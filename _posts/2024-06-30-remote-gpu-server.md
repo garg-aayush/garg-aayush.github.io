@@ -3,7 +3,7 @@ layout: post
 title:  Step-by-Step Guide to Setup Your Personal GPU Server
 tags: ["gpu","ngrok", "openssh"]
 mathjax: true
-summary: In this blog post, I will walk you through the steps to configure a personal GPU Ubuntu server for remote access which will help you access your GPU from anywhere!
+summary: A concise guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.
 ---
 
 I've been using a GPU workstation with an RTX 4090 for almost a year now, and it's been one of the best decisions I've made. With a personal GPU server, you no longer need to rely on cloud-based GPU instances from services like `RunPod` or `Vast.ai` every time you want to run a job or try new models. The best part? No stress about recurring GPU instance costs! :-)
