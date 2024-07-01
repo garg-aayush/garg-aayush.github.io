@@ -61,7 +61,7 @@ title: Blogs
 </ul> -->
 
 
-<ul class="blog-list">
+<!-- <ul class="blog-list">
   {% for post in site.posts %}
     <li class="blog-item">
       <div class="blog-title">
@@ -69,6 +69,23 @@ title: Blogs
       </div>
       <div class="blog-meta">
         {{ post.date | date: "%B %d, %Y" }} — {{ post.categories | join: ", " }}
+      </div>
+    </li>
+  {% endfor %}
+</ul> -->
+
+
+<ul class="blog-list">
+  {% for post in site.posts %}
+    <li class="blog-item">
+      <div class="blog-title">
+        <a href="{{ post.url }}">{{ post.title }}</a>
+      </div>
+      <div class="blog-meta">
+        {{ post.date | date: "%B %d, %Y" }} — 
+        <span class="blog-tags">
+          {{ post.tags | join: ", " }}
+        </span>
       </div>
     </li>
   {% endfor %}
