@@ -658,18 +658,18 @@ pre code {
   white-space: pre;
 }
 pre.highlight, .highlight > pre, td.code pre {
-  background: #FAFAFA;
-  background-image: linear-gradient(#F9F9F9 50%, #FDFDFD 50%);
+  background: #292827; /* Consistent dark background */
+  background-image: linear-gradient(#292827 50%,#211e1b 50%);
   background-repeat: repeat;
   background-size: 3em 3em;
   background-position: 0px 10px;
-  border-left: 5px solid #444;
+  border-left: 7px solid #444;
 }
 code table, code table td, code table th, code table tbody, code table tr,
 td.gutter pre {
   padding: 0;
   border: none;
-  background-color: #272822; /* Dark background */
+  background-color: #fff;
 }
 .highlight > pre {
   padding: 10px;
@@ -677,7 +677,7 @@ td.gutter pre {
 td.code pre {
   border-width: 0 0 0 2px;
   border-style: solid;
-  border-color:  #75715e; /* Matching border color */
+  border-color: #444;
   border-radius: 0;
 }
 td.gutter {
