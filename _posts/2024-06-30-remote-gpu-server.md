@@ -135,12 +135,14 @@ Here's how to set it up:
     
     To ensure ngrok starts automatically when your workstation boots:
 
-    - Create a new service file:
+   - Create a new service file:
+  
     ```bash
     sudo vim /etc/systemd/system/ngrok.service
     ```
+
+   - Add the following content:
     
-    - Add the following content:
     ```bash
     [Unit]
     Description=start ngrok tunnel on startup
@@ -157,6 +159,7 @@ Here's how to set it up:
     Replace `<your_username>` with your Ubuntu username. Save the file and exit the editor.
 
    - Enable and start the service:
+    
     ```bash
     sudo systemctl enable ngrok.service
     sudo systemctl start ngrok.service
@@ -166,15 +169,18 @@ Here's how to set it up:
     > Note: With a free account, ngrok assigns a new port (YYYY) each time your workstation boots. You can get the new port from the [ngrok dashboard](https://dashboard.ngrok.com/tunnels/agents).
 
 
-7. **Paid ngrok account for dedicated port**
+6. **Paid ngrok account for dedicated port**
     
     For a dedicated TCP endpoint port that doesn't change on reboot, you need a paid ngrok personal account (`$10/month`).
 
     a. Reserve a tcp endpoint
-    - Once you have a paid account, reserve a TCP endpoint at https://dashboard.ngrok.com/cloud-edge/tcp-addresses.
+    
+    Once you have a paid account, reserve a TCP endpoint at `https://dashboard.ngrok.com/cloud-edge/tcp-addresses`.
 
     b. Update the ngrok service file
+    
     Add the following content:
+    
     ```bash
     [Unit]
     Description=start ngrok tunnel on startup
