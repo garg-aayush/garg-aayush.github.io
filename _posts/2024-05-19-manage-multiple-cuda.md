@@ -8,7 +8,7 @@ summary: Guide to install CUDA locally and manage multiple cuda environments on 
 
 > Latest Update: May 19th, 2024
 
-- [Gitub Gist Link](https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956/edit)
+- [Gitub Gist Link](https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956)
 
 This blog contains all the steps required to:
 - Install multiple CUDA versions (e.g., `CUDA 11.8 and `CUDA 12.1
@@ -124,14 +124,13 @@ This blog contains all the steps required to:
     sudo chmod a+r /usr/local/cuda-12.1/include/cudnn*.h /usr/local/cuda-12.1/lib64/libcudnn*
     ```
 
-**Note**:
-- Strictly speaking, you are done with the CUDA setup. You can use it by adding the CUDA bin and library path to the `PATH` and `LD_LIBRARY_PATH` environment variables. For example, you can set up CUDA 11.8 by adding the following lines in the `~/.bashrc`:
+- **Note**: Strictly speaking, you are done with the CUDA setup. You can use it by adding the CUDA bin and library path to the `PATH` and `LD_LIBRARY_PATH` environment variables. For example, you can set up CUDA 11.8 by adding the following lines in the `~/.bashrc`:
 
-```bash
-PATH=/usr/local/cuda-11.8/bin:$PATH
-LD_LIBRARY_PATH=/usr/local/cuda-11.8/extras/CUPTI/lib64:$LD_LIBRARY_PATH
-LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
-```
+    ```bash
+    PATH=/usr/local/cuda-11.8/bin:$PATH
+    LD_LIBRARY_PATH=/usr/local/cuda-11.8/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+    ```
 
 Similarly, you can set up CUDA 12.1. However, manually changing the paths every time can be cumbersome!
 
@@ -139,125 +138,128 @@ Similarly, you can set up CUDA 12.1. However, manually changing the paths every 
 
 ### Manage multiple CUDA versions using `environment modules`
 
-**1. Install the environment modules utility**
-  - Run the following commands:
+1. **Install the environment modules utility**
+    
+    Run the following commands:
       
       ```bash
           sudo apt-get update
           sudo apt-get install environment-modules
       ```
-  - Check the installation:
+    
+    Check the installation:
       
       ```bash
       # Check the installation by running
       module list
       ```
 
-   > You should see a list of default installed modules like git and maybe their versions displayed when you run the command `module list`. This confirms that the environment modules utility has been successfully installed on your system.
+    > You should see a list of default installed modules like git and maybe their versions displayed when you run the command `module list`. This confirms that the environment modules utility has been successfully installed on your system.
 
 2. **Create modulefiles for CUDA distributions**
-    
+
     > **Note**: You might need root permissions to create directories and files. Use sudo in that case.
 
-    - Create a directory `/usr/share/modules/modulefiles/cuda` to hold modulefiles for cuda distributions
+    Create a directory `/usr/share/modules/modulefiles/cuda` to hold modulefiles for cuda distributions
         
-        ```bash
-        sudo mkdir -p /usr/share/modules/modulefiles/cuda
-        ```
+    ```bash
+    sudo mkdir -p /usr/share/modules/modulefiles/cuda
+    ```
 
-    - Create a modulefile `/usr/share/modules/modulefiles/cuda/11.8` for `CUDA 11.8` and add the following lines:
+    Create a modulefile `/usr/share/modules/modulefiles/cuda/11.8` for `CUDA 11.8` and add the following lines:
         
-        ```bash
-        #%Module1.0
-        ##
-        ## cuda 11.8 modulefile
-        ##
+    ```bash
+    #%Module1.0
+    ##
+    ## cuda 11.8 modulefile
+    ##
 
-        proc ModulesHelp { } {
-            global version
-            
-            puts stderr "\tSets up environment for CUDA $version\n"
-        }
+    proc ModulesHelp { } {
+        global version
+        
+        puts stderr "\tSets up environment for CUDA $version\n"
+    }
 
-        module-whatis "sets up environment for CUDA 11.8"
+    module-whatis "sets up environment for CUDA 11.8"
 
-        if { [ is-loaded cuda/12.1 ] } {
-        module unload cuda/12.1
-        }
+    if { [ is-loaded cuda/12.1 ] } {
+    module unload cuda/12.1
+    }
 
-        set version 11.8
-        set root /usr/local/cuda-11.8
-        setenv CUDA_HOME	$root
+    set version 11.8
+    set root /usr/local/cuda-11.8
+    setenv CUDA_HOME	$root
 
-        prepend-path PATH $root/bin
-        prepend-path LD_LIBRARY_PATH $root/extras/CUPTI/lib64
-        prepend-path LD_LIBRARY_PATH $root/lib64
-        conflict cuda
-        ```
+    prepend-path PATH $root/bin
+    prepend-path LD_LIBRARY_PATH $root/extras/CUPTI/lib64
+    prepend-path LD_LIBRARY_PATH $root/lib64
+    conflict cuda
+    ```
 
-   - Similarly, create a modulefile `/usr/share/modules/modulefiles/cuda/12.1` for `CUDA 12.1` and add the following lines:
+    Similarly, create a modulefile `/usr/share/modules/modulefiles/cuda/12.1` for `CUDA 12.1` and add the following lines:
        
-       ```bash
-       #%Module1.0
-       ##
-       ## cuda 12.1 modulefile
-       ##
+    ```bash
+    #%Module1.0
+    ##
+    ## cuda 12.1 modulefile
+    ##
 
-       proc ModulesHelp { } {
-           global version
-           
-           puts stderr "\tSets up environment for CUDA $version\n"
-       }
+    proc ModulesHelp { } {
+        global version
+        
+        puts stderr "\tSets up environment for CUDA $version\n"
+    }
 
-       module-whatis "sets up environment for CUDA 12.1"
+    module-whatis "sets up environment for CUDA 12.1"
 
-       if { [ is-loaded cuda/11.8 ] } {
-       module unload cuda/11.8
-       }
+    if { [ is-loaded cuda/11.8 ] } {
+    module unload cuda/11.8
+    }
 
-       set version 12.1
-       set root /usr/local/cuda-12.1
-       setenv CUDA_HOME	$root
+    set version 12.1
+    set root /usr/local/cuda-12.1
+    setenv CUDA_HOME	$root
 
-       prepend-path PATH $root/bin
-       prepend-path LD_LIBRARY_PATH $root/extras/CUPTI/lib64
-       prepend-path LD_LIBRARY_PATH $root/lib64
-       conflict cuda
-       ```
+    prepend-path PATH $root/bin
+    prepend-path LD_LIBRARY_PATH $root/extras/CUPTI/lib64
+    prepend-path LD_LIBRARY_PATH $root/lib64
+    conflict cuda
+    ```
 
 3. **Make `CUDA 11.8` the default cuda version**
 
-   - Create a file `/usr/share/modules/modulefiles/cuda.version` to make `CUDA 11.8` the default cuda module:
-       
-       ```bash
-       #%Module
-       set ModulesVersion 11.8
-       ```
+    Create a file `/usr/share/modules/modulefiles/cuda.version` to make `CUDA 11.8` the default cuda module:
+    
+    ```bash
+    #%Module
+    set ModulesVersion 11.8
+    ```
 
-   > **Note**: make sure to reload your terminal.
+    > **Note**: make sure to reload your terminal.
 
 4. **Changing and Viewing the CUDA Module**
-   - To change and view the loaded CUDA module, you can use the following commands:
+   
+    To change and view the loaded CUDA module, you can use the following commands:
        
-       ```bash
-       # Check the currently loaded module
-       module list
-       # Check the available modules
-       module avail
-       
-       # Load a specific cuda version
-       module load cuda/12.1
-       # Unload the currently loaded CUDA module
-       module unload cuda
-       # Load CUDA 11.8
-       module load cuda/11.8
-       
-       # verify the paths of the loaded CUDA
-       nvcc --version # should give the loaded CUDA version
-       echo $CUDA_HOME
-       echo $PATH
-       echo $LD_LIBRARY_PATH
-       ```
+    ```bash
+    # Check the currently loaded module
+    module list
+    # Check the available modules
+    module avail
+    
+    # Load a specific cuda version
+    module load cuda/12.1
+    # Unload the currently loaded CUDA module
+    module unload cuda
+    # Load CUDA 11.8
+    module load cuda/11.8
+    
+    # verify the paths of the loaded CUDA
+    nvcc --version # should give the loaded CUDA version
+    echo $CUDA_HOME
+    echo $PATH
+    echo $LD_LIBRARY_PATH
+    ```
 
    > **Note**: You can add additional `CUDA` versions or other packages by creating corresponding modulefiles and following the steps outlined in this gist.
 
@@ -265,13 +267,14 @@ Similarly, you can set up CUDA 12.1. However, manually changing the paths every 
 ### Some Useful Tips
 1. **What to do if `nvidia-smi` does not works**
 
-   - Sometime, after Ubuntu update or some other weird issue. The system might not be able to detect drivers. For example, you get erros such as `nvidia-smi has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.` The best solution is to remove the current drivers and reinstall the compatible nvidia-driver.
-       ```bash
-       # removes all the nvidia drivers
-       sudo apt-get --purge remove "*nvidia*" "libxnvctrl*"
-       # reinstall the compatible driver and restart
-       sudo ubuntu-drivers install
-       ```
+    Sometime, after Ubuntu update or some other weird issue. The system might not be able to detect drivers. For example, you get erros such as `nvidia-smi has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.` The best solution is to remove the current drivers and reinstall the compatible nvidia-driver.
+    
+    ```bash
+    # removes all the nvidia drivers
+    sudo apt-get --purge remove "*nvidia*" "libxnvctrl*"
+    # reinstall the compatible driver and restart
+    sudo ubuntu-drivers install
+    ```
 
 2. **How to purge CUDA from your computer**
     
