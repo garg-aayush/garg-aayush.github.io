@@ -1,7 +1,4 @@
-/* @import url(autumn.css);
-@import url("pygment_highlights.css"); */
-
-@import url(monokai.css);
+@import url(autumn.css);
 @import url("pygment_highlights.css");
 
 /* --- General --- */
@@ -646,20 +643,18 @@ table tr td :last-child {
   margin-bottom: 0;
 }
 
-
 /* --- Code blocks --- */
 
 pre {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5em;
 }
-
 pre code {
   white-space: pre;
 }
 pre.highlight, .highlight > pre, td.code pre {
-  background: #292827; /* Consistent dark background */
-  background-image: linear-gradient(#292827 50%,#211e1b 50%);
+  background: #FAFAFA;
+  background-image: linear-gradient(#F9F9F9 50%, #FDFDFD 50%);
   background-repeat: repeat;
   background-size: 3em 3em;
   background-position: 0px 10px;
@@ -672,7 +667,7 @@ td.gutter pre {
   background-color: #fff;
 }
 .highlight > pre {
-  padding: 10px;
+  padding: 0;
 }
 td.code pre {
   border-width: 0 0 0 2px;
@@ -682,14 +677,6 @@ td.code pre {
 }
 td.gutter {
   padding-top: 3px;
-}
-/* 
-/* Optional: Style inline code */
-code {
-  background-color: #3c3d3e; /* Slightly lighter than the main background */
-  color: #f8f8f2;
-  padding: 2px 4px;
-  border-radius: 3px;
 }
 
 /* --- Social media sharing section --- */
