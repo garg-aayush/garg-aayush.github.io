@@ -9,7 +9,7 @@ title: Blogs
     - This is a concise instructional guide on installing multiple CUDA environments and seemlessly managing them using `environment modules`. It will help you to aviod the compatibility concerns due to multiple cuda environments on same system. Once configured, you can effortlessly switch between CUDA versions using just a single command. -->
 
   
-<div class="posts-list">
+<!-- <div class="posts-list">
   {% for post in paginator.posts %}
   <article class="post-preview">
     <a href="{{ post.url | prepend: site.baseurl }}">
@@ -47,7 +47,7 @@ title: Blogs
     <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Older Posts &rarr;</a>
   </li>
   {% endif %}
-</ul>
+</ul> -->
 {% endif %}
 
 <!-- <p>Here are my blog posts in reverse chronological order:</p>
@@ -59,3 +59,17 @@ title: Blogs
     </li>
   {% endfor %}
 </ul> -->
+
+
+<ul class="blog-list">
+  {% for post in site.posts %}
+    <li class="blog-item">
+      <div class="blog-title">
+        <a href="{{ post.url }}">{{ post.title }}</a>
+      </div>
+      <div class="blog-meta">
+        {{ post.date | date: "%B %d, %Y" }} — {{ post.categories | join: ", " }}
+      </div>
+    </li>
+  {% endfor %}
+</ul>
