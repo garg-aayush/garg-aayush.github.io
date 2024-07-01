@@ -4,6 +4,9 @@ title: Publications
 ---
 
 - **Spatial aliasing removal using deep learning super-resolution**  
+  <b>Garg, A.</b>, Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J., 2019, Spatial aliasing removal using deep learning super-resolution, <b>2019</b>, <a href="https://doi.org/10.1093/gji/ggz557" target="_blank" style="color:blue;"> First Break, 37(9), 87-92 </a> 
+
+- **From surface seismic data to reservoir elastic parameters using a full-wavefield redatuming approach**  
   <b>Garg, A.</b>, Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J., 2019, Spatial aliasing removal using deep learning super-resolution, First Break, 37(9), 87-92 
   *First Break, 37(9), 87-92*  
   [Paper](https://doi.org/10.3997/1365-2397.n0057){: .btn} 
