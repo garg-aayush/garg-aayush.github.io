@@ -15,9 +15,9 @@ This blog contains all the steps required to:
 - Manage multiple CUDA environments on Ubuntu using the utility called [environment modules](https://modules.readthedocs.io/en/latest/).
 - Use this approach to avoid CUDA environment conflicts.
 
-> Environment Modules is a package that provides for the dynamic modification of a user's environment via modulefiles. You can find more on it at https://modules.readthedocs.io/en/latest/
+> Environment Modules is a package that provides for the dynamic modification of a user's environment via modulefiles. You can find more on it at [https://modules.readthedocs.io/en/latest/](https://modules.readthedocs.io/en/latest/)
 
-## Install the Compatible NVIDIA Drivers (if required)
+### Install the Compatible NVIDIA Drivers (if required)
 
 - Add PPA GPU Drivers Repository to the System
     
@@ -91,9 +91,9 @@ This blog contains all the steps required to:
 
 - Make sure to copy and execute the commands above in your terminal to install `CUDA 11.8` and `CUDA 12.1` on your system.
 
-## Install `cuDNN` library
+### Install `cuDNN` library
 
-- Go to https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/ and download the `cuDNN` tar for `CUDA 11.x`. Note that you might need to create a developer's account first.
+- Go to [https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/](https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/) and download the `cuDNN` tar for `CUDA 11.x`. Note that you might need to create a developer's account first.
 
 - Untar the downloaded file using the following command:
     
@@ -125,7 +125,7 @@ This blog contains all the steps required to:
     ```
 
 **Note**:
-- Strictly speaking, you are done with the CUDA setup. You can use it by adding the CUDA bin and library path to the PATH and LD_LIBRARY_PATH environment variables. For example, you can set up CUDA 11.8 by adding the following lines in the `~/.bashrc`:
+- Strictly speaking, you are done with the CUDA setup. You can use it by adding the CUDA bin and library path to the `PATH` and `LD_LIBRARY_PATH` environment variables. For example, you can set up CUDA 11.8 by adding the following lines in the `~/.bashrc`:
 
 ```bash
 PATH=/usr/local/cuda-11.8/bin:$PATH
@@ -135,9 +135,9 @@ LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
 
 Similarly, you can set up CUDA 12.1. However, manually changing the paths every time can be cumbersome!
 
-**Note**: In case, you only want to install either of the one, CUDNN 11.x or CUDNN 12.x. The simpler way is to go to https://developer.nvidia.com/cudnn-downloads and install the CUDNN 11.x or CUDNN 12.x similar to CUDA installation. 
+**Note**: In case, you only want to install either of the one, CUDNN 11.x or CUDNN 12.x. The simpler way is to go to [https://developer.nvidia.com/cudnn-downloads](https://developer.nvidia.com/cudnn-downloads) and install the CUDNN 11.x or CUDNN 12.x similar to CUDA installation. 
 
-## Manage multiple CUDA versions using `environment modules`
+### Manage multiple CUDA versions using `environment modules`
 
 **1. Install the environment modules utility**
   - Run the following commands:
@@ -262,7 +262,7 @@ Similarly, you can set up CUDA 12.1. However, manually changing the paths every 
    > **Note**: You can add additional `CUDA` versions or other packages by creating corresponding modulefiles and following the steps outlined in this gist.
 
 
-## Some Useful Tips
+### Some Useful Tips
 1. **What to do if `nvidia-smi` does not works**
 
    - Sometime, after Ubuntu update or some other weird issue. The system might not be able to detect drivers. For example, you get erros such as `nvidia-smi has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.` The best solution is to remove the current drivers and reinstall the compatible nvidia-driver.
@@ -287,9 +287,9 @@ Similarly, you can set up CUDA 12.1. However, manually changing the paths every 
     ```
 
 ## Resources and helpful links
-- https://ubuntu.com/server/docs/nvidia-drivers-installation
-- https://developer.nvidia.com/cuda-toolkit-archive
-- https://developer.nvidia.com/cudnn-downloads
+- [https://ubuntu.com/server/docs/nvidia-drivers-installation](https://ubuntu.com/server/docs/nvidia-drivers-installation)
+- [https://developer.nvidia.com/cuda-toolkit-archive](https://developer.nvidia.com/cuda-toolkit-archive)
+- [https://developer.nvidia.com/cudnn-downloads](https://developer.nvidia.com/cudnn-downloads)
 
 
 ---

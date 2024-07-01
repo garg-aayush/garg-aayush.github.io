@@ -6,6 +6,8 @@ mathjax: true
 summary: A concise guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.
 ---
 
+- [Gitub Gist Link](hhttps://gist.github.com/garg-aayush/d377557b20ef9f206c1d6381e174d8a7)
+
 I've been using a GPU workstation with an RTX 4090 for almost a year now, and it's been one of the best decisions I've made. With a personal GPU server, you no longer need to rely on cloud-based GPU instances from services like `RunPod` or `Vast.ai` every time you want to run a job or try new models. The best part? No stress about recurring GPU instance costs! :-)
 
 However, I rarely work directly on my workstation. Instead, I prefer the flexibility of accessing the GPU remotely using my MacBook, whether I'm working from different locations within my home, from a co-working space, or a cozy cafe in another part of town. 
