@@ -12,6 +12,9 @@ title: Publications
   Garg, A., Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J., <b>2019</b>
   <a href="https://doi.org/10.3997/1365-2397.n0057"> First Break, 37(9), 87-92 </a> 
 
+- **Spatial aliasing removal using deep learning super-resolution**  
+  Garg, A., Verschuur, D. J., <b>2019</b>
+  <a href="https://doi.org/10.1190/segam2019-3216448.1"> 89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648 </a> 
   
 - <b>Garg, A.</b>, Verschuur, D. J., 2019, Estimation of reservoir elastic parameters via full-wavefield redatuming: Comparison of approaches, 89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648. <a href="https://doi.org/10.1190/segam2019-3216448.1" target="_blank" style="color:blue;"> doi.org/10.1190/segam2019-3216448.1</a>
 
