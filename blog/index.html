@@ -120,7 +120,6 @@ title: Blogs
   </ul>
 {% endfor %} -->
 
-<!-- Certainly! Implementing pagination for your blog listing is a great way to manage a large number of posts. Here's how you can modify your blog.html to 
 
 {% assign postsByYear = paginator.posts | group_by_exp:"post", "post.date | date: '%Y'" %}
 

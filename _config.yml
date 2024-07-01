@@ -97,6 +97,12 @@ excerpt_length: 50
 # and RSS feed title
 title-separator: "-"
 
+#pagination
+gems: [jekyll-paginate]
+paginate: 5
+paginate_path: "blog/page:num"
+
+
 # --- Don't need to touch anything below here (but you can if you want) --- #
 
 # Output options (more information on Jekyll's site)
@@ -106,10 +112,6 @@ mathjax: true
 highlighter: rouge
 permalink: /:year-:month-:day-:title/
 # paginate: 5
-#pagination
-gems: [jekyll-paginate]
-paginate: 5
-paginate_path: "blog/page:num"
 
 kramdown:
   input: GFM
