@@ -48,28 +48,25 @@ Let's start by setting up local access, which will allow you to `ssh` into your 
     ```bash
     sudo ufw allow ssh
     ```
-
-This command adds an exception to your firewall rules, permitting incoming SSH connections. You can check the SSH status with:
-```
-sudo ufw status
-```
-
-You should see the output similar to:
-```bash
-To                         Action      From
---                         ------      ----
-22/tcp                     ALLOW       Anywhere
-22/tcp(v6)                 ALLOW       Anywhere (v6)
-```
+    This command adds an exception to your firewall rules, permitting incoming SSH connections. You can check the SSH status with:
+    ```bash
+    sudo ufw status
+    ```
+    You should see the output similar to:
+    ```bash
+    To                         Action      From
+    --                         ------      ----
+    22/tcp                     ALLOW       Anywhere
+    22/tcp(v6)                 ALLOW       Anywhere (v6)
+    ```
 
 4. **Connect to the local server**
+    
     Now that your GPU server is set up, it's time to test the connection. From your laptop (which should be on the same local network as your GPU machine), open a terminal and use the following command:
     ```bash
     ssh user@local-ip-address
     ```
-
     Replace user with your Ubuntu `user` and `local-ip-address` with the IP address of your GPU machine on the local network.
-
     - To find your username on the workstation, you can use the `whoami` command.
     - To find your local IP address, use one of these methods on your workstation:
         - Run `hostname -I` and use the first address listed.
@@ -83,6 +80,7 @@ To                         Action      From
     If everything is configured correctly, you'll be prompted to enter your password, after which you'll gain remote access to your GPU server.
 
 5. **Set Up SSH Keys for Passwordless Login**
+    
     It is recommended to set up key-based authentication for better security and convenience purposes. This allows you to connect to your remote server without entering a password each time.
 
     - It is quite common to setup ssh key-based authentication. 
@@ -99,13 +97,15 @@ One simple and secure way to achieve this is by using [ngrok](https://ngrok.com/
 Here's how to set it up:
 
 1. **Install ngrok**
-    First, you need to install ngrok on your GPU workstation. Open a terminal and run this command:
+   
+   First, you need to install ngrok on your GPU workstation. Open a terminal and run this command:
     ```bash
     snap install ngrok
     ```
     - For more installation options, see https://dashboard.ngrok.com/get-started/setup/linux.
 
 2. **Create and connect to ngrok Account**
+    
     Visit [ngrok's website](https://ngrok.com/) and sign up for a free account if you haven't already.
     After signing up, you'll receive an auth token. On your GPU workstation, run:
     ```bash
@@ -113,14 +113,16 @@ Here's how to set it up:
     ```
     You can get the config file path and edit using `ngrok config check` and `vim <path>`, respectively.
 
-3. **Start the ngrok Tunnel**
+3. **Start the ngrok Tunnel**  
+    
     Now, you can create a secure tunnel to your SSH service:
     ```bash
     ngrok tcp 22
     ```
     This command will display a URL that looks like `tcp://X.tcp.ngrok.io:PORT`. Note down this URL.
 
-4. **Connect to Your Workstation**
+4. **Connect to Your Workstation**  
+    
     From any external laptop, you can now SSH into your GPU workstation using:
     ```bash
     ssh -p YYYY user@X.tcp.ngrok.io
@@ -129,14 +131,15 @@ Here's how to set it up:
 
     _The above steps ensure that you can remotely access the workstation from external network. However, no one is going to manually start the ngrok every time before heading out._
 
-6. **Make ngrok start automatically on boot**
+5. **Make ngrok start automatically on boot**
+    
     To ensure ngrok starts automatically when your workstation boots:
 
     - Create a new service file:
     ```bash
     sudo vim /etc/systemd/system/ngrok.service
     ```
-
+    
     - Add the following content:
     ```bash
     [Unit]
@@ -164,6 +167,7 @@ Here's how to set it up:
 
 
 7. **Paid ngrok account for dedicated port**
+    
     For a dedicated TCP endpoint port that doesn't change on reboot, you need a paid ngrok personal account (`$10/month`).
 
     a. Reserve a tcp endpoint
