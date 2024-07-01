@@ -14,12 +14,12 @@ However, I rarely work directly on my workstation. Instead, I prefer the flexibi
 
 For this guide, I assume you already have a workstation running Ubuntu with a GPU and it is connected to your local network
 
-## Setting Up Local Remote Access
+### Setting Up Local Remote Access
 
 Let's start by setting up local access, which will allow you to `ssh` into your GPU server when you're on the same home Wi-Fi network. This is ideal for a work-from-home (WFH) setup where your workstation is running in a corner of your living space.
 
 
-### 1. Install the SSH server
+#### 1. Install the SSH server
 First, we need to install an SSH (Secure Shell) server. This will allow you to securely access your GPU machine remotely. Open a terminal on your Ubuntu machine and run the following commands:
 ```
 sudo apt update &&
@@ -27,7 +27,7 @@ sudo apt install openssh-server
 ```
 This command updates your package lists and installs the OpenSSH server.
 
-### 2. Start and Enable SSH Service
+#### 2. Start and Enable SSH Service
 
 Next, enable the SSH service using this command:
 ```
@@ -43,7 +43,7 @@ Look for a line starting with `Active: active (running)` for `ssh.service`. This
 
 > Note: The OpenSSH server starts running on boot by default.
 
-### 3. Configure the firewall
+#### 3. Configure the firewall
 To allow SSH connections through the system firewall, you need to open the appropriate port. Ubuntu's default firewall, UFW (Uncomplicated Firewall), makes this process straightforward:
 
 ```
@@ -63,7 +63,7 @@ To                         Action      From
 22/tcp(v6)                 ALLOW       Anywhere (v6)
 ```
 
-### 4. Connect to the local server
+#### 4. Connect to the local server
 Now that your GPU server is set up, it's time to test the connection. From your laptop (which should be on the same local network as your GPU machine), open a terminal and use the following command:
 
 ```
@@ -84,14 +84,14 @@ Replace user with your Ubuntu `user` and `local-ip-address` with the IP address 
 
 If everything is configured correctly, you'll be prompted to enter your password, after which you'll gain remote access to your GPU server.
 
-### 5. Set Up SSH Keys for Passwordless Login
+#### 5. Set Up SSH Keys for Passwordless Login
 It is recommended to set up key-based authentication for better security and convenience purposes. This allows you to connect to your remote server without entering a password each time.
 
 - It is quite common to setup ssh key-based authentication. 
 - For detailed instructions on setting up SSH keys, refer to the DigitalOcean guide on [Setting up SSH keys on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04#step-4-disabling-password-authentication-on-your-server).
 
 
-## Setting Up External Remote Access
+### Setting Up External Remote Access
 
 While local access is great for working within your home network, sometimes you need to access your GPU workstation from outside your local network, such as from co-working spaces or a cozy cafe.
 
@@ -101,7 +101,7 @@ One simple and secure way to achieve this is by using [ngrok](https://ngrok.com/
 
 Here's how to set it up:
 
-### 1. Install ngrok
+#### 1. Install ngrok
 
 First, you need to install ngrok on your GPU workstation. Open a terminal and run this command:
 
@@ -111,18 +111,17 @@ snap install ngrok
 
 - For more installation options, see https://dashboard.ngrok.com/get-started/setup/linux.
 
-### 2. Create an ngrok Account
+#### 2. Create an ngrok Account
 Visit [ngrok's website](https://ngrok.com/) and sign up for a free account if you haven't already.
 
-### 3. Connect Your Account
+#### 3. Connect Your Account
 After signing up, you'll receive an auth token. On your GPU workstation, run:
 ```
 ngrok config add-authtoken YOUR_AUTH_TOKEN
 ```
 You can get the config file path and edit using `ngrok config check` and `vim <path>`, respectively.
 
-
-### 4. Start the ngrok Tunnel
+#### 4. Start the ngrok Tunnel
 Now, you can create a secure tunnel to your SSH service:
 ```
 ngrok tcp 22
@@ -130,7 +129,7 @@ ngrok tcp 22
 
 This command will display a URL that looks like `tcp://X.tcp.ngrok.io:PORT`. Note down this URL.
 
-### 5. Connect to Your Workstation
+#### 5. Connect to Your Workstation
 From any external laptop, you can now SSH into your GPU workstation using:
 ```
 ssh -p YYYY user@X.tcp.ngrok.io
@@ -139,10 +138,10 @@ Replace `PORT` with the port number and `X` with the subdomain from the ngrok UR
 
 _The above steps ensure that you can remotely access the workstation from external network. However, no one is going to manually start the ngrok every time before heading out._
 
-### 6. Make ngrok start automatically on boot
+#### 6. Make ngrok start automatically on boot
 To ensure ngrok starts automatically when your workstation boots:
 
-#### a. Create a new service file:
+##### a. Create a new service file:
 ```
 sudo vim /etc/systemd/system/ngrok.service
 ```
@@ -164,7 +163,7 @@ WantedBy=multi-user.target
 
 Replace `<your_username>` with your Ubuntu username. Save the file and exit the editor.
 
-#### b. Enable and start the service:
+##### b. Enable and start the service:
 ```
 sudo systemctl enable ngrok.service
 sudo systemctl start ngrok.service
@@ -174,13 +173,13 @@ Now ngrok will automatically start and create a tunnel when your workstation boo
 > Note: With a free account, ngrok assigns a new port (YYYY) each time your workstation boots. You can get the new port from the [ngrok dashboard](https://dashboard.ngrok.com/tunnels/agents).
 
 
-### 7. Paid ngrok account for dedicated port
+#### 7. Paid ngrok account for dedicated port
 For a dedicated TCP endpoint port that doesn't change on reboot, you need a paid ngrok personal account (`$10/month`).
 
-#### a. Reserve a tcp endpoint
+##### a. Reserve a tcp endpoint
 - Once you have a paid account, reserve a TCP endpoint at https://dashboard.ngrok.com/cloud-edge/tcp-addresses.
 
-#### b. Update the ngrok service file
+##### b. Update the ngrok service file
 Add the following content:
 ```
 [Unit]
@@ -200,7 +199,7 @@ Replace `<region>`, `<remote-address>`, and `<your_username>` with the appropria
 
 **With this setup, your SSH remote endpoint will remain the same even if the system reboots.**
 
-## Reference Links:
+### Reference Links:
 1. [Ubuntu SSH Documentation](https://ubuntu.com/server/docs/service-openssh)
 2. [DigitalOcean Guide on Setting Up SSH Keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04)
 3. [ngrok Documentation](https://ngrok.com/docs)

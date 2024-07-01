@@ -7,7 +7,8 @@ summary: Guide to install CUDA locally and manage multiple cuda environments on 
 ---
 
 > Latest Update: May 19th, 2024
-> [Gitub Gist Link](https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956/edit)
+
+- [Gitub Gist Link](https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956/edit)
 
 This blog contains all the steps required to:
 - Install multiple CUDA versions (e.g., `CUDA 11.8 and `CUDA 12.1
@@ -16,7 +17,7 @@ This blog contains all the steps required to:
 
 > Environment Modules is a package that provides for the dynamic modification of a user's environment via modulefiles. You can find more on it at https://modules.readthedocs.io/en/latest/
 
-## 1. Install the Compatible NVIDIA Drivers (if required)
+### 1. Install the Compatible NVIDIA Drivers (if required)
 
 - Add PPA GPU Drivers Repository to the System
     ```bash
@@ -46,7 +47,7 @@ This blog contains all the steps required to:
 > - Additionally, you can also install NVIDIA drivers using the **Software & Updates** Ubuntu app. Just go to the **Additional Drivers** tab, choose a driver, and click **Apply Changes**.
   
 
-## 2. Install `CUDA 11.8` and `CUDA 12.1`
+### 2. Install `CUDA 11.8` and `CUDA 12.1`
 
 - Go to the [https://developer.nvidia.com/cuda-toolkit-archive](https://developer.nvidia.com/cuda-toolkit-archive) and select `CUDA Toolkit 11.8` from the available options. 
 - Choose your OS, architecture, distribution, version, and installer type. For example, in my case:
@@ -81,7 +82,7 @@ This blog contains all the steps required to:
     ```
 - Make sure to copy and execute the commands above in your terminal to install `CUDA 11.8` and `CUDA 12.1` on your system.
 
-## 3. Install `cuDNN` library
+### 3. Install `cuDNN` library
 
 - Go to https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/linux-x86_64/ and download the `cuDNN` tar for `CUDA 11.x`. Note that you might need to create a developer's account first.
 
@@ -122,8 +123,8 @@ This blog contains all the steps required to:
 
 > **Note**: In case, you only want to install either of the one, CUDNN 11.x or CUDNN 12.x. The simpler way is to go to https://developer.nvidia.com/cudnn-downloads and install the CUDNN 11.x or CUDNN 12.x similar to CUDA installation. 
 
-## 4. Manage multiple CUDA versions using `environment modules`
-### a) Install the environment modules utility:
+### 4. Manage multiple CUDA versions using `environment modules`
+#### a) Install the environment modules utility:
 - Run the following commands:
     ```bash
         sudo apt-get update
@@ -137,7 +138,7 @@ This blog contains all the steps required to:
 
  > You should see a list of default installed modules like git and maybe their versions displayed when you run the command `module list`. This confirms that the environment modules utility has been successfully installed on your system.
 
-### b) Create modulefiles for CUDA distributions
+#### b) Create modulefiles for CUDA distributions
   
 > **Note**: You might need root permissions to create directories and files. Use sudo in that case.
 
@@ -204,7 +205,7 @@ This blog contains all the steps required to:
     conflict cuda
     ```
 
-### c) Make `CUDA 11.8` the default cuda version
+#### c) Make `CUDA 11.8` the default cuda version
 - Create a file `/usr/share/modules/modulefiles/cuda.version` to make `CUDA 11.8` the default cuda module:
     ```bash
     #%Module
@@ -213,7 +214,7 @@ This blog contains all the steps required to:
 
 > **Note**: make sure to reload your terminal.
 
-## 5. Changing and Viewing the CUDA Module
+### 5. Changing and Viewing the CUDA Module
 - To change and view the loaded CUDA module, you can use the following commands:
     ```bash
     # Check the currently loaded module
@@ -237,8 +238,8 @@ This blog contains all the steps required to:
 > **Note**: You can add additional `CUDA` versions or other packages by creating corresponding modulefiles and following the steps outlined in this gist.
 
 
-## 6. Some Useful Tips
-### a) `nvidia-smi` does not works
+### 6. Some Useful Tips
+#### a) `nvidia-smi` does not works
 
 - Sometime, after Ubuntu update or some other weird issue. The system might not be able to detect drivers. For example, you get erros such as `nvidia-smi has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.` The best solution is to remove the current drivers and reinstall the compatible nvidia-driver.
     ```bash
@@ -248,7 +249,7 @@ This blog contains all the steps required to:
     sudo ubuntu-drivers install
     ```
 
-### b) Purge CUDA from your computer
+#### b) Purge CUDA from your computer
 > DO IT AT YOUR OWN RISK
 
     ```bash
@@ -260,7 +261,7 @@ This blog contains all the steps required to:
     sudo rm -rf /usr/loca/cuda*
     ```
 
-## Resources and helpful links
+### Resources and helpful links
 - https://ubuntu.com/server/docs/nvidia-drivers-installation
 - https://developer.nvidia.com/cuda-toolkit-archive
 - https://developer.nvidia.com/cudnn-downloads
