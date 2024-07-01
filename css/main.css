@@ -652,7 +652,6 @@ table tr td :last-child {
 pre {
   font-size: 14px;
   line-height: 1.5em;
-  background-color: #272822; /* Dark background */
 }
 
 pre code {
@@ -664,13 +663,13 @@ pre.highlight, .highlight > pre, td.code pre {
   background-repeat: repeat;
   background-size: 3em 3em;
   background-position: 0px 10px;
-  border-left: 7px solid #444;
+  border-left: 5px solid #444;
 }
 code table, code table td, code table th, code table tbody, code table tr,
 td.gutter pre {
   padding: 0;
   border: none;
-  background-color: #fff;
+  background-color: #272822; /* Dark background */
 }
 .highlight > pre {
   padding: 10px;
@@ -678,7 +677,7 @@ td.gutter pre {
 td.code pre {
   border-width: 0 0 0 2px;
   border-style: solid;
-  border-color: #444;
+  border-color:  #75715e; /* Matching border color */
   border-radius: 0;
 }
 td.gutter {
