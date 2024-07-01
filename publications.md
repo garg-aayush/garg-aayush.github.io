@@ -3,8 +3,10 @@ layout: page
 title: Publications
 ---
 
-You can also browse my <a href="https://scholar.google.co.in/citations?user=Z-7pPYEAAAAJ&hl=en" target="_blank">Google Scholar profile</a>.
-<br />
+- **Spatial aliasing removal using deep learning super-resolution**  
+  <b>Garg, A.</b>, Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J., 2019, Spatial aliasing removal using deep learning super-resolution, First Break, 37(9), 87-92 
+  *First Break, 37(9), 87-92*  
+  [Paper](https://doi.org/10.3997/1365-2397.n0057){: .btn} 
 
 
 -  <b>Garg, A.</b>, Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J., 2019, Spatial aliasing removal using deep learning super-resolution, First Break, 37(9), 87-92. <a href="https://doi.org/10.3997/1365-2397.n0057" target="_blank" style="color:blue;"> doi.org/10.3997/1365-2397.n0057 </a>
