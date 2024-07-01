@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Baseline Evaluation of GPT-4o for Functional Representation Extraction
+title:  Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction
 tags: ["LLMs", "GPT", "Evaluation", "VIGGO"]
 mathjax: true
 summary: In this blog post, I will walk through structured data extraction, specifically functional representation, using OpenAI's GPT-4o model.
@@ -9,10 +9,10 @@ summary: In this blog post, I will walk through structured data extraction, spec
 ### Introduction
 Extracting structured data from unstructured texts allow us to condense the information present in the text. This representation then can be used for efficient indexing and other downstream RAG applications. 
 
-I want to evaluate [GPT-4o](https://openai.com/index/hello-gpt-4o/) performance in extracting structural data, specifically, functional representation, from the unstructured domain-specific text. I will use [ViGGO dataset](https://huggingface.co/datasets/GEM/viggo) to evaluate it on custom evaluation criteria and will set it as baseline performance for that can be used for comparison in future work with other models such as **Claude**, **Gemini**, and **custom** fine-tuned open-source models.
+I want to evaluate [GPT-4o's](https://openai.com/index/hello-gpt-4o/) performance in extracting structural data, specifically, functional representation, from the unstructured domain-specific text. I will use [ViGGO dataset](https://huggingface.co/datasets/GEM/viggo) to evaluate it on custom evaluation criteria and will set it as baseline performance for that can be used for comparison in future work with other models such as **Claude**, **Gemini**, and **custom** fine-tuned open-source models.
 
 ### ViGGO Dataset
-It is a video game domain opinions data-to-text generation dataset. Strictly speaking, it is intended to generate coherent conversational responses based on input functional representations (set of attributes and values).
+This is a dataset for generating text opinions in the video game domain. Strictly speaking, it is intended to generate coherent conversational responses based on input functional representations (set of attributes and values).
 
 However, I use the **reverse task**, where I **generate structured functional representations from the given text input**. A typical ViGGO dataset example has the output structured functional representation consisting of a single function with attributes and attribute values.
 
@@ -37,7 +37,7 @@ Attributes:
 'player_perspective', 'has_multiplayer', 'developer', 'exp_release_date']
 ```
 
-**Note**: _Since I am not training/fine-tuning any model, I will only consider the ViGGO validation dataset for this exercise._
+**Note**: _Since I am not training/fine-tuning any model, I will only consider the **ViGGO validation dataset** for this exercise._
 
 ### Prompt for generating the functional representation
 
@@ -108,8 +108,6 @@ Ground Truth: recommend(name[Need for Speed: The Run], platforms[Xbox])
 GPT Response: confirm(name[Need for Speed: The Run], platforms[Xbox])
 ```
 
-**Please go through the GPT-4o baseline evaluation notebook  for more details on building prompt template and evaluating responses.**
-
 ### Evaluation criteria
 
 Often, you require custom evaluation criteria for custom tasks. For structured functional representation extraction, I define the following binary criteria:
@@ -125,7 +123,7 @@ The above criteria are in order of increasing strictness. The first criterion is
 
 ### Evaluation Strategy
 
-Although not ideal, I use the GPT-4o model itself to evaluate its own performance on the given task. I asks the model to compare the generated function with the ground truth function and provide a boolean score based on the above evaluation criteria. 
+Although not ideal, I ask the model to evaluate its own performance on the given task. This approach has limitations, as it could potentially introduce bias in the evaluation process. However, it serves as a starting point for our analysis. I ask the model to compare the generated function with the ground truth function and provide a boolean score based on the above evaluation criteria.
 
 Since, I need the evaluation scores in a more structured format to analyze the model's performance effectively. I use [pydantic](https://docs.pydantic.dev/latest/) and [instructor](https://python.useinstructor.com/) packages to obtain the evaluation scores in a structured format. I use the following prompt and pydantic model to evaluate the GPT-4o performance:
 
@@ -154,24 +152,42 @@ Let's think step by step.
 """
 ```
 
+> **Please go through the [GPT-4o baseline evaluation notebook](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Evaluate_GPT4_Viggo_dataset.ipynb)  for more details on prompt template and evaluation process and responses.**
+
 ### Evaluating the performance
 
 Using the above evaluation strategy, I generate the average evaluation scores for the full dataset.
 
 ![GPT-4o Evaluation Metrics](/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png)
 
-The task of generating functional representations from natural language sentences is challenging as seen in the above scores. Best the model can do is to provide the exact match only for 30% of the examples. Even the correct function name evaluation score is about 80%.
-
+The task of generating functional representations from natural language sentences is challenging as seen in the above scores. The best the model can do is to provide the exact match only for **30%** of the examples. Even the correct function name evaluation score is only about **80%**. These results indicate that while GPT-4o shows some capability in extracting functional representations, there's significant room for improvement.
 
 ### Conclusion
 
-The above evaluation exercise provides a good baseline and useful evaluation criteria/metrics that can be used to assess the performance of other models on the same task in the future. Generating functional representations is a complex task and is not easily accomplished using prompt-engineering techniques like few-shot learning as seen above.
+The above evaluation exercise provides a good baseline and useful evaluation criteria/metrics that can be used to assess the performance of other models on the same task in the future. Generating functional representations is a complex task and is not easily accomplished using prompt-engineering techniques like few-shot learning as seen in the results.
+
 
 ### Next steps…
 
-- I can evaluate other large models like Claude, Gemini, and Llama-3–70B on the same task to compare their performance.
+- Evaluate other large models like **Claude**, **Gemini**, and **Llama-3–70B** on the same task to compare their performance. This will provide a broader perspective on how different LLMs handle structured data extraction. 
 
-- Most importantly, I can fine-tuning smaller models like Llama-3–8B or Mistral-7B for this domain-specific structured representation task. Fine-tuning will not only improves the model's performance but also enhances latency and reduces the number of input tokens required to generate the output.
+- Explore alternative evaluation methods that don't rely on the model evaluating itselfMost importantly, to eliminate potential biases in the evaluation process.
+
+- Fine-tune smaller models like **Llama-3–8B** or **Mistral-7B** for this domain-specific structured representation task. Fine-tuning will not only improve the model's performance but also enhance latency and reduce the number of input tokens required to generate the output.
+
+- Investigate the impact of different prompt engineering techniques on the model's performance. 
+
+### Reference Links
+Certainly! Here's a reference section with all the links used in the blog post:
+
+### References
+
+- [GPT-4o baseline evaluation notebook](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Evaluate_GPT4_Viggo_dataset.ipynb)
+- [OpenAI GPT-4o](https://openai.com/index/hello-gpt-4o/)
+- [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo)
+- [Anyscale Blog on Fine-tuning Llama 2](https://www.anyscale.com/blog/fine-tuning-llama-2-a-comprehensive-case-study-for-tailoring-models-to-unique-applications)
+- [Pydantic Documentation](https://docs.pydantic.dev/latest/)
+- [Instructor Package](https://python.useinstructor.com/)
 
 ---
 Thanks for reading! If you have any questions or feedback, please let me know on [Twitter](https://twitter.com/Aayush_ander) or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734/).
