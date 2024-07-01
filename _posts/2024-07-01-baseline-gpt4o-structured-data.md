@@ -26,7 +26,20 @@ Functional Representation:
 verify_attribute(name[Crysis], developer[Crytek Frankfurt], rating[good], player_perspective[first person])
 ```
 
-_Since I am not training/fine-tuning any model, I will only consider the ViGGO validation dataset for this exercise._
+The function and attributes must be one of the following, respectively:
+
+```python
+Function:
+['inform', 'request', 'give_opinion', 'confirm', 'verify_attribute', 
+'suggest', 'request_explanation', 'recommend', 'request_attribute']
+
+Attributes:
+['name', 'release_year', 'esrb', 'genres', 'platforms', 'available_on_steam',
+'has_linux_release', 'has_mac_release', 'specifier', 'rating', 
+'player_perspective', 'has_multiplayer', 'developer', 'exp_release_date']
+```
+
+**Note**: _Since I am not training/fine-tuning any model, I will only consider the ViGGO validation dataset for this exercise._
 
 
 ---
