@@ -74,14 +74,14 @@ share-links-active:
 
 # How to display the link to the website in the footer
 # Remove this if you don't want a link in the footer
-url-pretty: "garg-aayush.github.io"  # eg. "deanattali.com/beautiful-jekyll"
+url-pretty: "aayushgarg.dev"  # eg. "deanattali.com/beautiful-jekyll"
 
 # --- Misc --- #
 # Fill in your Disqus shortname (NOT the userid) if you want to support Disqus comments
-disqus: "garg-aayush-github-io"
+disqus: "aayushgarg-dev"
 
 # # Fill in your Google Analytics ID to track your website using GA
-# google_analytics: "UA-121781547-1"
+# google_analytics: "G-16JWTLXJNG"
 
 # Google Tag Manager ID
 #gtm: ""
@@ -100,7 +100,7 @@ title-separator: "-"
 # --- Don't need to touch anything below here (but you can if you want) --- #
 
 # Output options (more information on Jekyll's site)
-timezone: "America/New_York"
+timezone: "Asia/Kolkata"
 markdown: kramdown
 mathjax: true
 highlighter: rouge
