@@ -6,7 +6,35 @@ title: Publications
 You can also browse my <a href="https://scholar.google.co.in/citations?user=Z-7pPYEAAAAJ&hl=en" target="_blank">Google Scholar profile</a>.
 <br />
 
-**2024**
+
+-  <b>Garg, A.</b>, Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J., 2019, Spatial aliasing removal using deep learning super-resolution, First Break, 37(9), 87-92. <a href="https://doi.org/10.3997/1365-2397.n0057" target="_blank" style="color:blue;"> doi.org/10.3997/1365-2397.n0057 </a>
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2019, From surface seismic data to reservoir elastic parameters using a full-wavefield redatuming approach, Geophysical Journal International, Volume 221, Issue 1, April 2020, Pages 115–128. <a href="https://doi.org/10.1093/gji/ggz557" target="_blank" style="color:blue;"> doi.org/10.1093/gji/ggz557 </a>
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2019, Estimation of reservoir elastic parameters via full-wavefield redatuming: Comparison of approaches, 89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648. <a href="https://doi.org/10.1190/segam2019-3216448.1" target="_blank" style="color:blue;"> doi.org/10.1190/segam2019-3216448.1</a>
+
+- Luiken N., <b>Garg, A.</b>, 2019, Block-Krylov methods for multi-dimensional deconvolution, 89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 5070-5074. <a href="https://doi.org/10.1190/segam2019-3216690.1" target="_blank" style="color:blue;"> https://doi.org/10.1190/segam2019-3216690.1</a>
+
+- <b>Garg, A.</b>, H. Masoomzadeh, S. Baldock, Verschuur, D. J., 2019, Elastic parameters estimation using reservoir-oriented Joint Migration Inversion for Norwegian Sea field data, 81st EAGE Conference and Exhibition 2019, Jun 2019, Volume 2019, Pages 1-5. <a href="https://doi.org/10.3997/2214-4609.201900833" target="_blank" style="color:blue;"> doi.org/10.3997/2214-4609.201900833</a>
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2018, Including internal multiples in joint migration inversion and redatuming of North Sea field data, 88th Annual International Meeting, SEG, Extended abstracts, Pages 4342-4346. <a href="https://doi.org/10.1190/segam2018-2998168.1" target="_blank" style="color:blue;"> doi.org/10.1190/segam2018-2998168.1
+
+- <b>Garg, A.</b>, S. Sharma, Verschuur, D. J., 2018, Reservoir elastic parameters estimation from surface seismic data using JMI-res: A full-wavefield approach, 80th EAGE Conference and Exhibition 2018, Jun 2018, Volume 2018, Pages 1-5. doi.org/10.3997/2214-4609.201800726  <a href="https://www.youtube.com/watch?v=AsnUoKojMZY&t=5s" target="_blank" style="color:blue;"> EAGE E-lecture video
+
+- Verschuur, D. J., Davydenko, M., <b>Garg, A.</b>, 2018, Using one-way propagators to build a full wavefield inversion process, 80th EAGE Conference & Exhibition 2018 Workshop Programme, Jun 2018, cp-556-00082.  <a href="https://doi.org/10.3997/2214-4609.201801907" target="_blank" style="color:blue;"> doi.org/10.3997/2214-4609.201801907
+
+- <b>Garg, A.</b>, Verschuur, D. J., Elastic reflectivity preserving full-wavefield inversio, 2017, 87th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 5561-5566. <a href="https://doi.org/10.1190/segam2017-17786449.1" target="_blank" style="color:blue;"> doi.org/10.1190/segam2017-17786449.1
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2017, High-resolution reservoir impulse response estimation, 87th SEG Technical Program Expanded Abstracts, Pages: 3516-3520. <a href="https://doi.org/10.1190/segam2017-17784204.1" target="_blank" style="color:blue;"> doi.org/10.1190/segam2017-17784204.1
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2017, AVP-preserving estimation of reservoir impulse responses, 79th EAGE Conference and Exhibition 2017, Jun 2017, Volume 2017, Pages 1-5. <a href="https://doi.org/10.3997/2214-4609.201700672" target="_blank" style="color:blue;"> doi.org/10.3997/2214-4609.201700672
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2016, Reservoir impulse response estimation using joint migration inversion, 78th EAGE Conference and Exhibition 2016, May 2016, Volume 2016, Pages 1-5.  <a href="https://doi.org/10.3997/2214-4609.201601529" target="_blank" style="color:blue;"> doi.org/10.3997/2214-4609.201601529
+
+- <b>Garg, A.</b>, Verschuur, D. J., 2020, Target-oriented elastic parameter models estimation from surface seismic data using JMI-res, invited speaker for FWI workshop in 82nd EAGE Conference and Exhibition.
+
+
+<!-- **2024**
 
 - **ConEC: Earnings Call Dataset with Real-world Contexts for Benchmarking Contextual Speech Recognition**  
   Ruizhe Huang, Mahsa Yarmohammadi, Jan Trmal, Jing Liu, **Desh Raj**, Leibny Paola Garcia, Alexei V Ivanov, Patrick Ehlen, Mingzhi Yu, Dan Povey, Sanjeev Khudanpur  
@@ -218,7 +246,7 @@ You can also browse my <a href="https://scholar.google.co.in/citations?user=Z-7p
 - **Analysis of data generated from multidimensional type-1 and type-2 fuzzy membership functions**  
   **Desh Raj**, Aditya Gupta, Bhuvnesh Garg, Kenil Tanna, Frank Chung-hoon Rhee.  
   *IEEE Transactions on Fuzzy Systems*, 2017.  
-  [Paper](http://ieeexplore.ieee.org/document/7888454/){: .btn}
+  [Paper](http://ieeexplore.ieee.org/document/7888454/){: .btn} -->
 
 <!-- 
 **Non-refereed project reports:**
