@@ -14,28 +14,30 @@ However, I rarely work directly on my workstation. Instead, I prefer the flexibi
 
 For this guide, I assume you already have a workstation running Ubuntu with a GPU and it is connected to your local network
 
-### Setting Up Local Remote Access
+## Setting Up Local Remote Access
 
 Let's start by setting up local access, which will allow you to `ssh` into your GPU server when you're on the same home Wi-Fi network. This is ideal for a work-from-home (WFH) setup where your workstation is running in a corner of your living space.
 
+1. Install the SSH server
 
-#### 1. Install the SSH server
 First, we need to install an SSH (Secure Shell) server. This will allow you to securely access your GPU machine remotely. Open a terminal on your Ubuntu machine and run the following commands:
-```
+
+```bash
 sudo apt update &&
 sudo apt install openssh-server
 ```
 This command updates your package lists and installs the OpenSSH server.
 
-#### 2. Start and Enable SSH Service
-
+2. Start and Enable SSH Service
 Next, enable the SSH service using this command:
-```
+
+```bash
 sudo systemctl enable --now ssh
 ```
 
 You can verify if the service is enabled by running:
-```
+
+```bash
 sudo systemctl status ssh
 ```
 
