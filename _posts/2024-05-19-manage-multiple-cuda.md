@@ -8,7 +8,7 @@ summary: Guide to install CUDA locally and manage multiple cuda environments on 
 
 > Latest Update: May 19th, 2024
 
-- [Gitub Gist Link](https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956)
+- [Github Gist Link](https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956)
 
 This blog contains all the steps required to:
 - Install multiple CUDA versions (e.g., `CUDA 11.8 and `CUDA 12.1
