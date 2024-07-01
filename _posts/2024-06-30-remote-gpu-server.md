@@ -18,36 +18,36 @@ For this guide, I assume you already have a workstation running Ubuntu with a GP
 
 Let's start by setting up local access, which will allow you to `ssh` into your GPU server when you're on the same home Wi-Fi network. This is ideal for a work-from-home (WFH) setup where your workstation is running in a corner of your living space.
 
-1. Install the SSH server
-First, we need to install an SSH (Secure Shell) server. This will allow you to securely access your GPU machine remotely. Open a terminal on your Ubuntu machine and run the following commands:
+1. **Install the SSH server**
+    
+    First, we need to install an SSH (Secure Shell) server. This will allow you to securely access your GPU machine remotely. Open a terminal on your Ubuntu machine and run the following commands:
+    ```bash
+    sudo apt update &&
+    sudo apt install openssh-server
+    ```
+    This command updates your package lists and installs the OpenSSH server.
 
-```bash
-sudo apt update &&
-sudo apt install openssh-server
-```
-This command updates your package lists and installs the OpenSSH server.
+2. **Start and Enable SSH Service**
 
-2. Start and Enable SSH Service
-Next, enable the SSH service using this command:
+    Next, enable the SSH service using this command:
+    ```bash
+    sudo systemctl enable --now ssh
+    ```
+    You can verify if the service is enabled by running:
+    ```bash
+    sudo systemctl status ssh
+    ```
 
-```bash
-sudo systemctl enable --now ssh
-```
+    Look for a line starting with `Active: active (running)` for `ssh.service`. This indicates that the SSH service is up and running.
 
-You can verify if the service is enabled by running:
-```bash
-sudo systemctl status ssh
-```
+    > Note: The OpenSSH server starts running on boot by default.
 
-Look for a line starting with `Active: active (running)` for `ssh.service`. This indicates that the SSH service is up and running.
+3. **Configure the firewall**
 
-> Note: The OpenSSH server starts running on boot by default.
-
-3. Configure the firewall
-To allow SSH connections through the system firewall, you need to open the appropriate port. Ubuntu's default firewall, UFW (Uncomplicated Firewall), makes this process straightforward:
-```bash
-sudo ufw allow ssh
-```
+    To allow SSH connections through the system firewall, you need to open the appropriate port. Ubuntu's default firewall, UFW (Uncomplicated Firewall), makes this process straightforward:
+    ```bash
+    sudo ufw allow ssh
+    ```
 
 This command adds an exception to your firewall rules, permitting incoming SSH connections. You can check the SSH status with:
 ```
