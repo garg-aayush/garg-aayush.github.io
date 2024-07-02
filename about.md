@@ -49,7 +49,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
   position: absolute;
   width: 30px;
   height: 30px;
-  left: -25px;
+  left: -40px;
   background-color: orange;
   border: 4px solid #474e5d;
   top: 15px;
