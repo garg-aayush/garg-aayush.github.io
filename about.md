@@ -37,7 +37,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
 	}
 	
   .timeline-item {
-    padding: 20px 15px;
+    padding: 17px 15px;
     position: relative;
     background-color: inherit;
     width: 90%;
@@ -72,7 +72,8 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .custom-font {
-  font-size: 14px;
+  font-weight: 500;
+
 }
 </style>
 
@@ -82,7 +83,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
   <div class="timeline-item">
     <div class="timeline-date">Jan 2024 - Ongoing</div>
     <div class="timeline-content">
-      <h3>Jiffy</h3>
+      <h3 class="custom-font">Jiffy</h3>
       <h4>Senior Maching Learning Engineer</h4>
       <ul>
         <li>Working on building Generative-AI image processing features and leveraging LLMs/VLMs for search and recommendations.</li>
@@ -93,7 +94,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
 <div class="timeline-item">
 <div class="timeline-date">Aug 2022 - Dec 2024</div>
 <div class="timeline-content">
-	<h3>Flixstock</h3>
+	<h3 class="custom-font">Flixstock</h3>
 	<h4>Software Development Engineer III</h4>
 	<ul>
 	<li>Developed vision-based Generative-AI solutions for Virtual Try-On and Background Generation.</li>
@@ -104,7 +105,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
 <div class="timeline-item">
     <div class="timeline-date">Oct 2019 - July 2022</div>
     <div class="timeline-content">
-      <h3>Shell</h3>
+      <h3 class="custom-font">Shell</h3>
       <li>Focused on uncertainty quantification and accelerating denoising of subsurface realizations/data.</li>
     </div>
 </div>
@@ -112,7 +113,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
 <div class="timeline-item">
     <div class="timeline-date">Aug 2015 - Sep 2019</div>
     <div class="timeline-content">
-      <h3>TU Delft</h3>
+      <h3 class="custom-font">TU Delft</h3>
       <h4>PhD Researcher</h4>
       <ul>
         <li>Worked on a new imaging approach, JMI-<i>res</i>, for high-resolution subsurface physical properties.</li>
