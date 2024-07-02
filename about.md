@@ -4,20 +4,18 @@ title: About
 use-site-title: true
 ---
 
-I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is <i>"Applied AI should <b>ALWAYS</b> be product-driven."</i>
+I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is <i>"Applied AI should <b>ALWAYS</b> be product-driven"</i>.
 
 Currently, I am working as a Senior Machine Learning Engineer at <a href="https://www.jiffy.com/">Jiffy</a>, where I focus on building in-house Generative AI-based image processing features and leveraging Large Language Models (LLMs) and
-Vision-Language Models (VLMs) for search and recommendation tools.
+Vision-Language Models (VLMs) for search and recommendation tools. Of late, we as a team focussed a lot on generating low-cost detailed structured metadata for the different assets (fonts, designs, products).
 
-Previously, I worked with <a href="https://www.flixstock.com/">Flixstock</a>, where I predominantly developed vision Generative AI solutions such as Virtual Try-On, Background Generation, and AI-generated photoshoot models with identity
-and pose control.
+Previously at <a href="https://www.flixstock.com/">Flixstock</a>, I predominantly developed vision Generative AI solutions, with a focus on building Virtual Try-On and Background Generation solutions emphasizing identity and pose control. We constructed product pipelines around StyleGANs, Vision Transformers, Stable Diffusion, and its variants such as ControlNets, T2I-Adapters, and Dreambooth.
 
-I have a background and Ph.D. research experience in computational geophysics and worked for <a href="https://www.shell.com/">Shell</a> as a research geophysicist for almost two years before transitioning to applied deep learning. I guess, this diverse background allows me to approach AI problems from unique perspectives.
+Unlike many in this field, my core background isn't in computer science. My graduate and Ph.D. research experience is in computational geophysics, and I worked for <a href="https://www.shell.com/">Shell</a> as a research geophysicist for about 3 years before transitioning to applied deep learning. I believe this diverse background helps me approach problems from unique perspectives.
 
-I love to connect and collaborate with new people. And, I am always open to assist and mentor upcoming new graduates. Please don't hesitate to reach out! 😊
+I love connecting, chatting, and collaborating with new people. Whether you're a fellow professional, a new graduate, or someone interested in discussing AI-powered products, please don't hesitate to reach out! 😊
 
-You can also book a meeting with me using the <a href="https://calendly.com/aayushgargiitr/30min">Calendly link</a>.😊
-
+You can also book a meeting with me using the <a href="https://calendly.com/aayushgargiitr/30min">Calendly link</a>.
 
 
 <style>
@@ -26,128 +24,97 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     max-width: 1200px;
     margin: 0 auto;
   }
-  
-  .timeline::after {
-    content: '';
-    position: absolute;
-    width: 6px;
-    background-color: #474e5d;
-    top: 0;
-    bottom: 0;
-    left: 50px;
-    margin-left: -3px;
-  }
-  
+	
+	.timeline::after {
+	content: '';
+	position: absolute;
+	width: 6px;
+	background-color: #474e5d;
+	top: 0;
+	bottom: 0;
+	left: 50px;
+	margin-left: -3px;
+	}
+	
   .timeline-item {
-    padding: 10px 40px;
+    padding: 15px 15px;
     position: relative;
     background-color: inherit;
     width: 90%;
     left: 70px;
-  }
+	}
   
-  .timeline-item::after {
-    content: '';
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    right: 100%;
-    background-color: white;
-    border: 4px solid #FF9F55;
-    top: 15px;
-    border-radius: 50%;
-    z-index: 1;
-  }
+.timeline-item::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: -35px;
+  background-color: orange;
+  border: 4px solid #474e5d;
+  top: 15px;
+  border-radius: 50%;
+  z-index: 1;
+}
   
-  .timeline-date {
+.timeline-date {
     font-weight: bold;
+	font-size: 18px;
     color: #474e5d;
-  }
+}
   
-  .timeline-content {
+.timeline-content {
+	font-color: orange;
     padding: 20px 30px;
-    background-color: white;
     position: relative;
     border-radius: 6px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
+}
 </style>
 
 
 <h2>Professional Experience</h2>
 <div class="timeline">
   <div class="timeline-item">
-    <div class="timeline-date">2017 - Ongoing</div>
+    <div class="timeline-date">Jan 2024 - Ongoing</div>
     <div class="timeline-content">
-      <h3>Operations Manager</h3>
-      <h4>Ledner Group</h4>
+      <h3>Jiffy</h3>
+      <h4>Senior Maching Learning Engineer</h4>
       <ul>
-        <li>Accountable for 3.5M monthly units at a $12M yearly revenue.</li>
-        <li>Led teams of 50+ permanent and agency staff, both operations and administrations.</li>
-        <li>Manage a portfolio of $5M+ of campaigns in booked revenue per Quarter across NSW and QLD clients.</li>
+        <li>Working on building Generative-AI image processing features and leveraging LLMs/VLMs for search and recommendations.</li>
       </ul>
     </div>
-  </div>
+</div>
   
-  <div class="timeline-item">
-    <div class="timeline-date">2013 - 2017</div>
+<div class="timeline-item">
+<div class="timeline-date">Aug 2022 - Dec 2024</div>
+<div class="timeline-content">
+	<h3>Flixstock</h3>
+	<h4>Software Development Engineer III</h4>
+	<ul>
+	<li>Developed vision-based Generative-AI solutions for Virtual Try-On and Background Generation.</li>
+	</ul>
+</div>
+</div>
+  
+<div class="timeline-item">
+    <div class="timeline-date">Oct 2019 - July 2022</div>
     <div class="timeline-content">
-      <h3>Area Manager</h3>
-      <h4>Bernier</h4>
-      <ul>
-        <li>Led and developed a team of 80-100 Amazon Associates in the largest North American Fulfilment Centre to meet daily rate goals.</li>
-        <li>Responsible for communicating policies to Associates and acting as the primary information source for 4 teams.</li>
-        <li>Partnered with other leadership to ensure the business is operating a balanced lean shift while meeting objectives.</li>
-        <li>Achieved the 2nd highest saving for 2016 at 35.1M units.</li>
-        <li>Supported and upheld compliance to all safety programs to ensure a safe work environment for all associates.</li>
-      </ul>
+      <h3>Shell</h3>
+      <li>Focused on uncertainty quantification and accelerating denoising of subsurface realizations/data.</li>
     </div>
-  </div>
-  
-  <!-- Add more timeline items as needed -->
 </div>
 
-
-<div>
-    <p class="job-duration">August, 2022 - present</p>
-    <div class="work-experience">
-    <p class="job-title">Software Development Engineer III</p>
-    <p class="company">Flixstock, Gurugram, India</p>
-    <p class="job-description">
-        Here, I develop novel diffusion and GANs-based products for the Fashion domain.
-    </p>
+<div class="timeline-item">
+    <div class="timeline-date">Aug 2015 - Sep 2019</div>
+    <div class="timeline-content">
+      <h3>TU Delft</h3>
+      <h4>PhD Researcher</h4>
+      <ul>
+        <li>Worked on a new imaging approach, JMI-<i>res</i>, for high-resolution subsurface physical properties.</li>
+      </ul>
     </div>
-  </div>
+</div>
 
-<div>
-    <p class="job-duration">October, 2019 - July, 2022</p>
-    <div class="work-experience">
-    <p class="job-title">Researcher Geophysicist</p>
-    <p class="company">Bengaluru, India</p>
-    <p class="job-description">
-        Developed DL-based solutions for denoising and seismic imaging for the subsurface data.
-    </p>
-    </div>
-  </div>
+</div>
 
-<div>
-    <p class="job-duration">August, 2015 - August, 2019</p>
-    <div class="work-experience">
-    <p class="job-title">Ph.D. Researcher</p>
-    <p class="company">Delft, Netherlands</p>
-    <p class="job-description">
-        Developed reservoir-oriented joint migration inversion (JMI-res) technology to estimate high-quality reservoir elastic parameter. 
-    </p>
-    </div>
-  </div>
-
-<div>
-    <p class="job-duration">September, 2018 - December, 2018</p>
-    <div class="work-experience">
-    <p class="job-title">Research Intern</p>
-    <p class="company">Bengaluru, India</p>
-    <p class="job-description">
-        Tested the JMI-res on a proprietory TGS field data.
-    </p>
-    </div>
-  </div>
