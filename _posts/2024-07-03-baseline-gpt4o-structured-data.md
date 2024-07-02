@@ -37,7 +37,7 @@ Attributes:
 'player_perspective', 'has_multiplayer', 'developer', 'exp_release_date']
 ```
 
-**Note**: _Since I am not training/fine-tuning any model, I will only consider the **ViGGO validation dataset** for this exercise._
+**Note**: Since I am not training/fine-tuning any model, I will only consider the ViGGO validation datasetfor this exercise.
 
 ### Prompt for generating the functional representation
 
@@ -119,6 +119,7 @@ Often, you require custom evaluation criteria for custom tasks. For structured f
 3. **Function, Attributes, and Values Match**: The generated function name, attributes, and values must match the ground truth function attributes and values. The order of the attributes and values does not matter.
 
 4. **Exact Match**: The generated function must exactly match the ground truth function.
+
 The above criteria are in order of increasing strictness. The first criterion is the least strict, and the last criterion is the most strict. These criteria will help me evaluate the model's performance.
 
 ### Evaluation Strategy
@@ -152,7 +153,7 @@ Let's think step by step.
 """
 ```
 
-> **Please go through the [GPT-4o baseline evaluation notebook](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Evaluate_GPT4_Viggo_dataset.ipynb)  for more details on prompt template and evaluation process and responses.**
+**Please go through the [GPT-4o baseline evaluation notebook](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Evaluate_GPT4_Viggo_dataset.ipynb)  for more details on prompt template and evaluation process and responses.**
 
 ### Evaluating the performance
 
@@ -171,14 +172,11 @@ The above evaluation exercise provides a good baseline and useful evaluation cri
 
 - Evaluate other large models like **Claude**, **Gemini**, and **Llama-3–70B** on the same task to compare their performance. This will provide a broader perspective on how different LLMs handle structured data extraction. 
 
-- Explore alternative evaluation methods that don't rely on the model evaluating itselfMost importantly, to eliminate potential biases in the evaluation process.
+- Explore alternative evaluation methods that don't rely on the model evaluating itself. Most importantly, to eliminate potential biases in the evaluation process.
 
 - Fine-tune smaller models like **Llama-3–8B** or **Mistral-7B** for this domain-specific structured representation task. Fine-tuning will not only improve the model's performance but also enhance latency and reduce the number of input tokens required to generate the output.
 
 - Investigate the impact of different prompt engineering techniques on the model's performance. 
-
-### Reference Links
-Certainly! Here's a reference section with all the links used in the blog post:
 
 ### References
 
