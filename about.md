@@ -72,8 +72,8 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .custom-font {
-  font-weight: 500;
-
+  font-weight: 700;
+  font-size: 18px;
 }
 </style>
 
@@ -106,6 +106,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     <div class="timeline-date">Oct 2019 - July 2022</div>
     <div class="timeline-content">
       <h3 class="custom-font">Shell</h3>
+      <h4 >Research Geophysicist</h3>
       <li>Focused on uncertainty quantification and accelerating denoising of subsurface realizations/data.</li>
     </div>
 </div>
