@@ -88,7 +88,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     <div class="timeline-date">Jan 2024 - Ongoing</div>
     <div class="timeline-content">
       <h3 class="custom-font">Jiffy</h3>
-      <h4>Senior Maching Learning Engineer</h4>
+      <h4 class="custom-font2">Senior Maching Learning Engineer</h4>
       <ul>
         <li>Working on building Generative-AI image processing features and leveraging LLMs/VLMs for search and recommendations.</li>
       </ul>
@@ -99,7 +99,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
 <div class="timeline-date">Aug 2022 - Dec 2024</div>
 <div class="timeline-content">
 	<h3 class="custom-font">Flixstock</h3>
-	<h4 class="custom-font">Software Development Engineer III</h4>
+	<h4 class="custom-font2">Software Development Engineer III</h4>
 	<ul>
 	<li>Developed vision-based Generative-AI solutions for Virtual Try-On and Background Generation.</li>
 	</ul>
@@ -110,7 +110,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     <div class="timeline-date">Oct 2019 - July 2022</div>
     <div class="timeline-content">
       <h3 class="custom-font">Shell</h3>
-      <h4 class="custom-font">Research Geophysicist</h4>
+      <h4 class="custom-font2">Research Geophysicist</h4>
       <li>Focused on uncertainty quantification and accelerating denoising of subsurface realizations/data.</li>
     </div>
 </div>
@@ -119,7 +119,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     <div class="timeline-date">Aug 2015 - Sep 2019</div>
     <div class="timeline-content">
       <h3 class="custom-font">TU Delft</h3>
-      <h4 class="custom-font">PhD Researcher</h4>
+      <h4 class="custom-font2">PhD Researcher</h4>
       <ul>
         <li>Worked on a new imaging approach, JMI-<i>res</i>, for high-resolution subsurface physical properties.</li>
       </ul>
