@@ -59,7 +59,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
   
 .timeline-date {
     font-weight: bold;
-	font-size: 18px;
+	font-size: 20px;
     color: #474e5d;
 }
   
@@ -68,7 +68,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     padding: 20px 30px;
     position: relative;
     border-radius: 6px;
-	font-size: 15px;
+	font-size: 16px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .custom-font {
@@ -76,8 +76,8 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
   font-size: 20px;
 }
 .custom-font2 {
-  font-weight: 650;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 16px;
 }
 </style>
 
