@@ -111,7 +111,9 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     <div class="timeline-content">
       <h3 class="custom-font">Shell</h3>
       <h4 class="custom-font2">Research Geophysicist</h4>
+	  <ul>
       <li>Focused on uncertainty quantification and accelerating denoising of subsurface realizations/data.</li>
+	  </ul>
     </div>
 </div>
 
