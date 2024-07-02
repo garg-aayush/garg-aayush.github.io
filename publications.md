@@ -19,9 +19,9 @@ title: Publications
   <a href="https://doi.org/10.1190/segam2019-3216448.1"> 89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648 </a> 
 
 
-- **Block-Krylov methods for multi-dimensional deconvolution**
-  Luiken N., Garg, A., <b>2019</b>
-  89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 5070-5074. <a href="https://doi.org/10.1190/segam2019-3216690.1"> 89th Annual International Meeting, SEG Technical Program Expanded Abstracts</a>
+- **Block-Krylov methods for multi-dimensional deconvolution**  
+  Luiken N., Garg, A., <b>2019</b>  
+  <a href="https://doi.org/10.1190/segam2019-3216690.1"> 89th Annual International Meeting, SEG Technical Program Expanded Abstracts</a>
 
 
 - **Elastic parameters estimation using reservoir-oriented Joint Migration Inversion for Norwegian Sea field data**  
