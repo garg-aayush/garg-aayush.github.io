@@ -47,9 +47,9 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
 .timeline-item::after {
   content: '';
   position: absolute;
-  width: 20px;
-  height: 20px;
-  left: -35px;
+  width: 30px;
+  height: 30px;
+  left: -25px;
   background-color: orange;
   border: 4px solid #474e5d;
   top: 15px;
@@ -68,6 +68,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
     padding: 20px 30px;
     position: relative;
     border-radius: 6px;
+	font-size: 16px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 </style>
