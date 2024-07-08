@@ -97,7 +97,7 @@ Generating responses for this experiment had the following associated costs:
 | Claude-1.5-Sonnet API | ~ $3.5 |
 | Replicate API | ~ $3 |
 | Gemini-1.5-flash API | Free* |
-| **Total** | **~ $9** |
+| **Total** | **~$9** |
 
 _*for limited usage_
 
