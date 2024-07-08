@@ -31,7 +31,7 @@ I evaluate and compare the performance of these six LLM models:
 
 ### Dataset and Prompt Template
 
-For consistency and fair comparison, I used the same ViGGO validation dataset and prompt template as in the previous blog post. The prompt template and the few-shot examples are designed to guide the models in generating structured functional representations from the given text input:
+For consistency and fair comparison, I used the same ViGGO validation dataset and the prompt template as in the previous blog post. The prompt template and the few-shot examples are designed to guide the models in generating structured functional representations from the given text input:
 
 ```python
 PROMPT_TEMPLATE = """
@@ -87,7 +87,7 @@ Give the output for the following sentence:
 
 I used the respective official API calls for the closed models (`GPT-4o`, `Gemini-1.5-flash`, `Claude-1.5-Sonnet`) and the [Replicate](https://replicate.com/) API client for open-source models (`Llama-3-70B`, `Llama-3-8B`, `Mistral-8x7B`).
 
-**For detailed information on API endpoints and the process of generating responses for all models, please refer to the [Generate_responses_all_models.ipynb]() notebook.**
+**For detailed information on API endpoints and the process of generating responses for all models, please refer to the [Generate_responses_all_llms.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Generate_responses_all_llms.ipynb) notebook.**
 
 Generating responses for this experiment had the following associated costs:
 
@@ -115,7 +115,7 @@ To assess the models' performance, I used the same evaluation criteria as in the
 
 **Note**: I implemented custom Python functions using regex and string manipulation to calculate these metrics, rather than relying on another LLM for evaluation. This approach helps avoid potential biases that might be introduced by using an LLM in the evaluation process.
 
-**For the complete evaluation code and functions used, please refer to the Compare_models_performances.ipynb notebook.**
+**For the complete evaluation code and functions used, please refer to the [Compare_models_performances.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Compare_model_performances.ipynb) notebook.**
 
 
 ### Comparing the models performance
@@ -138,26 +138,18 @@ _**Based on the quickly eyeballing the generated responses:**_
 2. For queries involving multiple attributes or conditions, the model sometimes misses or misinterprets parts of the input.
 3. The models struggles with capturing subtle distinctions in opinions and inferring information that is implied but not explicitly stated in the text. For example, models struggled to differentiate between `inform`, `give_opinion` and `suggest`.
 
-
-_**Based on a quick eyeballing of the generated responses:**_
-
-1. All models consistently capture straightforward attributes such as player perspective and multiplayer status.
-2. Models sometimes miss or misinterpret parts of the input for queries involving multiple attributes or conditions.
-3. The models struggle with capturing subtle distinctions in opinions and inferring information that is implied but not explicitly stated. For example, differentiating between 'inform', 'give_opinion', and 'suggest' functions is challenging.
-
-
 ### Conclusions
 
 This comparison provides valuable insights into the capabilities of various LLMs in functional representation extraction. As expected, the proprietary large models like `Claude Sonnet-3.5` and `GPT-4o` perform best out of the box, with `Claude Sonnet-3.5` being the best.
 
-One can argue that these results may not fully represent the models' maximum capabilities. Different model-specific prompt engineering approaches or dynamic few-shot examples could potentially improve performance further. However, my aim is just to assess how well a model perform without fancy RAG/function calling/complecated prompt engineering approaches.
+One can argue that these results may not fully represent the models' maximum capabilities. Different model-specific prompt engineering approaches or dynamic few-shot examples could potentially improve performance further. However, my aim is just to assess how well a model perform without fancy RAG/function calling/complicated prompt engineering approaches.
 
 
 ### Next steps....
 
 - I plan to fine-tune the base `Llama-3-8B` model on the ViGGO dataset to assess whether a fine-tuned smaller model can compete with or surpass the performance of `Claude Sonnet-3.5` and `GPT-4o`. 
 
-- At the sime time, investigate the trade offs like inference speed, accuracy, and latency associated with fine-tuned smaller models and propreitory models api calls.
+- At the same time, investigate the trade offs like inference speed, accuracy, and latency associated with fine-tuned smaller models and propreitory models api calls.
 
 ---
 Thanks for reading! If you have any questions or feedback, please let me know on [Twitter](https://twitter.com/Aayush_ander) or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734/).
