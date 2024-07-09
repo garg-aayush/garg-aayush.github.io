@@ -15,15 +15,10 @@ Building on that foundation, I expand the experiment to include a broader range 
 I evaluate and compare the performance of these six LLM models:
 
 1. [GPT-4o](https://openai.com/index/hello-gpt-4o/): OpenAI's latest iteration of the GPT-4 model, known for its faster generation, advanced natural language understanding and generation capabilities. Currently one of the most popular and capable models.
-
 2. [Claude Sonnet-3.5](https://www.anthropic.com/news/claude-3-5-sonnet): Anthropic's refined language model with enhanced reasoning abilities. It aims to provide more context-aware outputs compared to earlier versions and has recently outperformed GPT-4o on many benchmarks.
-
 3. [Gemini-1.5-Flash](https://deepmind.google/technologies/gemini/flash/): Google DeepMind's streamlined version of the Gemini model, optimized for faster inference and reduced computational requirements.
-
 4. [llama-3-70b-instruct](https://replicate.com/meta/meta-llama-3-70b-instruct): Meta's large-scale instruction-tuned language model, part of the latest LLaMA 3 family, with 70 billion parameters. It's designed to follow complex instructions and generate high-quality text across diverse domains.
-
 5. [mixtral-8x7b-instruct-v0.1](https://replicate.com/mistralai/mixtral-8x7b-instruct-v0.1): Mistral AI's instruction-tuned variant of the Mixtral 8x7B model, known for its mixture-of-experts architecture.
-
 6. [llama-3-8b-instruct](https://replicate.com/meta/meta-llama-3-8b-instruct): A more compact version of Meta's LLaMA 3 family, with 8 billion parameters, optimized for instruction following.
 
 > **Note**: I've included the smaller `Llama-3-8B` model as I plan to finetune it's base 8B model in coming days. It would help me compare the general instruction finetuned 8B model performance.
@@ -106,11 +101,8 @@ _*for limited usage_
 To assess the models' performance, I used the same evaluation criteria as in the [previous post](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/):
 
 1. **Function Name Match**: The function name must match the ground truth function name.
-
 2. **Function and Attributes Match**: The generated function name and attributes must match the ground truth function attributes. However, the order of the attributes does not matter.
-
 3. **Function, Attributes, and Values Match**: The generated function name, attributes, and values must match the ground truth function attributes and values. The order of the attributes and values does not matter.
-
 4. **Exact Match**: The generated function must exactly match the ground truth function.
 
 **Note**: I implemented custom Python functions using regex and string manipulation to calculate these metrics, rather than relying on another LLM for evaluation. This approach helps avoid potential biases that might be introduced by using an LLM in the evaluation process.
@@ -148,12 +140,9 @@ One can argue that these results may not fully represent the models' maximum cap
 
 ### Next steps....
 
-- I plan to fine-tune the base `Llama-3-8B` model on the ViGGO dataset to assess whether a fine-tuned smaller model can compete with or surpass the performance of `Claude Sonnet-3.5` and `GPT-4o`. 
+- I plan to fine-tune the base `Llama-3-8B`  and other smaller models (like `Phi` and `Gemma`) on the ViGGO dataset to assess whether a fine-tuned smaller model can compete with or surpass the performance of `Claude Sonnet-3.5` and `GPT-4o`. 
 
 - At the same time, investigate the trade offs like inference speed, accuracy, and latency associated with fine-tuned smaller models and propreitory models api calls.
-
----
-Thanks for reading! If you have any questions or feedback, please let me know on [Twitter](https://twitter.com/Aayush_ander) or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734/).
 
 ## References
 
@@ -161,3 +150,6 @@ Thanks for reading! If you have any questions or feedback, please let me know on
 - [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo)
 - [Notebook I: Generate_responses_all_llms.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Generate_responses_all_llms.ipynb)
 - [Notebook II: Compare_models_performances.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Compare_model_performances.ipynb)
+
+---
+Thanks for reading! If you have any questions or feedback, please let me know on [Twitter](https://twitter.com/Aayush_ander) or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734/).
