@@ -3,7 +3,7 @@ layout: post
 title:  "Part II: Comparison of Model Performances on Structured Functional Representation Extraction"
 tags: ["LLMs", "GPT", "Evaluation", "ViGGO", "Claude", "Llama", "Gemini", "Mistral"]
 mathjax: true
-summary: In this blog post, I will walk through structured data extraction, specifically functional representation, using OpenAI's GPT-4o model.
+summary: This blog post compares the performance of various models in extracting structured functional representations from text.
 ---
 
 ### Introduction
@@ -103,7 +103,7 @@ _*for limited usage_
 
 ### Evaluation Strategy
 
-To assess the models' performance, I used the same evaluation criteria as in the [previous post](https://aayushgarg.dev/2024-07-01-baseline-gpt4o-structured-data/):
+To assess the models' performance, I used the same evaluation criteria as in the [previous post](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/):
 
 1. **Function Name Match**: The function name must match the ground truth function name.
 
@@ -132,7 +132,8 @@ To assess the models' performance, I used the same evaluation criteria as in the
 6. `Mistral-8x7B's` performance is lower than anticipated, suggesting lower instruction-following capabilities.
 
 **Some key observations**
-_**Based on the quickly eyeballing the generated responses:**_
+
+> Based on the quickly eyeballing the generated responses:
 
 1. Almost all models consistently captures straightforward attributes such as player perspective and multiplayer status.
 2. For queries involving multiple attributes or conditions, the model sometimes misses or misinterprets parts of the input.
@@ -153,3 +154,10 @@ One can argue that these results may not fully represent the models' maximum cap
 
 ---
 Thanks for reading! If you have any questions or feedback, please let me know on [Twitter](https://twitter.com/Aayush_ander) or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734/).
+
+## References
+
+- [Part I blog post of series](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/)
+- [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo)
+- [Notebook I: Generate_responses_all_llms.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Generate_responses_all_llms.ipynb)
+- [Notebook II: Compare_models_performances.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Compare_model_performances.ipynb)
