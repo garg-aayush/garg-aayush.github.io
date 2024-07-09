@@ -15,11 +15,16 @@ Building on that foundation, I expand the experiment to include a broader range 
 I evaluate and compare the performance of these six LLM models:
 
 1. [GPT-4o](https://openai.com/index/hello-gpt-4o/): OpenAI's latest iteration of the GPT-4 model, known for its faster generation, advanced natural language understanding and generation capabilities. Currently one of the most popular and capable models.
+   
 2. [Claude Sonnet-3.5](https://www.anthropic.com/news/claude-3-5-sonnet): Anthropic's refined language model with enhanced reasoning abilities. It aims to provide more context-aware outputs compared to earlier versions and has recently outperformed GPT-4o on many benchmarks.
+
 3. [Gemini-1.5-Flash](https://deepmind.google/technologies/gemini/flash/): Google DeepMind's streamlined version of the Gemini model, optimized for faster inference and reduced computational requirements.
+
 4. [llama-3-70b-instruct](https://replicate.com/meta/meta-llama-3-70b-instruct): Meta's large-scale instruction-tuned language model, part of the latest LLaMA 3 family, with 70 billion parameters. It's designed to follow complex instructions and generate high-quality text across diverse domains.
+
 5. [mixtral-8x7b-instruct-v0.1](https://replicate.com/mistralai/mixtral-8x7b-instruct-v0.1): Mistral AI's instruction-tuned variant of the Mixtral 8x7B model, known for its mixture-of-experts architecture.
-6. [llama-3-8b-instruct](https://replicate.com/meta/meta-llama-3-8b-instruct): A more compact version of Meta's LLaMA 3 family, with 8 billion parameters, optimized for instruction following.
+
+7. [llama-3-8b-instruct](https://replicate.com/meta/meta-llama-3-8b-instruct): A more compact version of Meta's LLaMA 3 family, with 8 billion parameters, optimized for instruction following.
 
 > **Note**: I've included the smaller `Llama-3-8B` model as I plan to finetune it's base 8B model in coming days. It would help me compare the general instruction finetuned 8B model performance.
 
