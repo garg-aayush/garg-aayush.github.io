@@ -8,7 +8,7 @@ summary: This blog post compares the performance of various models in extracting
 
 ### Introduction
 
-In the [previous blog post](https://aayushgarg.dev/2024-07-01-baseline-gpt4o-structured-data/), I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo).
+In the [previous blog post](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/), I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo).
 
 Building on that foundation, I expand the experiment to include a broader range of models, both open-source and proprietary. This comparison aims to provide insights on how well these models perform out of the box in structured data extraction tasks, which is quite crucial for RAG applications, knowledge base construction, and reasoning systems.
 
