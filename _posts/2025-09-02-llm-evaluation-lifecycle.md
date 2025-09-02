@@ -1,30 +1,28 @@
 ---
 layout: post
-title:  "What I Learned in Lecture 1: LLM Evaluation Lifecycle"
+title:  "Key Takeaways from Lecture 1: LLM Evaluation Lifecycle"
 tags: ["LLMs", "Evaluation"]
 mathjax: true
-summary: In this blog post, I will discuss the key ideas/insights I learnt around the "Three Gulfs", the systematic evaluation and improvement of LLM-application.
+summary: In this blog post, I will discuss the key ideas/takeaways around the systematic evaluation and metrics, "Three Gulfs" and effective prompting.
 ---
 
-Recently I enrolled in [AI Evals for Engineers and PMs](https://maven.com/parlance-labs/evals), a course by [Hamel](https://hamel.dev/) and [Shreya](https://www.sh-reya.com/) that’s refreshingly LLM application evaluation-centric. Instead of abstract benchmarks, it teaches you how to systematically evaluate and improve LLM-powered products. As the they put it, the goal is to:
+A couple of months back, I enrolled in [AI Evals for Engineers and PMs](https://maven.com/parlance-labs/evals), a course by [Hamel](https://hamel.dev/) and [Shreya](https://www.sh-reya.com/). The live cohort for ot ran from July to mid-August, but due to work commitments I couldn’t follow along in real time. 
 
-> “Master the principles and practices of application-centric LLM evaluation to systematically improve AI-driven products.”
-
-In this first blog of what I hope will be a multi-part series 🤞, I’ll walk through my key takeaways from **Lecture 1**. 
+I have now started following it as a self-paced course and plans to write a blog for each lesson as I progress. This will be my way to capture what I learn and to reflect on the material. In this first blog 🤞, I’ll walk through my key takeaways from introductory **Lecture 1**. 
 
 # Key Takeaways
 
 ## 1. Evaluation isn’t Optional but Fundamental
 
-Anyone who has built or worked with LLM pipelines knows that their outputs are open-ended, subjective, and unstructured (unless you enforce it). If you rely on ad-hoc checks, which I have been guilty of, often leads to knee-jerk fixes. Moreover, it completely miss the long-term need of continuous tracking which is essential for your pipeline reliability, safety, and usefulness. This is why **_Evaluation_—the systematic measurement of an LLM pipeline quality—is critical!**
+Anyone who has built or worked with LLM pipelines knows that their outputs are open-ended, subjective, and unstructured (unless you enforce it). If you rely on ad-hoc checks which I have been guilty of, it often leads to knee-jerk fixes. Moreover, it completely miss the long-term need of continuous tracking which is essential for improving your pipeline reliability and usefulness. This is why **Evaluation—the systematic measurement of an LLM pipeline quality—is critical!**
 
 ## 2. The Three Gulfs
-The below image beautifully captures and categorizes all challenges associated with any LLM application:
-![Three gulfs](/static/img/blog-2025-09-03/three-gulfs.png)
+The below image beautifully captures and categorizes the challenges associated with any LLM application:
+![Three gulfs](/static/img/blog-2025-09-02/three-gulfs.png)
 
-* **Gulf of Comprehension**: This is a result of limited understanding of the input data (user queries) and the pipeline’s outputs (behavior). Bridging it requires examining examples to identify common failure modes. This brings it own challenge: _"How to manually review every input or output to identify failure modes?"_.
+* **Gulf of Comprehension**: This is a result of limited understanding of the input data (user queries) and the pipeline’s outputs (behavior). Bridging it requires examining examples to identify common failure modes. This brings it own challenge: **"How to manually review every input or output to identify failure modes?"**
 
-* **Gulf of Specification**: It refers to the difficulty of translating a user’s high-level intent into unambiguous pricise instructions for the LLM. Bridging it requires writing detailed prompts that captures "true intent" which in itself is challenging due to _ambiguous nature of natural language._
+* **Gulf of Specification**: It refers to the difficulty of translating a user’s high-level intent into unambiguous precise instructions for the LLM. Bridging it requires writing detailed prompts that captures "true intent" which in itself is challenging due to **ambiguous nature of natural language.**
 
 * **Gulf of Generalizaton**: This is due to LLMs unexpected and inconsistent behavior on new or unusual (out of distribution) inputs. Bridging it requires a good understanding of your LLM model capabilities. This leads to the question: _"How to improve LLM model?"_
 
@@ -32,7 +30,7 @@ The below image beautifully captures and categorizes all challenges associated w
 
 Hamel and Shreya introduced a structured way to bridge the above gulfs: **Analyze → Measure → Improve** lifecycle. 
 
-![Analyze → Measure → Improve Lifecycle](/static/img/blog-2025-09-03/pitfalls.png)
+![Analyze → Measure → Improve Lifecycle](/static/img/blog-2025-09-02/pitfalls.png)
 
 However, the most important takeaways for me was not what each phase means but the **pitfalls** that often derail them:
 
@@ -43,11 +41,20 @@ However, the most important takeaways for me was not what each phase means but t
 | **Improve** | Prematurely jumping to fixes; defaulting to the most complex solution first (fine-tuning, bigger models) | **Start simple**. Prompt tweaks and improvements often go a long way before heavier changes are needed. |
 
 
-## 4. Always Remember LLMs Core Strengths and Weaknesses
+## 4. LLMs are Imperfect—Prompt Iteratively
 When we write prompts it’s easy to ignore that LLMs are non-deterministic, prompt-sensitive and can confidently hallucinate. Thus, always remember: **_“LLMs are powerful but imperfect components. Leverage strengths, anticipate weaknesses.”_**
 
-![LLM Strengths vs. Weaknesses](/static/img/blog-2025-09-03/llm-strengths-weaknesses.jpg)
+![LLM Strengths vs. Weaknesses](/static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg)
 
+**Effective prompting starts with you.** You should not delegate the prompting to an LLM or you will miss important failure modes. Instead, write your own draft prompt and if needed, use an LLM only to polish clarity. 
 
-## 5. Craft Precise Prompts and Refine Iteratively
-## 6. Reference-based vs Reference-Free Metrics
+From there on, treat prompting as an iterative process where the first draft is a starting point which you refine based on observed outputs.
+
+## 5. Reference-based vs Reference-free Metrics
+The evaluation metrics broadly fall into two categories: **reference-free** and **reference-based**. Both of them are useful but in different contexts.
+
+|                     | **Reference-Free**                                                                 | **Reference-Based**                                                                 |
+|---------------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| **What it means**   | Evaluates properties of the output itself (no golden answer required)               | Compares output against a golden reference or ground truth                          |
+| **When to use**     | Creative or open-ended tasks, formatting/structure checks, validity tests           | Tasks with clearly defined correct answers (e.g., factual QA, deterministic outputs)|
+| **Examples**        | - Does the output follow the JSON format?<br>- Does generated code/SQL run without errors? | - Exact match against a gold SQL query<br>- ROUGE/BLEU score for text generation    |
