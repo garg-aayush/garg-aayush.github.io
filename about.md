@@ -6,12 +6,11 @@ use-site-title: true
 
 I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is <i>"Applied AI should <b>ALWAYS</b> be product-driven"</i>.
 
-Currently, I am working as a Senior Machine Learning Engineer at <a href="https://www.jiffy.com/">Jiffy</a>, where I focus on building in-house Generative AI-based image processing features and leveraging Large Language Models (LLMs) and
-Vision-Language Models (VLMs) for search and recommendation tools. Of late, we as a team focussed a lot on generating low-cost detailed structured metadata for the different assets (fonts, designs, products).
+Currently, I am working as a Senior Machine Learning Engineer at <a href="https://www.jiffy.com/">Jiffy</a>, where I build image enhancement pipelines/agents, deploy custom in-house and open-source ML models, and develop LLM/VLM applications across different verticals. My work also spans improving search and recommendation systems and designing automated prompt-optimization workflows.
 
-Previously at <a href="https://www.flixstock.com/">Flixstock</a>, I predominantly developed vision Generative AI solutions, with a focus on building Virtual Try-On and Background Generation solutions emphasizing identity and pose control. We constructed product pipelines around StyleGANs, Vision Transformers, Stable Diffusion, and its variants such as ControlNets, T2I-Adapters, and Dreambooth.
+Previously at <a href="https://www.flixstock.com/">Flixstock</a>, I predominantly developed vision Generative AI solutions, with a focus on building Virtual Try-On and Background Generation solutions emphasizing identity and pose control.
 
-Unlike many in this field, my core background isn't in computer science. My graduate and Ph.D. research experience is in computational geophysics, and I worked for <a href="https://www.shell.com/">Shell</a> as a research geophysicist for about 3 years before transitioning to applied deep learning. I believe this diverse background helps me approach problems from unique perspectives.
+Unlike many in this field, my core background isn't in computer science. My graduate and Ph.D. research experience is in computational geophysics, and I worked for <a href="https://www.shell.com/">Shell</a> as a research geophysicist for about 3 years. I believe this diverse background helps me approach problems from unique perspectives.
 
 I love connecting, chatting, and collaborating with new people. Whether you're a fellow professional, a new graduate, or someone interested in discussing AI-powered products, please don't hesitate to reach out! 😊
 
@@ -171,7 +170,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
       <h3>Jiffy</h3>
       <h4>Senior Machine Learning Engineer</h4>
       <ul>
-        <li>Working on building Generative-AI image processing features and leveraging LLMs/VLMs for search and recommendations.</li>
+        <li>Building generative AI image pipelines, LLM/VLM applications and relevant evals for different verticals. </li>
       </ul>
     </div>
 </div>
@@ -193,7 +192,7 @@ You can also book a meeting with me using the <a href="https://calendly.com/aayu
       <h3>Shell</h3>
       <h4>Research Geophysicist</h4>
 	  <ul>
-      <li>Focused on uncertainty quantification and accelerating denoising of subsurface realizations/data.</li>
+      <li>Focused on uncertainty quantification and denoising of subsurface seismic data.</li>
 	  </ul>
     </div>
 </div>
