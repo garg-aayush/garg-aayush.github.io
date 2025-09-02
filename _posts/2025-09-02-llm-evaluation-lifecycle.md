@@ -24,7 +24,7 @@ The below image beautifully captures and categorizes the challenges associated w
 
 * **Gulf of Specification**: It refers to the difficulty of translating a user’s high-level intent into unambiguous precise instructions for the LLM. Bridging it requires writing detailed prompts that captures "true intent" which in itself is challenging due to **ambiguous nature of natural language.**
 
-* **Gulf of Generalizaton**: This is due to LLMs unexpected and inconsistent behavior on new or unusual (out of distribution) inputs. Bridging it requires a good understanding of your LLM model capabilities. This leads to the question: _"How to improve LLM model?"_
+* **Gulf of Generalizaton**: This is due to LLMs unexpected and inconsistent behavior on new or unusual (out of distribution) inputs. Bridging it requires a good understanding of your LLM model capabilities. This leads to the question: **"How to improve LLM model?"**
 
 ## 3. Analyze → Measure → Improve Lifecycle
 
