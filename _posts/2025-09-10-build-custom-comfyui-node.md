@@ -24,7 +24,8 @@ I prefer not to start with the ComfyUI node API. First, I like to write a simple
 
 In my case, I needed a way to read, rasterize and manipulate the SVGs. Thus, I tested all the relevant operations using the core packages [CairoSVG](https://cairosvg.org/) and [Pillow](https://python-pillow.org/). 
 
-For example:```python
+For example:
+```python
 # Simple SVG read and conversion check
 import cairosvg
 from PIL import Image, ImageOps
