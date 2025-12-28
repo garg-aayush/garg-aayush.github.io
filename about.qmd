@@ -1,0 +1,68 @@
+---
+title: "About"
+page-layout: full
+---
+
+I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is "Applied AI should always be product-driven".
+
+Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/), where I build image enhancement pipelines, deploy custom in-house and open-source ML models, and develop LLM/VLM applications across different verticals. My work also spans improving search and recommendation systems and designing automated prompt-optimization workflows.
+
+Previously at [Flixstock](https://www.flixstock.com/), I predominantly developed vision generative AI solutions, with a focus on building virtual try-on and background generation solutions emphasizing identity and pose control.
+
+Unlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics, and I worked for [Shell](https://www.shell.com/) as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.
+
+I love connecting, chatting, and collaborating with new people. Whether you are a fellow professional, a new graduate, or someone interested in discussing AI-powered products, please do not hesitate to reach out.
+
+You can also book a meeting with me using the [Calendly link](https://calendly.com/aayushgargiitr/30min).
+
+## Professional Experience
+
+::: {.timeline}
+::: {.timeline-item}
+::: {.timeline-date}
+Jan 2024 - Ongoing
+:::
+::: {.timeline-content}
+### Jiffy
+#### Senior Machine Learning Engineer
+
+- Building generative AI image pipelines, LLM/VLM applications, and evals across product verticals.
+:::
+:::
+
+::: {.timeline-item}
+::: {.timeline-date}
+Aug 2022 - Dec 2024
+:::
+::: {.timeline-content}
+### Flixstock
+#### Software Development Engineer III
+
+- Developed vision-based generative AI solutions for virtual try-on and background generation.
+:::
+:::
+
+::: {.timeline-item}
+::: {.timeline-date}
+Oct 2019 - Jul 2022
+:::
+::: {.timeline-content}
+### Shell
+#### Research Geophysicist
+
+- Focused on uncertainty quantification and denoising of subsurface seismic data.
+:::
+:::
+
+::: {.timeline-item}
+::: {.timeline-date}
+Aug 2015 - Sep 2019
+:::
+::: {.timeline-content}
+### TU Delft
+#### PhD Researcher
+
+- Worked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties.
+:::
+:::
+:::

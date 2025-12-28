@@ -1,0 +1,13 @@
+---
+title: "Blogs"
+page-layout: full
+listing:
+  contents: "../posts/20*.qmd"
+  sort: "date desc"
+  type: default
+  categories: false
+  page-size: 9
+  fields: [title, date, description, tags]
+---
+
+Welcome to the writing archive. Use the list below to browse by topic or date.

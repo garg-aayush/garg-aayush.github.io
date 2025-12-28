@@ -1,0 +1,182 @@
+---
+title: "Publications"
+page-layout: full
+---
+
+::: {.publications-container}
+## 2020 {.pub-year-header}
+
+::: {.publications-list}
+::: {.publication-item}
+::: {.pub-title}
+Target-oriented elastic parameter models estimation from surface seismic data using JMI-res
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+Invited speaker for FWI workshop in [82nd EAGE Conference and Exhibition](https://eage.eventsair.com/eageannual2021/)
+:::
+:::
+:::
+
+## 2019 {.pub-year-header}
+
+::: {.publications-list}
+::: {.publication-item}
+::: {.pub-title}
+From surface seismic data to reservoir elastic parameters using a full-wavefield redatuming approach
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[Geophysical Journal International, Volume 221, Issue 1, April 2020, Pages 115-128](https://doi.org/10.1093/gji/ggz557)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+Spatial aliasing removal using deep learning super-resolution
+:::
+::: {.pub-authors}
+Garg, A., Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[First Break, 37(9), 87-92](https://doi.org/10.3997/1365-2397.n0057)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+Spatial aliasing removal using deep learning super-resolution
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648](https://doi.org/10.1190/segam2019-3216448.1)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+Block-Krylov methods for multi-dimensional deconvolution
+:::
+::: {.pub-authors}
+Luiken N., Garg, A.
+:::
+::: {.pub-venue}
+[89th Annual International Meeting, SEG Technical Program Expanded Abstracts](https://doi.org/10.1190/segam2019-3216690.1)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+Elastic parameters estimation using reservoir-oriented Joint Migration Inversion for Norwegian Sea field data
+:::
+::: {.pub-authors}
+Garg, A., H. Masoomzadeh, S. Baldock, Verschuur, D. J.
+:::
+::: {.pub-venue}
+[81st EAGE Conference and Exhibition 2019, Jun 2019, Volume 2019, Pages 1-5](https://doi.org/10.3997/2214-4609.201900833)
+:::
+:::
+:::
+
+## 2018 {.pub-year-header}
+
+::: {.publications-list}
+::: {.publication-item}
+::: {.pub-title}
+Including internal multiples in joint migration inversion and redatuming of North Sea field data
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[88th Annual International Meeting, SEG, Extended abstracts, Pages 4342-4346](https://doi.org/10.1190/segam2018-2998168.1)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+Reservoir elastic parameters estimation from surface seismic data using JMI-res: A full-wavefield approach
+:::
+::: {.pub-authors}
+Garg, A., S. Sharma, Verschuur, D. J.
+:::
+::: {.pub-venue}
+[80th EAGE Conference and Exhibition 2018, Jun 2018, Volume 2018, Pages 1-5](https://www.youtube.com/watch?v=AsnUoKojMZY&t=5s)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+Using one-way propagators to build a full wavefield inversion process
+:::
+::: {.pub-authors}
+Verschuur, D. J., Davydenko, M., Garg, A.
+:::
+::: {.pub-venue}
+[80th EAGE Conference and Exhibition 2018 Workshop Programme, Jun 2018, cp-556-00082](https://doi.org/10.3997/2214-4609.201801907)
+:::
+:::
+:::
+
+## 2017 {.pub-year-header}
+
+::: {.publications-list}
+::: {.publication-item}
+::: {.pub-title}
+Elastic reflectivity preserving full-wavefield inversion
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[87th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 5561-5566](https://doi.org/10.1190/segam2017-17786449.1)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+High-resolution reservoir impulse response estimation
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[87th SEG Technical Program Expanded Abstracts, Pages: 3516-3520](https://doi.org/10.1190/segam2017-17784204.1)
+:::
+:::
+
+::: {.publication-item}
+::: {.pub-title}
+AVP-preserving estimation of reservoir impulse responses
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[79th EAGE Conference and Exhibition 2017, Jun 2017, Volume 2017, Pages 1-5](https://doi.org/10.3997/2214-4609.201700672)
+:::
+:::
+:::
+
+## 2016 {.pub-year-header}
+
+::: {.publications-list}
+::: {.publication-item}
+::: {.pub-title}
+Reservoir impulse response estimation using joint migration inversion
+:::
+::: {.pub-authors}
+Garg, A., Verschuur, D. J.
+:::
+::: {.pub-venue}
+[78th EAGE Conference and Exhibition 2016, May 2016, Volume 2016, Pages 1-5](https://doi.org/10.3997/2214-4609.201601529)
+:::
+:::
+:::
+:::
