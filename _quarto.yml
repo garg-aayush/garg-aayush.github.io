@@ -57,3 +57,4 @@ format:
 resources:
   - static
   - js
+  - CNAME
