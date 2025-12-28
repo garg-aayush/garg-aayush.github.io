@@ -43,6 +43,10 @@ I write about practical ML engineering, LLMs, and lessons learned from building 
 ::: {#blog-listings}
 :::
 
-## 📬 Follow Me
+## 📬 Reach Out
 
-The best way to follow my work is on [GitHub](https://github.com/garg-aayush) or [Twitter](https://twitter.com/Aayush_ander).
+The best way to follow my work is on [GitHub](https://github.com/garg-aayush), [Twitter](https://twitter.com/Aayush_ander), or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734).
+
+::: {.template-credit}
+*Template inspired by [hamel.dev](https://hamel.dev/) and [Lil'Log](https://lilianweng.github.io/).*
+:::
