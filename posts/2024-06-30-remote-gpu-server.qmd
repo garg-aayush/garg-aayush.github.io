@@ -2,7 +2,7 @@
 title:  Step-by-Step Guide to Setup Your Personal GPU Server
 tags: ["gpu","ngrok", "openssh"]
 mathjax: true
-description: A concise guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.
+description: Guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.
 date: 2024-06-30
 permalink: /2024-06-30-remote-gpu-server/
 ---

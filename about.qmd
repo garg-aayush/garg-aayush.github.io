@@ -1,6 +1,7 @@
 ---
 title: "About"
-page-layout: full
+sidebar: false
+toc: true
 ---
 
 I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is "Applied AI should always be product-driven".
@@ -17,52 +18,74 @@ You can also book a meeting with me using the [Calendly link](https://calendly.c
 
 ## Professional Experience
 
-::: {.timeline}
-::: {.timeline-item}
-::: {.timeline-date}
-Jan 2024 - Ongoing
-:::
-::: {.timeline-content}
-### Jiffy
-#### Senior Machine Learning Engineer
+::: {.experience-grid}
 
-- Building generative AI image pipelines, LLM/VLM applications, and evals across product verticals.
+::: {.experience-card}
+::: {.card-header}
+::: {.company-name}
+Jiffy
+:::
+::: {.card-date}
+Jan 2024 - Present
+:::
+:::
+::: {.card-role}
+Senior Machine Learning Engineer
+:::
+::: {.card-description}
+Building generative AI image pipelines, LLM/VLM applications, and evals across product verticals.
 :::
 :::
 
-::: {.timeline-item}
-::: {.timeline-date}
+::: {.experience-card}
+::: {.card-header}
+::: {.company-name}
+Flixstock
+:::
+::: {.card-date}
 Aug 2022 - Dec 2024
 :::
-::: {.timeline-content}
-### Flixstock
-#### Software Development Engineer III
-
-- Developed vision-based generative AI solutions for virtual try-on and background generation.
+:::
+::: {.card-role}
+Software Development Engineer III
+:::
+::: {.card-description}
+Developed vision-based generative AI solutions for virtual try-on and background generation.
 :::
 :::
 
-::: {.timeline-item}
-::: {.timeline-date}
+::: {.experience-card}
+::: {.card-header}
+::: {.company-name}
+Shell
+:::
+::: {.card-date}
 Oct 2019 - Jul 2022
 :::
-::: {.timeline-content}
-### Shell
-#### Research Geophysicist
-
-- Focused on uncertainty quantification and denoising of subsurface seismic data.
+:::
+::: {.card-role}
+Research Geophysicist
+:::
+::: {.card-description}
+Focused on uncertainty quantification and denoising of subsurface seismic data.
 :::
 :::
 
-::: {.timeline-item}
-::: {.timeline-date}
+::: {.experience-card}
+::: {.card-header}
+::: {.company-name}
+TU Delft
+:::
+::: {.card-date}
 Aug 2015 - Sep 2019
 :::
-::: {.timeline-content}
-### TU Delft
-#### PhD Researcher
+:::
+::: {.card-role}
+PhD Researcher
+:::
+::: {.card-description}
+Worked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties.
+:::
+:::
 
-- Worked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties.
-:::
-:::
 :::

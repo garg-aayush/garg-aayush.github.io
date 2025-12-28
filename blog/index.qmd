@@ -1,13 +1,20 @@
 ---
-title: "Blogs"
-page-layout: full
+title: "Blog"
+sidebar: false
+toc: false
 listing:
-  contents: "../posts/20*.qmd"
+  date-format: short
+  feed: true
+  filter-ui: true
+  type: table
+  sort-ui: false
   sort: "date desc"
-  type: default
   categories: false
-  page-size: 9
-  fields: [title, date, description, tags]
+  fields: [date, title]
+  id: blog-listings
+  contents: "../posts/20*.qmd"
+  page-size: 20
 ---
 
-Welcome to the writing archive. Use the list below to browse by topic or date.
+::: {#blog-listings}
+:::

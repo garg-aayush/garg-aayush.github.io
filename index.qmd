@@ -1,34 +1,48 @@
 ---
-title: ""
-page-layout: full
-title-block: false
+title: "Aayush Garg"
+description: "Notes on applied ML engineering, LLMs, and building AI products."
+sidebar: false
+toc: true
+listing:
+  date-format: short
+  feed: true
+  filter-ui: false
+  type: table
+  sort-ui: false
+  sort: "date desc"
+  categories: false
+  fields: [date, title]
+  id: blog-listings
+  contents: posts/20*.qmd
+  max-items: 10
+format:
+  html:
+    anchor-sections: true
 ---
 
-## Hi, I'm Aayush {.intro-title}
-::: {.intro-subtitle}
-Senior ML Engineer at Jiffy
-:::
+::: {layout="[21,79]" .profile-header}
 
-::: {layout="[26,74]" .profile-header}
 ![](static/img/aayush_cropped.jpg){.profile-pic fig-alt="Aayush Garg"}
 
 I am an applied machine learning engineer focused on building AI-driven products and systems people can rely on. At Jiffy, I build image enhancement pipelines, deploy ML models at scale, and develop LLM/VLM applications across product verticals.
+
 :::
 
-::: {.profile-followup}
+## 💼 Current Work
+
 I am currently building an in-house AI design platform, developing evaluation and prompt-optimization workflows, and exploring applied LLM fine-tuning for structured data extraction. My background is in computational geophysics, which keeps me grounded in first principles and pragmatic experimentation.
+
+If you're interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734).
+
+---
+
+## 📮 Blog
+
+I write about practical ML engineering, LLMs, and lessons learned from building AI products. Below are my recent posts.
+
+::: {#blog-listings}
 :::
 
-::: {.section-card}
-## Updates
+## 📬 Follow Me
 
-::: {.updates-list}
-- **September 2025**: Wrote a tutorial on building custom ComfyUI nodes. [Guide to Building Custom Nodes in ComfyUI](/2025-09-10-build-custom-comfyui-node/).
-- **September 2025**: Published the first blog post in the AI evals series. [Key Takeaways from Lecture 1](/2025-09-02-llm-evaluation-lifecycle/).
-- **July 2024**: Published Part II of the LLM fine-tuning series. [Comparison of Model Performances](/2024-07-09-compare-models-structured-data/).
-- **July 2024**: Launched the LLM fine-tuning series. [Baseline Evaluation of GPT-4o](/2024-07-03-baseline-gpt4o-structured-data/).
-- **June 2024**: Published a guide on configuring a personal GPU server. [Setup Your Personal GPU Server](/2024-06-30-remote-gpu-server/).
-- **May 2024**: Updated the CUDA environments guide. [Managing Multiple CUDA Environments](/2024-05-19-manage-multiple-cuda/).
-- **January 2024**: Joined Jiffy as Senior ML Engineer.
-:::
-:::
+The best way to follow my work is on [GitHub](https://github.com/garg-aayush) or [Twitter](https://twitter.com/Aayush_ander).

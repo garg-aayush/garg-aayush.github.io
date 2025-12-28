@@ -2,7 +2,7 @@
 title:  "Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction"
 tags: ["LLMs", "GPT", "Evaluation", "VIGGO"]
 mathjax: true
-description: In this blog, I walk you through structured data extraction, specifically functional representation, using OpenAI's GPT-4o model.
+description: This blog gives a detailed walkthrough of structured data extraction using OpenAI's GPT-4o model.
 date: 2024-07-03
 permalink: /2024-07-03-baseline-gpt4o-structured-data/
 ---

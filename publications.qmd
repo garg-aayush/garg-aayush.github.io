@@ -1,6 +1,7 @@
 ---
 title: "Publications"
-page-layout: full
+sidebar: false
+toc: true
 ---
 
 ::: {.publications-container}
