@@ -2,5 +2,7 @@ _site/
 .quarto/
 .jekyll-cache/
 .DS_Store
+.cursorindexingignore
+.specstory/
 
 /.quarto/
