@@ -1,3 +1,8 @@
 # Personal website
 
-This is my personal website repo based on [Beautfiul Jekyll](https://github.com/daattali/beautiful-jekyll?tab=readme-ov-file) template. I have used https://github.com/desh2608/desh2608.github.io as the starting template for my website.
+This is my personal website repo. The current site is built with [Quarto](https://quarto.org/) and was originally based on the Beautiful Jekyll template.
+
+## Development
+
+1. `quarto preview`
+2. `quarto render`

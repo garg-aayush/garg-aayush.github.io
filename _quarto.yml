@@ -1,0 +1,60 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - about.qmd
+    - publications.qmd
+    - resume.qmd
+    - bio.qmd
+    - blog/index.qmd
+    - pages/*.qmd
+    - posts/*.qmd
+
+website:
+  title: "Aayush Garg"
+  description: "Personal website"
+  site-url: "https://garg-aayush.github.io"
+  favicon: "static/img/aayush_cropped.jpg"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Blogs
+        href: blog/
+      - text: Publications
+        href: publications.qmd
+      - text: About
+        href: about.qmd
+    right:
+      - icon: github
+        href: "https://github.com/garg-aayush"
+      - icon: linkedin
+        href: "https://www.linkedin.com/in/aayush-garg-8b26a734"
+      - icon: twitter
+        href: "https://twitter.com/Aayush_ander"
+  page-footer:
+    left: "Copyright 2025 Aayush Garg"
+    right:
+      - text: "Email"
+        href: "mailto:aayushgargiitr@gmail.com"
+      - icon: github
+        href: "https://github.com/garg-aayush"
+      - icon: linkedin
+        href: "https://www.linkedin.com/in/aayush-garg-8b26a734"
+      - icon: twitter
+        href: "https://twitter.com/Aayush_ander"
+
+format:
+  html:
+    from: markdown+raw_html
+    theme: flatly
+    css: styles.css
+    toc: false
+    smooth-scroll: true
+    link-external-newwindow: true
+
+resources:
+  - static
+  - js
+  - CNAME

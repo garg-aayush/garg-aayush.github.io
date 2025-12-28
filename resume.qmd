@@ -1,11 +1,10 @@
 ---
-layout: page
-title: Resume
-use-site-title: true
+title: "Resume"
+page-layout: full
 ---
 
 <div id="pdf" style="height: 800px;"></div>
 <script src="/js/pdfobject.min.js"></script>
 <script>
-PDFObject.embed("https://desh2608.github.io/DeshRaj.pdf", "#pdf");
+  PDFObject.embed("https://desh2608.github.io/DeshRaj.pdf", "#pdf");
 </script>

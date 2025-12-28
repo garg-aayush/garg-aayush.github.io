@@ -1,0 +1,7 @@
+page-layout: article
+format:
+  html:
+    toc: true
+    code-copy: true
+execute:
+  freeze: true

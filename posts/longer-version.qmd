@@ -1,0 +1,39 @@
+---
+title:  "What I Learned in Lecture 1: LLM Evaluation Lifecycle"
+tags: ["LLMs", "Evaluation"]
+mathjax: true
+description: In this blog post, I will discuss the key ideas/insights I learnt around the "Three Gulfs", the systematic evaluation and improvement of LLM-application.
+permalink: /longer-version/
+---
+
+Recently I enrolled in [AI Evals for Engineers and PMs](https://maven.com/parlance-labs/evals), a course by [Hamel](https://hamel.dev/) and [Shreya](https://www.sh-reya.com/) that’s refreshingly LLM application-centric. Instead of abstract benchmarks, it teaches you how to systematically evaluate and improve LLM-powered products. As the they put it, the goal is to:
+
+> “Master the principles and practices of application-centric LLM evaluation to systematically improve AI-driven products.”
+
+In this first blog of what I hope will be a multi-part series 🤞, I’ll walk through my key takeaways from **Lecture 1**. 
+
+# Key Takeaways
+
+
+## 1. Evaluation isn’t Optional but Fundamental
+Anyone who has built or worked with LLM pipelines knows that their outputs are inherently open-ended, subjective, and unstructured. This is unlike traditional software or classical ML models, where a loss curve(s) can reliably indicate when performance is improving. Relying on ad hoc checks which I have done, leads to knee-jerk fixes that may yield short-term gains but overlook the long-term need of continuously tracking and enhancing reliability, safety, and usefulness.
+
+That is why evaluation—the systematic measurement of an LLM pipeline quality—is absolutely critical!
+It isn’t a single score, but a blend of quantitative metrics and structured qualitative reports. Embracing this comprehensive framework is how I diagnose failures, guide improvements, and build truly robust, ever-evolving LLM applications.
+
+
+
+We need a systematic manner a
+## 2. Bridge the Three Gulfs in Pipeline Development
+## 3. Iterate with Analyze → Measure → Improve
+
+## 4. Always Remember LLMs Core Strengths and Weaknesses
+
+**_“LLMs are powerful but imperfect components. Leverage strengths, anticipate weaknesses.”_**
+![LLM Strengths vs. Weaknesses](/static/img/blog-2025-07-30/llm-strengths-weaknesses.png)
+Whenever you’re iterating on prompts or evaluating your pipeline, remember to capitalize on LLMs’ strengths and put safeguards in place for their weakest spots. Moreover, your evaluations must explicitly address these weaknesses.
+
+## 5. Craft Precise Prompts and Refine Iteratively
+## 6. Define Good vs. Bad Behavior Upfront
+## 7. Use Reference-Based and Reference-Free Metrics
+## 8. Clarify Specifications First with Error Analysis
