@@ -17,6 +17,10 @@ website:
   site-url: "https://garg-aayush.github.io"
   favicon: "static/img/aayush_cropped.jpg"
   navbar:
+    title: false
+    background: dark
+    pinned: true
+    collapse: false
     left:
       - text: Home
         href: index.qmd
@@ -34,10 +38,7 @@ website:
       - icon: twitter
         href: "https://twitter.com/Aayush_ander"
   page-footer:
-    left: "Copyright 2025 Aayush Garg"
-    right:
-      - text: "Email"
-        href: "mailto:aayushgargiitr@gmail.com"
+    center:
       - icon: github
         href: "https://github.com/garg-aayush"
       - icon: linkedin
@@ -48,9 +49,10 @@ website:
 format:
   html:
     from: markdown+raw_html
-    theme: flatly
+    theme:
+      dark: [cosmo, theme-dark.scss]
     css: styles.css
-    toc: false
+    toc: true
     smooth-scroll: true
     link-external-newwindow: true
 
