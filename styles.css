@@ -434,3 +434,27 @@ h2 {
     left: 0.25rem;
   }
 }
+
+/* Template credit */
+.template-credit {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.template-credit p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.template-credit a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.template-credit a:hover {
+  color: var(--accent);
+}

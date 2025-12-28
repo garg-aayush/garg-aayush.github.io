@@ -231,11 +231,11 @@
     "text": "📮 Blog\nI write about practical ML engineering, LLMs, and lessons learned from building AI products. Below are my recent posts.\n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\n\n\n\n\n\n9/10/25\n\n\nA Guide to Building Custom Nodes in ComfyUI\n\n\n\n\n\n\n9/2/25\n\n\nKey Takeaways from Lecture 1: LLM Evaluation Lifecycle\n\n\n\n\n\n\n7/15/24\n\n\nPart III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction\n\n\n\n\n\n\n7/9/24\n\n\nPart II: Comparison of Model Performances on Structured Functional Representation Extraction\n\n\n\n\n\n\n7/3/24\n\n\nPart I: Baseline Evaluation of GPT-4o for Functional Representation Extraction\n\n\n\n\n\n\n6/30/24\n\n\nStep-by-Step Guide to Setup Your Personal GPU Server\n\n\n\n\n\n\n5/19/24\n\n\nManaging multiple CUDA versions using environment modules in Ubuntu\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "index.html#follow-me",
-    "href": "index.html#follow-me",
+    "objectID": "index.html#reach-out",
+    "href": "index.html#reach-out",
     "title": "Aayush Garg",
-    "section": "📬 Follow Me",
-    "text": "📬 Follow Me\nThe best way to follow my work is on GitHub or Twitter."
+    "section": "📬 Reach Out",
+    "text": "📬 Reach Out\nThe best way to follow my work is on GitHub, Twitter, or LinkedIn.\n\nTemplate inspired by hamel.dev and Lil’Log."
   },
   {
     "objectID": "publications.html",
