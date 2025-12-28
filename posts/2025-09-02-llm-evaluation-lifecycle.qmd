@@ -2,7 +2,7 @@
 title:  "Key Takeaways from Lecture 1: LLM Evaluation Lifecycle"
 tags: ["LLMs", "Evaluation"]
 mathjax: true
-description: In this blog post, I will discuss the key ideas/takeaways around the systematic evaluation and metrics, "Three Gulfs" and effective prompting.
+description: Here, I discuss the key ideas/takeaways around the systematic evaluation and metrics, "Three Gulfs" and effective prompting.
 date: 2025-09-02
 permalink: /2025-09-02-llm-evaluation-lifecycle/
 ---

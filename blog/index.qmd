@@ -1,6 +1,5 @@
 ---
 title: "Blog"
-description: "All posts on ML engineering, LLMs, and AI products."
 sidebar: false
 toc: false
 listing:
