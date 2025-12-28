@@ -1,6 +1,6 @@
 /*-- scss:defaults --*/
 
-// Color palette inspired by hamel.dev
+// Color palette inspired by Lil'Log (PaperMod) - softer dark theme
 $blue: #447099;
 $red: #D44000;
 $orange: #EE6331;
@@ -10,17 +10,19 @@ $teal: #419599;
 $cyan: #75A8D9;
 $black: #000;
 $white: #fff;
+
+// Lil'Log inspired grays - softer contrast
 $gray: #404041;
 $gray-dark: #343a40;
-$gray-100: #f8f8f8;
-$gray-200: #C2C2C4;
-$gray-300: #949494;
+$gray-100: #dadada;      // Primary text (softer than #f8f8f8)
+$gray-200: #c4c4c5;      // Content text
+$gray-300: #9b9c9d;      // Secondary text
 $gray-400: #707073;
 $gray-500: #495057;
-$gray-600: #404041;
-$gray-700: #333333;
-$gray-800: #242426;
-$gray-900: #151515;
+$gray-600: #414244;      // Tertiary
+$gray-700: #333333;      // Borders
+$gray-800: #2e2e33;      // Card/entry background
+$gray-900: #1d1e20;      // Main background (warmer than #151515)
 
 $default: $gray-900;
 $primary: $cyan;
@@ -30,54 +32,65 @@ $info: $yellow;
 $warning: $orange;
 $danger: $red;
 
-// Base document colors
+// Base document colors - Lil'Log style
 $body-bg: $gray-900;
 $body-color: $gray-100;
 $link-color: $cyan;
 
-$light: rgb(32.4,32.4,34.2);
+$light: $gray-800;
 
 // Navigation element colors
 $footer-bg: $gray-900;
-$navbar-bg: shade-color($gray-800, 10%);
+$navbar-bg: $gray-800;
 
 // Code blocks
 $code-block-bg-alpha: -.9;
 
 // Bootstrap popovers
-$popover-bg: #242424;
+$popover-bg: $gray-800;
 
 // Bootstrap inputs
-$input-bg: #242424;
+$input-bg: $gray-800;
 $dropdown-bg: $body-bg;
 $dropdown-color: $body-color;
 $dropdown-link-color: $body-color;
 $dropdown-link-hover-bg: $gray-600;
 $dropdown-link-hover-color: #eee;
-$nav-tabs-link-hover-border-color: rgb(80, 80, 80);
+$nav-tabs-link-hover-border-color: $gray-600;
 
-$border-color: rgba($gray-800, 0.5);
+$border-color: $gray-700;
 
 $mono-background-color: rgba(0,0,0,0);
-$code-color: rgb(192, 128, 216);
+$code-color: #c792ea;
+$code-bg: #37383e;
 $nav-tabs-link-active-color: $body-color;
-$toc-inactive-border: rgba($gray-800, 0.5);
+$toc-inactive-border: $gray-700;
 $input-text-background-color: $gray-800;
 $input-group-addon-bg: $gray-800;
-$pagination-disabled-bg: rgb(24,24,24);
+$pagination-disabled-bg: $gray-800;
 
-$text-muted: lighten(#6a737b, 20%);
+$text-muted: $gray-300;
 
 /*-- scss:rules --*/
 
-// Navbar styling
+// Navbar styling - slightly lighter than body
 .navbar-dark {
-  background-color: #1b1b1d !important;
+  background-color: $gray-800 !important;
 }
 
 // Code styling
 pre code {
-  color: $body-color;
+  color: $gray-200;
+}
+
+pre {
+  background-color: $gray-800 !important;
+}
+
+code {
+  background-color: $code-bg;
+  padding: 0.125rem 0.25rem;
+  border-radius: 3px;
 }
 
 figcaption code,
@@ -98,14 +111,18 @@ details > summary {
 // Cell output styling
 .cell-output {
   margin-left: 20px;
-  border-left: 2px solid #a59595;
-  background-color: #444242;
+  border-left: 2px solid $gray-600;
+  background-color: $gray-800;
 }
 
 // Blockquote styling
+blockquote {
+  border-left-color: $cyan;
+}
+
 blockquote p {
-  color: rgb(219, 204, 204);
-  background-color: #2d2f36;
+  color: $gray-200;
+  background-color: $gray-800;
 }
 
 // Layout helpers
@@ -113,3 +130,21 @@ blockquote p {
   background-color: $body-bg;
 }
 
+// Softer headings
+h1, h2, h3, h4, h5, h6 {
+  color: $gray-100;
+}
+
+// Body text - slightly muted for comfort
+p, li {
+  color: $gray-200;
+}
+
+// Links - cyan accent
+a {
+  color: $cyan;
+}
+
+a:hover {
+  color: lighten($cyan, 10%);
+}
