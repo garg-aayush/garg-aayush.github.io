@@ -15,12 +15,27 @@
 /* Profile section */
 .profile-pic {
   border-radius: 50%;
-  max-width: 150px;
+  max-width: 100px;
   height: auto;
 }
 
 .profile-header .quarto-layout-row {
   align-items: flex-start;
+}
+
+/* Reset all margins inside profile header cells for top alignment */
+.profile-header .quarto-layout-cell {
+  padding-top: 0;
+}
+
+.profile-header .quarto-layout-cell p,
+.profile-header .quarto-layout-cell figure {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.profile-header .profile-pic {
+  margin: 0;
 }
 
 @media (max-width: 600px) {
