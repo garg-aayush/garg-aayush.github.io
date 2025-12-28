@@ -19,7 +19,6 @@
 
 
 
-
 <p><a href="https://www.comfy.org/">ComfyUI</a> is by far my favorite open-source software right now. Its intuitive node-based interface has transformed the way we build AI image and video generation workflows.</p>
 <p>What I really appreciate about ComfyUI is its flexibility. You can easily extend it with your own custom nodes. Here, I’ll show you how to create custom nodes that let you add exactly the tools you need. I’ll use parts from my <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a> nodes as the running example for this purpose.</p>
 <section id="svg2raster" class="level2">
@@ -482,7 +481,6 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 
 
 
-
 <p>A couple of months back, I enrolled in <a href="https://maven.com/parlance-labs/evals">AI Evals for Engineers and PMs</a>, a course by <a href="https://hamel.dev/">Hamel</a> and <a href="https://www.sh-reya.com/">Shreya</a>. The live cohort for ot ran from July to mid-August, but due to work commitments I couldn’t follow along in real time.</p>
 <p>I have now started following it as a self-paced course and plans to write a blog for each lesson as I progress. This will be my way to capture what I learn and to reflect on the material. In this first blog 🤞, I’ll walk through my key takeaways from introductory <strong>Lecture 1</strong>.</p>
 <section id="key-takeaways" class="level1">
@@ -601,7 +599,6 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
   <title>Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</title>
   <link>https://garg-aayush.github.io/posts/2024-07-15-finetune-llama3-8B-predibase.html</link>
   <description><![CDATA[ 
-
 
 
 
@@ -964,7 +961,6 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 
 
 
-
 <section id="introduction" class="level3">
 <h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
 <p>In the <a href="https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/">previous blog post</a>, I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the <a href="https://huggingface.co/datasets/GEM/viggo">ViGGO Dataset</a>.</p>
@@ -1215,7 +1211,6 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
   <title>Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</title>
   <link>https://garg-aayush.github.io/posts/2024-07-03-baseline-gpt4o-structured-data.html</link>
   <description><![CDATA[ 
-
 
 
 
@@ -1599,7 +1594,6 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 
 
 
-
 <ul>
 <li><a href="https://gist.github.com/garg-aayush/d377557b20ef9f206c1d6381e174d8a7">Github Gist Link</a></li>
 </ul>
@@ -1832,7 +1826,6 @@ font-style: inherit;">=</span>multi-user.target</span></code></pre></div></div>
   <title>Managing multiple CUDA versions using environment modules in Ubuntu</title>
   <link>https://garg-aayush.github.io/posts/2024-05-19-manage-multiple-cuda.html</link>
   <description><![CDATA[ 
-
 
 
 
