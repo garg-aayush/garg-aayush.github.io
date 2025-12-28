@@ -10,5 +10,17 @@
       "/posts/2024-06-30-remote-gpu-server.html",
       "/posts/2024-05-19-manage-multiple-cuda.html"
     ]
+  },
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/2025-09-10-build-custom-comfyui-node.html",
+      "/posts/2025-09-02-llm-evaluation-lifecycle.html",
+      "/posts/2024-07-15-finetune-llama3-8B-predibase.html",
+      "/posts/2024-07-09-compare-models-structured-data.html",
+      "/posts/2024-07-03-baseline-gpt4o-structured-data.html",
+      "/posts/2024-06-30-remote-gpu-server.html",
+      "/posts/2024-05-19-manage-multiple-cuda.html"
+    ]
   }
 ]

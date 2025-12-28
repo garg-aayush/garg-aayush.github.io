@@ -191,9 +191,9 @@
   {
     "objectID": "blog/index.html",
     "href": "blog/index.html",
-    "title": "Blogs",
+    "title": "Blog",
     "section": "",
-    "text": "Welcome to the writing archive. Use the list below to browse by topic or date.\n\n\n\n\n\n\n\n\n\nA Guide to Building Custom Nodes in ComfyUI\n\n\nA practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.\n\n\n\n\n\nSep 10, 2025\n\n\nComfyUI,SVG,Image Processing\n\n\n\n\n\n\n\nKey Takeaways from Lecture 1: LLM Evaluation Lifecycle\n\n\nIn this blog post, I will discuss the key ideas/takeaways around the systematic evaluation and metrics, “Three Gulfs” and effective prompting.\n\n\n\n\n\nSep 2, 2025\n\n\nLLMs,Evaluation\n\n\n\n\n\n\n\nPart III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction\n\n\nIn this blog post, I walk through the process of fine-tuning a Llama-3-8B model on the Predibase platform for structured functional representation extraction, and compare its performance with GPT-4 and Claude 3.5 Sonnet.\n\n\n\n\n\nJul 15, 2024\n\n\nLLMs,Finetuning,Predibase,ViGGO,Llama,LORA\n\n\n\n\n\n\n\nPart II: Comparison of Model Performances on Structured Functional Representation Extraction\n\n\nThis blog post compares the performance of various models in extracting structured functional representations from text.\n\n\n\n\n\nJul 9, 2024\n\n\nLLMs,GPT,Evaluation,ViGGO,Claude,Llama,Gemini,Mistral\n\n\n\n\n\n\n\nPart I: Baseline Evaluation of GPT-4o for Functional Representation Extraction\n\n\nIn this blog, I walk you through structured data extraction, specifically functional representation, using OpenAI’s GPT-4o model.\n\n\n\n\n\nJul 3, 2024\n\n\nLLMs,GPT,Evaluation,VIGGO\n\n\n\n\n\n\n\nStep-by-Step Guide to Setup Your Personal GPU Server\n\n\nA concise guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.\n\n\n\n\n\nJun 30, 2024\n\n\ngpu,ngrok,openssh\n\n\n\n\n\n\n\nManaging multiple CUDA versions using environment modules in Ubuntu\n\n\nGuide to install CUDA locally and manage multiple cuda environments on Ubuntu GPU server.\n\n\n\n\n\nMay 19, 2024\n\n\ngpu,cuda,nvidia,module\n\n\n\n\n\nNo matching items"
+    "text": "Date\n\n\n\nTitle\n\n\n\n\n\n\n\n\n9/10/25\n\n\nA Guide to Building Custom Nodes in ComfyUI\n\n\n\n\n\n\n9/2/25\n\n\nKey Takeaways from Lecture 1: LLM Evaluation Lifecycle\n\n\n\n\n\n\n7/15/24\n\n\nPart III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction\n\n\n\n\n\n\n7/9/24\n\n\nPart II: Comparison of Model Performances on Structured Functional Representation Extraction\n\n\n\n\n\n\n7/3/24\n\n\nPart I: Baseline Evaluation of GPT-4o for Functional Representation Extraction\n\n\n\n\n\n\n6/30/24\n\n\nStep-by-Step Guide to Setup Your Personal GPU Server\n\n\n\n\n\n\n5/19/24\n\n\nManaging multiple CUDA versions using environment modules in Ubuntu\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -207,28 +207,35 @@
     "href": "about.html#professional-experience",
     "title": "About",
     "section": "Professional Experience",
-    "text": "Professional Experience\n\n\n\nJan 2024 - Ongoing\n\n\nJiffy\n\nSenior Machine Learning Engineer\n\nBuilding generative AI image pipelines, LLM/VLM applications, and evals across product verticals.\n\n\n\n\n\n\nAug 2022 - Dec 2024\n\n\nFlixstock\n\nSoftware Development Engineer III\n\nDeveloped vision-based generative AI solutions for virtual try-on and background generation.\n\n\n\n\n\n\nOct 2019 - Jul 2022\n\n\nShell\n\nResearch Geophysicist\n\nFocused on uncertainty quantification and denoising of subsurface seismic data.\n\n\n\n\n\n\nAug 2015 - Sep 2019\n\n\nTU Delft\n\nPhD Researcher\n\nWorked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties."
+    "text": "Professional Experience\n\n\n\n\nJiffy\n\n\nJan 2024 - Present\n\n\n\nSenior Machine Learning Engineer\n\n\nBuilding generative AI image pipelines, LLM/VLM applications, and evals across product verticals.\n\n\n\n\n\nFlixstock\n\n\nAug 2022 - Dec 2024\n\n\n\nSoftware Development Engineer III\n\n\nDeveloped vision-based generative AI solutions for virtual try-on and background generation.\n\n\n\n\n\nShell\n\n\nOct 2019 - Jul 2022\n\n\n\nResearch Geophysicist\n\n\nFocused on uncertainty quantification and denoising of subsurface seismic data.\n\n\n\n\n\nTU Delft\n\n\nAug 2015 - Sep 2019\n\n\n\nPhD Researcher\n\n\nWorked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Aayush Garg",
     "section": "",
-    "text": "Senior ML Engineer at Jiffy\n\n\n\n\n\n\n\nI am an applied machine learning engineer focused on building AI-driven products and systems people can rely on. At Jiffy, I build image enhancement pipelines, deploy ML models at scale, and develop LLM/VLM applications across product verticals.\n\n\n\n\nI am currently building an in-house AI design platform, developing evaluation and prompt-optimization workflows, and exploring applied LLM fine-tuning for structured data extraction. My background is in computational geophysics, which keeps me grounded in first principles and pragmatic experimentation."
+    "text": "I am an applied machine learning engineer focused on building AI-driven products and systems people can rely on. At Jiffy, I build image enhancement pipelines, deploy ML models at scale, and develop LLM/VLM applications across product verticals."
   },
   {
-    "objectID": "index.html#hi-im-aayush",
-    "href": "index.html#hi-im-aayush",
+    "objectID": "index.html#current-work",
+    "href": "index.html#current-work",
     "title": "Aayush Garg",
-    "section": "",
-    "text": "Senior ML Engineer at Jiffy\n\n\n\n\n\n\n\nI am an applied machine learning engineer focused on building AI-driven products and systems people can rely on. At Jiffy, I build image enhancement pipelines, deploy ML models at scale, and develop LLM/VLM applications across product verticals.\n\n\n\n\nI am currently building an in-house AI design platform, developing evaluation and prompt-optimization workflows, and exploring applied LLM fine-tuning for structured data extraction. My background is in computational geophysics, which keeps me grounded in first principles and pragmatic experimentation."
+    "section": "💼 Current Work",
+    "text": "💼 Current Work\nI am currently building an in-house AI design platform, developing evaluation and prompt-optimization workflows, and exploring applied LLM fine-tuning for structured data extraction. My background is in computational geophysics, which keeps me grounded in first principles and pragmatic experimentation.\nIf you’re interested in my work or want to collaborate, feel free to reach out via email or connect on LinkedIn."
   },
   {
-    "objectID": "index.html#updates",
-    "href": "index.html#updates",
+    "objectID": "index.html#blog",
+    "href": "index.html#blog",
     "title": "Aayush Garg",
-    "section": "Updates",
-    "text": "Updates\n\n\nSeptember 2025: Wrote a tutorial on building custom ComfyUI nodes. Guide to Building Custom Nodes in ComfyUI.\nSeptember 2025: Published the first blog post in the AI evals series. Key Takeaways from Lecture 1.\nJuly 2024: Published Part II of the LLM fine-tuning series. Comparison of Model Performances.\nJuly 2024: Launched the LLM fine-tuning series. Baseline Evaluation of GPT-4o.\nJune 2024: Published a guide on configuring a personal GPU server. Setup Your Personal GPU Server.\nMay 2024: Updated the CUDA environments guide. Managing Multiple CUDA Environments.\nJanuary 2024: Joined Jiffy as Senior ML Engineer."
+    "section": "📮 Blog",
+    "text": "📮 Blog\nI write about practical ML engineering, LLMs, and lessons learned from building AI products. Below are my recent posts.\n\n\n\n\n\n\nDate\n\n\n\nTitle\n\n\n\n\n\n\n\n\n9/10/25\n\n\nA Guide to Building Custom Nodes in ComfyUI\n\n\n\n\n\n\n9/2/25\n\n\nKey Takeaways from Lecture 1: LLM Evaluation Lifecycle\n\n\n\n\n\n\n7/15/24\n\n\nPart III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction\n\n\n\n\n\n\n7/9/24\n\n\nPart II: Comparison of Model Performances on Structured Functional Representation Extraction\n\n\n\n\n\n\n7/3/24\n\n\nPart I: Baseline Evaluation of GPT-4o for Functional Representation Extraction\n\n\n\n\n\n\n6/30/24\n\n\nStep-by-Step Guide to Setup Your Personal GPU Server\n\n\n\n\n\n\n5/19/24\n\n\nManaging multiple CUDA versions using environment modules in Ubuntu\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html#follow-me",
+    "href": "index.html#follow-me",
+    "title": "Aayush Garg",
+    "section": "📬 Follow Me",
+    "text": "📬 Follow Me\nThe best way to follow my work is on GitHub or Twitter."
   },
   {
     "objectID": "publications.html",

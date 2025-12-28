@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Blogs – Aayush Garg</title>
+<title>Blog – Aayush Garg</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,7 +24,6 @@ ul.task-list li input[type="checkbox"] {
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
@@ -40,10 +39,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-960d9d362f81d399278ec3e29b622b37.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-87b5ad44aa73cdb6d1f2a4b88aae80c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3afc7a49fce14ce59ac386be69953720.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-87b5ad44aa73cdb6d1f2a4b88aae80c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -74,20 +77,20 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
       return; 
     }
 
     const options = {
-      valueNames: ['listing-title','listing-date','listing-description','listing-tags',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description"],
+      searchColumns: ["listing-date","listing-title","listing-author"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+    window['quarto-listings']['listing-blog-listings'] = new List('listing-blog-listings', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -133,25 +136,175 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="../styles.css">
-</head>
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"></head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = true;
+    const darkModeDefault = authorPrefersDark;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Aayush Garg</span>
-    </a>
-  </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
@@ -169,7 +322,7 @@ window.Quarto = {
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
 </i> 
@@ -186,28 +339,30 @@ window.Quarto = {
 <span class="menu-text"></span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
+
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Blogs</h1>
+<h1 class="title">Blog</h1>
 </div>
 
 
 
-<div class="quarto-title-meta column-page">
+<div class="quarto-title-meta">
 
     
   
@@ -219,158 +374,123 @@ window.Quarto = {
 </header>
 
 
-<p>Welcome to the writing archive. Use the list below to browse by topic or date.</p>
+<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
+<div class="listing-actions-group">
+    <div class="input-group input-group-sm quarto-listing-filter">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="search form-control" placeholder="Filter">
+    </div>
+</div>
+<table class="quarto-listing-table table">
+<thead>
+<tr>
 
+<th>
+Date
+</th>
 
+<th>
+Title
+</th>
 
+</tr>
+</thead>
+<tbody class="list">
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1766903479247" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="no-external">A Guide to Building Custom Nodes in ComfyUI</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="no-external">
-<p>A practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="no-external">
-<div class="listing-date">
-Sep 10, 2025
-</div>
-<div class="metadata-value listing-tags">
-ComfyUI,SVG,Image Processing
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1766903479247" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="no-external">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="no-external">
-<p>In this blog post, I will discuss the key ideas/takeaways around the systematic evaluation and metrics, “Three Gulfs” and effective prompting.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="no-external">
-<div class="listing-date">
-Sep 2, 2025
-</div>
-<div class="metadata-value listing-tags">
-LLMs,Evaluation
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1766903479247" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="no-external">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="no-external">
-<p>In this blog post, I walk through the process of fine-tuning a Llama-3-8B model on the Predibase platform for structured functional representation extraction, and compare its performance with GPT-4 and Claude 3.5 Sonnet.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="no-external">
-<div class="listing-date">
-Jul 15, 2024
-</div>
-<div class="metadata-value listing-tags">
-LLMs,Finetuning,Predibase,ViGGO,Llama,LORA
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1766903479247" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2024-07-09-compare-models-structured-data.html" class="no-external">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2024-07-09-compare-models-structured-data.html" class="no-external">
-<p>This blog post compares the performance of various models in extracting structured functional representations from text.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2024-07-09-compare-models-structured-data.html" class="no-external">
-<div class="listing-date">
-Jul 9, 2024
-</div>
-<div class="metadata-value listing-tags">
-LLMs,GPT,Evaluation,ViGGO,Claude,Llama,Gemini,Mistral
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1766903479247" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="no-external">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="no-external">
-<p>In this blog, I walk you through structured data extraction, specifically functional representation, using OpenAI’s GPT-4o model.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="no-external">
-<div class="listing-date">
-Jul 3, 2024
-</div>
-<div class="metadata-value listing-tags">
-LLMs,GPT,Evaluation,VIGGO
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1766903479247" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2024-06-30-remote-gpu-server.html" class="no-external">Step-by-Step Guide to Setup Your Personal GPU Server</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2024-06-30-remote-gpu-server.html" class="no-external">
-<p>A concise guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2024-06-30-remote-gpu-server.html" class="no-external">
-<div class="listing-date">
-Jun 30, 2024
-</div>
-<div class="metadata-value listing-tags">
-gpu,ngrok,openssh
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1766903479246" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../posts/2024-05-19-manage-multiple-cuda.html" class="no-external">Managing multiple CUDA versions using environment modules in Ubuntu</a>
-</h3>
-<div class="delink listing-description"><a href="../posts/2024-05-19-manage-multiple-cuda.html" class="no-external">
-<p>Guide to install CUDA locally and manage multiple cuda environments on Ubuntu GPU server.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../posts/2024-05-19-manage-multiple-cuda.html" class="no-external">
-<div class="listing-date">
-May 19, 2024
-</div>
-<div class="metadata-value listing-tags">
-gpu,cuda,nvidia,module
-</div>
-</a>
-</div>
-</div>
-</div>
+<tr data-index="0" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365" data-listing-title-sort="A Guide to Building Custom Nodes in ComfyUI" data-listing-filename-sort="2025-09-10-build-custom-comfyui-node.qmd">
+<td>
+<span class="listing-date">9/10/25</span>
+</td>
+<td>
+<a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="title listing-title">A Guide to Building Custom Nodes in ComfyUI</a>
+</td>
+
+</tr>
+
+<tr data-index="1" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035" data-listing-title-sort="Key Takeaways from Lecture 1: LLM Evaluation Lifecycle" data-listing-filename-sort="2025-09-02-llm-evaluation-lifecycle.qmd">
+<td>
+<span class="listing-date">9/2/25</span>
+</td>
+<td>
+<a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="title listing-title">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
+</td>
+
+</tr>
+
+<tr data-index="2" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299" data-listing-title-sort="Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-15-finetune-llama3-8B-predibase.qmd">
+<td>
+<span class="listing-date">7/15/24</span>
+</td>
+<td>
+<a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title listing-title">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
+</td>
+
+</tr>
+
+<tr data-index="3" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288" data-listing-title-sort="Part II: Comparison of Model Performances on Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-09-compare-models-structured-data.qmd">
+<td>
+<span class="listing-date">7/9/24</span>
+</td>
+<td>
+<a href="../posts/2024-07-09-compare-models-structured-data.html" class="title listing-title">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
+</td>
+
+</tr>
+
+<tr data-index="4" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429" data-listing-title-sort="Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction" data-listing-filename-sort="2024-07-03-baseline-gpt4o-structured-data.qmd">
+<td>
+<span class="listing-date">7/3/24</span>
+</td>
+<td>
+<a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="title listing-title">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a>
+</td>
+
+</tr>
+
+<tr data-index="5" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744" data-listing-title-sort="Step-by-Step Guide to Setup Your Personal GPU Server" data-listing-filename-sort="2024-06-30-remote-gpu-server.qmd">
+<td>
+<span class="listing-date">6/30/24</span>
+</td>
+<td>
+<a href="../posts/2024-06-30-remote-gpu-server.html" class="title listing-title">Step-by-Step Guide to Setup Your Personal GPU Server</a>
+</td>
+
+</tr>
+
+<tr data-index="6" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1766924386106" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858" data-listing-title-sort="Managing multiple CUDA versions using environment modules in Ubuntu" data-listing-filename-sort="2024-05-19-manage-multiple-cuda.qmd">
+<td>
+<span class="listing-date">5/19/24</span>
+</td>
+<td>
+<a href="../posts/2024-05-19-manage-multiple-cuda.html" class="title listing-title">Managing multiple CUDA versions using environment modules in Ubuntu</a>
+</td>
+
+</tr>
+
+</tbody>
+</table>
 <div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</div>
+
+
+
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -778,18 +898,10 @@ gpu,cuda,nvidia,module
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>Copyright 2025 Aayush Garg</p>
-</div>   
-    <div class="nav-footer-center">
       &nbsp;
-    </div>
-    <div class="nav-footer-right">
+    </div>   
+    <div class="nav-footer-center">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item">
-    <a class="nav-link" href="mailto:aayushgargiitr@gmail.com">
-<p>Email</p>
-</a>
-  </li>  
     <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/garg-aayush">
       <i class="bi bi-github" role="img">
@@ -809,6 +921,9 @@ gpu,cuda,nvidia,module
     </a>
   </li>  
 </ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
     </div>
   </div>
 </footer>
