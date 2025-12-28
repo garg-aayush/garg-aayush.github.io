@@ -49,8 +49,7 @@ website:
 format:
   html:
     from: markdown+raw_html
-    theme:
-      dark: [cosmo, theme-dark.scss]
+    theme: [cosmo, theme-dark.scss]
     css: styles.css
     toc: true
     smooth-scroll: true
