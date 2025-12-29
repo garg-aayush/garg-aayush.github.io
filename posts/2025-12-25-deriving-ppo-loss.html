@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-12-25">
+<meta name="description" content="A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.">
+
+<title>Deriving the PPO Loss from First Principles – Aayush Garg</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-2d3f84a5f37526cd3979248aedf2fbfb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../blog/"> 
+<span class="menu-text">Blogs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#i-reinforcement-learning-core-definitions" id="toc-i-reinforcement-learning-core-definitions" class="nav-link active" data-scroll-target="#i-reinforcement-learning-core-definitions">I: Reinforcement Learning: Core Definitions</a></li>
+  <li><a href="#ii-reward-model-in-rlhf-for-llms" id="toc-ii-reward-model-in-rlhf-for-llms" class="nav-link" data-scroll-target="#ii-reward-model-in-rlhf-for-llms">II: Reward Model in RLHF for LLMs</a>
+  <ul class="collapse">
+  <li><a href="#how-is-the-reward-model-trained" id="toc-how-is-the-reward-model-trained" class="nav-link" data-scroll-target="#how-is-the-reward-model-trained">How is the Reward Model Trained?</a></li>
+  <li><a href="#reward-model-loss-function" id="toc-reward-model-loss-function" class="nav-link" data-scroll-target="#reward-model-loss-function">Reward Model Loss Function</a></li>
+  </ul></li>
+  <li><a href="#iii-trajectories-and-returns" id="toc-iii-trajectories-and-returns" class="nav-link" data-scroll-target="#iii-trajectories-and-returns">III: Trajectories and Returns</a>
+  <ul class="collapse">
+  <li><a href="#trajectory" id="toc-trajectory" class="nav-link" data-scroll-target="#trajectory">Trajectory</a></li>
+  <li><a href="#return" id="toc-return" class="nav-link" data-scroll-target="#return">Return</a></li>
+  </ul></li>
+  <li><a href="#iv-policy-gradient-optimization-and-reinforce-algorithm" id="toc-iv-policy-gradient-optimization-and-reinforce-algorithm" class="nav-link" data-scroll-target="#iv-policy-gradient-optimization-and-reinforce-algorithm">IV: Policy Gradient Optimization and REINFORCE Algorithm</a></li>
+  <li><a href="#v-reducing-variance-and-the-advantage-function" id="toc-v-reducing-variance-and-the-advantage-function" class="nav-link" data-scroll-target="#v-reducing-variance-and-the-advantage-function">V: Reducing Variance and the Advantage Function</a>
+  <ul class="collapse">
+  <li><a href="#replacing-full-trajectory-return-with-reward-to-go-using-causality" id="toc-replacing-full-trajectory-return-with-reward-to-go-using-causality" class="nav-link" data-scroll-target="#replacing-full-trajectory-return-with-reward-to-go-using-causality">Replacing Full-Trajectory Return with Reward-to-Go (using causality)</a></li>
+  <li><a href="#subtracting-a-baseline" id="toc-subtracting-a-baseline" class="nav-link" data-scroll-target="#subtracting-a-baseline">Subtracting a Baseline</a></li>
+  <li><a href="#value-functions-vpis-and-qpis-a" id="toc-value-functions-vpis-and-qpis-a" class="nav-link" data-scroll-target="#value-functions-vpis-and-qpis-a">Value Functions: <span class="math inline">\(V^\pi(s)\)</span> and <span class="math inline">\(Q^\pi(s, a)\)</span></a></li>
+  <li><a href="#advantage-function" id="toc-advantage-function" class="nav-link" data-scroll-target="#advantage-function">Advantage Function</a></li>
+  <li><a href="#advantage-weighted-policy-gradient" id="toc-advantage-weighted-policy-gradient" class="nav-link" data-scroll-target="#advantage-weighted-policy-gradient">Advantage-Weighted Policy Gradient</a></li>
+  </ul></li>
+  <li><a href="#vi-importance-sampling-and-off-policy-policy-gradients" id="toc-vi-importance-sampling-and-off-policy-policy-gradients" class="nav-link" data-scroll-target="#vi-importance-sampling-and-off-policy-policy-gradients">VI: Importance Sampling and Off-Policy Policy Gradients</a>
+  <ul class="collapse">
+  <li><a href="#importance-sampling" id="toc-importance-sampling" class="nav-link" data-scroll-target="#importance-sampling">Importance Sampling</a></li>
+  <li><a href="#applying-importance-sampling-to-policy-gradients" id="toc-applying-importance-sampling-to-policy-gradients" class="nav-link" data-scroll-target="#applying-importance-sampling-to-policy-gradients">Applying Importance Sampling to Policy Gradients</a></li>
+  <li><a href="#off-policy-learning-reusing-trajectories" id="toc-off-policy-learning-reusing-trajectories" class="nav-link" data-scroll-target="#off-policy-learning-reusing-trajectories">Off-Policy Learning: Reusing Trajectories</a></li>
+  <li><a href="#the-instability-problem" id="toc-the-instability-problem" class="nav-link" data-scroll-target="#the-instability-problem">The Instability Problem</a></li>
+  </ul></li>
+  <li><a href="#vii-trust-region-policy-optimization-trpo" id="toc-vii-trust-region-policy-optimization-trpo" class="nav-link" data-scroll-target="#vii-trust-region-policy-optimization-trpo">VII: Trust Region Policy Optimization (TRPO)</a></li>
+  <li><a href="#viii-proximal-policy-optimization-ppo" id="toc-viii-proximal-policy-optimization-ppo" class="nav-link" data-scroll-target="#viii-proximal-policy-optimization-ppo">VIII: Proximal Policy Optimization (PPO)</a>
+  <ul class="collapse">
+  <li><a href="#clipped-surrogate-objective" id="toc-clipped-surrogate-objective" class="nav-link" data-scroll-target="#clipped-surrogate-objective">Clipped Surrogate Objective</a></li>
+  <li><a href="#ppo-objective" id="toc-ppo-objective" class="nav-link" data-scroll-target="#ppo-objective">PPO Objective</a></li>
+  </ul></li>
+  <li><a href="#ix-complete-ppo-objective-with-kl-penalty" id="toc-ix-complete-ppo-objective-with-kl-penalty" class="nav-link" data-scroll-target="#ix-complete-ppo-objective-with-kl-penalty">IX: Complete PPO Objective with KL Penalty</a></li>
+  <li><a href="#finally-done" id="toc-finally-done" class="nav-link" data-scroll-target="#finally-done">Finally done…</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Deriving the PPO Loss from First Principles</h1>
+</div>
+
+<div>
+  <div class="description">
+    A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 25, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>I have been trying to wrap my head around reinforcement learning methods like <a href="https://arxiv.org/abs/2305.18290">DPO</a>, <a href="https://arxiv.org/pdf/2402.03300">GRPO</a>, and <a href="https://arxiv.org/abs/2506.14245">RLVR</a> for a while now, especially with all the recent work showing how effective they can be for LLM post-training. Since I amm still pretty new to RL, I figured the best place to start was Proximal Policy Optimization (PPO), the algorithm OpenAI used to show how reinforcement learning could meaningfully improve LLM alignment (<a href="https://arxiv.org/pdf/2203.02155">InstructGPT</a> paper). My hope is that getting comfortable with PPO will give me the right mental model for the policy-gradient side of things and make it easier to understand the newer LLM-specific RL methods built on similar ideas.</p>
+<p>If you start learning RL, you quickly realize it involves a lot of math! So I decided to lean into that and do a few (possibly annoying) derivation sessions to really understand the PPO objective by building it up from first principles, similar to how Umar Jamil does in his video.</p>
+<blockquote class="blockquote">
+<p>A huge shoutout to Umar Jamil’s <a href="https://www.youtube.com/watch?v=qGyFrqc34yc">video on RLHF and PPO</a>: it was incredibly helpful for building intuition and understanding the math behind the PPO loss.</p>
+</blockquote>
+<p>Below is my attempt at the derivation based on the original PPO and InstructGPT papers and Umar Jamil’s video.</p>
+<section id="i-reinforcement-learning-core-definitions" class="level2">
+<h2 class="anchored" data-anchor-id="i-reinforcement-learning-core-definitions">I: Reinforcement Learning: Core Definitions</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 39%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>General RL Definition</th>
+<th>LLM Context (RLHF)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Reinforcement Learning</strong></td>
+<td>A learning setup where an agent learns to act in an environment to maximize expected cumulative reward.</td>
+<td>Fine-tuning a language model to generate responses that better match human preferences using reward-based feedback.</td>
+</tr>
+<tr class="even">
+<td><strong>Environment</strong></td>
+<td>Everything outside the agent that it interacts with and that produces observations and rewards.</td>
+<td>The prompt distribution and interaction loop and the reward signal from a reward model evaluating generated responses.</td>
+</tr>
+<tr class="odd">
+<td><strong>Agent</strong></td>
+<td>The learner/decision-maker that observes states, takes actions, and receives rewards.</td>
+<td>The language model generating text token by token.</td>
+</tr>
+<tr class="even">
+<td><strong>Action (<span class="math inline">\(a\)</span>)</strong></td>
+<td>A choice made by the agent, usually conditioned on the state <span class="math inline">\(s\)</span>.</td>
+<td>Picking the next token at each step of generation.</td>
+</tr>
+<tr class="odd">
+<td><strong>State (<span class="math inline">\(s\)</span>)</strong></td>
+<td>The information available to the agent at a given time step.</td>
+<td>The prompt plus the response generated so far (the current token context).</td>
+</tr>
+<tr class="even">
+<td><strong>Reward (<span class="math inline">\(r\)</span>)</strong></td>
+<td>A scalar signal telling the agent how good or bad an outcome was.</td>
+<td>A score from the reward model (trained on preference data) that judges how good or bad a response is.</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy (<span class="math inline">\(\pi\)</span>)</strong></td>
+<td>A stochastic mapping from states to a distribution over actions.</td>
+<td>The model’s probability distribution over the next token given the context.</td>
+</tr>
+<tr class="even">
+<td><strong>Goal</strong></td>
+<td>Find an optimal policy <span class="math inline">\(\pi^*\)</span> that maximizes expected cumulative reward over time.</td>
+<td>Update (align) the model so it tends to generate responses with higher reward-model scores.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ii-reward-model-in-rlhf-for-llms" class="level2">
+<h2 class="anchored" data-anchor-id="ii-reward-model-in-rlhf-for-llms">II: Reward Model in RLHF for LLMs</h2>
+<p>A <strong>Reward Model (RM)</strong> is a neural network that takes a prompt <span class="math inline">\(x\)</span> and a response <span class="math inline">\(y\)</span> as input and outputs a <strong>scalar reward</strong> <span class="math inline">\(r_\phi(x, y) \in \mathbb{R}\)</span> indicating how “good” or “aligned” that response is according to human preferences.</p>
+<p>Policy-gradient methods (including PPO) require a scalar objective to update the policy parameters. In standard RL, the environment provides this signal. However for language generation, there is no natural environment giving us rewards for “good” responses. Having humans rate every output is impractical and for gradient-based optimization, we need a differentiable scalar signal to backpropagate through. Thus, we require a cheap, differentiable proxy for human preferences during RL training. A learned RM provides exactly this.</p>
+<section id="how-is-the-reward-model-trained" class="level3">
+<h3 class="anchored" data-anchor-id="how-is-the-reward-model-trained">How is the Reward Model Trained?</h3>
+<p>The standard procedure for training the reward model is:</p>
+<ol type="1">
+<li>Sample prompts (<span class="math inline">\(x\)</span>)</li>
+<li>Generate multiple candidate completions (<span class="math inline">\(y_1, y_2, \ldots, y_K\)</span>) from a baseline policy (often an SFT model).</li>
+<li>Ask humans to <strong>compare</strong> candidates (pairwise preferences are easier than absolute scoring).</li>
+<li>Train the RM (<span class="math inline">\(r_\phi\)</span>) to predict those preferences.</li>
+</ol>
+<p>Architecturally, the reward model is typically: - Initialized from a pretrained language model (often the SFT model itself) - The final non-embedding layer (which projects to vocabulary) is <strong>removed</strong> - Replaced it with a <strong>linear layer</strong> that projects the hidden state of the last token to a single scalar output</p>
+</section>
+<section id="reward-model-loss-function" class="level3">
+<h3 class="anchored" data-anchor-id="reward-model-loss-function">Reward Model Loss Function</h3>
+<p>The reward model is trained using the <strong>Bradley-Terry model</strong> for pairwise comparisons. The probability that response <span class="math inline">\(y_w\)</span> (preferred) is preferred over <span class="math inline">\(y_l\)</span> (less preferred) for any prompt <span class="math inline">\(x\)</span> is modeled as:</p>
+<p><span class="math display">\[
+P(y_w \succ y_l | x) = \sigma\left(r_\theta(x, y_w) - r_\theta(x, y_l)\right) \tag{II.I}
+\]</span></p>
+<p>where <span class="math inline">\(\sigma\)</span> is the sigmoid function: <span class="math inline">\(\sigma(z) = \frac{1}{1 + e^{-z}}\)</span></p>
+<p>The <strong>negative log-likelihood loss</strong> is:</p>
+<p><span class="math display">\[
+\mathcal{L}_{\text{RM}}(\phi) = -\mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma\left(r_\phi(x, y_w) - r_\phi(x, y_l)\right) \right]
+\]</span></p>
+<p>One can verify that this loss forces the reward model to assign higher rewards to preferred responses (see <a href="https://arxiv.org/pdf/2203.02155">InstructGPT paper</a> or Umar Jamil’s video for a detailed walkthrough).</p>
+<p>There are two key insights here: 1. We don’t need absolute scores, we only need the reward model to <strong>correctly rank</strong> responses. 2. The loss depends only on <strong>differences</strong> (<span class="math inline">\(r_\phi(x, y_w) - r_\phi(x, y_l)\)</span>), so it is invariant to adding a constant to all rewards. This will be useful later when we discuss the PPO loss.</p>
+<p>The reward model serves as a <strong>learned proxy for human preferences</strong>, converting the intractable problem of getting human feedback on every generation into a tractable supervised learning problem. Once trained, it provides the scalar signal <span class="math inline">\(r_\phi(x, y)\)</span> needed to optimize our policy (LLM) using rl algorithms like PPO.</p>
+</section>
+</section>
+<section id="iii-trajectories-and-returns" class="level2">
+<h2 class="anchored" data-anchor-id="iii-trajectories-and-returns">III: Trajectories and Returns</h2>
+<section id="trajectory" class="level3">
+<h3 class="anchored" data-anchor-id="trajectory">Trajectory</h3>
+<p>A <strong>trajectory</strong> (also called a rollout or episode) is a sequence of states (<span class="math inline">\(s\)</span>), actions (<span class="math inline">\(a\)</span>), and rewards (<span class="math inline">\(r\)</span>) generated by an agent interacting with an environment:</p>
+<p><span class="math display">\[
+\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \ldots, s_T, a_T, r_T)
+\]</span></p>
+<p>In the context of LLMs, a trajectory corresponds to the entire sequence of token generations. It is the prompt followed by all generated tokens until the end-of-sequence token.</p>
+<p>Note that the states are always stochastically modeled, and <span class="math inline">\(s_{t+1}\)</span> can be represented as <span class="math inline">\(s_{t+1} \sim P(s_{t+1} | s_t, a_t)\)</span>. Given a stochastic policy <span class="math inline">\(\pi_\theta (a_t | s_t)\)</span>, the probability of a trajectory <span class="math inline">\(\tau\)</span> is the product of: 1. The initial state distribution <span class="math inline">\(\rho_0(s_0)\)</span> 2. The stochastic policy <span class="math inline">\(\pi_\theta (a_t | s_t)\)</span> 3. The environment transition dynamics <span class="math inline">\(P(s_{t+1} | s_t, a_t)\)</span></p>
+<p><span class="math display">\[
+P(\tau | \pi_\theta) = \rho_0(s_0) \prod_{t=0}^{T-1} \pi_\theta(a_t | s_t) \cdot P(s_{t+1} | s_t, a_t) \tag{III.I}
+\]</span></p>
+</section>
+<section id="return" class="level3">
+<h3 class="anchored" data-anchor-id="return">Return</h3>
+<p>The <strong>return</strong> is the cumulative reward collected over the full trajectory (<span class="math inline">\(\tau\)</span>). The simplest form is the <strong>undiscounted return</strong>:</p>
+<p><span class="math display">\[
+R(\tau) = \sum_{t=0}^{T} r_t
+\]</span></p>
+<p>More generally, we use the <strong>discounted return</strong>:</p>
+<p><span class="math display">\[
+R(\tau) = \sum_{k=0}^{\infty} \gamma^k r_{k} = r_0 + \gamma r_{1} + \gamma^2 r_{2} + \cdots \tag{III.II}
+\]</span></p>
+<p>where <span class="math inline">\(\gamma \in [0, 1]\)</span> is the <strong>discount factor</strong>. The discount factor <span class="math inline">\(\gamma\)</span> serves a couple of purposes: 1. It ensures the return is finite for infinite-horizon tasks (<span class="math inline">\(T\to\infty\)</span>). 2. It prioritizes immediate rewards over distant ones.</p>
+</section>
+</section>
+<section id="iv-policy-gradient-optimization-and-reinforce-algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="iv-policy-gradient-optimization-and-reinforce-algorithm">IV: Policy Gradient Optimization and REINFORCE Algorithm</h2>
+<p>The goal of reinforcement learning is to find a policy <span class="math inline">\(\pi_\theta\)</span> that maximizes the <strong>expected return</strong> over all possible trajectories:</p>
+<p><span class="math display">\[
+\boxed{J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]} \tag{IV.I}
+\]</span></p>
+<p>This is our objective function and we want to find parameters <span class="math inline">\(\theta^*\)</span> such that:</p>
+<p><span class="math display">\[
+\theta^* = \arg\max_\theta J(\theta)
+\]</span></p>
+<p>To maximize <span class="math inline">\(J(\theta)\)</span> using gradient-based methods, we need to compute <span class="math inline">\(\nabla_\theta J(\theta)\)</span> and perform gradient ascent:</p>
+<p><span class="math display">\[
+\boxed{\theta_{k+1} = \theta_k + \alpha \left. \nabla_\theta J(\pi_\theta) \right|_{\theta_k}} \tag{IV.II}
+\]</span></p>
+<p>This policy gradient looks simple in equation form but it is intractable to compute. The expectation is over trajectories sampled from <span class="math inline">\(\pi_\theta\)</span>, which itself depends on <span class="math inline">\(\theta\)</span>. We can’t simply enumerate all possible trajectories. This is computationally intractable for any reasonably sized state-action space (and certainly not possible for LLMs!).</p>
+<p>Thus, as a next step we need to derive some sort of reasonable and tractable approximation for <span class="math inline">\(\nabla_\theta J(\theta)\)</span>. We do this by using the <strong>log-derivative trick</strong>.</p>
+<p><span class="math display">\[
+\nabla_\theta J(\theta) = \nabla_\theta \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]
+\]</span></p>
+<p>This expectation can be written as an integral: <span class="math display">\[
+= \nabla_\theta \int_\tau P(\tau | \theta) R(\tau) \, d\tau
+\]</span></p>
+<p>Bringing the gradient inside the integral: <span class="math display">\[
+= \int_\tau \nabla_\theta P(\tau | \theta) R(\tau) \, d\tau
+\]</span></p>
+<p>Now we apply the <strong>log-derivative trick</strong>: <span class="math display">\[
+\nabla_\theta \log P(\tau | \theta) = \frac{\nabla_\theta P(\tau | \theta)}{P(\tau | \theta)}
+\]</span></p>
+<p>Rearranging: <span class="math inline">\(\nabla_\theta P(\tau | \theta) = P(\tau | \theta) \nabla_\theta \log P(\tau | \theta)\)</span> and substituting back, we get: <span class="math display">\[
+= \int_\tau P(\tau | \theta) \nabla_\theta \log P(\tau | \theta) R(\tau) \, d\tau
+\]</span></p>
+<p>which can also be written as the following expectation:</p>
+<p><span class="math display">\[
+\boxed{\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[ \nabla_\theta \log P(\tau | \theta) \cdot R(\tau) \right]} \tag{IV.III}
+\]</span></p>
+<p>Note, here the gradient is now the expectation of the gradient of the log-probability of the trajectory. This can further be simplified by using the trajectory probability expression (III.I): <span class="math display">\[
+P(\tau | \theta) = \rho_0(s_0) \prod_{t=0}^{T-1} \pi_\theta(a_t | s_t) \cdot P(s_{t+1} | s_t, a_t)
+\]</span></p>
+<p>Taking the log:</p>
+<p><span class="math display">\[
+\log P(\tau | \theta) = \log \rho_0(s_0) + \sum_{t=0}^{T-1} \log \pi_\theta(a_t | s_t) + \sum_{t=0}^{T-1} \log P(s_{t+1} | s_t, a_t)
+\]</span></p>
+<p>When we take <span class="math inline">\(\nabla_\theta\)</span>, only the policy term depends on <span class="math inline">\(\theta\)</span>:</p>
+<p><span class="math display">\[
+\nabla_\theta \log P(\tau | \theta) = \sum_{t=0}^{T-1} \nabla_\theta \log \pi_\theta(a_t | s_t)
+\]</span></p>
+<p>The initial state distribution and transition dynamics are independent of <span class="math inline">\(\theta\)</span>, so their gradients vanish. Substituting back, we obtain the <strong>policy gradient theorem</strong>:</p>
+<p><span class="math display">\[
+\boxed{\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[ \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot R(\tau) \right]} \tag{IV.IV}
+\]</span></p>
+<p>This is a remarkable result. We can compute the gradient of our objective without differentiating through the environment dynamics and <strong>only need gradients of the log-probabilities of our policy</strong>.</p>
+<p>Since we cannot compute the expectation exactly, we approximate it with a sample mean by sampling <span class="math inline">\(N\)</span> trajectories:</p>
+<p><span class="math display">\[
+\boxed{\nabla_\theta J(\theta) \approx \hat{g} = \frac{1}{N} \sum_{i=1}^{N} \left( \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \right) R(\tau_i)} \tag{IV.V}
+\]</span></p>
+<p>This gives us the <strong>REINFORCE algorithm</strong>:</p>
+<ol type="1">
+<li><p><strong>Initialize</strong>: Start with a pretrained or supervised fine-tuned (SFT) language model <span class="math inline">\(\pi_\theta\)</span></p></li>
+<li><p><strong>Sample prompts</strong>: Draw a batch of <span class="math inline">\(N\)</span> prompts <span class="math inline">\(\{x_1, x_2, \ldots, x_N\}\)</span> from a dataset</p></li>
+<li><p><strong>Generate trajectories</strong>: For each prompt <span class="math inline">\(x_i\)</span>, generate a response <span class="math inline">\(y_i = (a_0, a_1, \ldots, a_T)\)</span> by sampling tokens from the policy <span class="math inline">\(\pi_\theta\)</span>. Each trajectory is the sequence of states (prompt + generated tokens so far) and actions (selected tokens).</p></li>
+<li><p><strong>Compute log-probabilities</strong>: For each trajectory, compute the log-probability of each generated token given its context: <span class="math display">\[\log \pi_\theta(a_t | s_t) \quad \text{for } t = 0, 1, \ldots, T\]</span></p></li>
+<li><p><strong>Compute rewards</strong>: Score each complete (prompt, response) pair using the reward model: <span class="math display">\[R(\tau_i) = r_\phi(x_i, y_i)\]</span></p></li>
+<li><p><strong>Estimate policy gradient</strong>: Compute the gradient estimate using (IV.V): <span class="math display">\[\hat{g} = \frac{1}{N} \sum_{i=1}^{N} \left( \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \right) R(\tau_i)\]</span></p></li>
+<li><p><strong>Update policy</strong>: Perform a gradient ascent step: <span class="math display">\[\theta \leftarrow \theta + \alpha \hat{g}\]</span></p></li>
+<li><p><strong>Repeat</strong>: Go back to Step 2 and iterate until convergence</p></li>
+</ol>
+<p>While REINFORCE provides an unbiased gradient estimate, it suffers from two critical issues that make it impractical for LLM training:</p>
+<ol type="1">
+<li><p><strong>High Variance</strong>: The gradient estimate <span class="math inline">\(\hat{g}\)</span> suffers from high variance depending on the sampled trajectories. This variance can be large and can lead to noisy gradients and unstable training. &gt; If you look again at (IV.V), the gradient estimate for each action is weighted by the return of the <em>entire</em> trajectory <span class="math inline">\(R(\tau)\)</span>. This means that even if an action was good, it might receive a negative gradient update simply because other actions in the trajectory led to poor outcomes (or vice versa). Over many samples, the noise introduced by this coupling can be substantial, leading to high variance</p></li>
+<li><p><strong>On-Policy Constraint (Sample Inefficiency)</strong>: REINFORCE requires trajectories sampled from the <em>current</em> policy <span class="math inline">\(\pi_\theta\)</span>. Thus after every gradient update, previously collected trajectories must be discarded and new ones need to be sampled from the updated policy. For LLMs, where each trajectory requires a full forward pass through a billion(s)-parameter model, this is prohibitively expensive especially when we need many small gradient steps to train effectively.</p></li>
+</ol>
+</section>
+<section id="v-reducing-variance-and-the-advantage-function" class="level2">
+<h2 class="anchored" data-anchor-id="v-reducing-variance-and-the-advantage-function">V: Reducing Variance and the Advantage Function</h2>
+<p>The REINFORCE algorithm provides an unbiased gradient estimate (IV.V). However while unbiased, this estimator suffers from <strong>high variance</strong>.</p>
+<section id="replacing-full-trajectory-return-with-reward-to-go-using-causality" class="level3">
+<h3 class="anchored" data-anchor-id="replacing-full-trajectory-return-with-reward-to-go-using-causality">Replacing Full-Trajectory Return with Reward-to-Go (using causality)</h3>
+<p>A first variance reduction comes from noticing that action <span class="math inline">\(a_t\)</span> taken at time <span class="math inline">\(t\)</span> <strong>cannot influence rewards that were received before time <span class="math inline">\(t\)</span></strong>. This is a fundamental consequence of causality. These past reward terms contribute only noise to the gradient estimate and add variance without contributing any signal. Thus, we can remove them and consider only the <strong>rewards-to-go</strong> :</p>
+<p><span class="math display">\[
+\hat{R}_t = \sum_{t'=t}^{T} r_{t'}
+\]</span></p>
+<p>This gives us a lower-variance estimator:</p>
+<p><span class="math display">\[
+\boxed{\nabla_\theta J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \cdot \hat{R}_{i,t}} \tag{V.I}
+\]</span></p>
+<p>where <span class="math inline">\(\hat{R}_{i,t} = \sum_{t'=t}^{T} r_{i,t'}\)</span> is the rewards-to-go for trajectory <span class="math inline">\(i\)</span> starting from time <span class="math inline">\(t\)</span>.</p>
+</section>
+<section id="subtracting-a-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="subtracting-a-baseline">Subtracting a Baseline</h3>
+<p>A second complementary technique for variance reduction is to subtract a <strong>baseline</strong> <span class="math inline">\(b(s_t)\)</span> from the rewards. The key insight is that we can subtract <strong>any function that does not depend on the action</strong> from our reward signal without changing the expected value of the gradient.</p>
+<p>Thus we can subtract a state-dependent baseline <span class="math inline">\(b(s_t)\)</span> from our rewards-to-go to yield an <strong>unbiased</strong> gradient estimator:</p>
+<p><span class="math display">\[
+\boxed{\nabla_\theta J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \cdot \left(\hat{R}_{i,t} - b(s_{i,t})\right)} \tag{V.II}
+\]</span></p>
+</section>
+<section id="value-functions-vpis-and-qpis-a" class="level3">
+<h3 class="anchored" data-anchor-id="value-functions-vpis-and-qpis-a">Value Functions: <span class="math inline">\(V^\pi(s)\)</span> and <span class="math inline">\(Q^\pi(s, a)\)</span></h3>
+<p>The baseline is still an arbitrary function. To make it more systematic and concrete, there are two fundamental functions from RL theory.</p>
+<p><strong>State Value Function:</strong> The <strong>state value function</strong> <span class="math inline">\(V^\pi(s)\)</span> is the expected return when the agent is in state <span class="math inline">\(s\)</span> and acts according to policy <span class="math inline">\(\pi\)</span>:</p>
+<p><span class="math display">\[
+V^\pi(s) = \mathbb{E}_{\tau \sim \pi}\left[\sum_{t=0}^{\infty} \gamma^t r_t \;\middle|\; s_0 = s\right]  \]</span></p>
+<p>Intuitively, <span class="math inline">\(V^\pi(s)\)</span> tells <strong>“How good is this state on average?”</strong> and is used as a baseline <span class="math inline">\(b(s) = V^\pi(s)\)</span>.</p>
+<p><strong>Action Value Function (Q-function):</strong> The <strong>action value function</strong> <span class="math inline">\(Q^\pi(s, a)\)</span> is the expected return when starting in state <span class="math inline">\(s\)</span> and taking action <span class="math inline">\(a\)</span> and then acting according to policy <span class="math inline">\(\pi\)</span>:</p>
+<p><span class="math display">\[
+Q^\pi(s, a) = \mathbb{E}_{\tau \sim \pi}\left[\sum_{t=0}^{\infty} \gamma^t r_t \;\middle|\; s_0 = s, a_0 = a\right]
+\]</span></p>
+<p>Intuitively, <span class="math inline">\(Q^\pi(s, a)\)</span> tells <strong>“How good is this specific action in this state?”</strong> and in RL, the rewards-to-go is estimated as <span class="math inline">\(Q^\pi(s, a)\)</span>.</p>
+<p>In the LLM context: - <span class="math inline">\(V^\pi(s)\)</span> estimates the expected reward for a given prompt + partial response, assuming the model continues generating according to its current policy. - <span class="math inline">\(Q^\pi(s, a)\)</span> estimates the expected reward if, from the current prompt + partial response, the model generates a specific next token <span class="math inline">\(a\)</span> and then continues according to its policy.</p>
+</section>
+<section id="advantage-function" class="level3">
+<h3 class="anchored" data-anchor-id="advantage-function">Advantage Function</h3>
+<p>The <strong>advantage function</strong> <span class="math inline">\(A^\pi(s, a)\)</span> measures how much better (or worse) a specific action <span class="math inline">\(a\)</span> is compared to the average action under the policy:</p>
+<p><span class="math display">\[
+\boxed{A^\pi(s, a) = Q^\pi(s, a) - V^\pi(s)} \tag{V.III}
+\]</span></p>
+<p>The advantage function directly tells us: <strong>“How much better is this particular action compared to what we would typically do in this state?”</strong> This is precisely the signal we want for policy improvement. We want to increase the probability of actions with positive advantage and decrease the probability of actions with negative advantage.</p>
+<blockquote class="blockquote">
+<p>From Umar Jamil’s video:<br>
+In the LLM context consider a state where the prompt is “Where is Shanghai?” and the model has generated “Shanghai is”. From this state: - If the model samples the token “in” (leading toward “Shanghai is in China”), this action likely has <strong>positive advantage</strong>. This is because it is better than the average token the model might produce. - If the model samples the token “delicious” (leading toward an incoherent response), this action likely has <strong>negative advantage</strong>. This is because it is worse than the average token the model might produce.</p>
+</blockquote>
+</section>
+<section id="advantage-weighted-policy-gradient" class="level3">
+<h3 class="anchored" data-anchor-id="advantage-weighted-policy-gradient">Advantage-Weighted Policy Gradient</h3>
+<p>Substituting the rewards-to-go and the value function as a baseline, we get the following form of the policy gradient: <span class="math display">\[
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot (Q^\pi(s_t, a_t) - V^\pi(s_t))\right]
+\]</span></p>
+<p>which can be written as: <span class="math display">\[
+\boxed{\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]} \tag{V.IV}
+\]</span></p>
+<p>and for sample-based approximation:</p>
+<p><span class="math display">\[
+\boxed{\nabla_\theta J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \cdot \hat{A}_{i,t}} \tag{V.V}
+\]</span></p>
+<p>where <span class="math inline">\(\hat{A}_{i,t}\)</span> is an estimate of the advantage function at time <span class="math inline">\(t\)</span> in trajectory <span class="math inline">\(i\)</span>. This is the form of the policy gradient often used.</p>
+<p>In practice, <span class="math inline">\(A^\pi(s_t, a_t)\)</span> can be estimated as follows:</p>
+<ol type="1">
+<li><p><strong>Learn a value function:</strong> Train a neural network <span class="math inline">\(V_\phi(s)\)</span> (often called the “critic” or “value head”) to approximate <span class="math inline">\(V^\pi(s)\)</span>. In LLM fine-tuning, this is often a linear layer on top of the same transformer backbone used for the policy.</p></li>
+<li><p><strong>Estimate <span class="math inline">\(Q^\pi\)</span> from samples:</strong> Given a trajectory, the rewards-to-go <span class="math inline">\(\hat{R}_t = \sum_{t'=t}^{T} \gamma^{t'} r_{t'}\)</span> provides an unbiased (but high-variance) estimate of <span class="math inline">\(Q^\pi(s_t, a_t)\)</span>.</p></li>
+<li><p><strong>Compute advantage estimates:</strong> <span class="math inline">\(\hat{A}_t = \hat{R}_t - V_\phi(s_t)\)</span></p></li>
+</ol>
+<p>More sophisticated methods like <strong>Generalized Advantage Estimation (GAE)</strong> interpolate between high-variance, low-bias estimates and low-variance, high-bias estimates by using a weighted combination of multi-step returns. See the <a href="https://arxiv.org/abs/1506.02438">GAE paper</a> for more details.</p>
+</section>
+</section>
+<section id="vi-importance-sampling-and-off-policy-policy-gradients" class="level2">
+<h2 class="anchored" data-anchor-id="vi-importance-sampling-and-off-policy-policy-gradients">VI: Importance Sampling and Off-Policy Policy Gradients</h2>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> In RL literature, “off-policy” typically refers to methods where the <em>behavior policy</em> (generating data) is arbitrarily quite different from the <em>target policy</em> (being optimized) say where transitions from policies thousands of updates old are reused. In this section, what we will call “off-policy” should more precisely be called “local off-policy”.</p>
+</blockquote>
+<p>The advantage-weighted policy gradient (V.IV) requires trajectories sampled from the current policy <span class="math inline">\(\pi_\theta\)</span>. … The advantage-weighted policy gradient (V.IV) requires trajectories sampled from the current policy <span class="math inline">\(\pi_\theta\)</span>. This creates a fundamental <strong>inefficiency</strong> i.e., after each gradient update <span class="math inline">\(\theta \to \theta'\)</span> all previously collected trajectories become “stale” and we must discard these trajectories and sample new ones from the updated policy.</p>
+<p>For LLMs, where each trajectory requires a full forward pass through billion(s)-parameter model, this is prohibitively expensive especially when we need many small gradient steps to train effectively.</p>
+<p>We need a way to reuse the same trajectories for multiple gradient updates. <strong>Importance sampling</strong> provides the mathematical machinery to do exactly this!</p>
+<section id="importance-sampling" class="level3">
+<h3 class="anchored" data-anchor-id="importance-sampling">Importance Sampling</h3>
+<p>Importance sampling is a technique for estimating expectations under one probability distribution using samples drawn from a different distribution. Consider an expectation for distribution <span class="math inline">\(p(x)\)</span>:</p>
+<p><span class="math display">\[
+\mathbb{E}_{x \sim p}[f(x)] = \int p(x) f(x) \, dx
+\]</span></p>
+<p>We can rewrite this by multiplying and dividing by another distribution <span class="math inline">\(q(x)\)</span> (with <span class="math inline">\(q(x) &gt; 0\)</span> wherever <span class="math inline">\(p(x) &gt; 0\)</span>):</p>
+<p><span class="math display">\[
+= \int q(x) \frac{p(x)}{q(x)} f(x) \, dx = \mathbb{E}_{x \sim q}\left[\frac{p(x)}{q(x)} f(x)\right]
+\]</span></p>
+<p>The ratio <span class="math inline">\(\frac{p(x)}{q(x)}\)</span> is called the <strong>importance weight</strong>. This identity tells us:</p>
+<p><span class="math display">\[
+\boxed{\mathbb{E}_{x \sim p}[f(x)] = \mathbb{E}_{x \sim q}\left[\frac{p(x)}{q(x)} f(x)\right]} \tag{VI.I}
+\]</span></p>
+<p>We can now estimate the expectation under <span class="math inline">\(p\)</span> using samples from <span class="math inline">\(q\)</span> as long as we reweight each sample by the ratio of probabilities.</p>
+</section>
+<section id="applying-importance-sampling-to-policy-gradients" class="level3">
+<h3 class="anchored" data-anchor-id="applying-importance-sampling-to-policy-gradients">Applying Importance Sampling to Policy Gradients</h3>
+<p>We can apply this technique to the policy gradient setting. The on-policy advantage-weighted gradient (V.IV) is:</p>
+<p><span class="math display">\[
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]
+\]</span></p>
+<p>To apply importance sampling, we work at time-step level rather than trajectory level (full trajectory importance weights have extremely high variance). For a single timestep: <span class="math display">\[
+\nabla_\theta J(\theta) = \mathbb{E}_{(s_t, a_t) \sim \pi_\theta}\left[\nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]
+\]</span></p>
+<p>Using importance sampling with samples from <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span>:</p>
+<p><span class="math display">\[
+= \mathbb{E}_{(s_t, a_t) \sim \pi_{\theta_{\text{old}}}}\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]
+\]</span></p>
+<p>Now we apply the log-derivative identity <span class="math inline">\(\nabla_\theta \log \pi_\theta = \frac{\nabla_\theta \pi_\theta}{\pi_\theta}\)</span>, which gives us a <strong>surrogate objective <span class="math inline">\(L(\theta)\)</span></strong> whose gradient equals this importance-weighted policy gradient:</p>
+<p><span class="math display">\[
+\nabla_\theta J(\theta) = \mathbb{E}_{(s_t, a_t) \sim \pi_{\theta_{\text{old}}}}\left[\frac{\nabla_\theta \pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} A^{\pi_{\theta_{\text{old}}}}(s_t, a_t)\right]
+\]</span></p>
+<p>where the importance-weighted surrogate objective also known as the <strong>Conservative Policy Iteration (CPI)</strong> objective is: <span class="math display">\[
+L^{\text{CPI}}(\theta) = \mathbb{E}_{(s_t, a_t) \sim \pi_{\theta_{\text{old}}}}\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} A^{\pi_{\theta_{\text{old}}}}(s_t, a_t)\right]
+\]</span></p>
+<p>We also define the <strong>probability ratio</strong> as:</p>
+<p><span class="math display">\[
+r_t(\theta) = \frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \tag{VI.II}
+\]</span></p>
+<p>Note that <span class="math inline">\(r_t(\theta_{\text{old}}) = 1\)</span> by construction. Thus, the CPI objective can be written as:</p>
+<p><span class="math display">\[
+\boxed{L^{\text{CPI}}(\theta) = \mathbb{E}_t\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \hat{A}_t\right] = \mathbb{E}_t\left[r_t(\theta) \hat{A}_t\right]} \tag{VI.III}
+\]</span></p>
+<p>where <span class="math inline">\(\hat{A}_t\)</span> is the estimated advantage at timestep <span class="math inline">\(t\)</span>, and <span class="math inline">\(\mathbb{E}_t[\cdot]\)</span> denotes the empirical average over a batch of samples collected under <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span>.</p>
+<p>This objective has a clear interpretation: - If <span class="math inline">\(\hat{A}_t &gt; 0\)</span> (action better than average), we want to <strong>increase</strong> <span class="math inline">\(r_t(\theta)\)</span>, i.e., make the new policy more likely to take this action. - If <span class="math inline">\(\hat{A}_t &lt; 0\)</span> (action worse than average), we want to <strong>decrease</strong> <span class="math inline">\(r_t(\theta)\)</span>, i.e., make the new policy less likely to take this action.</p>
+<p>The corresponding sample-based approximation is:</p>
+<p><span class="math display">\[
+\boxed{L^{\text{CPI}}(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \frac{\pi_\theta(a_{i,t} | s_{i,t})}{\pi_{\theta_{\text{old}}}(a_{i,t} | s_{i,t})} \hat{A}_{i,t}} \tag{VI.IV}
+\]</span></p>
+</section>
+<section id="off-policy-learning-reusing-trajectories" class="level3">
+<h3 class="anchored" data-anchor-id="off-policy-learning-reusing-trajectories">Off-Policy Learning: Reusing Trajectories</h3>
+<p>The CPI objective enables <strong>off-policy learning</strong>: we can sample trajectories from <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span>, store them and then perform multiple gradient updates on <span class="math inline">\(\theta\)</span> using the same batch of data. The typical workflow becomes:</p>
+<ol type="1">
+<li><strong>Collect</strong>: Sample trajectories <span class="math inline">\(\{\tau_i\}\)</span> from the current policy <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span></li>
+<li><strong>Compute</strong>: Calculate advantages <span class="math inline">\(\hat{A}_{i,t}\)</span> and log-probabilities <span class="math inline">\(\log \pi_{\theta_{\text{old}}}(a_{i,t} | s_{i,t})\)</span></li>
+<li><strong>Store</strong>: Save the trajectories along with their advantages and old log-probabilities</li>
+<li><strong>Optimize</strong>: Perform multiple gradient ascent steps on <span class="math inline">\(L^{\text{CPI}}(\theta)\)</span> using mini-batches from the stored data</li>
+<li><strong>Repeat</strong>: Set <span class="math inline">\(\theta_{\text{old}} \leftarrow \theta\)</span> and return to step 1</li>
+</ol>
+<p>This dramatically improves sample efficiency. Instead of discarding trajectories after a single gradient step, we can extract multiple updates from each batch of expensive LLM rollouts.</p>
+</section>
+<section id="the-instability-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-instability-problem">The Instability Problem</h3>
+<p>While the CPI objective improves sample efficiency, <strong>unconstrained optimization of <span class="math inline">\(L^{\text{CPI}}(\theta)\)</span> is unstable</strong>. The core issue is that importance sampling becomes unreliable when <span class="math inline">\(\pi_\theta\)</span> drifts far from <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span>:</p>
+<ul>
+<li><strong>Extreme probability ratios</strong>: The ratio <span class="math inline">\(r_t(\theta)\)</span> can become arbitrarily large or small, destabilizing gradient estimates.</li>
+<li><strong>Stale advantages</strong>: The estimates <span class="math inline">\(\hat{A}_t\)</span> were computed under <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span> and become inaccurate as <span class="math inline">\(\pi_\theta\)</span> diverges. The optimizer may exploit these stale estimates, making updates that appear beneficial but are actually harmful.</li>
+</ul>
+<p>In practice, unconstrained maximization of <span class="math inline">\(L^{\text{CPI}}(\theta)\)</span> often leads to excessively large policy updates that cause catastrophic performance collapse.</p>
+<blockquote class="blockquote">
+<p><strong>LLM Context (from Umar Jamil):</strong> Suppose we have a trajectory where the model generated “Shanghai is in China” with high advantage. Unconstrained optimization might dramatically upweight “China” as the next token given “Shanghai is in”—but this could simultaneously cause unintended probability shifts elsewhere, perhaps making the model overly likely to say “China” in completely unrelated contexts, or disrupting the probability mass across the entire vocabulary in unpredictable ways.</p>
+</blockquote>
+<p>We need a mechanism to constrain <span class="math inline">\(\pi_\theta\)</span> from deviating too far from <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span> and keeping the ratio <span class="math inline">\(r_t(\theta)\)</span> close to 1 while still allowing meaningful policy improvement.</p>
+</section>
+</section>
+<section id="vii-trust-region-policy-optimization-trpo" class="level2">
+<h2 class="anchored" data-anchor-id="vii-trust-region-policy-optimization-trpo">VII: Trust Region Policy Optimization (TRPO)</h2>
+<p>The CPI objective is attractive because it lets us reuse data via importance ratios, but <strong>unconstrained optimization is unstable</strong>. When <span class="math inline">\(\pi_\theta\)</span> drifts far from <span class="math inline">\(\pi_{\theta_{\text{old}}}\)</span>, the probability ratios <span class="math inline">\(r_t(\theta)\)</span> become extreme and the advantage estimates <span class="math inline">\(\hat{A}_t\)</span> become stale and can be exploited by the optimizer.</p>
+<p>The key insight of Trust Region Policy Optimization (<a href="https://arxiv.org/abs/1502.05477">TRPO</a>) is that the surrogate objective <span class="math inline">\(L^{\text{CPI}}(\theta)\)</span> is only a valid approximation to the true objective within a local neighborhood of <span class="math inline">\(\theta_{\text{old}}\)</span>. TRPO paper formalized this by proving policy performance is guaranteed to improve as long as the KL divergence between consecutive policies remains bounded. This theoretical result motivates constraining the policy update to stay within a “trust region” where the surrogate objective remains reliable. See the <a href="https://arxiv.org/abs/1502.05477">TRPO paper</a> for the formal proof.</p>
+<p>TRPO converts this insight into a <strong>constrained optimization problem</strong> that ensures the policy update stays within a “trust region” where the surrogate objective remains reliable.</p>
+<p><span class="math display">\[
+\boxed{
+\begin{aligned}
+\max_\theta \quad &amp; L^{\text{CPI}}(\theta) = \mathbb{E}_t\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \hat{A}_t\right] \\[6pt]
+\text{subject to} \quad &amp; \mathbb{E}_t\left[D_{\text{KL}}\left(\pi_{\theta_{\text{old}}}(\cdot|s_t) \| \pi_\theta(\cdot|s_t)\right)\right] \leq \delta
+\end{aligned}
+} \tag{VII.I}
+\]</span></p>
+<p>The hyperparameter <span class="math inline">\(\delta\)</span> defines the trust region size, the maximum allowed divergence between consecutive policies. This constraint ensures that <span class="math inline">\(r_t(\theta)\)</span> remains close to 1, keeping our importance-weighted estimates reliable.</p>
+<p>Solving (VII.I) requires <strong>second-order optimization</strong>. TRPO approximates the objective linearly and the KL constraint quadratically (using the Fisher Information Matrix) and then solves the resulting problem via the <strong>conjugate gradient algorithm</strong> followed by a <strong>line search</strong> to ensure constraints are satisfied.</p>
+<p>For large-scale LLM training, this approach is impractical:</p>
+<ul>
+<li><strong>Computational overhead</strong>: Each policy update requires multiple conjugate gradient iterations and line search steps, significantly more expensive than standard gradient descent.</li>
+<li><strong>Memory requirements</strong>: Computing Fisher-vector products adds substantial memory overhead for billion(s)-parameter models</li>
+</ul>
+<p>The theory behind TRPO also suggests using a <strong>KL penalty</strong> rather than a hard constraint. It is easier to implement and more computationally efficient.</p>
+<p><span class="math display">\[
+\max_\theta \; \mathbb{E}_t\left[r_t(\theta) \hat{A}_t - \beta \cdot D_{\text{KL}}\left(\pi_{\theta_{\text{old}}}(\cdot|s_t) \| \pi_\theta(\cdot|s_t)\right)\right] \tag{VII.II}
+\]</span></p>
+<p>However, choosing a penalty coefficient <span class="math inline">\(\beta\)</span> that works across different problems or even across different training stages is notoriously difficult. This motivates Proximal Policy Optimization (PPO): a <strong>first-order method</strong> that achieves TRPO’s stability through a <strong>clipped surrogate objective</strong> rather than explicit constraints.</p>
+</section>
+<section id="viii-proximal-policy-optimization-ppo" class="level2">
+<h2 class="anchored" data-anchor-id="viii-proximal-policy-optimization-ppo">VIII: Proximal Policy Optimization (PPO)</h2>
+<p>Proximal Policy Optimization (PPO) achieves TRPO’s stability guarantees using only <strong>first-order optimization</strong>. Instead of explicitly constraining the KL divergence, PPO modifies the objective function itself to discourage large policy updates through a <strong>clipping mechanism</strong>. It implicitly limits how far the policy can move, providing a “soft” trust region using only standard gradient descent.</p>
+<section id="clipped-surrogate-objective" class="level3">
+<h3 class="anchored" data-anchor-id="clipped-surrogate-objective">Clipped Surrogate Objective</h3>
+<p>CPI objective and probability ratio from Section VI:</p>
+<p><span class="math display">\[
+L^{\text{CPI}}(\theta) = \mathbb{E}_t\left[r_t(\theta) \hat{A}_t\right] \quad \text{where} \quad r_t(\theta) = \frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)}
+\]</span></p>
+<p>The problem with <span class="math inline">\(L^{\text{CPI}}\)</span> is that nothing prevents <span class="math inline">\(r_t(\theta)\)</span> from becoming arbitrarily large or small. PPO addresses this by <strong>clipping</strong> the probability ratio to stay within <span class="math inline">\([1-\epsilon, 1+\epsilon]\)</span>:</p>
+<p><span class="math display">\[
+\boxed{L^{\text{CLIP}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) \hat{A}_t, \; \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \cdot \hat{A}_t\right)\right]} \tag{VIII.I}
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon\)</span> is a hyperparameter (<span class="math inline">\(\epsilon = 0.2\)</span> from the <a href="https://arxiv.org/abs/1707.06347">PPO paper</a>) and the clip function is defined as:</p>
+<p><span class="math display">\[
+\text{clip}(r, 1-\epsilon, 1+\epsilon) = \begin{cases}
+1-\epsilon &amp; \text{if } r &lt; 1-\epsilon \\
+r &amp; \text{if } 1-\epsilon \leq r \leq 1+\epsilon \\
+1+\epsilon &amp; \text{if } r &gt; 1+\epsilon
+\end{cases}
+\]</span></p>
+<p>The <span class="math inline">\(\min\)</span> operator in (VIII.I) is important. It ensures we take the <strong>more pessimistic</strong> (lower) estimate between the clipped and unclipped objectives. This creates different behavior depending on the sign of the advantage:</p>
+<p><strong>Case 1: Positive Advantage (<span class="math inline">\(\hat{A}_t &gt; 0\)</span>)</strong></p>
+<p>When an action is better than average, we want to <strong>increase</strong> its probability, which means increasing <span class="math inline">\(r_t(\theta)\)</span>. The objective becomes:</p>
+<p><span class="math display">\[
+L^{\text{CLIP}}_t = \min\left(r_t(\theta), 1+\epsilon\right) \cdot \hat{A}_t
+\]</span></p>
+<ul>
+<li>If <span class="math inline">\(r_t(\theta) \leq 1+\epsilon\)</span>: The objective is <span class="math inline">\(r_t(\theta) \hat{A}_t\)</span>, so gradient ascent increases <span class="math inline">\(r_t(\theta)\)</span></li>
+<li>If <span class="math inline">\(r_t(\theta) &gt; 1+\epsilon\)</span>: The objective becomes <span class="math inline">\((1+\epsilon)\hat{A}_t\)</span></li>
+</ul>
+<p>The clipping <strong>removes the incentive</strong> to increase <span class="math inline">\(r_t(\theta)\)</span> beyond <span class="math inline">\(1+\epsilon\)</span>.</p>
+<p><strong>Case 2: Negative Advantage (<span class="math inline">\(\hat{A}_t &lt; 0\)</span>)</strong></p>
+<p>When an action is worse than average, we want to <strong>decrease</strong> its probability, which means decreasing <span class="math inline">\(r_t(\theta)\)</span>. Since <span class="math inline">\(\hat{A}_t &lt; 0\)</span>, multiplying by a smaller <span class="math inline">\(r_t\)</span> makes the product <em>less negative</em> (larger). The objective becomes:</p>
+<p><span class="math display">\[
+L^{\text{CLIP}}_t = \max\left(r_t(\theta), 1-\epsilon\right) \cdot \hat{A}_t
+\]</span></p>
+<p>(The <span class="math inline">\(\min\)</span> with negative values becomes a <span class="math inline">\(\max\)</span> in terms of which <span class="math inline">\(r_t\)</span> is selected.)</p>
+<ul>
+<li>If <span class="math inline">\(r_t(\theta) \geq 1-\epsilon\)</span>: The objective is <span class="math inline">\(r_t(\theta) \hat{A}_t\)</span>, so gradient ascent decreases <span class="math inline">\(r_t(\theta)\)</span></li>
+<li>If <span class="math inline">\(r_t(\theta) &lt; 1-\epsilon\)</span>: The objective becomes <span class="math inline">\((1-\epsilon)\hat{A}_t\)</span></li>
+</ul>
+<p>The clipping <strong>removes the incentive</strong> to decrease <span class="math inline">\(r_t(\theta)\)</span> beyond <span class="math inline">\(1-\epsilon\)</span>.</p>
+<p>The takeaway here is that PPO provides a <strong>pessimistic lower bound</strong> on <span class="math inline">\(L^{\text{CPI}}\)</span>. We ignore updates when they would make things “too good to be true.”</p>
+<blockquote class="blockquote">
+<p><strong>LLM Context (from Umar Jamil Video):</strong> In language model fine-tuning, the policy <span class="math inline">\(\pi_\theta(a_t|s_t)\)</span> is the probability the model assigns to token <span class="math inline">\(a_t\)</span> given the context <span class="math inline">\(s_t\)</span> (prompt + previously generated tokens). The probability ratio <span class="math inline">\(r_t(\theta)\)</span> measures how much more or less likely the fine-tuned model is to generate a particular token compared to the reference policy. Clipping ensures that no single token’s probability can change by more than a factor of <span class="math inline">\((1 \pm \epsilon)\)</span> in a single update iteration, preventing the model from “overreacting” to high-advantage tokens.</p>
+</blockquote>
+</section>
+<section id="ppo-objective" class="level3">
+<h3 class="anchored" data-anchor-id="ppo-objective">PPO Objective</h3>
+<p>In practice, PPO combines the clipped policy objective with two additional terms:</p>
+<p><span class="math display">\[
+\boxed{L^{\text{PPO}}(\theta) = \mathbb{E}_t\left[L^{\text{CLIP}}_t(\theta) - c_1 L^{\text{VF}}_t(\theta) + c_2 S[\pi_\theta](s_t)\right]} \tag{VIII.II}
+\]</span></p>
+<p><strong>1. Value Function Loss (<span class="math inline">\(L^{\text{VF}}\)</span>):</strong> Recall from Section V that we need a value function <span class="math inline">\(V_\phi(s)\)</span> to compute advantage estimates. The value function is trained to minimize the squared error between its predictions and the actual returns:</p>
+<p><span class="math display">\[
+L^{\text{VF}}_t(\theta) = \left(V_\theta(s_t) - V_t^{\text{target}}\right)^2
+\]</span></p>
+<p>where <span class="math inline">\(V_t^{\text{target}}\)</span> is typically the discounted return-to-go. When the policy and value function share parameters (common in LLM fine-tuning where both use the same transformer backbone), this loss is subtracted from the objective (hence the negative sign, since we maximize <span class="math inline">\(L^{\text{PPO}}\)</span> but minimize <span class="math inline">\(L^{\text{VF}}\)</span>).</p>
+<p><strong>2. Entropy Bonus (<span class="math inline">\(S[\pi_\theta]\)</span>):</strong> To encourage exploration and prevent premature convergence to deterministic policies, PPO adds an entropy loss:</p>
+<p><span class="math display">\[
+S[\pi_\theta](s_t) = -\sum_a \pi_\theta(a|s_t) \log \pi_\theta(a|s_t)
+\]</span></p>
+<p>Here, the coefficients <span class="math inline">\(c_1, c_2 &gt; 0\)</span> control the regularization strength.</p>
+</section>
+</section>
+<section id="ix-complete-ppo-objective-with-kl-penalty" class="level2">
+<h2 class="anchored" data-anchor-id="ix-complete-ppo-objective-with-kl-penalty">IX: Complete PPO Objective with KL Penalty</h2>
+<p>When fine-tuning an LLM with “vanilla” PPO, the policy learns to maximize rewards from the reward model. However, the reward model is an imperfect proxy for human preferences. It is a neural network trained on limited data that can be exploited. Without constraints, the policy may discover adversarial outputs that achieve high reward scores while producing text that:</p>
+<ul>
+<li>Degenerates into repetitive or nonsensical patterns that “fool” the reward model</li>
+<li>Drifts far from natural language, losing fluency and coherence</li>
+<li>Exploits spurious correlations learned by the reward model</li>
+</ul>
+<p>This phenomenon is called <strong>reward hacking</strong>. The policy finds a way to “game” the reward model rather than genuinely improving response quality.</p>
+<p>To prevent reward hacking, the <a href="https://arxiv.org/pdf/2203.02155">InstructGPT paper</a> adds a <strong>KL divergence penalty</strong> that regularizes the policy to stay close to a <strong>reference model</strong> <span class="math inline">\(\pi_{\text{ref}}\)</span> (typically the SFT model before RL fine-tuning).</p>
+<p>From Section VIII, the PPO objective (to be maximized via gradient ascent) consists of three terms:</p>
+<p><span class="math display">\[
+L^{\text{PPO}}(\theta) = \underbrace{L^{\text{CLIP}}(\theta)}_{\text{Clipped Policy Objective}} - \underbrace{c_1 L^{\text{VF}}(\theta)}_{\text{Value Function Loss}} + \underbrace{c_2 S[\pi_\theta]}_{\text{Entropy Bonus}}
+\]</span></p>
+<p>Now, we don’t use raw reward model scores directly. Instead, we define a <strong>KL-penalized reward</strong> that regularizes the policy to stay close to a reference model <span class="math inline">\(\pi_{\text{ref}}\)</span>:</p>
+<p><span class="math display">\[
+\boxed{r_{\text{total}}(s_t, a_t) = r_{\text{RM}}(s_t, a_t) - \beta \cdot D_{\text{KL}}\left(\pi_\theta(\cdot|s_t) \| \pi_{\text{ref}}(\cdot|s_t)\right)} \tag{IX.I}
+\]</span></p>
+<p>where: - <span class="math inline">\(r_{\text{RM}}(s_t, a_t)\)</span> is the reward signal at timestep <span class="math inline">\(t\)</span> - <span class="math inline">\(\beta\)</span> is the KL penalty coefficient - <span class="math inline">\(\pi_{\text{ref}}\)</span> is the frozen reference model</p>
+<p>At each token position, the KL divergence simplifies to:</p>
+<p><span class="math display">\[
+D_{\text{KL}}\left(\pi_\theta(\cdot|s_t) \| \pi_{\text{ref}}(\cdot|s_t)\right) = \mathbb{E}_{a \sim \pi_\theta}\left[\log \frac{\pi_\theta(a|s_t)}{\pi_{\text{ref}}(a|s_t)}\right]
+\]</span></p>
+<p>In practice we estimate this expectation with the sampled token <span class="math inline">\(a_t\)</span>, yielding: <span class="math display">\[
+\hat d_t=\log \frac{\pi_\theta(a_t|s_t)}{\pi_{\mathrm{ref}}(a_t|s_t)}
+\]</span></p>
+<p>Note that the reward model <span class="math inline">\(r_\phi(x, y)\)</span> produces a single scalar for the complete response <span class="math inline">\((x, y)\)</span>. This score is assigned only at the <strong>final token</strong> <span class="math inline">\(T\)</span>, while the KL penalty applies at <strong>every token</strong>. <span class="math display">\[
+\tilde{r}_\phi = \begin{cases}
+-\beta \cdot \log \frac{\pi_\theta(a_t | s_t)}{\pi_{\text{ref}}(a_t | s_t)} &amp; \text{if } t &lt; T \\[8pt]
+r_\phi(x, y) - \beta \cdot \log \frac{\pi_\theta(a_T | s_T)}{\pi_{\text{ref}}(a_T | s_T)} &amp; \text{if } t = T
+\end{cases}
+\]</span></p>
+<p>The KL penalty serves two purposes: 1. <strong>Prevents reward hacking</strong>: The policy cannot drift arbitrarily far from natural language 2. <strong>Maintains fluency</strong>: Outputs remain similar in distribution to the well-trained SFT model</p>
+<p>It modifies the advantage estimates <span class="math inline">\(\hat{A}_t\)</span> used in PPO through the modified per-token rewards. However, it is mathematically equivalent (and more efficient in implementation) to add the KL term directly to the objective. The PPO objective with KL penalty is:</p>
+<p><span class="math display">\[
+J(\theta) = \underbrace{\mathbb{E}_{a \sim \pi_\theta}\left[r_{\text{RM}}(s, a)\right]}_{\text{Vanilla PPO objective}} - \underbrace{\beta \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})}_{\text{KL penalty term}}
+\]</span></p>
+<p>The first term is exactly what vanilla PPO optimizes using the clipped surrogate. The KL penalty term appears as a separate additive component that penalizes divergence from the reference model. Substituting the PPO clipped surrogate for the first term:</p>
+<p><span class="math display">\[
+J_{\text{c}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t\right)\right] - \beta \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})
+\]</span></p>
+<p>Combining all components, the <strong>complete PPO objective with KL penalty</strong> (to be maximized) is:</p>
+<p><span class="math display">\[
+\boxed{L^{\text{RLHF}}(\theta) = \underbrace{L^{\text{CLIP}}(\theta)}_{\text{Policy Objective}} - \underbrace{c_1 L^{\text{VF}}(\theta)}_{\text{Value Loss}} + \underbrace{c_2 S[\pi_\theta]}_{\text{Entropy Bonus}} - \underbrace{\beta \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})}_{\text{KL Penalty}}} \tag{IX.II}
+\]</span></p>
+<p>Here, each term serves a distinct purpose:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Policy Objective</strong> <span class="math inline">\(L^{\text{CLIP}}\)</span></td>
+<td>Improves the policy while preventing destructive updates via clipping</td>
+</tr>
+<tr class="even">
+<td><strong>Value Loss</strong> <span class="math inline">\(c_1 L^{\text{VF}}\)</span></td>
+<td>Trains the critic for accurate advantage estimation (subtracted to minimize)</td>
+</tr>
+<tr class="odd">
+<td><strong>Entropy Bonus</strong> <span class="math inline">\(c_2 S[\pi_\theta]\)</span></td>
+<td>Encourages exploration, prevents premature convergence</td>
+</tr>
+<tr class="even">
+<td><strong>KL Penalty</strong> <span class="math inline">\(\beta D_{\text{KL}}\)</span></td>
+<td>Prevents reward hacking, maintains language quality (subtracted to penalize drift)</td>
+</tr>
+</tbody>
+</table>
+<p>It is important to distinguish the two KL-related mechanisms in the complete loss. The PPO clipping mechanism acts as a <strong>short-term anchor</strong> that constrains how much the policy can change in a single update, while the KL penalty is a <strong>long-term anchor</strong> that constrains how far the policy can drift from its starting point across all of training.</p>
+</section>
+<section id="finally-done" class="level2">
+<h2 class="anchored" data-anchor-id="finally-done">Finally done…</h2>
+<p>And that’s the full derivation! What I find satisfying is that every term in the final loss has a specific purpose. Each one exists because we ran into a specific problem along the way and needed to fix it. I will admit it was not easy to understand all the math and concepts behind the loss. I still do not fully understand every detail but I understand it far better than I did a few days ago.</p>
+<p>I hope this was useful. If you spot any errors in derivation (which I’m sure there are) or have suggestions, feel free to reach out.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><strong>Video:</strong>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=qGyFrqc34yc">Umar Jamil’s video on RLHF and PPO</a>: A comprehensive and must-watch video covering RLHF and PPO concepts.</li>
+</ul></li>
+<li><strong>Papers:</strong>
+<ul>
+<li><a href="https://arxiv.org/abs/1707.06347">Proximal Policy Optimization Algorithms</a>: The foundational PPO paper introducing the clipped surrogate objective.</li>
+<li><a href="https://arxiv.org/pdf/2203.02155">Training language models to follow instructions with human feedback</a>: The InstructGPT paper demonstrating PPO with KL penalty to mitigate reward hacking in LLM fine-tuning.</li>
+<li><a href="https://arxiv.org/abs/1502.05477">Trust Region Policy Optimization</a>: The TRPO paper that motivates the trust region constraints used in PPO.</li>
+<li><a href="https://arxiv.org/abs/1506.02438">High-Dimensional Continuous Control Using Generalized Advantage Estimation</a>: GAE paper introducing the exponentially-weighted advantage estimator for variance reduction in policy gradients.</li>
+</ul></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

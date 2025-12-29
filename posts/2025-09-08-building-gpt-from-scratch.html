@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Notes on applied ML engineering, LLMs, and building AI products.">
+<meta name="dcterms.date" content="2025-09-08">
+<meta name="description" content="This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.">
 
-<title>Aayush Garg</title>
+<title>Building GPT from Scratch: Following Karpathy’s Tutorial – Aayush Garg</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,26 +25,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-506a6ca307b069fd236c00aaea49b2f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-2d3f84a5f37526cd3979248aedf2fbfb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -71,69 +70,11 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-blog-listings'] = new List('listing-blog-listings', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <style>html{ scroll-behavior: smooth; }</style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"></head>
+<link rel="stylesheet" href="../styles.css">
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -143,19 +84,19 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./blog/"> 
+    <a class="nav-link" href="../blog/"> 
 <span class="menu-text">Blogs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./publications.html"> 
+    <a class="nav-link" href="../publications.html"> 
 <span class="menu-text">Publications</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -191,9 +132,15 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#current-work" id="toc-current-work" class="nav-link active" data-scroll-target="#current-work">💼 Current Work</a></li>
-  <li><a href="#blog" id="toc-blog" class="nav-link" data-scroll-target="#blog">📮 Blog</a></li>
-  <li><a href="#reach-out" id="toc-reach-out" class="nav-link" data-scroll-target="#reach-out">📬 Reach Out</a></li>
+  <li><a href="#baseline-bigram-model-e0b5864" id="toc-baseline-bigram-model-e0b5864" class="nav-link active" data-scroll-target="#baseline-bigram-model-e0b5864">Baseline: Bigram Model (<code>e0b5864</code>)</a></li>
+  <li><a href="#update-1-self-attention-7b0e03a" id="toc-update-1-self-attention-7b0e03a" class="nav-link" data-scroll-target="#update-1-self-attention-7b0e03a">Update 1: Self-Attention (<code>7b0e03a</code>)</a></li>
+  <li><a href="#update-2-multi-head-attention-9d2a7b5" id="toc-update-2-multi-head-attention-9d2a7b5" class="nav-link" data-scroll-target="#update-2-multi-head-attention-9d2a7b5">Update 2: Multi-Head Attention (<code>9d2a7b5</code>)</a></li>
+  <li><a href="#update-3-feed-forward-network-c4c46ff" id="toc-update-3-feed-forward-network-c4c46ff" class="nav-link" data-scroll-target="#update-3-feed-forward-network-c4c46ff">Update 3: Feed-Forward Network (<code>c4c46ff</code>)</a></li>
+  <li><a href="#update-4-residual-connections-0239c07" id="toc-update-4-residual-connections-0239c07" class="nav-link" data-scroll-target="#update-4-residual-connections-0239c07">Update 4: Residual Connections (<code>0239c07</code>)</a></li>
+  <li><a href="#update-5-6-layer-normalization-63ef5f8-4f5bef8" id="toc-update-5-6-layer-normalization-63ef5f8-4f5bef8" class="nav-link" data-scroll-target="#update-5-6-layer-normalization-63ef5f8-4f5bef8">Update 5 &amp; 6: Layer Normalization (<code>63ef5f8</code>, <code>4f5bef8</code>)</a></li>
+  <li><a href="#update-7-scaling-up-d4141d7" id="toc-update-7-scaling-up-d4141d7" class="nav-link" data-scroll-target="#update-7-scaling-up-d4141d7">Update 7: Scaling Up (<code>d4141d7</code>)</a></li>
+  <li><a href="#how-this-compares-to-gpt-3" id="toc-how-this-compares-to-gpt-3" class="nav-link" data-scroll-target="#how-this-compares-to-gpt-3">How This Compares to GPT-3</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
   </ul>
 </nav>
     </div>
@@ -202,12 +149,12 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Aayush Garg</h1>
+<h1 class="title">Building GPT from Scratch: Following Karpathy’s Tutorial</h1>
 </div>
 
 <div>
   <div class="description">
-    Notes on applied ML engineering, LLMs, and building AI products.
+    This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.
   </div>
 </div>
 
@@ -215,6 +162,12 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 8, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -224,154 +177,215 @@ window.Quarto = {
 </header>
 
 
-<div class="profile-header quarto-layout-panel" data-layout="[21,79]">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;">
-<p><img src="static/img/aayush_cropped.jpg" class="profile-pic img-fluid" alt="Aayush Garg"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: flex-start;">
-<p>I am an applied machine learning engineer focused on building AI-driven products and systems people can rely on. At Jiffy, I build image enhancement pipelines, deploy ML models at scale, and develop LLM/VLM applications across product verticals.</p>
-</div>
-</div>
-</div>
-<section id="current-work" class="level2">
-<h2 class="anchored" data-anchor-id="current-work">💼 Current Work</h2>
-<p>I am currently building an in-house AI design platform, developing evaluation and prompt-optimization workflows, and exploring applied LLM fine-tuning for structured data extraction. My background is in computational geophysics, which keeps me grounded in first principles and pragmatic experimentation.</p>
-<p>If you’re interested in my work or want to collaborate, feel free to reach out via <a href="mailto:aayushgargiitr@gmail.com">email</a> or connect on <a href="https://www.linkedin.com/in/aayush-garg-8b26a734">LinkedIn</a>.</p>
-<hr>
-</section>
-<section id="blog" class="level2">
-<h2 class="anchored" data-anchor-id="blog">📮 Blog</h2>
-<p>I write about practical ML engineering, LLMs, and lessons learned from building AI products. Below are my recent posts.</p>
-<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-<table class="quarto-listing-table table">
+<p>The Transformer architecture has become the workhorse behind modern LLMs. GPT-2/3/4/5, Llama, Claude, Gemini: they all are built on top of the same core architecture or its variants from the 2017 “Attention Is All You Need” paper. I wanted to understand this architecture properly, so I followed Andrej Karpathy’s <a href="https://www.youtube.com/watch?v=kCc8FmEb1nY">“Let’s Build GPT from Scratch”</a> video. It’s a 2-hour walkthrough where you start from an empty file and end up with a working Transformer.</p>
+<p>I followed Karpathy’s video and captured each architectural addition as a separate commit. This let me see exactly how each component pulled down the validation loss. In this walkthrough, the training data is ~1M characters of Shakespeare and the goal is to generate Shakespeare-like text.</p>
+<table class="caption-top table">
 <thead>
-<tr>
-
-<th>
-Date
-</th>
-
-<th>
-Title
-</th>
-
+<tr class="header">
+<th></th>
+<th>Component</th>
+<th>Val Loss</th>
+<th>Commit</th>
 </tr>
 </thead>
-<tbody class="list">
-
-<tr data-index="0" data-listing-date-sort="1766620800000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6096" data-listing-title-sort="Deriving the PPO Loss from First Principles" data-listing-filename-sort="2025-12-25-deriving-ppo-loss.qmd">
-<td>
-<span class="listing-date">12/25/25</span>
-</td>
-<td>
-<a href="./posts/2025-12-25-deriving-ppo-loss.html" class="title listing-title">Deriving the PPO Loss from First Principles</a>
-</td>
-
+<tbody>
+<tr class="odd">
+<td>Baseline</td>
+<td>Bigram Model</td>
+<td>~2.49</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/e0b5864"><code>e0b5864</code></a></td>
 </tr>
-
-<tr data-index="1" data-listing-date-sort="1764720000000" data-listing-file-modified-sort="1766984141103" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1981" data-listing-title-sort="What I Learned Building SFT from the Ground Up" data-listing-filename-sort="2025-12-28-sft-from-scratch.qmd">
-<td>
-<span class="listing-date">12/3/25</span>
-</td>
-<td>
-<a href="./posts/2025-12-28-sft-from-scratch.html" class="title listing-title">What I Learned Building SFT from the Ground Up</a>
-</td>
-
+<tr class="even">
+<td>Update 1</td>
+<td>Single Head Self-Attention</td>
+<td>~2.4</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/7b0e03a"><code>7b0e03a</code></a></td>
 </tr>
-
-<tr data-index="2" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365" data-listing-title-sort="A Guide to Building Custom Nodes in ComfyUI" data-listing-filename-sort="2025-09-10-build-custom-comfyui-node.qmd">
-<td>
-<span class="listing-date">9/10/25</span>
-</td>
-<td>
-<a href="./posts/2025-09-10-build-custom-comfyui-node.html" class="title listing-title">A Guide to Building Custom Nodes in ComfyUI</a>
-</td>
-
+<tr class="odd">
+<td>Update 2</td>
+<td>Multi-Head Attention</td>
+<td>~2.28</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/9d2a7b5"><code>9d2a7b5</code></a></td>
 </tr>
-
-<tr data-index="3" data-listing-date-sort="1757289600000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Building GPT from Scratch: Following Karpathy's Tutorial" data-listing-filename-sort="2025-09-08-building-gpt-from-scratch.qmd">
-<td>
-<span class="listing-date">9/8/25</span>
-</td>
-<td>
-<a href="./posts/2025-09-08-building-gpt-from-scratch.html" class="title listing-title">Building GPT from Scratch: Following Karpathy’s Tutorial</a>
-</td>
-
+<tr class="even">
+<td>Update 3</td>
+<td>Feed-Forward Network</td>
+<td>~2.27</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/c4c46ff"><code>c4c46ff</code></a></td>
 </tr>
-
-<tr data-index="4" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035" data-listing-title-sort="Key Takeaways from Lecture 1: LLM Evaluation Lifecycle" data-listing-filename-sort="2025-09-02-llm-evaluation-lifecycle.qmd">
-<td>
-<span class="listing-date">9/2/25</span>
-</td>
-<td>
-<a href="./posts/2025-09-02-llm-evaluation-lifecycle.html" class="title listing-title">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
-</td>
-
+<tr class="odd">
+<td>Update 4</td>
+<td>Residual Connections</td>
+<td>~2.09</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/0239c07"><code>0239c07</code></a></td>
 </tr>
-
-<tr data-index="5" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299" data-listing-title-sort="Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-15-finetune-llama3-8B-predibase.qmd">
-<td>
-<span class="listing-date">7/15/24</span>
-</td>
-<td>
-<a href="./posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title listing-title">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
-</td>
-
+<tr class="even">
+<td>Update 5</td>
+<td>Layer Normalization</td>
+<td>~2.076</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/63ef5f8"><code>63ef5f8</code></a></td>
 </tr>
-
-<tr data-index="6" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288" data-listing-title-sort="Part II: Comparison of Model Performances on Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-09-compare-models-structured-data.qmd">
-<td>
-<span class="listing-date">7/9/24</span>
-</td>
-<td>
-<a href="./posts/2024-07-09-compare-models-structured-data.html" class="title listing-title">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
-</td>
-
+<tr class="odd">
+<td>Update 6</td>
+<td>Pre-LayerNorm (modern)</td>
+<td>~2.076</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/4f5bef8"><code>4f5bef8</code></a></td>
 </tr>
-
-<tr data-index="7" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429" data-listing-title-sort="Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction" data-listing-filename-sort="2024-07-03-baseline-gpt4o-structured-data.qmd">
-<td>
-<span class="listing-date">7/3/24</span>
-</td>
-<td>
-<a href="./posts/2024-07-03-baseline-gpt4o-structured-data.html" class="title listing-title">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a>
-</td>
-
+<tr class="even">
+<td>Update 7</td>
+<td>Scaling Up + Dropout</td>
+<td>~1.48</td>
+<td><a href="https://github.com/garg-aayush/building-from-scratch/commit/d4141d7"><code>d4141d7</code></a></td>
 </tr>
-
-<tr data-index="8" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744" data-listing-title-sort="Step-by-Step Guide to Setup Your Personal GPU Server" data-listing-filename-sort="2024-06-30-remote-gpu-server.qmd">
-<td>
-<span class="listing-date">6/30/24</span>
-</td>
-<td>
-<a href="./posts/2024-06-30-remote-gpu-server.html" class="title listing-title">Step-by-Step Guide to Setup Your Personal GPU Server</a>
-</td>
-
-</tr>
-
-<tr data-index="9" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1766984141102" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858" data-listing-title-sort="Managing multiple CUDA versions using environment modules in Ubuntu" data-listing-filename-sort="2024-05-19-manage-multiple-cuda.qmd">
-<td>
-<span class="listing-date">5/19/24</span>
-</td>
-<td>
-<a href="./posts/2024-05-19-manage-multiple-cuda.html" class="title listing-title">Managing multiple CUDA versions using environment modules in Ubuntu</a>
-</td>
-
-</tr>
-
 </tbody>
 </table>
-<div class="listing-no-matching d-none">No matching items</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/loss_curves.png" class="img-fluid figure-img"></p>
+<figcaption>Loss Curves</figcaption>
+</figure>
 </div>
+<p>You can find all the code and notebooks in the repo: <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/basic-gpt">building-from-scratch/basic-gpt</a></p>
+<section id="baseline-bigram-model-e0b5864" class="level2">
+<h2 class="anchored" data-anchor-id="baseline-bigram-model-e0b5864">Baseline: Bigram Model (<a href="https://github.com/garg-aayush/building-from-scratch/commit/e0b5864"><code>e0b5864</code></a>)</h2>
+<p>Karpathy starts with the simplest possible language model: a bigram model. It predicts the next character based only on the current character. No context at all. The tokens aren’t talking to each other.</p>
+<p>This still works somewhat because some characters naturally follow others (the letter ‘q’ is almost always followed by ‘u’). But the output is complete gibberish because the model has no way to look at what came before.</p>
+<p><strong>Result</strong>: ~2.49 validation loss.</p>
 </section>
-<section id="reach-out" class="level2">
-<h2 class="anchored" data-anchor-id="reach-out">📬 Reach Out</h2>
-<p>The best way to follow my work is on <a href="https://github.com/garg-aayush">GitHub</a>, <a href="https://twitter.com/Aayush_ander">Twitter</a>, or <a href="https://www.linkedin.com/in/aayush-garg-8b26a734">LinkedIn</a>.</p>
-<div class="template-credit">
-<p><em>Template inspired by <a href="https://hamel.dev/">hamel.dev</a> and <a href="https://lilianweng.github.io/">Lil’Log</a>.</em></p>
+<section id="update-1-self-attention-7b0e03a" class="level2">
+<h2 class="anchored" data-anchor-id="update-1-self-attention-7b0e03a">Update 1: Self-Attention (<a href="https://github.com/garg-aayush/building-from-scratch/commit/7b0e03a"><code>7b0e03a</code></a>)</h2>
+<p>We want tokens to communicate with each other and predictions to consider context from previous tokens, not just the current one. A token at position 5 should be able to look at tokens 1-4 and gather information from them. But at the same time, it can’t look at tokens 6, 7, 8 because those are the future we’re trying to predict.</p>
+<p>Self-attention solves this. Every token is represented by 3 vectors: - <strong>Query</strong>: “What am I looking for?” - <strong>Key</strong>: “What do I contain?”<br>
+- <strong>Value</strong>: “If you find me interesting, here’s what I’ll tell you.”</p>
+<p>The query dot-products with all the keys. High dot product means high affinity: “I find you interesting.” The values of interesting tokens get aggregated via weighted sum.</p>
+<blockquote class="blockquote">
+<p><strong>Note</strong>: Attention is really a communication mechanism. You can think of it as nodes in a directed graph where every node aggregates information from nodes that point to it. In our case, token 5 can receive information from tokens 1-4 (and itself), but not from tokens 6-8. The triangular mask creates this directed structure and is what makes this a “decoder” block.</p>
+</blockquote>
+<p>One subtle but important point: attention has no notion of space. The tokens don’t inherently know where they are in the sequence. That’s why we add <strong>positional embeddings</strong>. Each position gets its own learned embedding that’s added to the token embedding, giving the model spatial information.</p>
+<p><strong>Result</strong>: ~2.4 validation loss. Tokens can now see context.</p>
+</section>
+<section id="update-2-multi-head-attention-9d2a7b5" class="level2">
+<h2 class="anchored" data-anchor-id="update-2-multi-head-attention-9d2a7b5">Update 2: Multi-Head Attention (<a href="https://github.com/garg-aayush/building-from-scratch/commit/9d2a7b5"><code>9d2a7b5</code></a>)</h2>
+<p>Tokens have a lot to talk about. One head might look for consonants, another for vowels, another for word boundaries, another for patterns at specific positions. Having multiple independent communication channels lets the model gather diverse types of data in parallel.</p>
+<blockquote class="blockquote">
+<p><strong>Note</strong>: This is similar to grouped convolutions. Instead of one large convolution, you do it in groups. With 4 heads of 8 dimensions each, we get the same total dimensionality (32) but with 4 separate communication channels. Each head can specialize in different patterns.</p>
+</blockquote>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/MHA.png" class="img-fluid figure-img"></p>
+<figcaption>Multi-Head Attention</figcaption>
+</figure>
 </div>
-
+<p><strong>Result</strong>: ~2.28 validation loss.</p>
+</section>
+<section id="update-3-feed-forward-network-c4c46ff" class="level2">
+<h2 class="anchored" data-anchor-id="update-3-feed-forward-network-c4c46ff">Update 3: Feed-Forward Network (<a href="https://github.com/garg-aayush/building-from-scratch/commit/c4c46ff"><code>c4c46ff</code></a>)</h2>
+<p>The FFN layer addresses a key problem. Until now, “the tokens looked at each other but didn’t have enough time to think about what they found.”</p>
+<p>Self-attention is the <strong>communication</strong> phase. Tokens gather data from each other. But then they need to <strong>compute</strong> on that data individually. That’s what the feed-forward network does. It operates on a per-token level. All the tokens process their gathered information independently.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/FFN.png" class="img-fluid figure-img"></p>
+<figcaption>Feed-Forward Network</figcaption>
+</figure>
+</div>
+<p>So the Transformer block becomes: <strong>communicate</strong> (attention) → <strong>compute</strong> (feed-forward). This pattern repeats for every layer.</p>
+<p><strong>Result</strong>: ~2.27 validation loss. The architecture now has both communication and computation.</p>
+</section>
+<section id="update-4-residual-connections-0239c07" class="level2">
+<h2 class="anchored" data-anchor-id="update-4-residual-connections-0239c07">Update 4: Residual Connections (<a href="https://github.com/garg-aayush/building-from-scratch/commit/0239c07"><code>0239c07</code></a>)</h2>
+<p>This is one of two optimizations that make deep networks actually trainable. Without it, stacking many layers leads to vanishing gradients and optimization difficulties.</p>
+<p>Karpathy visualizes it nicely: imagine a residual pathway running from top to bottom. You can “fork off” from this pathway, do some computation, and project back via addition. The path from inputs to outputs is just a series of additions.</p>
+<blockquote class="blockquote">
+<p><strong>Note</strong>: Why does this help? During backpropagation, addition distributes gradients equally to both branches. The gradients “hop” through every addition node directly to the input. This creates a <strong>“gradient superhighway”</strong> from supervision to input, unimpeded. The residual blocks are initialized to contribute very little at first, then “come online” over time during optimization.</p>
+</blockquote>
+<p><strong>Result</strong>: ~2.09 validation loss. Now we can stack layers without vanishing gradients.</p>
+</section>
+<section id="update-5-6-layer-normalization-63ef5f8-4f5bef8" class="level2">
+<h2 class="anchored" data-anchor-id="update-5-6-layer-normalization-63ef5f8-4f5bef8">Update 5 &amp; 6: Layer Normalization (<a href="https://github.com/garg-aayush/building-from-scratch/commit/63ef5f8"><code>63ef5f8</code></a>, <a href="https://github.com/garg-aayush/building-from-scratch/commit/4f5bef8"><code>4f5bef8</code></a>)</h2>
+<p>Batch normalization normalizes columns (across examples in a batch). Layer normalization normalizes rows (across features for each example). The implementation is almost identical, you just change which dimension you normalize over.</p>
+<p>Layer norm has advantages for Transformers: - No dependency on batch size (works even with batch size 1) - No running buffers to maintain - No distinction between training and test time</p>
+<p>The original Transformer paper used <strong>post-layer norm</strong> (normalize after attention/FFN). Modern implementations use <strong>pre-layer norm</strong> (normalize before). Pre-layer norm creates a cleaner residual pathway since the transformation happens on normalized inputs, leading to more stable training.</p>
+<p><strong>Result</strong>: ~2.076 validation loss.</p>
+</section>
+<section id="update-7-scaling-up-d4141d7" class="level2">
+<h2 class="anchored" data-anchor-id="update-7-scaling-up-d4141d7">Update 7: Scaling Up (<a href="https://github.com/garg-aayush/building-from-scratch/commit/d4141d7"><code>d4141d7</code></a>)</h2>
+<p>With all the architectural pieces in place, Karpathy scales up the architecture:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Block size (context)</td>
+<td>8</td>
+<td>256</td>
+</tr>
+<tr class="even">
+<td>Embedding dim</td>
+<td>32</td>
+<td>384</td>
+</tr>
+<tr class="odd">
+<td>Heads</td>
+<td>4</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>Layers</td>
+<td>3</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>Dropout</td>
+<td>0</td>
+<td>0.2</td>
+</tr>
+</tbody>
+</table>
+<p>Dropout is added for regularization. It randomly shuts off neurons during training, effectively training an ensemble of sub-networks. At test time, everything is enabled and the sub-networks merge.</p>
+<p><strong>Result</strong>: ~1.48 validation loss. The generated text now looks like Shakespeare (structure, dialogue formatting, character names) even though it’s nonsensical when you actually read it.</p>
+</section>
+<section id="how-this-compares-to-gpt-3" class="level2">
+<h2 class="anchored" data-anchor-id="how-this-compares-to-gpt-3">How This Compares to GPT-3</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>My Model</th>
+<th>GPT-3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Parameters</td>
+<td>~10M</td>
+<td>175B</td>
+</tr>
+<tr class="even">
+<td>Dataset</td>
+<td>~300K tokens</td>
+<td>300B tokens</td>
+</tr>
+<tr class="odd">
+<td>Architecture</td>
+<td>Nearly identical</td>
+<td>Nearly identical</td>
+</tr>
+</tbody>
+</table>
+<p>The architecture we built is essentially the same as GPT-3. The difference is pure scale: 17,500x more parameters trained on 1 million times more data. By today’s standards, even GPT-3’s 300B tokens is considered modest. Current models train on 1T+ tokens.</p>
+<p>This is what makes the Transformer architecture so remarkable. The same fundamental design (attention for communication, feed-forward for computation, residual connections, layer norm) scales from a 10M parameter Shakespeare generator to a 175B parameter model!</p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<ul>
+<li><strong>Code</strong>: <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/basic-gpt">building-from-scratch/basic-gpt</a></li>
+<li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=kCc8FmEb1nY">Let’s Build GPT from Scratch</a> by Andrej Karpathy</li>
+</ul>
 
 
 </section>
@@ -819,5 +833,5 @@ Title
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
