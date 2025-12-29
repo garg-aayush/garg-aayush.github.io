@@ -1,0 +1,661 @@
+---
+title: "Deriving the PPO Loss from First Principles"
+tags: ["Reinforcement Learning", "PPO", "RLHF", "LLMs"]
+mathjax: true
+description: A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.
+date: 2025-12-25
+permalink: /2025-12-25-deriving-ppo-loss/
+---
+
+I have been trying to wrap my head around reinforcement learning methods like [DPO](https://arxiv.org/abs/2305.18290), [GRPO](https://arxiv.org/pdf/2402.03300), and [RLVR](https://arxiv.org/abs/2506.14245) for a while now, especially with all the recent work showing how effective they can be for LLM post-training. Since I amm still pretty new to RL, I figured the best place to start was Proximal Policy Optimization (PPO), the algorithm OpenAI used to show how reinforcement learning could meaningfully improve LLM alignment ([InstructGPT](https://arxiv.org/pdf/2203.02155) paper). My hope is that getting comfortable with PPO will give me the right mental model for the policy-gradient side of things and make it easier to understand the newer LLM-specific RL methods built on similar ideas.
+
+If you start learning RL, you quickly realize it involves a lot of math! So I decided to lean into that and do a few (possibly annoying) derivation sessions to really understand the PPO objective by building it up from first principles, similar to how Umar Jamil does in his video.
+
+> A huge shoutout to Umar Jamil's [video on RLHF and PPO](https://www.youtube.com/watch?v=qGyFrqc34yc): it was incredibly helpful for building intuition and understanding the math behind the PPO loss.
+
+Below is my attempt at the derivation based on the original PPO and InstructGPT papers and Umar Jamil’s video.
+
+## I: Reinforcement Learning: Core Definitions
+
+| Concept                    | General RL Definition                                                                                   | LLM Context (RLHF)                                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Reinforcement Learning** | A learning setup where an agent learns to act in an environment to maximize expected cumulative reward. | Fine-tuning a language model to generate responses that better match human preferences using reward-based feedback.                  |
+| **Environment**            | Everything outside the agent that it interacts with and that produces observations and rewards.         | The prompt distribution and interaction loop and the reward signal from a reward model evaluating generated responses. |
+| **Agent**                  | The learner/decision-maker that observes states, takes actions, and receives rewards.                   | The language model generating text token by token.                                                                                   |
+| **Action ($a$)**           | A choice made by the agent, usually conditioned on the state $s$.                                       | Picking the next token at each step of generation.                                                                                   |
+| **State ($s$)**            | The information available to the agent at a given time step.                                            | The prompt plus the response generated so far (the current token context).                                                           |
+| **Reward ($r$)**           | A scalar signal telling the agent how good or bad an outcome was.                                       | A score from the reward model (trained on preference data) that judges how good or bad a response is.  |
+| **Policy ($\pi$)**         | A stochastic mapping from states to a distribution over actions.                             | The model’s probability distribution over the next token given the context.                                                          |
+| **Goal**                   | Find an optimal policy $\pi^*$ that maximizes expected cumulative reward over time.                     | Update (align) the model so it tends to generate responses with higher reward-model scores.              |
+
+
+## II: Reward Model in RLHF for LLMs
+
+A **Reward Model (RM)** is a neural network that takes a prompt $x$ and a response $y$ as input and outputs a **scalar reward** $r_\phi(x, y) \in \mathbb{R}$ indicating how "good" or "aligned" that response is according to human preferences.
+
+Policy-gradient methods (including PPO) require a scalar objective to update the policy parameters. In standard RL, the environment provides this signal. However for language generation, there is no natural environment giving us rewards for "good" responses. Having humans rate every output is impractical and for gradient-based optimization, we need a differentiable scalar signal to backpropagate through. Thus, we require a cheap, differentiable proxy for human preferences during RL training. A learned RM provides exactly this.
+
+### How is the Reward Model Trained?
+
+The standard procedure for training the reward model is:
+
+1. Sample prompts ($x$)
+2. Generate multiple candidate completions ($y_1, y_2, \ldots, y_K$) from a baseline policy (often an SFT model).
+3. Ask humans to **compare** candidates (pairwise preferences are easier than absolute scoring).
+4. Train the RM ($r_\phi$) to predict those preferences.
+
+Architecturally, the reward model is typically:
+- Initialized from a pretrained language model (often the SFT model itself)
+- The final non-embedding layer (which projects to vocabulary) is **removed**
+- Replaced it with a **linear layer** that projects the hidden state of the last token to a single scalar output
+
+### Reward Model Loss Function
+
+The reward model is trained using the **Bradley-Terry model** for pairwise comparisons. The probability that response $y_w$ (preferred) is preferred over $y_l$ (less preferred) for any prompt $x$ is modeled as:
+
+$$
+P(y_w \succ y_l | x) = \sigma\left(r_\theta(x, y_w) - r_\theta(x, y_l)\right) \tag{II.I}
+$$
+
+where $\sigma$ is the sigmoid function: $\sigma(z) = \frac{1}{1 + e^{-z}}$
+
+The **negative log-likelihood loss** is:
+
+$$
+\mathcal{L}_{\text{RM}}(\phi) = -\mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[ \log \sigma\left(r_\phi(x, y_w) - r_\phi(x, y_l)\right) \right]
+$$
+
+One can verify that this loss forces the reward model to assign higher rewards to preferred responses (see [InstructGPT paper](https://arxiv.org/pdf/2203.02155) or Umar Jamil's video for a detailed walkthrough).
+
+There are two key insights here:
+1. We don't need absolute scores, we only need the reward model to **correctly rank** responses.
+2. The loss depends only on **differences** ($r_\phi(x, y_w) - r_\phi(x, y_l)$), so it is invariant to adding a constant to all rewards. This will be useful later when we discuss the PPO loss.
+
+The reward model serves as a **learned proxy for human preferences**, converting the intractable problem of getting human feedback on every generation into a tractable supervised learning problem. Once trained, it provides the scalar signal $r_\phi(x, y)$ needed to optimize our policy (LLM) using rl algorithms like PPO.
+
+
+## III: Trajectories and Returns
+
+### Trajectory
+A **trajectory** (also called a rollout or episode) is a sequence of states ($s$), actions ($a$), and rewards ($r$) generated by an agent interacting with an environment:
+
+$$
+\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \ldots, s_T, a_T, r_T)
+$$
+
+In the context of LLMs, a trajectory corresponds to the entire sequence of token generations. It is the prompt followed by all generated tokens until the end-of-sequence token. 
+
+Note that the states are always stochastically modeled, and $s_{t+1}$ can be represented as $s_{t+1} \sim P(s_{t+1} | s_t, a_t)$. Given a stochastic policy $\pi_\theta (a_t | s_t)$, the probability of a trajectory $\tau$ is the product of:
+1. The initial state distribution $\rho_0(s_0)$
+2. The stochastic policy $\pi_\theta (a_t | s_t)$
+3. The environment transition dynamics $P(s_{t+1} | s_t, a_t)$
+
+$$
+P(\tau | \pi_\theta) = \rho_0(s_0) \prod_{t=0}^{T-1} \pi_\theta(a_t | s_t) \cdot P(s_{t+1} | s_t, a_t) \tag{III.I}
+$$
+
+### Return
+The **return** is the cumulative reward collected over the full trajectory ($\tau$). The simplest form is the **undiscounted return**:
+
+$$
+R(\tau) = \sum_{t=0}^{T} r_t
+$$
+
+More generally, we use the **discounted return**:
+
+$$
+R(\tau) = \sum_{k=0}^{\infty} \gamma^k r_{k} = r_0 + \gamma r_{1} + \gamma^2 r_{2} + \cdots \tag{III.II}
+$$
+
+where $\gamma \in [0, 1]$ is the **discount factor**. The discount factor $\gamma$ serves a couple of purposes:
+1. It ensures the return is finite for infinite-horizon tasks ($T\to\infty$).
+2. It prioritizes immediate rewards over distant ones.
+
+
+## IV: Policy Gradient Optimization and REINFORCE Algorithm
+
+The goal of reinforcement learning is to find a policy $\pi_\theta$ that maximizes the **expected return** over all possible trajectories:
+
+$$
+\boxed{J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]} \tag{IV.I}
+$$
+
+This is our objective function and we want to find parameters $\theta^*$ such that:
+
+$$
+\theta^* = \arg\max_\theta J(\theta)
+$$
+
+To maximize $J(\theta)$ using gradient-based methods, we need to compute $\nabla_\theta J(\theta)$ and perform gradient ascent:
+
+$$
+\boxed{\theta_{k+1} = \theta_k + \alpha \left. \nabla_\theta J(\pi_\theta) \right|_{\theta_k}} \tag{IV.II}
+$$
+
+This policy gradient looks simple in equation form but it is intractable to compute. The expectation is over trajectories sampled from $\pi_\theta$, which itself depends on $\theta$. We can't simply enumerate all possible trajectories. This is computationally intractable for any reasonably sized state-action space (and certainly not possible for LLMs!).
+
+Thus, as a next step we need to derive some sort of reasonable and tractable approximation for $\nabla_\theta J(\theta)$. We do this by using the **log-derivative trick**.
+
+$$
+\nabla_\theta J(\theta) = \nabla_\theta \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]
+$$
+
+This expectation can be written as an integral:
+$$
+= \nabla_\theta \int_\tau P(\tau | \theta) R(\tau) \, d\tau
+$$
+
+Bringing the gradient inside the integral:
+$$
+= \int_\tau \nabla_\theta P(\tau | \theta) R(\tau) \, d\tau
+$$
+
+Now we apply the **log-derivative trick**:
+$$
+\nabla_\theta \log P(\tau | \theta) = \frac{\nabla_\theta P(\tau | \theta)}{P(\tau | \theta)}
+$$
+
+Rearranging: $\nabla_\theta P(\tau | \theta) = P(\tau | \theta) \nabla_\theta \log P(\tau | \theta)$ and substituting back, we get:
+$$
+= \int_\tau P(\tau | \theta) \nabla_\theta \log P(\tau | \theta) R(\tau) \, d\tau
+$$
+
+which can also be written as the following expectation:
+
+$$
+\boxed{\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[ \nabla_\theta \log P(\tau | \theta) \cdot R(\tau) \right]} \tag{IV.III}
+$$
+
+Note, here the gradient is now the expectation of the gradient of the log-probability of the trajectory. This can further be simplified by using the trajectory probability expression (III.I):
+$$
+P(\tau | \theta) = \rho_0(s_0) \prod_{t=0}^{T-1} \pi_\theta(a_t | s_t) \cdot P(s_{t+1} | s_t, a_t)
+$$
+
+Taking the log:
+
+$$
+\log P(\tau | \theta) = \log \rho_0(s_0) + \sum_{t=0}^{T-1} \log \pi_\theta(a_t | s_t) + \sum_{t=0}^{T-1} \log P(s_{t+1} | s_t, a_t)
+$$
+
+When we take $\nabla_\theta$, only the policy term depends on $\theta$:
+
+$$
+\nabla_\theta \log P(\tau | \theta) = \sum_{t=0}^{T-1} \nabla_\theta \log \pi_\theta(a_t | s_t)
+$$
+
+The initial state distribution and transition dynamics are independent of $\theta$, so their gradients vanish. Substituting back, we obtain the **policy gradient theorem**:
+
+$$
+\boxed{\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[ \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot R(\tau) \right]} \tag{IV.IV}
+$$
+
+This is a remarkable result. We can compute the gradient of our objective without differentiating through the environment dynamics and **only need gradients of the log-probabilities of our policy**.
+
+Since we cannot compute the expectation exactly, we approximate it with a sample mean by sampling $N$ trajectories:
+
+$$
+\boxed{\nabla_\theta J(\theta) \approx \hat{g} = \frac{1}{N} \sum_{i=1}^{N} \left( \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \right) R(\tau_i)} \tag{IV.V}
+$$
+
+This gives us the **REINFORCE algorithm**:
+
+1. **Initialize**: Start with a pretrained or supervised fine-tuned (SFT) language model $\pi_\theta$
+
+2. **Sample prompts**: Draw a batch of $N$ prompts $\{x_1, x_2, \ldots, x_N\}$ from a dataset
+
+3. **Generate trajectories**: For each prompt $x_i$, generate a response $y_i = (a_0, a_1, \ldots, a_T)$ by sampling tokens from the policy $\pi_\theta$. Each trajectory is the sequence of states (prompt + generated tokens so far) and actions (selected tokens).
+
+4. **Compute log-probabilities**: For each trajectory, compute the log-probability of each generated token given its context:
+   $$\log \pi_\theta(a_t | s_t) \quad \text{for } t = 0, 1, \ldots, T$$
+
+5. **Compute rewards**: Score each complete (prompt, response) pair using the reward model:
+   $$R(\tau_i) = r_\phi(x_i, y_i)$$
+
+6. **Estimate policy gradient**: Compute the gradient estimate using (IV.V):
+   $$\hat{g} = \frac{1}{N} \sum_{i=1}^{N} \left( \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \right) R(\tau_i)$$
+
+7. **Update policy**: Perform a gradient ascent step:
+   $$\theta \leftarrow \theta + \alpha \hat{g}$$
+
+8. **Repeat**: Go back to Step 2 and iterate until convergence
+
+
+While REINFORCE provides an unbiased gradient estimate, it suffers from two critical issues that make it impractical for LLM training:
+
+1. **High Variance**: The gradient estimate $\hat{g}$ suffers from high variance depending on the sampled trajectories. This variance can be large and can lead to noisy gradients and unstable training.
+   > If you look again at (IV.V), the gradient estimate for each action is weighted by the return of the *entire* trajectory $R(\tau)$. This means that even if an action was good, it might receive a negative gradient update simply because other actions in the trajectory led to poor outcomes (or vice versa). Over many samples, the noise introduced by this coupling can be substantial, leading to high variance
+
+2. **On-Policy Constraint (Sample Inefficiency)**: REINFORCE requires trajectories sampled from the *current* policy $\pi_\theta$. Thus after every gradient update, previously collected trajectories must be discarded and new ones need to be sampled from the updated policy. For LLMs, where each trajectory requires a full forward pass through a billion(s)-parameter model, this is prohibitively expensive especially when we need many small gradient steps to train effectively.
+
+## V: Reducing Variance and the Advantage Function
+The REINFORCE algorithm provides an unbiased gradient estimate (IV.V). However while unbiased, this estimator suffers from **high variance**.
+
+### Replacing Full-Trajectory Return with Reward-to-Go (using causality)
+
+A first variance reduction comes from noticing that action $a_t$ taken at time $t$ **cannot influence rewards that were received before time $t$**. This is a fundamental consequence of causality. These past reward terms contribute only noise to the gradient estimate and add variance without contributing any signal. Thus, we can remove them and consider only the **rewards-to-go** :
+
+$$
+\hat{R}_t = \sum_{t'=t}^{T} r_{t'}
+$$
+
+This gives us a lower-variance estimator:
+
+$$
+\boxed{\nabla_\theta J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \cdot \hat{R}_{i,t}} \tag{V.I}
+$$
+
+where $\hat{R}_{i,t} = \sum_{t'=t}^{T} r_{i,t'}$ is the rewards-to-go for trajectory $i$ starting from time $t$.
+
+
+### Subtracting a Baseline
+
+A second complementary technique for variance reduction is to subtract a **baseline** $b(s_t)$ from the rewards. The key insight is that we can subtract **any function that does not depend on the action** from our reward signal without changing the expected value of the gradient.
+
+Thus we can subtract a state-dependent baseline $b(s_t)$ from our rewards-to-go to yield an **unbiased** gradient estimator:
+
+$$
+\boxed{\nabla_\theta J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \cdot \left(\hat{R}_{i,t} - b(s_{i,t})\right)} \tag{V.II}
+$$
+
+
+### Value Functions: $V^\pi(s)$ and $Q^\pi(s, a)$
+The baseline is still an arbitrary function. To make it more systematic and concrete, there are two fundamental functions from RL theory.
+
+**State Value Function:** The **state value function** $V^\pi(s)$ is the expected return when the agent is in state $s$ and acts according to policy $\pi$:
+
+$$
+V^\pi(s) = \mathbb{E}_{\tau \sim \pi}\left[\sum_{t=0}^{\infty} \gamma^t r_t \;\middle|\; s_0 = s\right]  $$
+
+Intuitively, $V^\pi(s)$ tells **"How good is this state on average?"** and is used as a baseline $b(s) = V^\pi(s)$.
+
+**Action Value Function (Q-function):** The **action value function** $Q^\pi(s, a)$ is the expected return when starting in state $s$ and taking action $a$ and then acting according to policy $\pi$:
+
+$$
+Q^\pi(s, a) = \mathbb{E}_{\tau \sim \pi}\left[\sum_{t=0}^{\infty} \gamma^t r_t \;\middle|\; s_0 = s, a_0 = a\right] 
+$$
+
+Intuitively, $Q^\pi(s, a)$ tells **"How good is this specific action in this state?"** and in RL, the rewards-to-go is estimated as $Q^\pi(s, a)$.
+
+In the LLM context:
+- $V^\pi(s)$ estimates the expected reward for a given prompt + partial response, assuming the model continues generating according to its current policy.
+- $Q^\pi(s, a)$ estimates the expected reward if, from the current prompt + partial response, the model generates a specific next token $a$ and then continues according to its policy.
+
+
+### Advantage Function
+
+The **advantage function** $A^\pi(s, a)$ measures how much better (or worse) a specific action $a$ is compared to the average action under the policy:
+
+$$
+\boxed{A^\pi(s, a) = Q^\pi(s, a) - V^\pi(s)} \tag{V.III}
+$$
+
+The advantage function directly tells us: **"How much better is this particular action compared to what we would typically do in this state?"** This is precisely the signal we want for policy improvement. We want to increase the probability of actions with positive advantage and decrease the probability of actions with negative advantage.
+
+>From Umar Jamil's video:  
+> In the LLM context consider a state where the prompt is "Where is Shanghai?" and the model has generated "Shanghai is". From this state:
+ > - If the model samples the token "in" (leading toward "Shanghai is in China"), this action likely has **positive advantage**. This is because it is better than the average token the model might produce.
+ > - If the model samples the token "delicious" (leading toward an incoherent response), this action likely has **negative advantage**. This is because it is worse than the average token the model might produce.
+
+### Advantage-Weighted Policy Gradient
+Substituting the rewards-to-go and the value function as a baseline, we get the following form of the policy gradient:
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot (Q^\pi(s_t, a_t) - V^\pi(s_t))\right]
+$$
+
+which can be written as:
+$$
+\boxed{\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]} \tag{V.IV}
+$$
+
+and for sample-based approximation:
+
+$$
+\boxed{\nabla_\theta J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_{i,t} | s_{i,t}) \cdot \hat{A}_{i,t}} \tag{V.V}
+$$
+
+where $\hat{A}_{i,t}$ is an estimate of the advantage function at time $t$ in trajectory $i$. This is the form of the policy gradient often used.
+
+In practice, $A^\pi(s_t, a_t)$ can be estimated as follows:
+
+1. **Learn a value function:** Train a neural network $V_\phi(s)$ (often called the "critic" or "value head") to approximate $V^\pi(s)$. In LLM fine-tuning, this is often a linear layer on top of the same transformer backbone used for the policy.
+
+2. **Estimate $Q^\pi$ from samples:** Given a trajectory, the rewards-to-go $\hat{R}_t = \sum_{t'=t}^{T} \gamma^{t'} r_{t'}$ provides an unbiased (but high-variance) estimate of $Q^\pi(s_t, a_t)$.
+
+3. **Compute advantage estimates:** $\hat{A}_t = \hat{R}_t - V_\phi(s_t)$
+
+More sophisticated methods like **Generalized Advantage Estimation (GAE)** interpolate between high-variance, low-bias estimates and low-variance, high-bias estimates by using a weighted combination of multi-step returns. See the [GAE paper](https://arxiv.org/abs/1506.02438) for more details.
+
+
+## VI: Importance Sampling and Off-Policy Policy Gradients
+
+> **Note:** In RL literature, "off-policy" typically refers to methods where the *behavior policy* (generating data) is arbitrarily quite different from the *target policy* (being optimized) say where transitions from policies thousands of updates old are reused. In this section, what we will call "off-policy" should more precisely be called "local off-policy".
+
+The advantage-weighted policy gradient (V.IV) requires trajectories sampled from the current policy $\pi_\theta$. ...
+The advantage-weighted policy gradient (V.IV) requires trajectories sampled from the current policy $\pi_\theta$. This creates a fundamental **inefficiency** i.e., after each gradient update $\theta \to \theta'$ all previously collected trajectories become "stale" and we must discard these trajectories and sample new ones from the updated policy.
+
+For LLMs, where each trajectory requires a full forward pass through billion(s)-parameter model, this is prohibitively expensive especially when we need many small gradient steps to train effectively.
+
+We need a way to reuse the same trajectories for multiple gradient updates. **Importance sampling** provides the mathematical machinery to do exactly this!
+
+### Importance Sampling
+
+Importance sampling is a technique for estimating expectations under one probability distribution using samples drawn from a different distribution. Consider an expectation for distribution $p(x)$:
+
+$$
+\mathbb{E}_{x \sim p}[f(x)] = \int p(x) f(x) \, dx
+$$
+
+We can rewrite this by multiplying and dividing by another distribution $q(x)$ (with $q(x) > 0$ wherever $p(x) > 0$):
+
+$$
+= \int q(x) \frac{p(x)}{q(x)} f(x) \, dx = \mathbb{E}_{x \sim q}\left[\frac{p(x)}{q(x)} f(x)\right]
+$$
+
+The ratio $\frac{p(x)}{q(x)}$ is called the **importance weight**. This identity tells us:
+
+$$
+\boxed{\mathbb{E}_{x \sim p}[f(x)] = \mathbb{E}_{x \sim q}\left[\frac{p(x)}{q(x)} f(x)\right]} \tag{VI.I}
+$$
+
+We can now estimate the expectation under $p$ using samples from $q$ as long as we reweight each sample by the ratio of probabilities.
+
+### Applying Importance Sampling to Policy Gradients
+
+We can apply this technique to the policy gradient setting. The on-policy advantage-weighted gradient (V.IV) is:
+
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]
+$$
+
+To apply importance sampling, we work at time-step level rather than trajectory level (full trajectory importance weights have extremely high variance). For a single timestep: 
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{(s_t, a_t) \sim \pi_\theta}\left[\nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]
+$$
+
+Using importance sampling with samples from $\pi_{\theta_{\text{old}}}$:
+
+$$
+= \mathbb{E}_{(s_t, a_t) \sim \pi_{\theta_{\text{old}}}}\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A^{\pi_\theta}(s_t, a_t)\right]
+$$
+
+Now we apply the log-derivative identity $\nabla_\theta \log \pi_\theta = \frac{\nabla_\theta \pi_\theta}{\pi_\theta}$, which gives us a **surrogate objective $L(\theta)$** whose gradient equals this importance-weighted policy gradient:
+
+
+$$
+\nabla_\theta J(\theta) = \mathbb{E}_{(s_t, a_t) \sim \pi_{\theta_{\text{old}}}}\left[\frac{\nabla_\theta \pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} A^{\pi_{\theta_{\text{old}}}}(s_t, a_t)\right]
+$$
+
+where the importance-weighted surrogate objective also known as the **Conservative Policy Iteration (CPI)** objective is:
+$$
+L^{\text{CPI}}(\theta) = \mathbb{E}_{(s_t, a_t) \sim \pi_{\theta_{\text{old}}}}\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} A^{\pi_{\theta_{\text{old}}}}(s_t, a_t)\right]
+$$
+
+We also define the **probability ratio** as:
+
+$$
+r_t(\theta) = \frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \tag{VI.II}
+$$
+
+Note that $r_t(\theta_{\text{old}}) = 1$ by construction. Thus, the CPI objective can be written as:
+
+$$
+\boxed{L^{\text{CPI}}(\theta) = \mathbb{E}_t\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \hat{A}_t\right] = \mathbb{E}_t\left[r_t(\theta) \hat{A}_t\right]} \tag{VI.III}
+$$
+
+where $\hat{A}_t$ is the estimated advantage at timestep $t$, and $\mathbb{E}_t[\cdot]$ denotes the empirical average over a batch of samples collected under $\pi_{\theta_{\text{old}}}$.
+
+This objective has a clear interpretation:
+- If $\hat{A}_t > 0$ (action better than average), we want to **increase** $r_t(\theta)$, i.e., make the new policy more likely to take this action.
+- If $\hat{A}_t < 0$ (action worse than average), we want to **decrease** $r_t(\theta)$, i.e., make the new policy less likely to take this action.
+
+The corresponding sample-based approximation is:
+
+$$
+\boxed{L^{\text{CPI}}(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \sum_{t=0}^{T} \frac{\pi_\theta(a_{i,t} | s_{i,t})}{\pi_{\theta_{\text{old}}}(a_{i,t} | s_{i,t})} \hat{A}_{i,t}} \tag{VI.IV}
+$$
+
+### Off-Policy Learning: Reusing Trajectories
+
+The CPI objective enables **off-policy learning**: we can sample trajectories from $\pi_{\theta_{\text{old}}}$, store them and then perform multiple gradient updates on $\theta$ using the same batch of data. The typical workflow becomes:
+
+1. **Collect**: Sample trajectories $\{\tau_i\}$ from the current policy $\pi_{\theta_{\text{old}}}$
+2. **Compute**: Calculate advantages $\hat{A}_{i,t}$ and log-probabilities $\log \pi_{\theta_{\text{old}}}(a_{i,t} | s_{i,t})$
+3. **Store**: Save the trajectories along with their advantages and old log-probabilities
+4. **Optimize**: Perform multiple gradient ascent steps on $L^{\text{CPI}}(\theta)$ using mini-batches from the stored data
+5. **Repeat**: Set $\theta_{\text{old}} \leftarrow \theta$ and return to step 1
+
+This dramatically improves sample efficiency. Instead of discarding trajectories after a single gradient step, we can extract multiple updates from each batch of expensive LLM rollouts.
+
+
+### The Instability Problem
+
+While the CPI objective improves sample efficiency, **unconstrained optimization of $L^{\text{CPI}}(\theta)$ is unstable**. The core issue is that importance sampling becomes unreliable when $\pi_\theta$ drifts far from $\pi_{\theta_{\text{old}}}$:
+
+- **Extreme probability ratios**: The ratio $r_t(\theta)$ can become arbitrarily large or small, destabilizing gradient estimates.
+- **Stale advantages**: The estimates $\hat{A}_t$ were computed under $\pi_{\theta_{\text{old}}}$ and become inaccurate as $\pi_\theta$ diverges. The optimizer may exploit these stale estimates, making updates that appear beneficial but are actually harmful.
+
+In practice, unconstrained maximization of $L^{\text{CPI}}(\theta)$ often leads to excessively large policy updates that cause catastrophic performance collapse.
+
+> **LLM Context (from Umar Jamil):** Suppose we have a trajectory where the model generated "Shanghai is in China" with high advantage. Unconstrained optimization might dramatically upweight "China" as the next token given "Shanghai is in"—but this could simultaneously cause unintended probability shifts elsewhere, perhaps making the model overly likely to say "China" in completely unrelated contexts, or disrupting the probability mass across the entire vocabulary in unpredictable ways.
+
+We need a mechanism to constrain $\pi_\theta$ from deviating too far from $\pi_{\theta_{\text{old}}}$ and keeping the ratio $r_t(\theta)$ close to 1 while still allowing meaningful policy improvement.
+
+## VII: Trust Region Policy Optimization (TRPO)
+
+The CPI objective is attractive because it lets us reuse data via importance ratios, but **unconstrained optimization is unstable**. When $\pi_\theta$ drifts far from $\pi_{\theta_{\text{old}}}$, the probability ratios $r_t(\theta)$ become extreme and the advantage estimates $\hat{A}_t$ become stale and can be exploited by the optimizer.
+
+The key insight of Trust Region Policy Optimization ([TRPO](https://arxiv.org/abs/1502.05477)) is that the surrogate objective $L^{\text{CPI}}(\theta)$ is only a valid approximation to the true objective within a local neighborhood of $\theta_{\text{old}}$. TRPO paper formalized this by proving policy performance is guaranteed to improve as long as the KL divergence between consecutive policies remains bounded. This theoretical result motivates constraining the policy update to stay within a "trust region" where the surrogate objective remains reliable. See the [TRPO paper](https://arxiv.org/abs/1502.05477) for the formal proof.
+
+TRPO converts this insight into a **constrained optimization problem** that ensures the policy update stays within a "trust region" where the surrogate objective remains reliable.
+
+$$
+\boxed{
+\begin{aligned}
+\max_\theta \quad & L^{\text{CPI}}(\theta) = \mathbb{E}_t\left[\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)} \hat{A}_t\right] \\[6pt]
+\text{subject to} \quad & \mathbb{E}_t\left[D_{\text{KL}}\left(\pi_{\theta_{\text{old}}}(\cdot|s_t) \| \pi_\theta(\cdot|s_t)\right)\right] \leq \delta
+\end{aligned}
+} \tag{VII.I}
+$$
+
+The hyperparameter $\delta$ defines the trust region size, the maximum allowed divergence between consecutive policies. This constraint ensures that $r_t(\theta)$ remains close to 1, keeping our importance-weighted estimates reliable.
+
+Solving (VII.I) requires **second-order optimization**. TRPO approximates the objective linearly and the KL constraint quadratically (using the Fisher Information Matrix) and then solves the resulting problem via the **conjugate gradient algorithm** followed by a **line search** to ensure constraints are satisfied.
+
+For large-scale LLM training, this approach is impractical:
+
+- **Computational overhead**: Each policy update requires multiple conjugate gradient iterations and line search steps, significantly more expensive than standard gradient descent.
+- **Memory requirements**: Computing Fisher-vector products adds substantial memory overhead for billion(s)-parameter models
+
+The theory behind TRPO also suggests using a **KL penalty** rather than a hard constraint. It is easier to implement and more computationally efficient.
+
+$$
+\max_\theta \; \mathbb{E}_t\left[r_t(\theta) \hat{A}_t - \beta \cdot D_{\text{KL}}\left(\pi_{\theta_{\text{old}}}(\cdot|s_t) \| \pi_\theta(\cdot|s_t)\right)\right] \tag{VII.II}
+$$
+
+However, choosing a penalty coefficient $\beta$ that works across different problems or even across different training stages is notoriously difficult. This motivates Proximal Policy Optimization (PPO): a **first-order method** that achieves TRPO's stability through a **clipped surrogate objective** rather than explicit constraints.
+
+## VIII: Proximal Policy Optimization (PPO)
+
+Proximal Policy Optimization (PPO) achieves TRPO's stability guarantees using only **first-order optimization**. Instead of explicitly constraining the KL divergence, PPO modifies the objective function itself to discourage large policy updates through a **clipping mechanism**. It implicitly limits how far the policy can move, providing a "soft" trust region using only standard gradient descent.
+
+### Clipped Surrogate Objective
+
+CPI objective and probability ratio from Section VI:
+
+$$
+L^{\text{CPI}}(\theta) = \mathbb{E}_t\left[r_t(\theta) \hat{A}_t\right] \quad \text{where} \quad r_t(\theta) = \frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)}
+$$
+
+The problem with $L^{\text{CPI}}$ is that nothing prevents $r_t(\theta)$ from becoming arbitrarily large or small. PPO addresses this by **clipping** the probability ratio to stay within $[1-\epsilon, 1+\epsilon]$:
+
+$$
+\boxed{L^{\text{CLIP}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) \hat{A}_t, \; \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \cdot \hat{A}_t\right)\right]} \tag{VIII.I}
+$$
+
+where $\epsilon$ is a hyperparameter ($\epsilon = 0.2$ from the [PPO paper](https://arxiv.org/abs/1707.06347)) and the clip function is defined as:
+
+$$
+\text{clip}(r, 1-\epsilon, 1+\epsilon) = \begin{cases}
+1-\epsilon & \text{if } r < 1-\epsilon \\
+r & \text{if } 1-\epsilon \leq r \leq 1+\epsilon \\
+1+\epsilon & \text{if } r > 1+\epsilon
+\end{cases}
+$$
+
+The $\min$ operator in (VIII.I) is important. It ensures we take the **more pessimistic** (lower) estimate between the clipped and unclipped objectives. This creates different behavior depending on the sign of the advantage:
+
+**Case 1: Positive Advantage ($\hat{A}_t > 0$)**
+
+When an action is better than average, we want to **increase** its probability, which means increasing $r_t(\theta)$. The objective becomes:
+
+$$
+L^{\text{CLIP}}_t = \min\left(r_t(\theta), 1+\epsilon\right) \cdot \hat{A}_t
+$$
+
+- If $r_t(\theta) \leq 1+\epsilon$: The objective is $r_t(\theta) \hat{A}_t$, so gradient ascent increases $r_t(\theta)$
+- If $r_t(\theta) > 1+\epsilon$: The objective becomes $(1+\epsilon)\hat{A}_t$
+
+The clipping **removes the incentive** to increase $r_t(\theta)$ beyond $1+\epsilon$.
+
+**Case 2: Negative Advantage ($\hat{A}_t < 0$)**
+
+When an action is worse than average, we want to **decrease** its probability, which means decreasing $r_t(\theta)$. Since $\hat{A}_t < 0$, multiplying by a smaller $r_t$ makes the product *less negative* (larger). The objective becomes:
+
+$$
+L^{\text{CLIP}}_t = \max\left(r_t(\theta), 1-\epsilon\right) \cdot \hat{A}_t
+$$
+
+(The $\min$ with negative values becomes a $\max$ in terms of which $r_t$ is selected.)
+
+- If $r_t(\theta) \geq 1-\epsilon$: The objective is $r_t(\theta) \hat{A}_t$, so gradient ascent decreases $r_t(\theta)$
+- If $r_t(\theta) < 1-\epsilon$: The objective becomes $(1-\epsilon)\hat{A}_t$
+
+The clipping **removes the incentive** to decrease $r_t(\theta)$ beyond $1-\epsilon$.
+
+The takeaway here is that PPO provides a **pessimistic lower bound** on $L^{\text{CPI}}$. We ignore updates when they would make things "too good to be true."
+
+> **LLM Context (from Umar Jamil Video):** In language model fine-tuning, the policy $\pi_\theta(a_t|s_t)$ is the probability the model assigns to token $a_t$ given the context $s_t$ (prompt + previously generated tokens). The probability ratio $r_t(\theta)$ measures how much more or less likely the fine-tuned model is to generate a particular token compared to the reference policy. Clipping ensures that no single token's probability can change by more than a factor of $(1 \pm \epsilon)$ in a single update iteration, preventing the model from "overreacting" to high-advantage tokens.
+
+
+### PPO Objective
+
+In practice, PPO combines the clipped policy objective with two additional terms:
+
+$$
+\boxed{L^{\text{PPO}}(\theta) = \mathbb{E}_t\left[L^{\text{CLIP}}_t(\theta) - c_1 L^{\text{VF}}_t(\theta) + c_2 S[\pi_\theta](s_t)\right]} \tag{VIII.II}
+$$
+
+**1. Value Function Loss ($L^{\text{VF}}$):** Recall from Section V that we need a value function $V_\phi(s)$ to compute advantage estimates. The value function is trained to minimize the squared error between its predictions and the actual returns:
+
+$$
+L^{\text{VF}}_t(\theta) = \left(V_\theta(s_t) - V_t^{\text{target}}\right)^2
+$$
+
+where $V_t^{\text{target}}$ is typically the discounted return-to-go. When the policy and value function share parameters (common in LLM fine-tuning where both use the same transformer backbone), this loss is subtracted from the objective (hence the negative sign, since we maximize $L^{\text{PPO}}$ but minimize $L^{\text{VF}}$).
+
+**2. Entropy Bonus ($S[\pi_\theta]$):** To encourage exploration and prevent premature convergence to deterministic policies, PPO adds an entropy loss:
+
+$$
+S[\pi_\theta](s_t) = -\sum_a \pi_\theta(a|s_t) \log \pi_\theta(a|s_t)
+$$
+
+Here, the coefficients $c_1, c_2 > 0$ control the regularization strength.
+
+
+## IX: Complete PPO Objective with KL Penalty
+
+When fine-tuning an LLM with "vanilla" PPO, the policy learns to maximize rewards from the reward model. However, the reward model is an imperfect proxy for human preferences. It is a neural network trained on limited data that can be exploited. Without constraints, the policy may discover adversarial outputs that achieve high reward scores while producing text that:
+
+- Degenerates into repetitive or nonsensical patterns that "fool" the reward model
+- Drifts far from natural language, losing fluency and coherence
+- Exploits spurious correlations learned by the reward model
+
+This phenomenon is called **reward hacking**. The policy finds a way to "game" the reward model rather than genuinely improving response quality. 
+
+To prevent reward hacking, the [InstructGPT paper](https://arxiv.org/pdf/2203.02155) adds a **KL divergence penalty** that regularizes the policy to stay close to a **reference model** $\pi_{\text{ref}}$ (typically the SFT model before RL fine-tuning).
+
+From Section VIII, the PPO objective (to be maximized via gradient ascent) consists of three terms:
+
+$$
+L^{\text{PPO}}(\theta) = \underbrace{L^{\text{CLIP}}(\theta)}_{\text{Clipped Policy Objective}} - \underbrace{c_1 L^{\text{VF}}(\theta)}_{\text{Value Function Loss}} + \underbrace{c_2 S[\pi_\theta]}_{\text{Entropy Bonus}}
+$$
+
+
+Now, we don't use raw reward model scores directly. Instead, we define a **KL-penalized reward** that regularizes the policy to stay close to a reference model $\pi_{\text{ref}}$:
+
+$$
+\boxed{r_{\text{total}}(s_t, a_t) = r_{\text{RM}}(s_t, a_t) - \beta \cdot D_{\text{KL}}\left(\pi_\theta(\cdot|s_t) \| \pi_{\text{ref}}(\cdot|s_t)\right)} \tag{IX.I}
+$$
+
+where:
+- $r_{\text{RM}}(s_t, a_t)$ is the reward signal at timestep $t$
+- $\beta$ is the KL penalty coefficient
+- $\pi_{\text{ref}}$ is the frozen reference model
+
+At each token position, the KL divergence simplifies to:
+
+$$
+D_{\text{KL}}\left(\pi_\theta(\cdot|s_t) \| \pi_{\text{ref}}(\cdot|s_t)\right) = \mathbb{E}_{a \sim \pi_\theta}\left[\log \frac{\pi_\theta(a|s_t)}{\pi_{\text{ref}}(a|s_t)}\right]
+$$
+
+In practice we estimate this expectation with the sampled token $a_t$, yielding:
+$$
+\hat d_t=\log \frac{\pi_\theta(a_t|s_t)}{\pi_{\mathrm{ref}}(a_t|s_t)}
+$$
+ 
+Note that the reward model $r_\phi(x, y)$ produces a single scalar for the complete response $(x, y)$. This score is assigned only at the **final token** $T$, while the KL penalty applies at **every token**.
+$$
+\tilde{r}_\phi = \begin{cases}
+-\beta \cdot \log \frac{\pi_\theta(a_t | s_t)}{\pi_{\text{ref}}(a_t | s_t)} & \text{if } t < T \\[8pt]
+r_\phi(x, y) - \beta \cdot \log \frac{\pi_\theta(a_T | s_T)}{\pi_{\text{ref}}(a_T | s_T)} & \text{if } t = T
+\end{cases}
+$$
+
+The KL penalty serves two purposes:
+1. **Prevents reward hacking**: The policy cannot drift arbitrarily far from natural language
+2. **Maintains fluency**: Outputs remain similar in distribution to the well-trained SFT model
+
+It modifies the advantage estimates $\hat{A}_t$ used in PPO through the modified per-token rewards. However, it is mathematically equivalent (and more efficient in implementation) to add the KL term directly to the objective. The PPO objective with KL penalty is:
+
+$$
+J(\theta) = \underbrace{\mathbb{E}_{a \sim \pi_\theta}\left[r_{\text{RM}}(s, a)\right]}_{\text{Vanilla PPO objective}} - \underbrace{\beta \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})}_{\text{KL penalty term}}
+$$
+
+The first term is exactly what vanilla PPO optimizes using the clipped surrogate. The KL penalty term appears as a separate additive component that penalizes divergence from the reference model. Substituting the PPO clipped surrogate for the first term:
+
+$$
+J_{\text{c}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) \hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t\right)\right] - \beta \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})
+$$
+
+Combining all components, the **complete PPO objective with KL penalty** (to be maximized) is:
+
+$$
+\boxed{L^{\text{RLHF}}(\theta) = \underbrace{L^{\text{CLIP}}(\theta)}_{\text{Policy Objective}} - \underbrace{c_1 L^{\text{VF}}(\theta)}_{\text{Value Loss}} + \underbrace{c_2 S[\pi_\theta]}_{\text{Entropy Bonus}} - \underbrace{\beta \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})}_{\text{KL Penalty}}} \tag{IX.II}
+$$
+
+Here, each term serves a distinct purpose:
+
+| Term | Role |
+|------|------|
+| **Policy Objective** $L^{\text{CLIP}}$ | Improves the policy while preventing destructive updates via clipping |
+| **Value Loss** $c_1 L^{\text{VF}}$ | Trains the critic for accurate advantage estimation (subtracted to minimize) |
+| **Entropy Bonus** $c_2 S[\pi_\theta]$ | Encourages exploration, prevents premature convergence |
+| **KL Penalty** $\beta D_{\text{KL}}$ | Prevents reward hacking, maintains language quality (subtracted to penalize drift) |
+
+It is important to distinguish the two KL-related mechanisms in the complete loss. The PPO clipping mechanism acts as a **short-term anchor** that constrains how much the policy can change in a single update, while the KL penalty is a **long-term anchor** that constrains how far the policy can drift from its starting point across all of training.
+
+## Finally done...
+And that's the full derivation! What I find satisfying is that every term in the final loss has a specific purpose. Each one exists because we ran into a specific problem along the way and needed to fix it. I will admit it was not easy to understand all the math and concepts behind the loss. I still do not fully understand every detail but I understand it far better than I did a few days ago.
+
+I hope this was useful. If you spot any errors in derivation (which I'm sure there are) or have suggestions, feel free to reach out.
+
+## References
+
+- **Video:** 
+   - [Umar Jamil's video on RLHF and PPO](https://www.youtube.com/watch?v=qGyFrqc34yc): A comprehensive and must-watch video covering RLHF and PPO concepts.
+
+- **Papers:**
+  - [Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347): The foundational PPO paper introducing the clipped surrogate objective.
+  - [Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155): The InstructGPT paper demonstrating PPO with KL penalty to mitigate reward hacking in LLM fine-tuning.
+  - [Trust Region Policy Optimization](https://arxiv.org/abs/1502.05477): The TRPO paper that motivates the trust region constraints used in PPO.
+  - [High-Dimensional Continuous Control Using Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438): GAE paper introducing the exponentially-weighted advantage estimator for variance reduction in policy gradients.
