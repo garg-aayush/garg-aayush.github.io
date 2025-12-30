@@ -7,8 +7,6 @@ date: 2025-12-30
 permalink: /2025-12-30-deriving-dpo-loss/
 ---
 
-# Deriving the DPO Loss from First Principles
-
 In my [previous post](https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html), I worked through the derivation of the PPO loss used in RLHF for LLMs. By the end, we arrived at a fairly daunting objective function with multiple components: clipped surrogate, value function loss, entropy bonus and KL penalty. It is not just that the final objective is intimidating but the entire RLHF pipeline is complex and multi-step. You first train a separate reward model to reflect human preferences then fine-tune the LLM using RL with PPO.
 
 That brings us to [Direct Preference Optimization](https://arxiv.org/abs/2305.18290) (DPO). DPO is a computationally lightweight alternative that directly optimizes LLMs to adhere to human preferences **without explicit reward modeling or reinforcement learning**. The key insight is that DPO implicitly optimizes the **same** objective as PPO-based RLHF (reward maximization with a KL-divergence constraint) but it replaces the entire reward model + PPO loop with a single supervised objective on preference pairs. There is no sampling during training, no value function, no clipping, just a classification loss!
