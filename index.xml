@@ -10,7 +10,235 @@
 <atom:link href="https://garg-aayush.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>Notes on applied ML engineering, LLMs, and building AI products.</description>
 <generator>quarto-1.8.26</generator>
-<lastBuildDate>Thu, 25 Dec 2025 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 30 Dec 2025 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Deriving the DPO Loss from First Principles</title>
+  <link>https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="deriving-the-dpo-loss-from-first-principles" class="level1">
+<h1>Deriving the DPO Loss from First Principles</h1>
+<p>In my <a href="https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html">previous post</a>, I worked through the derivation of the PPO loss used in RLHF for LLMs. By the end, we arrived at a fairly daunting objective function with multiple components: clipped surrogate, value function loss, entropy bonus and KL penalty. It is not just that the final objective is intimidating but the entire RLHF pipeline is complex and multi-step. You first train a separate reward model to reflect human preferences then fine-tune the LLM using RL with PPO.</p>
+<p>That brings us to <a href="https://arxiv.org/abs/2305.18290">Direct Preference Optimization</a> (DPO). DPO is a computationally lightweight alternative that directly optimizes LLMs to adhere to human preferences <strong>without explicit reward modeling or reinforcement learning</strong>. The key insight is that DPO implicitly optimizes the <strong>same</strong> objective as PPO-based RLHF (reward maximization with a KL-divergence constraint) but it replaces the entire reward model + PPO loop with a single supervised objective on preference pairs. There is no sampling during training, no value function, no clipping, just a classification loss!</p>
+<p>Here I derive the DPO loss showing exactly how this simplification is possible. I will assume familiarity with concepts from the PPO post, particularly the reward model and the KL-constrained RLHF objective.</p>
+<blockquote class="blockquote">
+<p>Again, a huge shoutout to Umar Jamil’s <a href="https://www.youtube.com/watch?v=hvGa5Mba4c8">video on DPO</a> for an excellent walkthrough that helped me understand the derivation.</p>
+</blockquote>
+<section id="i-the-rlhf-objective" class="level2">
+<h2 class="anchored" data-anchor-id="i-the-rlhf-objective">I: The RLHF Objective</h2>
+<p>Let’s recall the RLHF objective from the PPO blog. The goal of RLHF is to find a policy <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> that maximizes expected reward while staying close to a reference model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%7B%5Ctext%7Bref%7D%7D">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AJ_%7B%5Ctext%7BRLHF%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_%7Bx%20%5Csim%20%5Cmathcal%7BD%7D,%20y%20%5Csim%20%5Cpi_%5Ctheta(y%7Cx)%7D%5Cleft%5Br_%5Cphi(x,%20y)%5Cright%5D%20-%20%5Cbeta%20%5Ccdot%20D_%7B%5Ctext%7BKL%7D%7D%5Cleft(%5Cpi_%5Ctheta(y%7Cx)%20%5C%7C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%5Cright)%0A"></p>
+<p>The first term encourages the model to generate high-reward responses. The second term (KL penalty) prevents the model from drifting too far from the reference which helps avoid reward hacking and maintains language quality.</p>
+<p>As we saw in the PPO blog, we can’t optimize this objective directly with gradient descent because the expectation <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D_%7By%20%5Csim%20%5Cpi_%5Ctheta(y%7Cx)%7D%5B%5Ccdot%5D"> requires sampling from the policy and sampling is non-differentiable. This is why we needed reinforcement learning algorithms like REINFORCE and PPO. They provide ways to estimate policy gradients without differentiating through the sampling process.</p>
+<blockquote class="blockquote">
+<p>What if we could reformulate the problem so that we don’t need to sample from the policy during training? This is exactly what DPO will achieve.</p>
+</blockquote>
+</section>
+<section id="ii-the-bradley-terry-model-for-preference-learning" class="level2">
+<h2 class="anchored" data-anchor-id="ii-the-bradley-terry-model-for-preference-learning">II: The Bradley-Terry Model for Preference Learning</h2>
+<p>We also need to understand the <a href="https://www.jstor.org/stable/2334029">Bradley-Terry model</a> for reward model training in a bit more detail with focus on <em>why</em> it works the way it does.</p>
+<p>Training a reward model requires human-labeled preference data that compares pairs of responses. <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathcal%7BD%7D%20=%20%5Cleft%5C%7B(x%5E%7B(i)%7D,%20y_w%5E%7B(i)%7D,%20y_l%5E%7B(i)%7D)%5Cright%5C%7D_%7Bi=1%7D%5E%7BN%7D%0A"></p>
+<p>where: - <img src="https://latex.codecogs.com/png.latex?x"> is the prompt - <img src="https://latex.codecogs.com/png.latex?y_w"> is the <strong>preferred</strong> (winning) response - <img src="https://latex.codecogs.com/png.latex?y_l"> is the <strong>dispreferred</strong> (losing) response</p>
+<section id="the-bradley-terry-probability-model" class="level3">
+<h3 class="anchored" data-anchor-id="the-bradley-terry-probability-model">The Bradley-Terry Probability Model</h3>
+<p>The Bradley-Terry model provides a principled way to convert comparison data (defined above) into a probabilistic model. It assumes there exists some latent reward function <img src="https://latex.codecogs.com/png.latex?r%5E*(x,%20y)"> that captures true response quality and models the probability that response <img src="https://latex.codecogs.com/png.latex?y_w"> is preferred over <img src="https://latex.codecogs.com/png.latex?y_l"> as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AP(y_w%20%5Csucc%20y_l%20%7C%20x)%20=%20%5Cfrac%7Be%5E%7Br%5E*(x,%20y_w)%7D%7D%7Be%5E%7Br%5E*(x,%20y_w)%7D%20+%20e%5E%7Br%5E*(x,%20y_l)%7D%7D%20%5Ctag%7BII.I%7D%0A"></p>
+<p>The intuition is straightforward that the responses with higher reward are exponentially more likely to be preferred.</p>
+<p>A key step is recognizing that this <strong>ratio of exponentials can be written as a sigmoid function</strong>. This is important because it connects Bradley-Terry to standard binary classification.</p>
+<p>Let <img src="https://latex.codecogs.com/png.latex?A%20=%20r(x,%20y_w)"> and <img src="https://latex.codecogs.com/png.latex?B%20=%20r(x,%20y_l)">. We want to show:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cfrac%7Be%5EA%7D%7Be%5EA%20+%20e%5EB%7D%20=%20%5Csigma(A%20-%20B)%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%5Csigma(z)%20=%20%5Cfrac%7B1%7D%7B1%20+%20e%5E%7B-z%7D%7D"> is the sigmoid function.</p>
+<p>Starting with the left-hand side:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cfrac%7Be%5EA%7D%7Be%5EA%20+%20e%5EB%7D%0A"></p>
+<p>we can rewrite it as: <img src="https://latex.codecogs.com/png.latex?%0A=%20%5Cfrac%7Be%5EA%20/%20e%5EA%7D%7B(e%5EA%20+%20e%5EB)%20/%20e%5EA%7D%20=%20%5Cfrac%7B1%7D%7B1%20+%20e%5EB%20/%20e%5EA%7D%20=%20%5Cfrac%7B1%7D%7B1%20+%20e%5E%7BB-A%7D%7D%0A"></p>
+<p>which is the sigmoid function of <img src="https://latex.codecogs.com/png.latex?(A%20-%20B)">: <img src="https://latex.codecogs.com/png.latex?%0A=%20%5Cfrac%7B1%7D%7B1%20+%20e%5E%7B-(A-B)%7D%7D%20=%20%5Csigma(A%20-%20B)%0A"></p>
+<p>Therefore, the Bradley-Terry model can be written as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7BP(y_w%20%5Csucc%20y_l%20%7C%20x)%20=%20%5Csigma%5Cleft(r(x,%20y_w)%20-%20r(x,%20y_l)%5Cright)%7D%20%5Ctag%7BII.II%7D%0A"></p>
+</section>
+<section id="reward-model-loss" class="level3">
+<h3 class="anchored" data-anchor-id="reward-model-loss">Reward Model Loss</h3>
+<p>Given a dataset of preferences <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BD%7D">, we can train a parameterized reward model <img src="https://latex.codecogs.com/png.latex?r_%5Cphi(x,%20y)"> using maximum likelihood estimation. We want to maximize the probability of observing the preferences in our dataset:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmax_%5Cphi%20%5Cprod_%7B(x,%20y_w,%20y_l)%20%5Cin%20%5Cmathcal%7BD%7D%7D%20P(y_w%20%5Csucc%20y_l%20%7C%20x)%0A"></p>
+<p>Taking the log and negating (to turn maximization into minimization), we get the negative log-likelihood loss:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7B%5Cmathcal%7BL%7D_%7B%5Ctext%7BRM%7D%7D(%5Cphi)%20=%20-%5Cmathbb%7BE%7D_%7B(x,%20y_w,%20y_l)%20%5Csim%20%5Cmathcal%7BD%7D%7D%5Cleft%5B%5Clog%20%5Csigma%5Cleft(r_%5Cphi(x,%20y_w)%20-%20r_%5Cphi(x,%20y_l)%5Cright)%5Cright%5D%7D%20%5Ctag%7BII.III%7D%0A"></p>
+<p>This is just binary cross-entropy objective which helps the reward model learn to assign higher rewards to preferred responses. Notice that the Bradley-Terry model depends <strong>only on the difference of rewards</strong>: <img src="https://latex.codecogs.com/png.latex?r(x,%20y_w)%20-%20r(x,%20y_l)">. The absolute values dont matter, it is only their relative ordering. This means:</p>
+<blockquote class="blockquote">
+<p>If we add any constant <img src="https://latex.codecogs.com/png.latex?c"> or any function <img src="https://latex.codecogs.com/png.latex?f(x)"> that depends only on the prompt (not the response), the <strong>preference probabilities dont change</strong>. This invariance property will be the key to deriving DPO.</p>
+</blockquote>
+</section>
+</section>
+<section id="iii-optimal-policy-in-closed-form" class="level2">
+<h2 class="anchored" data-anchor-id="iii-optimal-policy-in-closed-form">III: Optimal Policy in Closed Form</h2>
+<p>Here, we will find the <strong>exact</strong> analytical optimal policy solution to the optimization problem. We want to find the policy that maximizes expected reward while keeping the KL divergence from the reference policy bounded:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmax_%5Cpi%20%5Cmathbb%7BE%7D_%7Bx%20%5Csim%20%5Cmathcal%7BD%7D,%20y%20%5Csim%20%5Cpi(y%7Cx)%7D%5Cleft%5Br(x,%20y)%5Cright%5D%20-%20%5Cbeta%20%5Ccdot%20D_%7B%5Ctext%7BKL%7D%7D%5Cleft(%5Cpi(y%7Cx)%20%5C%7C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%5Cright)%20%5Ctag%7BIII.I%7D%0A"></p>
+<p>Note, I am writing <img src="https://latex.codecogs.com/png.latex?%5Cpi"> instead of <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> to emphasize that we are looking for the optimal policy in general not just the parameterized version.</p>
+<p>Expanding the KL divergence:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AD_%7B%5Ctext%7BKL%7D%7D%5Cleft(%5Cpi(y%7Cx)%20%5C%7C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%5Cright)%20=%20%5Cmathbb%7BE%7D_%7By%20%5Csim%20%5Cpi(y%7Cx)%7D%5Cleft%5B%5Clog%20%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%5Cright%5D%0A"></p>
+<p>So our objective becomes:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmax_%5Cpi%20%5Cmathbb%7BE%7D_%7Bx%20%5Csim%20%5Cmathcal%7BD%7D%7D%20%5Cmathbb%7BE%7D_%7By%20%5Csim%20%5Cpi(y%7Cx)%7D%5Cleft%5Br(x,%20y)%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%5Cright%5D%0A"></p>
+<p>For a fixed prompt <img src="https://latex.codecogs.com/png.latex?x">, we want to find the distribution <img src="https://latex.codecogs.com/png.latex?%5Cpi(%5Ccdot%7Cx)"> that maximizes:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathbb%7BE%7D_%7By%20%5Csim%20%5Cpi(y%7Cx)%7D%5Cleft%5Br(x,%20y)%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%5Cright%5D%0A"></p>
+<p>This is a constrained optimization problem over probability distributions. We can solve it using the method of <a href="https://en.wikipedia.org/wiki/Lagrange_multiplier">Lagrange multipliers</a>, enforcing that <img src="https://latex.codecogs.com/png.latex?%5Cpi(y%7Cx)"> sums to 1. For discrete <img src="https://latex.codecogs.com/png.latex?y">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathcal%7BL%7D(%5Cpi,%20%5Clambda)%20=%20%5Csum_y%20%5Cpi(y%7Cx)%20%5Cleft%5Br(x,%20y)%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%5Cright%5D%20+%20%5Clambda%20%5Cleft(1%20-%20%5Csum_y%20%5Cpi(y%7Cx)%5Cright)%0A"></p>
+<p>Taking the derivative with respect to <img src="https://latex.codecogs.com/png.latex?%5Cpi(y%7Cx)"> and setting it to zero (stationary point):</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Cpartial%20%5Cmathcal%7BL%7D%7D%7B%5Cpartial%20%5Cpi(y%7Cx)%7D%20=%20r(x,%20y)%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%20-%20%5Cbeta%20-%20%5Clambda%20=%200%0A"></p>
+<p>Now, solving for <img src="https://latex.codecogs.com/png.latex?%5Cpi(y%7Cx)">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Clog%20%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%20=%20%5Cfrac%7B1%7D%7B%5Cbeta%7D%5Cleft(r(x,%20y)%20-%20%5Cbeta%20-%20%5Clambda%5Cright)%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Cpi(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%20=%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%20%5Ccdot%20%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cpi(y%7Cx)%20=%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Ccdot%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%20%5Ccdot%20%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)%0A"></p>
+<p>The term <img src="https://latex.codecogs.com/png.latex?%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)"> is a constant (with respect to <img src="https://latex.codecogs.com/png.latex?y">) that ensures normalization. To find its value, we enforce that <img src="https://latex.codecogs.com/png.latex?%5Cpi(y%7Cx)"> must be a valid probability distribution and sum to 1:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Csum_y%20%5Cpi(y%7Cx)%20=%201%0A"></p>
+<p>Substituting our expression for <img src="https://latex.codecogs.com/png.latex?%5Cpi(y%7Cx)">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Csum_y%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Ccdot%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%20%5Ccdot%20%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)%20=%201%0A"></p>
+<p>Since <img src="https://latex.codecogs.com/png.latex?%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)"> doesn’t depend on <img src="https://latex.codecogs.com/png.latex?y">, we can factor it out of the sum:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)%20%5Ccdot%20%5Csum_y%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Ccdot%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%20=%201%0A"></p>
+<p>Solving for the constant:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cexp%5Cleft(-1%20-%20%5Cfrac%7B%5Clambda%7D%7B%5Cbeta%7D%5Cright)%20=%20%5Cfrac%7B1%7D%7B%5Csum_y%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Ccdot%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%7D%0A"></p>
+<p>We define this normalizing sum as the <strong>partition function</strong> <img src="https://latex.codecogs.com/png.latex?Z(x)">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AZ(x)%20=%20%5Csum_y%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%20%5Ctag%7BIII.II%7D%0A"></p>
+<p>Substituting back, we get the optimal policy:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7B%5Cpi_r(y%7Cx)%20=%20%5Cfrac%7B1%7D%7BZ(x)%7D%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%7D%20%5Ctag%7BIII.III%7D%0A"></p>
+<p>We have an exact closed-form expression for the optimal policy. However, we cannot compute it directly because <img src="https://latex.codecogs.com/png.latex?Z(x)"> is intractable. To compute it, we need to sum over <strong>all possible responses</strong> <img src="https://latex.codecogs.com/png.latex?y"> which not possible.</p>
+</section>
+<section id="iv-the-reparameterization-trick" class="level2">
+<h2 class="anchored" data-anchor-id="iv-the-reparameterization-trick">IV: The Reparameterization Trick</h2>
+<p>The key insight of DPO is to flip the relationship between reward and policy. Now, we frame the problem as: “given an optimal policy what reward function does it correspond to?”</p>
+<p>Starting from the optimal policy equation (III.III):</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cpi_r(y%7Cx)%20=%20%5Cfrac%7B1%7D%7BZ(x)%7D%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20%5Cexp%5Cleft(%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%5Cright)%0A"></p>
+<p>We solve for the reward <img src="https://latex.codecogs.com/png.latex?r(x,%20y)"> by first taking the log of both sides:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Clog%20%5Cpi_r(y%7Cx)%20=%20%5Clog%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20+%20%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%20-%20%5Clog%20Z(x)%0A"></p>
+<p>Now rearrange to get <img src="https://latex.codecogs.com/png.latex?r(x,%20y)"> on left-side:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B1%7D%7B%5Cbeta%7Dr(x,%20y)%20=%20%5Clog%20%5Cpi_r(y%7Cx)%20-%20%5Clog%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20+%20%5Clog%20Z(x)%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ar(x,%20y)%20=%20%5Cbeta%20%5Clog%20%5Cpi_r(y%7Cx)%20-%20%5Cbeta%20%5Clog%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%20+%20%5Cbeta%20%5Clog%20Z(x)%0A"></p>
+<p>This can be written more compactly as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7Br(x,%20y)%20=%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi_r(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%20+%20%5Cbeta%20%5Clog%20Z(x)%7D%20%5Ctag%7BIV.I%7D%0A"></p>
+<p>The reward is expressed as: - A term involving the log-ratio of the optimal policy to the reference policy - <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%5Clog%20Z(x)"> which depends only on <img src="https://latex.codecogs.com/png.latex?x"> (not on <img src="https://latex.codecogs.com/png.latex?y">)</p>
+</section>
+<section id="v-deriving-the-dpo-loss" class="level2">
+<h2 class="anchored" data-anchor-id="v-deriving-the-dpo-loss">V: Deriving the DPO Loss</h2>
+<p>Finally, we have all the pieces to derive the DPO loss. From Section II, the Bradley-Terry preference model is:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AP(y_w%20%5Csucc%20y_l%20%7C%20x)%20=%20%5Csigma%5Cleft(r(x,%20y_w)%20-%20r(x,%20y_l)%5Cright)%0A"></p>
+<p>From Section IV, assuming we have access to an optimal policy <img src="https://latex.codecogs.com/png.latex?%5Cpi%5E*">, the reward can be written as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ar(x,%20y)%20=%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%20+%20%5Cbeta%20%5Clog%20Z(x)%0A"></p>
+<p>Substituting this into Bradley-Terry:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AP(y_w%20%5Csucc%20y_l%20%7C%20x)%20=%20%5Csigma%5Cleft(%5Cleft%5B%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y_w%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_w%7Cx)%7D%20+%20%5Cbeta%20%5Clog%20Z(x)%5Cright%5D%20-%20%5Cleft%5B%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y_l%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_l%7Cx)%7D%20+%20%5Cbeta%20%5Clog%20Z(x)%5Cright%5D%5Cright)%0A"></p>
+<p>Simplifying the expression inside the sigmoid:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A=%20%5Csigma%5Cleft(%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y_w%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_w%7Cx)%7D%20+%20%5Cbeta%20%5Clog%20Z(x)%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y_l%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_l%7Cx)%7D%20-%20%5Cbeta%20%5Clog%20Z(x)%5Cright)%0A"></p>
+<p>The <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%5Clog%20Z(x)"> terms cancel:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A=%20%5Csigma%5Cleft(%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y_w%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_w%7Cx)%7D%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y_l%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_l%7Cx)%7D%5Cright)%0A"></p>
+<blockquote class="blockquote">
+<p>Now recall the critical insight from Section II where we mentioned that the Bradley-Terry model depends only on reward <strong>differences</strong>. Thus, when we compute <img src="https://latex.codecogs.com/png.latex?r(x,%20y_w)%20-%20r(x,%20y_l)"> the intractable partition function <img src="https://latex.codecogs.com/png.latex?Z(x)"> cancels out. This is what makes DPO possible.</p>
+</blockquote>
+<p>We can write this more cleanly by defining the <strong>implicit reward</strong> in terms of the optimal policy:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Br%7D(x,%20y)%20=%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi%5E*(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%0A"></p>
+<p>Thus:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AP(y_w%20%5Csucc%20y_l%20%7C%20x)%20=%20%5Csigma%5Cleft(%5Chat%7Br%7D(x,%20y_w)%20-%20%5Chat%7Br%7D(x,%20y_l)%5Cright)%0A"></p>
+<p>We dont actually have access to the optimal policy <img src="https://latex.codecogs.com/png.latex?%5Cpi%5E*">. But we can <strong>parameterize</strong> a policy <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> and optimize it to maximize the likelihood of the observed preferences. This is exactly what the reward model loss (II.III) does except now <strong>our reward is implicitly defined by the policy itself</strong>.</p>
+<p>The DPO loss is the negative log-likelihood:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7B%5Cmathcal%7BL%7D_%7B%5Ctext%7BDPO%7D%7D(%5Cpi_%5Ctheta;%20%5Cpi_%7B%5Ctext%7Bref%7D%7D)%20=%20-%5Cmathbb%7BE%7D_%7B(x,%20y_w,%20y_l)%20%5Csim%20%5Cmathcal%7BD%7D%7D%5Cleft%5B%5Clog%20%5Csigma%5Cleft(%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi_%5Ctheta(y_w%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_w%7Cx)%7D%20-%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi_%5Ctheta(y_l%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y_l%7Cx)%7D%5Cright)%5Cright%5D%7D%20%5Ctag%7BV.I%7D%0A"></p>
+<p>for implicit reward notation, it can be written as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathcal%7BL%7D_%7B%5Ctext%7BDPO%7D%7D(%5Cpi_%5Ctheta;%20%5Cpi_%7B%5Ctext%7Bref%7D%7D)%20=%20-%5Cmathbb%7BE%7D_%7B(x,%20y_w,%20y_l)%20%5Csim%20%5Cmathcal%7BD%7D%7D%5Cleft%5B%5Clog%20%5Csigma%5Cleft(%5Chat%7Br%7D_%5Ctheta(x,%20y_w)%20-%20%5Chat%7Br%7D_%5Ctheta(x,%20y_l)%5Cright)%5Cright%5D%20%5Ctag%7BV.II%7D%0A"></p>
+<p>Some key insights from the above DPO loss:</p>
+<ul>
+<li>The policy implicitly defines its own reward via the log-ratio with the reference. There is <strong>no separate reward model</strong>.</li>
+<li>This is just a supervised classification loss on preference pairs with <strong>no RL</strong>.</li>
+<li>DPO uses the fixed preference dataset <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BD%7D">. Thus, <strong>no sampling during training</strong>.</li>
+<li><strong>No value function</strong> needed since we’re not doing policy gradients</li>
+<li>DPO still optimizes the KL-constrained reward maximization objective but in a different way</li>
+</ul>
+</section>
+<section id="vi-building-intuition-for-dpo" class="level2">
+<h2 class="anchored" data-anchor-id="vi-building-intuition-for-dpo">VI: Building Intuition for DPO</h2>
+<p>Now that we have the DPO loss we can build some intuition around the implicit reward model and its gradient updates.</p>
+<section id="implicit-reward-model" class="level3">
+<h3 class="anchored" data-anchor-id="implicit-reward-model">Implicit Reward Model</h3>
+<p>The DPO paper subtitle is <strong>“Your Language Model is Secretly a Reward Model”</strong> and this captures the key insight as we are using the LLM for implicit reward. The policy <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> defines an implicit reward function:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Br%7D_%5Ctheta(x,%20y)%20=%20%5Cbeta%20%5Clog%20%5Cfrac%7B%5Cpi_%5Ctheta(y%7Cx)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)%7D%0A"></p>
+<p>This reward measures how much more likely the current policy is to generate response <img src="https://latex.codecogs.com/png.latex?y"> compared to the reference policy, scaled by <img src="https://latex.codecogs.com/png.latex?%5Cbeta">.</p>
+<ul>
+<li>If <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta(y%7Cx)%20%3E%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)">: The implicit reward is positive (the policy “likes” this response more than reference)</li>
+<li>If <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta(y%7Cx)%20%3C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(y%7Cx)">: The implicit reward is negative (the policy “likes” this response less than reference)</li>
+</ul>
+</section>
+<section id="analyzing-the-gradient-update" class="level3">
+<h3 class="anchored" data-anchor-id="analyzing-the-gradient-update">Analyzing the Gradient Update</h3>
+<p>We can flex our brain muscles one more time and compute the gradient for the DPO objective:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmathcal%7BL%7D_%7B%5Ctext%7BDPO%7D%7D%20=%20-%5Cmathbb%7BE%7D%5Cleft%5B%5Clog%20%5Csigma%5Cleft(%5Chat%7Br%7D_%5Ctheta(x,%20y_w)%20-%20%5Chat%7Br%7D_%5Ctheta(x,%20y_l)%5Cright)%5Cright%5D%0A"></p>
+<p>Let <img src="https://latex.codecogs.com/png.latex?u%20=%20%5Chat%7Br%7D_%5Ctheta(x,%20y_w)%20-%20%5Chat%7Br%7D_%5Ctheta(x,%20y_l)">. Using the chain rule:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cnabla_%5Ctheta%20%5Cmathcal%7BL%7D_%7B%5Ctext%7BDPO%7D%7D%20=%20-%5Cmathbb%7BE%7D%5Cleft%5B%5Cfrac%7B%5Csigma'(u)%7D%7B%5Csigma(u)%7D%20%5Cnabla_%5Ctheta%20u%5Cright%5D%0A"></p>
+<p>Using the property <img src="https://latex.codecogs.com/png.latex?%5Csigma'(u)%20=%20%5Csigma(u)(1%20-%20%5Csigma(u))">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A=%20-%5Cmathbb%7BE%7D%5Cleft%5B%5Cfrac%7B%5Csigma(u)(1-%5Csigma(u))%7D%7B%5Csigma(u)%7D%20%5Cnabla_%5Ctheta%20u%5Cright%5D%20=%20-%5Cmathbb%7BE%7D%5Cleft%5B(1%20-%20%5Csigma(u))%20%5Cnabla_%5Ctheta%20u%5Cright%5D%0A"></p>
+<p>Using <img src="https://latex.codecogs.com/png.latex?1%20-%20%5Csigma(u)%20=%20%5Csigma(-u)">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A=%20-%5Cmathbb%7BE%7D%5Cleft%5B%5Csigma(-u)%20%5Cnabla_%5Ctheta%20u%5Cright%5D%0A"></p>
+<p>Now, <img src="https://latex.codecogs.com/png.latex?-u%20=%20%5Chat%7Br%7D_%5Ctheta(x,%20y_l)%20-%20%5Chat%7Br%7D_%5Ctheta(x,%20y_w)">, and:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cnabla_%5Ctheta%20u%20=%20%5Cnabla_%5Ctheta%20%5Chat%7Br%7D_%5Ctheta(x,%20y_w)%20-%20%5Cnabla_%5Ctheta%20%5Chat%7Br%7D_%5Ctheta(x,%20y_l)%20=%20%5Cbeta%20%5Cnabla_%5Ctheta%20%5Clog%20%5Cpi_%5Ctheta(y_w%7Cx)%20-%20%5Cbeta%20%5Cnabla_%5Ctheta%20%5Clog%20%5Cpi_%5Ctheta(y_l%7Cx)%0A"></p>
+<p>Putting it together:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7B%5Cnabla_%5Ctheta%20%5Cmathcal%7BL%7D_%7B%5Ctext%7BDPO%7D%7D%20=%20-%5Cbeta%20%5Cmathbb%7BE%7D%5Cleft%5B%5Cunderbrace%7B%5Csigma%5Cleft(%5Chat%7Br%7D_%5Ctheta(x,%20y_l)%20-%20%5Chat%7Br%7D_%5Ctheta(x,%20y_w)%5Cright)%7D_%7B%5Ctext%7Bweight%7D%7D%5Cleft(%5Cunderbrace%7B%5Cnabla_%5Ctheta%20%5Clog%20%5Cpi_%5Ctheta(y_w%7Cx)%7D_%7B%5Ctext%7Bincrease%20%7D%20y_w%7D%20-%20%5Cunderbrace%7B%5Cnabla_%5Ctheta%20%5Clog%20%5Cpi_%5Ctheta(y_l%7Cx)%7D_%7B%5Ctext%7Bdecrease%20%7D%20y_l%7D%5Cright)%5Cright%5D%7D%20%5Ctag%7BVI.I%7D%0A"></p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cnabla_%5Ctheta%20%5Clog%20%5Cpi_%5Ctheta(y_w%7Cx)"> points in the direction that increases probability of the preferred response</li>
+<li><img src="https://latex.codecogs.com/png.latex?-%5Cnabla_%5Ctheta%20%5Clog%20%5Cpi_%5Ctheta(y_l%7Cx)"> points in the direction that decreases probability of the dispreferred response</li>
+<li>The weight term is high when <img src="https://latex.codecogs.com/png.latex?%5Chat%7Br%7D_%5Ctheta(x,%20y_l)%20%3E%20%5Chat%7Br%7D_%5Ctheta(x,%20y_w)">, i.e.&nbsp;when the model currently assigns higher implicit reward to the losing response than the winning response. In other words:
+<ul>
+<li><strong>When the model is wrong</strong> (ranks <img src="https://latex.codecogs.com/png.latex?y_l"> above <img src="https://latex.codecogs.com/png.latex?y_w">), we get large gradient updates</li>
+<li><strong>When the model is right</strong> (ranks <img src="https://latex.codecogs.com/png.latex?y_w"> above <img src="https://latex.codecogs.com/png.latex?y_l">), we get small gradient updates</li>
+</ul></li>
+</ul>
+<p>This dynamic sigmoid weighting is crucial. It naturally focuses learning on the examples the model currently gets wrong.</p>
+</section>
+</section>
+<section id="vii-computing-log-probabilities-in-practice" class="level2">
+<h2 class="anchored" data-anchor-id="vii-computing-log-probabilities-in-practice">VII: Computing Log Probabilities in Practice</h2>
+<blockquote class="blockquote">
+<p>This section is fully adapted from Umar Jamil’s video. I think it is essential to understand how log probabilities are computed in practice.</p>
+</blockquote>
+<p>The DPO loss requires computing <img src="https://latex.codecogs.com/png.latex?%5Clog%20%5Cpi_%5Ctheta(y%7Cx)">, the log probability of a complete response <img src="https://latex.codecogs.com/png.latex?y"> given a prompt <img src="https://latex.codecogs.com/png.latex?x">. Let’s see how this works in practice with LLMs.</p>
+<p>Language models are autoregressive: they generate text one token at a time, conditioning on all previous tokens. For a response <img src="https://latex.codecogs.com/png.latex?y%20=%20(y_1,%20y_2,%20%5Cldots,%20y_T)">, the probability factorizes as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cpi_%5Ctheta(y%7Cx)%20=%20%5Cprod_%7Bt=1%7D%5E%7BT%7D%20%5Cpi_%5Ctheta(y_t%20%7C%20x,%20y_1,%20%5Cldots,%20y_%7Bt-1%7D)%20=%20%5Cprod_%7Bt=1%7D%5E%7BT%7D%20%5Cpi_%5Ctheta(y_t%20%7C%20x,%20y_%7B%3Ct%7D)%0A"></p>
+<p>Taking the logarithm:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7B%5Clog%20%5Cpi_%5Ctheta(y%7Cx)%20=%20%5Csum_%7Bt=1%7D%5E%7BT%7D%20%5Clog%20%5Cpi_%5Ctheta(y_t%20%7C%20x,%20y_%7B%3Ct%7D)%7D%20%5Ctag%7BVII.I%7D%0A"></p>
+<p><strong>The log probability of the full response is the sum of log probabilities at each position.</strong></p>
+<p>Here’s how to compute <img src="https://latex.codecogs.com/png.latex?%5Clog%20%5Cpi_%5Ctheta(y%7Cx)">:</p>
+<ol type="1">
+<li><p><strong>Prepare input</strong>: Concatenate the prompt and response into a single sequence</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctext%7Binput%7D%20=%20%5Bx_1,%20x_2,%20%5Cldots,%20x_n,%20y_1,%20y_2,%20%5Cldots,%20y_T%5D"></p></li>
+<li><p><strong>Forward pass</strong>: Run the transformer to get hidden states at each position</p></li>
+<li><p><strong>Project to logits</strong>: Apply the language model head (typically a linear layer) to get vocabulary logits at each position</p></li>
+<li><p><strong>Log softmax</strong>: Convert logits to log probabilities over the vocabulary using <code>logsoftmax</code></p></li>
+<li><p><strong>Gather relevant log probs</strong>: For each position <img src="https://latex.codecogs.com/png.latex?t"> in the response extract the log probability of the actual next token <img src="https://latex.codecogs.com/png.latex?y_t"> (since we know the output)</p></li>
+<li><p><strong>Sum with masking</strong>: Sum the log probabilities but only for response tokens (not prompt tokens)</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Clog%20%5Cpi_%5Ctheta(y%7Cx)%20=%20%5Csum_%7Bt%20%5Cin%20%5Ctext%7Bres%20pos%7D%7D%20%5Clog%20%5Cpi_%5Ctheta(y_t%20%7C%20x,%20y_%7B%3Ct%7D)"></p></li>
+</ol>
+<p>This gives us <img src="https://latex.codecogs.com/png.latex?%5Clog%20%5Cpi_%5Ctheta(y%7Cx)"> for one response. We do this for both the preferred response <img src="https://latex.codecogs.com/png.latex?y_w"> and the dispreferred response <img src="https://latex.codecogs.com/png.latex?y_l"> and we also do it for both the policy model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta"> and the frozen reference model <img src="https://latex.codecogs.com/png.latex?%5Cpi_%7B%5Ctext%7Bref%7D%7D">. With these four log probabilities in hand, we can compute the DPO loss.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Once you derive the DPO loss, you start appreciating the simplicity and elegance of the solution especially when compared to PPO. The derivation hinges on one observation that the Bradley-Terry model only cares about reward differences and this causes the intractable partition function from analytical solution to cancel out completely. In turn, what remains is a straightforward classification loss.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><strong>Papers:</strong>
+<ul>
+<li><a href="https://arxiv.org/abs/2305.18290">Direct Preference Optimization: Your Language Model is Secretly a Reward Model</a>: The original DPO paper</li>
+<li><a href="https://arxiv.org/pdf/2203.02155">Training language models to follow instructions with human feedback</a>: The InstructGPT paper that established PPO-based RLHF</li>
+</ul></li>
+<li><strong>Videos:</strong>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=hvGa5Mba4c8">Umar Jamil’s video on DPO</a>: Excellent walkthrough of the DPO derivation</li>
+</ul></li>
+</ul>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</guid>
+  <pubDate>Tue, 30 Dec 2025 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Deriving the PPO Loss from First Principles</title>
   <link>https://garg-aayush.github.io/posts/2025-12-25-deriving-ppo-loss.html</link>
