@@ -170,9 +170,7 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#deriving-the-dpo-loss-from-first-principles" id="toc-deriving-the-dpo-loss-from-first-principles" class="nav-link active" data-scroll-target="#deriving-the-dpo-loss-from-first-principles">Deriving the DPO Loss from First Principles</a>
-  <ul class="collapse">
-  <li><a href="#i-the-rlhf-objective" id="toc-i-the-rlhf-objective" class="nav-link" data-scroll-target="#i-the-rlhf-objective">I: The RLHF Objective</a></li>
+  <li><a href="#i-the-rlhf-objective" id="toc-i-the-rlhf-objective" class="nav-link active" data-scroll-target="#i-the-rlhf-objective">I: The RLHF Objective</a></li>
   <li><a href="#ii-the-bradley-terry-model-for-preference-learning" id="toc-ii-the-bradley-terry-model-for-preference-learning" class="nav-link" data-scroll-target="#ii-the-bradley-terry-model-for-preference-learning">II: The Bradley-Terry Model for Preference Learning</a>
   <ul class="collapse">
   <li><a href="#the-bradley-terry-probability-model" id="toc-the-bradley-terry-probability-model" class="nav-link" data-scroll-target="#the-bradley-terry-probability-model">The Bradley-Terry Probability Model</a></li>
@@ -189,7 +187,6 @@ window.Quarto = {
   <li><a href="#vii-computing-log-probabilities-in-practice" id="toc-vii-computing-log-probabilities-in-practice" class="nav-link" data-scroll-target="#vii-computing-log-probabilities-in-practice">VII: Computing Log Probabilities in Practice</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -226,8 +223,6 @@ window.Quarto = {
 </header>
 
 
-<section id="deriving-the-dpo-loss-from-first-principles" class="level1">
-<h1>Deriving the DPO Loss from First Principles</h1>
 <p>In my <a href="https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html">previous post</a>, I worked through the derivation of the PPO loss used in RLHF for LLMs. By the end, we arrived at a fairly daunting objective function with multiple components: clipped surrogate, value function loss, entropy bonus and KL penalty. It is not just that the final objective is intimidating but the entire RLHF pipeline is complex and multi-step. You first train a separate reward model to reflect human preferences then fine-tune the LLM using RL with PPO.</p>
 <p>That brings us to <a href="https://arxiv.org/abs/2305.18290">Direct Preference Optimization</a> (DPO). DPO is a computationally lightweight alternative that directly optimizes LLMs to adhere to human preferences <strong>without explicit reward modeling or reinforcement learning</strong>. The key insight is that DPO implicitly optimizes the <strong>same</strong> objective as PPO-based RLHF (reward maximization with a KL-divergence constraint) but it replaces the entire reward model + PPO loop with a single supervised objective on preference pairs. There is no sampling during training, no value function, no clipping, just a classification loss!</p>
 <p>Here I derive the DPO loss showing exactly how this simplification is possible. I will assume familiarity with concepts from the PPO post, particularly the reward model and the KL-constrained RLHF objective.</p>
@@ -535,7 +530,6 @@ P(y_w \succ y_l | x) = \sigma\left(\hat{r}(x, y_w) - \hat{r}(x, y_l)\right)
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
