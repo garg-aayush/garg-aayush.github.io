@@ -10,7 +10,213 @@
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>All posts on ML engineering, LLMs, and AI products.</description>
 <generator>quarto-1.8.26</generator>
-<lastBuildDate>Tue, 30 Dec 2025 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 01 Jan 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Understanding GRPO: PPO without the Critic</title>
+  <link>https://garg-aayush.github.io/posts/2026-01-01-understanding-grpo.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>In my previous posts, I worked through the derivations of <a href="https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html">PPO</a> and <a href="https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html">DPO</a> for LLM post-training. PPO gave us a full-fledged RL approach with clipped surrogate objectives, value functions and GAE-based advantage estimation. DPO on the other hand, showed a clever way to bypass RL entirely by reformulating the optimization as a simple classification loss on preference pairs.</p>
+<p>That brings us to Group Relative Policy Optimization (GRPO), introduced in the <a href="https://arxiv.org/abs/2402.03300">DeepSeekMath</a> paper. If you have been following recent developments in reasoning models throughout 2025, GRPO has become one of the most widely used post-training algorithms behind open-source reasoning models.</p>
+<p>In simple terms, GRPO can be thought of as PPO without the critic (value function). Recall that PPO trains a value function in addition to the policy to estimate baselines for advantage computation. GRPO takes a simpler approach where it samples multiple completions (“group”) for each prompt and uses their rewards to form a baseline for advantage computation. This group-derived baseline replaces the learned value function entirely (no need to train a critic!).</p>
+<p>The practical implication is lower memory consumption and reduced training complexity relative to PPO while still preserving PPO’s core stability mechanisms, including the clipped surrogate objective and KL regularization.</p>
+<p>In this blog, I will discuss and derive the GRPO objective step by step showing exactly how it simplifies PPO.</p>
+<section id="i-the-ppo-objective-and-the-critic-problem" class="level2">
+<h2 class="anchored" data-anchor-id="i-the-ppo-objective-and-the-critic-problem">I: The PPO Objective and the Critic Problem</h2>
+<p>Let’s briefly recap the key relevant elements of PPO. For the full derivation and PPO details, see my <a href="https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html">previous blog on PPO</a>.</p>
+<p>PPO optimizes an LLM by maximizing a <strong>clipped surrogate objective</strong> (constrained using KL regularization):</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AL%5E%7B%5Ctext%7BCLIP%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_t%5Cleft%5B%5Cmin%5Cleft(r_t(%5Ctheta)%20%5Chat%7BA%7D_t,%20%5C;%20%5Ctext%7Bclip%7D(r_t(%5Ctheta),%201-%5Cepsilon,%201+%5Cepsilon)%20%5Ccdot%20%5Chat%7BA%7D_t%5Cright)%5Cright%5D%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?r_t(%5Ctheta)%20=%20%5Cfrac%7B%5Cpi_%5Ctheta(a_t%7Cs_t)%7D%7B%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(a_t%7Cs_t)%7D"> is the probability ratio between current and old policies.</p>
+<p>The critical component here is the <strong>advantage estimate</strong> (<img src="https://latex.codecogs.com/png.latex?%5Chat%7BA%7D_t">). The advantage measures how much better (or worse) a specific action is compared to what we expected:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AA%5E%5Cpi(s_t,%20a_t)%20=%20Q%5E%5Cpi(s_t,%20a_t)%20-%20V%5E%5Cpi(s_t)%0A"></p>
+<p>To compute it, PPO uses a <strong>value function</strong> <img src="https://latex.codecogs.com/png.latex?V%5E%5Cpi(s)"> (baseline) also called the <strong>critic</strong>) that predicts expected future rewards from any state. The critic is trained alongside the policy and PPO uses <strong>Generalized Advantage Estimation (GAE)</strong> to compute advantages from per-token value predictions.</p>
+<section id="the-value-function-problem-in-ppo" class="level3">
+<h3 class="anchored" data-anchor-id="the-value-function-problem-in-ppo">The Value Function Problem in PPO</h3>
+<p>The value function is implemented as a <strong>learned critic model</strong> with the same architecture as the policy (i.e.&nbsp;another full LLM copy). This critic is trained alongside the policy using a regression loss:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AL%5E%7B%5Ctext%7BVF%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_t%5Cleft%5B%5Cleft(V_%5Ctheta(s_t)%20-%20V_t%5E%7B%5Ctext%7Btarget%7D%7D%5Cright)%5E2%5Cright%5D%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?V_t%5E%7B%5Ctext%7Btarget%7D%7D"> is typically the discounted return-to-go from the sampled trajectory.</p>
+<p>In PPO, we train two large neural networks (policy and critic) together rather than a single model. This substantially increases computational and memory overhead. Maintaining and training the critic alongside the policy not only increases memory consumption but also adds significant complexity to the training pipeline. In practice, PPO requires four models to be resident in memory at the same time: the policy, the critic, the reference model and the reward model.</p>
+<p>One more issue with PPO is that GAE needs <strong>per-token rewards</strong> to compute Temporal Difference (TD) residuals at each position. But in LLM fine-tuning, we typically get <strong>outcome rewards</strong> which is a single score for the entire completion assigned only at the final token.</p>
+<blockquote class="blockquote">
+<p><em>From DeepSeekMath</em>: “During RL training, the value function is treated as a baseline in the calculation of the advantage for variance reduction. While in the LLM context, <strong>usually only the last token is assigned a reward score by the reward model, which may complicate the training of a value function that is accurate at each token</strong>.”</p>
+</blockquote>
+<p>It raises a fundamental question: how can the critic learn accurate per-token values when all training signal comes from a single final reward?</p>
+</section>
+</section>
+<section id="ii-replacing-the-critic-with-group-sampling" class="level2">
+<h2 class="anchored" data-anchor-id="ii-replacing-the-critic-with-group-sampling">II: Replacing the Critic with Group Sampling</h2>
+<p>As mentioned earlier, in PPO the value function <img src="https://latex.codecogs.com/png.latex?V(s)"> acts as a <strong>baseline <img src="https://latex.codecogs.com/png.latex?b(s)"></strong> for advantage estimation: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BA%7D_t%20=%20Q(s_t,%20a_t)%20-%20V(s_t).%0A"> Subtracting this baseline reduces the variance of the policy gradient estimator which in turn stabilizes training.</p>
+<blockquote class="blockquote">
+<p><strong>Key insight:</strong> the value function is just <em>one possible</em> choice of baseline. In principle, <strong>any function <img src="https://latex.codecogs.com/png.latex?b(s)"> that depends only on the state and not on the action can be used without introducing bias into the gradient estimates.</strong></p>
+</blockquote>
+<p>Common baseline choices are:</p>
+<ul>
+<li><strong>Constant baseline:</strong> The average reward across samples. This is the simplest option and is used in vanilla REINFORCE.</li>
+<li><strong>Learned value function:</strong> <img src="https://latex.codecogs.com/png.latex?V(s)"> trained alongside the policy as in PPO.</li>
+<li><strong>Monte Carlo estimate:</strong> An empirical average of returns computed from multiple samples starting from the same state.</li>
+</ul>
+<p><strong>GRPO adopts the third approach. Instead of learning a value function, it directly estimates the expected return using multiple samples.</strong></p>
+<section id="monte-carlo-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="monte-carlo-baseline">Monte Carlo Baseline</h3>
+<p>For each prompt <img src="https://latex.codecogs.com/png.latex?q">, GRPO samples <strong>multiple completions</strong> <img src="https://latex.codecogs.com/png.latex?%5C%7Bo_1,%20o_2,%20%5Cldots,%20o_G%5C%7D"> from the policy and obtains their rewards <img src="https://latex.codecogs.com/png.latex?%5C%7Br_1,%20r_2,%20%5Cldots,%20r_G%5C%7D">. The average reward across these completions provides a Monte Carlo estimate of the expected return:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ab(q)%20=%20%5Cfrac%7B1%7D%7BG%7D%5Csum_%7Bi=1%7D%5EG%20r_i%20%5Capprox%20%5Cmathbb%7BE%7D_%7Bo%20%5Csim%20%5Cpi_%5Ctheta(o%7Cq)%7D%5Br(q,%20o)%5D%0A"></p>
+<p>This is a natural and unbiased estimator. With enough samples it converges to the true expected reward for that prompt, <strong>similar to what a well-trained value function would predict and can eliminates the need to train a separate critic model</strong>.</p>
+</section>
+<section id="group-relative-advantage" class="level3">
+<h3 class="anchored" data-anchor-id="group-relative-advantage">Group-Relative Advantage</h3>
+<p>Using the average reward as a baseline, the advantage for completion <img src="https://latex.codecogs.com/png.latex?i"> becomes:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BA%7D_i%20=%20r_i%20-%20%5Cfrac%7B1%7D%7BG%7D%5Csum_%7Bj=1%7D%5EG%20r_j%20=%20r_i%20-%20%5Ctext%7Bmean%7D(r_1,%20%5Cldots,%20r_G)%0A"></p>
+<p>GRPO normalizes the advantage by the standard deviation of rewards in the group:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BA%7D_i%20=%20%5Cfrac%7Br_i%20-%20%5Ctext%7Bmean%7D(r_1,%20%5Cldots,%20r_G)%7D%7B%5Ctext%7Bstd%7D(r_1,%20%5Cldots,%20r_G)%7D%20%5Ctag%7BII.I%7D%0A"></p>
+<p>This normalization ensures that advantages are on a comparable scale regardless of the prompt’s inherent difficulty.</p>
+<blockquote class="blockquote">
+<p>Think it this way: different prompts can have vastly different reward scales. For example, a simple arithmetic question might yield rewards clustered around 0.9 while a challenging proof might have rewards spread across say 0.1-0.9. Without normalization, the policy gradient updates would be dominated by high-variance prompts which can possibly destabilizing training.</p>
+</blockquote>
+<p>GRPO’s group-relative advantage mirrors the comparative nature of rewards models as we are asking “<em>how good is this completion relative to other completions for the same prompt</em>?”.</p>
+</section>
+</section>
+<section id="iii-the-grpo-objective" class="level2">
+<h2 class="anchored" data-anchor-id="iii-the-grpo-objective">III: The GRPO Objective</h2>
+<p>We now have all the pieces needed to construct the full GRPO objective. The construction follows three key modifications:</p>
+<p><strong>1. Start with PPO’s clipped surrogate.</strong> Recall from Section I that PPO optimizes:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AL%5E%7B%5Ctext%7BCLIP%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_t%5Cleft%5B%5Cmin%5Cleft(r_t(%5Ctheta)%20%5Chat%7BA%7D_t,%20%5C;%20%5Ctext%7Bclip%7D(r_t(%5Ctheta),%201-%5Cepsilon,%201+%5Cepsilon)%20%5Ccdot%20%5Chat%7BA%7D_t%5Cright)%5Cright%5D%0A"></p>
+<p>Here <img src="https://latex.codecogs.com/png.latex?clip(.)"> is <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bclip%7D(r_t(%5Ctheta),%201-%5Cepsilon,%201+%5Cepsilon)"> and this clipping mechanism provides a <strong>soft trust region</strong> that prevents destructively large policy updates.</p>
+<p><strong>2. Replace GAE advantage with group-relative advantage.</strong> Instead of computing <img src="https://latex.codecogs.com/png.latex?%5Chat%7BA%7D_t"> using a learned critic and GAE, we substitute the group-relative advantage from Section II:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BA%7D_i%20=%20%5Cfrac%7Br_i%20-%20%5Ctext%7Bmean%7D(r_1,%20%5Cldots,%20r_G)%7D%7B%5Ctext%7Bstd%7D(r_1,%20%5Cldots,%20r_G)%7D%0A"></p>
+<p>This is the <strong>key simplification</strong>. &gt; We no longer need per-token value predictions. Instead we estimate the baseline directly from sampled completions.</p>
+<p><strong>3. Move KL penalty from reward to loss.</strong> In PPO, the KL penalty is typically subtracted from the reward signal (<img src="https://latex.codecogs.com/png.latex?r_t">) before computing advantages:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctilde%7Br%7D_t%20=%20r_t%20-%20%5Cbeta%20%5Ccdot%20%5Clog%20%5Cfrac%7B%5Cpi_%5Ctheta(a_t%7Cs_t)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(a_t%7Cs_t)%7D%0A"></p>
+<p>GRPO takes a different approach by adding the KL divergence directly as a penalty term in the loss function. This is a design choice that simplifies advantage computation since we dont need to consider KL penalties in the baseline estimation.</p>
+<blockquote class="blockquote">
+<p><em>From DeepSeekMath</em>: “Also note that, instead of adding KL penalty in the reward, GRPO regularizes by directly adding the KL divergence between the trained policy and the reference policy to the loss, avoiding complicating the calculation of <img src="https://latex.codecogs.com/png.latex?%5Chat%7BA%7D_i">.”</p>
+</blockquote>
+<section id="the-full-grpo-objective" class="level3">
+<h3 class="anchored" data-anchor-id="the-full-grpo-objective">The Full GRPO Objective</h3>
+<p>Combining these modifications, the GRPO objective (to be maximized) is:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AJ_%7B%5Ctext%7BGRPO%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_%7Bq%20%5Csim%20%5Cmathcal%7BD%7D,%5C,%20%5C%7Bo_i%5C%7D_%7Bi=1%7D%5EG%20%5Csim%20%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(o%7Cq)%7D%5Cleft%5B%5Cfrac%7B1%7D%7BG%7D%5Csum_%7Bi=1%7D%5EG%20%5Cleft(%20%5Cmin%5Cleft(%5Cfrac%7B%5Cpi_%5Ctheta(o_i%7Cq)%7D%7B%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(o_i%7Cq)%7D%5Chat%7BA%7D_i,%20%5C;%20%5Ctext%7Bclip%7D(%5Ccdot)%20%5Ccdot%20%5Chat%7BA%7D_i%5Cright)%20-%20%5Cbeta%20%5C,%20D_%7B%5Ctext%7BKL%7D%7D%5Cleft(%5Cpi_%5Ctheta%20%5C%7C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D%5Cright)%20%5Cright)%5Cright%5D%0A"></p>
+<p>where: - <img src="https://latex.codecogs.com/png.latex?q"> is a prompt sampled from the training distribution <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BD%7D"> - <img src="https://latex.codecogs.com/png.latex?%5C%7Bo_1,%20o_2,%20%5Cldots,%20o_G%5C%7D"> are <img src="https://latex.codecogs.com/png.latex?G"> completions sampled from the old policy <img src="https://latex.codecogs.com/png.latex?%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D"> - <img src="https://latex.codecogs.com/png.latex?%5Chat%7BA%7D_i"> is the group-relative advantage for completion <img src="https://latex.codecogs.com/png.latex?i"> (from II.I) - <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is the KL penalty coefficient - <img src="https://latex.codecogs.com/png.latex?%5Cpi_%7B%5Ctext%7Bref%7D%7D"> is the frozen reference model (typically the SFT checkpoint)</p>
+<p>The objective averages over all completions in the group, treating each completion equally in the policy update.</p>
+<p>For implementation, we expand the sequence-level objective over individual tokens. Since autoregressive models factor the probability of a completion as a product of token probabilities:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cpi_%5Ctheta(o_i%7Cq)%20=%20%5Cprod_%7Bt=1%7D%5E%7B%7Co_i%7C%7D%20%5Cpi_%5Ctheta(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%0A"></p>
+<p>The per-token formulation of GRPO becomes:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AJ_%7B%5Ctext%7BGRPO%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_%7Bq%20%5Csim%20%5Cmathcal%7BD%7D,%5C,%20%5C%7Bo_i%5C%7D_%7Bi=1%7D%5EG%20%5Csim%20%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(o%7Cq)%7D%20%5Cleft%5B%5Cfrac%7B1%7D%7BG%7D%5Csum_%7Bi=1%7D%5EG%20%5Cfrac%7B1%7D%7B%7Co_i%7C%7D%5Csum_%7Bt=1%7D%5E%7B%7Co_i%7C%7D%20%5Cleft(%20%5Cmin%5Cleft(%5Cfrac%7B%5Cpi_%5Ctheta(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%7B%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%5Chat%7BA%7D_%7Bi,t%7D,%20%5C;%20%5Ctext%7Bclip%7D(%5Ccdot)%20%5Ccdot%20%5Chat%7BA%7D_%7Bi,t%7D%5Cright)%20-%20%5Cbeta%20%5C,%20D_%7B%5Ctext%7BKL%7D%7D%5E%7B(t)%7D%20%5Cright)%5Cright%5D%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?D_%7B%5Ctext%7BKL%7D%7D%5E%7B(t)%7D"> is the per-token KL divergence between the current policy and the reference model.</p>
+<p><strong>Note, all tokens in completion <img src="https://latex.codecogs.com/png.latex?i"> receive the same advantage:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BA%7D_%7Bi,t%7D%20=%20%5Chat%7BA%7D_i%20%5Cquad%20%5Cforall%20%5C,%20t%20%5Cin%20%5C%7B1,%202,%20%5Cldots,%20%7Co_i%7C%5C%7D%0A"></p>
+<p>This is a deliberate simplification. Since we only receive a single reward for the entire completion trying to learn which specific tokens were “good” or “bad” can be difficult.</p>
+<blockquote class="blockquote">
+<p><em>From DeepSeekMath</em>: “While in the LLM context, usually only the last token is assigned a reward score by the reward model, which may complicate the training of a value function that is accurate at each token.”</p>
+</blockquote>
+</section>
+<section id="single-gradient-step-simplification" class="level3">
+<h3 class="anchored" data-anchor-id="single-gradient-step-simplification">Single Gradient Step Simplification</h3>
+<p>In practice (as mentioned in RLHF Book), GRPO is often run with only <strong>one gradient step per batch</strong> of sampled data. In this case <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta%20=%20%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D"> at the start of the update which means the policy ratio equals 1 and the clipping mechanism has no effect:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ar_t(%5Ctheta)%20=%20%5Cfrac%7B%5Cpi_%5Ctheta(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%7B%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%20=%201%0A"></p>
+<p>The objective then simplifies to a weighted policy gradient:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AJ_%7B%5Ctext%7BGRPO%7D%7D(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_%7Bq%20%5Csim%20%5Cmathcal%7BD%7D,%5C,%20%5C%7Bo_i%5C%7D_%7Bi=1%7D%5EG%20%5Csim%20%5Cpi_%7B%5Ctheta_%7B%5Ctext%7Bold%7D%7D%7D(o%7Cq)%7D%20%5Cleft%5B%5Cfrac%7B1%7D%7BG%7D%5Csum_%7Bi=1%7D%5EG%20%5Cfrac%7B1%7D%7B%7Co_i%7C%7D%5Csum_%7Bt=1%7D%5E%7B%7Co_i%7C%7D%20%5Cleft(%20%5Chat%7BA%7D_i%20%5Ccdot%20%5Clog%20%5Cpi_%5Ctheta(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%20-%20%5Cbeta%20%5C,%20D_%7B%5Ctext%7BKL%7D%7D%5E%7B(t)%7D%20%5Cright)%5Cright%5D%0A"></p>
+</section>
+</section>
+<section id="iv-kl-divergence-in-grpo" class="level2">
+<h2 class="anchored" data-anchor-id="iv-kl-divergence-in-grpo">IV: KL Divergence in GRPO</h2>
+<p>The KL Divergence is a measure of the difference between two probability distributions. It is defined as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AD_%7B%5Ctext%7BKL%7D%7D(%5Cpi_%5Ctheta%20%5C%7C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D)%20=%20%5Cmathbb%7BE%7D_%7Bx%20%5Csim%20%5Cpi_%5Ctheta%7D%5Cleft%5B%5Clog%20%5Cfrac%7B%5Cpi_%5Ctheta(x)%7D%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(x)%7D%5Cright%5D%0A"></p>
+<p>It can simply be estimated as:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AD_%7B%5Ctext%7BKL%7D%7D(%5Cpi_%5Ctheta%20%5C%7C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D)%20%5Capprox%20%5Clog%20%5Cpi_%5Ctheta(x)%20-%20%5Clog%20%5Cpi_%7B%5Ctext%7Bref%7D%7D(x)%0A"></p>
+<p>However this can be <strong>negative</strong> for individual samples (when <img src="https://latex.codecogs.com/png.latex?%5Cpi_%5Ctheta%20%3C%20%5Cpi_%7B%5Ctext%7Bref%7D%7D">) even though KL divergence is always non-negative. This may lead to high variance in gradient estimates.</p>
+<p>GRPO uses an alternative estimator that is both <strong>unbiased</strong> and <strong>guaranteed non-negative</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AD_%7B%5Ctext%7BKL%7D%7D%5E%7B(t)%7D%20=%20%5Cfrac%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%7B%5Cpi_%5Ctheta(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%20-%20%5Clog%20%5Cfrac%7B%5Cpi_%7B%5Ctext%7Bref%7D%7D(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%7B%5Cpi_%5Ctheta(o_%7Bi,t%7D%7Cq,%20o_%7Bi,%3Ct%7D)%7D%20-%201%20%5Ctag%7BIV.I%7D%0A"></p>
+<p>This estimator can be understood as measuring the gap between <img src="https://latex.codecogs.com/png.latex?%5Clog(x)"> and its tangent line at <img src="https://latex.codecogs.com/png.latex?x=1">. Since <img src="https://latex.codecogs.com/png.latex?%5Clog"> is concave. This gap is always non-negative ensuring the KL penalty never incorrectly suggests that diverging from the reference <em>decreases</em> the penalty.</p>
+<blockquote class="blockquote">
+<p>For a detailed derivation of why this estimator is unbiased and non-negative, see <a href="http://joschu.net/blog/kl-approx.html">John Schulman’s excellent blog post on approximating KL divergence</a>.</p>
+</blockquote>
+</section>
+<section id="v-outcome-vs.-process-supervision" class="level2">
+<h2 class="anchored" data-anchor-id="v-outcome-vs.-process-supervision">V: Outcome vs.&nbsp;Process Supervision</h2>
+<p>The GRPO formulation presented so far assumes <strong>outcome supervision</strong> which provides a single reward at the end of each completion with the same advantage assigned to every token. However for complex reasoning tasks knowing only the final answer reward might not be sufficient.</p>
+<blockquote class="blockquote">
+<p><em>From DeepSeekMath Paper</em>: “Outcome supervision only provides a reward at the end of each output, which may not be sufficient and efficient to supervise the policy in complex mathematical tasks.”</p>
+</blockquote>
+<p><strong>Process supervision</strong> addresses this by providing rewards at the end of each reasoning step. Given a completion <img src="https://latex.codecogs.com/png.latex?o_i"> with <img src="https://latex.codecogs.com/png.latex?K_i"> reasoning steps, a <strong>process reward model (PRM)</strong> assigns rewards <img src="https://latex.codecogs.com/png.latex?%5C%7Br_i%5E%7B%5Ctext%7Bindex%7D(1)%7D,%20%5Cldots,%20r_i%5E%7B%5Ctext%7Bindex%7D(K_i)%7D%5C%7D"> at step boundaries where <img src="https://latex.codecogs.com/png.latex?%5Ctext%7Bindex%7D(j)"> is the end token index of the <img src="https://latex.codecogs.com/png.latex?j">-th step.</p>
+<p>GRPO extends to process supervision with two modifications:</p>
+<p><strong>1. Normalize across all step rewards in the group:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctilde%7Br%7D_i%5E%7B%5Ctext%7Bindex%7D(j)%7D%20=%20%5Cfrac%7Br_i%5E%7B%5Ctext%7Bindex%7D(j)%7D%20-%20%5Ctext%7Bmean%7D(%5Cmathcal%7BR%7D)%7D%7B%5Ctext%7Bstd%7D(%5Cmathcal%7BR%7D)%7D%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BR%7D"> contains all step rewards across all <img src="https://latex.codecogs.com/png.latex?G"> completions.</p>
+<p><strong>2. Compute advantages as cumulative future rewards:</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BA%7D_%7Bi,t%7D%20=%20%5Csum_%7B%5Ctext%7Bindex%7D(j)%20%5Cgeq%20t%7D%20%5Ctilde%7Br%7D_i%5E%7B%5Ctext%7Bindex%7D(j)%7D%20%5Ctag%7BV.I%7D%0A"></p>
+<p>This mirrors <strong>return-to-go</strong> in traditional RL where earlier tokens accumulate rewards from all subsequent steps, while tokens near the end see only remaining rewards.</p>
+<blockquote class="blockquote">
+<p>The DeepSeekMath experiments found process supervision can accelerate learning, though the gap narrows with iterative training. For domains with reliable verifiers (code execution, math answer checking), outcome supervision with RLVR has become dominant. DeepSeek-R1 uses only outcome-level verification.</p>
+</blockquote>
+</section>
+<section id="vi-connection-to-reinforce-leave-one-out-rloo" class="level2">
+<h2 class="anchored" data-anchor-id="vi-connection-to-reinforce-leave-one-out-rloo">VI: Connection to REINFORCE Leave-One-Out (RLOO)</h2>
+<p>GRPO is not the only critic-free algorithm leveraging group sampling. <a href="https://arxiv.org/html/2402.14740v1">REINFORCE Leave-One-Out (RLOO)</a> takes a similar approach but computes the baseline as the mean reward over all <em>other</em> completions, <strong>excluding</strong> the current sample:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AA_i%5E%7B%5Ctext%7BRLOO%7D%7D%20=%20r_i%20-%20%5Cfrac%7B1%7D%7BG-1%7D%5Csum_%7Bj=1,%20j%20%5Cneq%20i%7D%5E%7BG%7D%20r_j%20%5Ctag%7BVI.I%7D%0A"></p>
+<p>This “leave-one-out” baseline avoids a subtle correlation that exists when the baseline includes the sample being evaluated.</p>
+<p>The two algorithms are conceptually very similar. However, there are some key differences:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>RLOO</th>
+<th>GRPO</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Baseline</strong></td>
+<td>Mean of <em>other</em> samples</td>
+<td>Mean of <em>all</em> samples</td>
+</tr>
+<tr class="even">
+<td><strong>Normalization</strong></td>
+<td>None</td>
+<td>Divide by std</td>
+</tr>
+<tr class="odd">
+<td><strong>Clipping</strong></td>
+<td>No</td>
+<td>Yes (PPO-style)</td>
+</tr>
+<tr class="even">
+<td><strong>KL Placement</strong></td>
+<td>In reward</td>
+<td>In loss</td>
+</tr>
+</tbody>
+</table>
+<p><strong>GRPO can be understood as inheriting PPO’s clipping mechanism for stability while adopting RLOO-style group sampling to eliminate the critic.</strong></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>GRPO ingenuity comes from recognizing that PPO value function is fundamentally just a baseline for advantage computation and that an stimate obtained via group sampling can serve the same role. By sampling multiple completions per prompt and using their mean reward as the baseline, GRPO achieves the stability provided by PPO clipped surrogate objective without the memory overhead or training complexity of training a separate critic model.</p>
+<p>This design choice is what makes GRPO a preferred approach for RLVR training of LLMs focused on reasoning capabilities.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p><strong>Papers:</strong></p>
+<ul>
+<li><a href="https://arxiv.org/abs/2402.03300">DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</a>: The original GRPO paper</li>
+<li><a href="https://arxiv.org/abs/2501.12948">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</a>: DeepSeek’s reasoning model trained with GRPO</li>
+<li><a href="https://arxiv.org/abs/2402.14740">Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs</a>: The RLOO paper comparing critic-free methods</li>
+</ul>
+<p><strong>Blogs:</strong></p>
+<ul>
+<li><a href="http://joschu.net/blog/kl-approx.html">John Schulman’s post on approximating KL divergence</a>: Derivation of the unbiased non-negative KL estimator</li>
+<li><a href="https://rlhfbook.com/">RLHF Book by Nathan Lambert</a>: Comprehensive resource on RLHF algorithms including GRPO implementation details</li>
+<li><a href="https://substack.com/home/post/p-177823868">Understanding GRPO by Cameron R. Wolfe</a>: Deep dive into GRPO mechanics and implementation</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-01-01-understanding-grpo.html</guid>
+  <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Deriving the DPO Loss from First Principles</title>
   <link>https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</link>

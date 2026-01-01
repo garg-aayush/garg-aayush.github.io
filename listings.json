@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/blog/index.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/2026-01-01-understanding-grpo.html",
       "/posts/2025-12-30-deriving-dpo-loss.html",
       "/posts/2025-12-25-deriving-ppo-loss.html",
       "/posts/2025-12-28-sft-from-scratch.html",
@@ -16,8 +17,9 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/blog/index.html",
     "items": [
+      "/posts/2026-01-01-understanding-grpo.html",
       "/posts/2025-12-30-deriving-dpo-loss.html",
       "/posts/2025-12-25-deriving-ppo-loss.html",
       "/posts/2025-12-28-sft-from-scratch.html",
