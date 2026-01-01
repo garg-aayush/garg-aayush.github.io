@@ -1,6 +1,6 @@
 ---
 title: "Aayush Garg"
-description: "Notes on applied ML engineering, LLMs, and building AI products."
+description: "LLM fundamentals, fine-tuning experiments, and building reliable AI systems."
 sidebar: false
 toc: true
 listing:
@@ -24,21 +24,21 @@ format:
 
 ![](static/img/aayush_cropped.jpg){.profile-pic fig-alt="Aayush Garg"}
 
-I am an applied machine learning engineer focused on building AI-driven products and systems people can rely on. At Jiffy, I build image enhancement pipelines, deploy ML models at scale, and develop LLM/VLM applications across product verticals.
+I am an applied machine learning engineer focused on building resilient AI-driven products and systems. At Jiffy, I specialize in building intelligent image enhancement pipelines and agentic systems, developing custom ML models, and deploying ML/LLM models at scale for diverse verticals.
 
 :::
 
 ## 💼 Current Work
 
-I am currently building an in-house AI design platform, developing evaluation and prompt-optimization workflows, and exploring applied LLM fine-tuning for structured data extraction. My background is in computational geophysics, which keeps me grounded in first principles and pragmatic experimentation.
+I work at the intersection of computer vision and LLMs, building practical AI systems that deliver real business value. My background is in computational geophysics which keeps me grounded in first principles and pragmatic experimentation.
 
-If you're interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734).
+If you're interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) or [Twitter](https://twitter.com/Aayush_ander).
 
 ---
 
 ## 📮 Blog
 
-I write about practical ML engineering, LLMs, and lessons learned from building AI products. Below are my recent posts.
+I write about LLM fundamentals, fine-tuning experiments, and building reliable AI systems. Below are my recent posts.
 
 ::: {#blog-listings}
 :::
