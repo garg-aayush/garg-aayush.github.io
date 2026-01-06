@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="LLM fundamentals, fine-tuning experiments, and building reliable AI systems.">
+<meta name="dcterms.date" content="2026-01-06">
+<meta name="description" content="Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline">
 
-<title>Aayush Garg</title>
+<title>Key Insights from DeepSeekMath paper – Aayush Garg</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,26 +25,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-506a6ca307b069fd236c00aaea49b2f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-2d3f84a5f37526cd3979248aedf2fbfb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -71,35 +70,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-blog-listings'] = new List('listing-blog-listings', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
 
 <script type="text/javascript">
@@ -111,38 +81,9 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"></head>
+<link rel="stylesheet" href="../styles.css">
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -152,19 +93,19 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./blog/"> 
+    <a class="nav-link" href="../blog/"> 
 <span class="menu-text">Blogs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./publications.html"> 
+    <a class="nav-link" href="../publications.html"> 
 <span class="menu-text">Publications</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -200,9 +141,23 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#current-work" id="toc-current-work" class="nav-link active" data-scroll-target="#current-work">💼 Current Work</a></li>
-  <li><a href="#blog" id="toc-blog" class="nav-link" data-scroll-target="#blog">📮 Blog</a></li>
-  <li><a href="#reach-out" id="toc-reach-out" class="nav-link" data-scroll-target="#reach-out">📬 Reach Out</a></li>
+  <li><a href="#key-insights" id="toc-key-insights" class="nav-link active" data-scroll-target="#key-insights">Key Insights</a>
+  <ul class="collapse">
+  <li><a href="#iterative-data-curation-pipeline" id="toc-iterative-data-curation-pipeline" class="nav-link" data-scroll-target="#iterative-data-curation-pipeline">Iterative Data Curation Pipeline</a></li>
+  <li><a href="#grpo-ppo-without-the-critic" id="toc-grpo-ppo-without-the-critic" class="nav-link" data-scroll-target="#grpo-ppo-without-the-critic">GRPO: PPO Without the Critic</a></li>
+  <li><a href="#code-training-helps-math" id="toc-code-training-helps-math" class="nav-link" data-scroll-target="#code-training-helps-math">Code Training Helps Math</a></li>
+  <li><a href="#arxiv-papers-are-surprisingly-ineffective" id="toc-arxiv-papers-are-surprisingly-ineffective" class="nav-link" data-scroll-target="#arxiv-papers-are-surprisingly-ineffective">ArXiv Papers are Surprisingly Ineffective</a></li>
+  <li><a href="#online-rl-training-is-superior-to-offline" id="toc-online-rl-training-is-superior-to-offline" class="nav-link" data-scroll-target="#online-rl-training-is-superior-to-offline">Online RL Training is Superior to Offline</a></li>
+  <li><a href="#rl-sharpens-distribution-does-not-expand-model-capability" id="toc-rl-sharpens-distribution-does-not-expand-model-capability" class="nav-link" data-scroll-target="#rl-sharpens-distribution-does-not-expand-model-capability">RL Sharpens Distribution, Does not Expand Model Capability</a></li>
+  </ul></li>
+  <li><a href="#the-iterative-data-curation-pipeline" id="toc-the-iterative-data-curation-pipeline" class="nav-link" data-scroll-target="#the-iterative-data-curation-pipeline">The Iterative Data Curation Pipeline</a>
+  <ul class="collapse">
+  <li><a href="#train-a-fasttext-classifier" id="toc-train-a-fasttext-classifier" class="nav-link" data-scroll-target="#train-a-fasttext-classifier">1) Train a fastText Classifier</a></li>
+  <li><a href="#recall-math-related-web-pages-from-common-crawl" id="toc-recall-math-related-web-pages-from-common-crawl" class="nav-link" data-scroll-target="#recall-math-related-web-pages-from-common-crawl">2) Recall Math-Related Web Pages from Common Crawl</a></li>
+  <li><a href="#find-new-math-related-domains" id="toc-find-new-math-related-domains" class="nav-link" data-scroll-target="#find-new-math-related-domains">3) Find New Math-Related Domains</a></li>
+  <li><a href="#expand-the-seed-corpus-and-repeat" id="toc-expand-the-seed-corpus-and-repeat" class="nav-link" data-scroll-target="#expand-the-seed-corpus-and-repeat">4) Expand the Seed Corpus and Repeat</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -211,12 +166,12 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Aayush Garg</h1>
+<h1 class="title">Key Insights from DeepSeekMath paper</h1>
 </div>
 
 <div>
   <div class="description">
-    LLM fundamentals, fine-tuning experiments, and building reliable AI systems.
+    Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline
   </div>
 </div>
 
@@ -224,6 +179,12 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 6, 2026</p>
+    </div>
+  </div>
   
     
   </div>
@@ -233,154 +194,122 @@ window.Quarto = {
 </header>
 
 
-<div class="profile-header quarto-layout-panel" data-layout="[21,79]">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;">
-<p><img src="static/img/aayush_cropped.jpg" class="profile-pic img-fluid" alt="Aayush Garg"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: flex-start;">
-<p>I am an applied machine learning engineer focused on building resilient AI-driven products and systems. At Jiffy, I specialize in building intelligent image enhancement pipelines and agentic systems, developing custom ML models, and deploying ML/LLM models at scale for diverse verticals.</p>
-</div>
-</div>
-</div>
-<section id="current-work" class="level2">
-<h2 class="anchored" data-anchor-id="current-work">💼 Current Work</h2>
-<p>I work at the intersection of computer vision and LLMs, building practical AI systems that deliver real business value. My background is in computational geophysics which keeps me grounded in first principles and pragmatic experimentation.</p>
-<p>If you’re interested in my work or want to collaborate, feel free to reach out via <a href="mailto:aayushgargiitr@gmail.com">email</a> or connect on <a href="https://www.linkedin.com/in/aayush-garg-8b26a734">LinkedIn</a> or <a href="https://twitter.com/Aayush_ander">Twitter</a>.</p>
-<hr>
+<p>Over the weekend, I finished reading the <a href="https://arxiv.org/abs/2402.03300">DeepSeekMath</a> paper which introduced GRPO (the RL algorithm I covered in my <a href="https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html">previous post</a>). Below are my thoughts and key takeaways from the paper.</p>
+<p>In this paper, the authors show that a small domain-specific model (7B parameters) can approach the performance of SOTA general models like GPT-4 on competition-level math when it is pre-trained on a sufficiently large, well-curated math corpus (120B tokens) and then reinforced with RL. It outperform major open-source models available at that time including same or larger size math-specialized models like <a href="https://arxiv.org/abs/2308.09583">WizardMath-v1.1 7B</a>, <a href="https://arxiv.org/abs/2310.10631">Llemma 34B</a> and <a href="https://arxiv.org/abs/2309.12284">MetaMath 70B</a>. As shown below, DeepseekMath-7B achieves 51.7% on the competition-level <a href="https://arxiv.org/abs/2103.03874">MATH benchmark</a>.</p>
+<p><img src="../static/img/blog-2026-01-06/image1-benchmark.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>In a nutshell: <strong>data quality and domain-specific pre-training are more critical for mathematical reasoning than sheer parameter count</strong>.</p>
+</blockquote>
+<section id="key-insights" class="level2">
+<h2 class="anchored" data-anchor-id="key-insights">Key Insights</h2>
+<section id="iterative-data-curation-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="iterative-data-curation-pipeline">Iterative Data Curation Pipeline</h3>
+<p>One of the biggest contributors to DeepSeekMath-7B performance is its pre-training corpus which is a 120B-token, high-quality mathematical dataset built from <a href="https://commoncrawl.org/">Common Crawl</a> using an <strong>iterative <a href="https://arxiv.org/abs/1612.03651">fastText</a> classifier-based pipeline</strong>.</p>
+<p>What stood out to me here is not just the dataset and data curation pipeline itself but what it implies:</p>
+<ol type="1">
+<li><p>Firstly, they created the pre-training corpus from the Common Crawl which shows that if you use a well-thought data curation pipeline you can extract a high-quality domain-specific data from the public Common Crawl data.</p></li>
+<li><p>Secondly, the resulting corpus is substantially larger than <a href="https://arxiv.org/abs/2310.06786">OpenWebMath</a> (roughly 9 times larger), reinforcing the point that <em>scale matters</em>, as long as quality is maintained.</p></li>
+</ol>
+<p><img src="../static/img/blog-2026-01-06/image2-math-datacorpus-comparison.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>Note, I will go deeper into the pipeline later in this post because I feel it is broadly reusable beyond math.</p>
+</blockquote>
 </section>
-<section id="blog" class="level2">
-<h2 class="anchored" data-anchor-id="blog">📮 Blog</h2>
-<p>I write about LLM fundamentals, fine-tuning experiments, and building reliable AI systems. Below are my recent posts.</p>
-<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-
-<th>
-Date
-</th>
-
-<th>
-Title
-</th>
-
-</tr>
-</thead>
-<tbody class="list">
-
-<tr data-index="0" data-listing-date-sort="1767657600000" data-listing-file-modified-sort="1767710906472" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Key Insights from DeepSeekMath paper" data-listing-filename-sort="2026-01-06-review-deepseek-math.qmd">
-<td>
-<span class="listing-date">1/6/26</span>
-</td>
-<td>
-<a href="./posts/2026-01-06-review-deepseek-math.html" class="title listing-title">Key Insights from DeepSeekMath paper</a>
-</td>
-
-</tr>
-
-<tr data-index="1" data-listing-date-sort="1767225600000" data-listing-file-modified-sort="1767710906472" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2213" data-listing-title-sort="Understanding GRPO: PPO without the Critic" data-listing-filename-sort="2026-01-01-understanding-grpo.qmd">
-<td>
-<span class="listing-date">1/1/26</span>
-</td>
-<td>
-<a href="./posts/2026-01-01-understanding-grpo.html" class="title listing-title">Understanding GRPO: PPO without the Critic</a>
-</td>
-
-</tr>
-
-<tr data-index="2" data-listing-date-sort="1767052800000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2409" data-listing-title-sort="Deriving the DPO Loss from First Principles" data-listing-filename-sort="2025-12-30-deriving-dpo-loss.qmd">
-<td>
-<span class="listing-date">12/30/25</span>
-</td>
-<td>
-<a href="./posts/2025-12-30-deriving-dpo-loss.html" class="title listing-title">Deriving the DPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="3" data-listing-date-sort="1766620800000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6096" data-listing-title-sort="Deriving the PPO Loss from First Principles" data-listing-filename-sort="2025-12-25-deriving-ppo-loss.qmd">
-<td>
-<span class="listing-date">12/25/25</span>
-</td>
-<td>
-<a href="./posts/2025-12-25-deriving-ppo-loss.html" class="title listing-title">Deriving the PPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="4" data-listing-date-sort="1764720000000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1981" data-listing-title-sort="What I Learned Building SFT from the Ground Up" data-listing-filename-sort="2025-12-28-sft-from-scratch.qmd">
-<td>
-<span class="listing-date">12/3/25</span>
-</td>
-<td>
-<a href="./posts/2025-12-28-sft-from-scratch.html" class="title listing-title">What I Learned Building SFT from the Ground Up</a>
-</td>
-
-</tr>
-
-<tr data-index="5" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365" data-listing-title-sort="A Guide to Building Custom Nodes in ComfyUI" data-listing-filename-sort="2025-09-10-build-custom-comfyui-node.qmd">
-<td>
-<span class="listing-date">9/10/25</span>
-</td>
-<td>
-<a href="./posts/2025-09-10-build-custom-comfyui-node.html" class="title listing-title">A Guide to Building Custom Nodes in ComfyUI</a>
-</td>
-
-</tr>
-
-<tr data-index="6" data-listing-date-sort="1757289600000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Building GPT from Scratch: Following Karpathy's Tutorial" data-listing-filename-sort="2025-09-08-building-gpt-from-scratch.qmd">
-<td>
-<span class="listing-date">9/8/25</span>
-</td>
-<td>
-<a href="./posts/2025-09-08-building-gpt-from-scratch.html" class="title listing-title">Building GPT from Scratch: Following Karpathy’s Tutorial</a>
-</td>
-
-</tr>
-
-<tr data-index="7" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035" data-listing-title-sort="Key Takeaways from Lecture 1: LLM Evaluation Lifecycle" data-listing-filename-sort="2025-09-02-llm-evaluation-lifecycle.qmd">
-<td>
-<span class="listing-date">9/2/25</span>
-</td>
-<td>
-<a href="./posts/2025-09-02-llm-evaluation-lifecycle.html" class="title listing-title">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
-</td>
-
-</tr>
-
-<tr data-index="8" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299" data-listing-title-sort="Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-15-finetune-llama3-8B-predibase.qmd">
-<td>
-<span class="listing-date">7/15/24</span>
-</td>
-<td>
-<a href="./posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title listing-title">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="9" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1767710906471" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288" data-listing-title-sort="Part II: Comparison of Model Performances on Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-09-compare-models-structured-data.qmd">
-<td>
-<span class="listing-date">7/9/24</span>
-</td>
-<td>
-<a href="./posts/2024-07-09-compare-models-structured-data.html" class="title listing-title">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-</tbody>
-</table>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
+<section id="grpo-ppo-without-the-critic" class="level3">
+<h3 class="anchored" data-anchor-id="grpo-ppo-without-the-critic">GRPO: PPO Without the Critic</h3>
+<p>The second major novelty is their <strong>more memory-efficient alternative to <a href="https://arxiv.org/abs/1707.06347">PPO</a></strong>: <strong>GRPO (Group Relative Policy Optimization)</strong>.</p>
+<p>At a high level, GRPO removes the need to train a separate critic (value) model. Instead of learning a value function for advantage estimation, GRPO samples a <em>group</em> of multiple completions per prompt (64 in their experiments) and uses the normalized average reward of the group as the baseline. This significantly reduces memory and compute overhead while preserving the stability mechanisms associated with PPO (clipping and KL regularization).</p>
+<p><img src="../static/img/blog-2026-01-06/image3-grpo.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>For a detailed explanation of GRPO, see my <a href="https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html">previous post on Understanding GRPO</a>.</p>
+</blockquote>
 </section>
-<section id="reach-out" class="level2">
-<h2 class="anchored" data-anchor-id="reach-out">📬 Reach Out</h2>
-<p>The best way to follow my work is on <a href="https://github.com/garg-aayush">GitHub</a>, <a href="https://twitter.com/Aayush_ander">Twitter</a>, or <a href="https://www.linkedin.com/in/aayush-garg-8b26a734">LinkedIn</a>.</p>
-<div class="template-credit">
-<p><em>Template inspired by <a href="https://hamel.dev/">hamel.dev</a> and <a href="https://lilianweng.github.io/">Lil’Log</a>.</em></p>
-</div>
-
+<section id="code-training-helps-math" class="level3">
+<h3 class="anchored" data-anchor-id="code-training-helps-math">Code Training Helps Math</h3>
+<p>The paper also provides evidence for the hypothesized connection between code training and reasoning. In their results, models that underwent code pre-training before math training showed improved performance on mathematical benchmarks, both with and without tool use. Thus, DeepSeekMath-Base is initialized with <a href="https://arxiv.org/abs/2401.14196">DeepSeek-Coder-Base-v1.5 7B</a>, not a general language model.</p>
+<blockquote class="blockquote">
+<p>My understanding is code pushes the model toward more structured, step-wise patterns of reasoning and that structure transfers well to math.</p>
+</blockquote>
+</section>
+<section id="arxiv-papers-are-surprisingly-ineffective" class="level3">
+<h3 class="anchored" data-anchor-id="arxiv-papers-are-surprisingly-ineffective">ArXiv Papers are Surprisingly Ineffective</h3>
+<p>ArXiv papers are often a default ingredient in many math pre-training recipes, but the authors report that pre-training on arXiv content was not helpful in their setup. In some cases, it led to no improvement or even to worse performance.</p>
+<p><img src="../static/img/blog-2026-01-06/image4-archive.png" class="img-fluid"></p>
+<p>Note, the authors have been cautious claiming it to be definitely true and rather presented it as an empirical finding that requires more studies to confirm it.</p>
+<blockquote class="blockquote">
+<p>Still, I found this interesting. It suggests arXiv-style technical writing might be more useful for formal exposition (or informalization) than for improving competition-style problem solving.</p>
+</blockquote>
+</section>
+<section id="online-rl-training-is-superior-to-offline" class="level3">
+<h3 class="anchored" data-anchor-id="online-rl-training-is-superior-to-offline">Online RL Training is Superior to Offline</h3>
+<p>Sampling training data from the real-time policy model (online) significantly outperforms sampling from the initial SFT model (offline).</p>
+<p>In their experiments, Online <a href="https://arxiv.org/abs/2308.01825">Rejection Sampling Fine-Tuning (RFT)</a> significantly outperformed standard (offline) RFT on both <a href="https://arxiv.org/abs/2110.14168">GSM8K</a> and MATH benchmarks. While the two methods perform similarly in the early stages of training, Online RFT gains a distinct advantage as training progresses.</p>
+<p><img src="../static/img/blog-2026-01-06/image5-online-offline.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>As the policy diverges from the initial SFT model, data sampled from SFT becomes less relevant to the current model’s decision boundaries. Early on when the policy is close to SFT, it doesn’t matter much. Later, this staleness hurts the performance.</p>
+</blockquote>
+</section>
+<section id="rl-sharpens-distribution-does-not-expand-model-capability" class="level3">
+<h3 class="anchored" data-anchor-id="rl-sharpens-distribution-does-not-expand-model-capability">RL Sharpens Distribution, Does not Expand Model Capability</h3>
+<p>This is one of my favorite analyses in the paper. The authors compare <strong>Maj@K</strong> (majority voting accuracy) and <strong>Pass@K</strong> (whether any of K samples is correct) for both the Instruct and RL models.</p>
+<p>At K=64 samples, both models reach similar Pass@K ceilings (around 83-85% on MATH) which indicates that the fundamental capability is the same. However, RL consistently outperforms on Maj@K.</p>
+<p><img src="../static/img/blog-2026-01-06/image6-majpass.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>This suggests RL isn’t expanding fundamental reasoning abilities. Instead it is sharpening the distribution of the model’s output which boosts the correct responses that were already within the model’s capability.</p>
+</blockquote>
+</section>
+</section>
+<section id="the-iterative-data-curation-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="the-iterative-data-curation-pipeline">The Iterative Data Curation Pipeline</h2>
+<p>As I mentioned earlier, one of the key contributions of this paper is their data curation pipeline that extracts high-quality mathematical content from Common Crawl.</p>
+<p>The reason I am going into detail here is that you can <strong>draw parallels from this approach to create any other domain-specific dataset from publicly available data like Common Crawl</strong>. The pipeline is iterative and uses a fastText classifier at its core. Crudely, this is how the pipeline works:</p>
+<p><img src="../static/img/blog-2026-01-06/image7-data-pipeline.png" class="img-fluid"></p>
+<section id="train-a-fasttext-classifier" class="level3">
+<h3 class="anchored" data-anchor-id="train-a-fasttext-classifier">1) Train a fastText Classifier</h3>
+<p>They start with <a href="https://huggingface.co/datasets/open-web-math/open-web-math">OpenWebMath</a> as a seed corpus (high-quality math web text). Using this seed, they build a binary classification dataset:</p>
+<ul>
+<li>Sample ~500K examples from the seed corpus as <strong>positive</strong> examples</li>
+<li>Sample ~500K random web pages from Common Crawl as <strong>negative</strong> examples</li>
+<li>Train a fastText binary classifier on this labeled data</li>
+</ul>
+</section>
+<section id="recall-math-related-web-pages-from-common-crawl" class="level3">
+<h3 class="anchored" data-anchor-id="recall-math-related-web-pages-from-common-crawl">2) Recall Math-Related Web Pages from Common Crawl</h3>
+<p>Next, they run the trained fastText model over a deduplicated Common Crawl snapshot to score pages, rank them by score and keep the highest-scoring subset.</p>
+<blockquote class="blockquote">
+<p>The paper also mentions reducing the overall common crawl size to 40B pages via URL-based deduplication and near-deduplication, before applying the classifier at scale.</p>
+</blockquote>
+</section>
+<section id="find-new-math-related-domains" class="level3">
+<h3 class="anchored" data-anchor-id="find-new-math-related-domains">3) Find New Math-Related Domains</h3>
+<p>One issue is that the initial seed (OpenWebMath) is not diverse enough to filter effectively all the math content from Common Crawl. So they add a domain discovery step to expand on it. To find what was missed in the first round of collection:</p>
+<ul>
+<li>Group Common Crawl into domains (pages sharing the same base URL)</li>
+<li>For each domain, calculate what percentage of its pages were already collected</li>
+<li>Treat domains where <strong>over 10% of pages are captured</strong> as candidate math-related domains</li>
+<li>For the newly discovered math-related domains, use manual annotators to identify which URL paths actually contain mathematical content</li>
+</ul>
+<blockquote class="blockquote">
+<p>The paper is not very detailed about the annotation mechanism beyond describing it as manual. My guess is it is a mix of human annotations and LLMs-as-a-judge.</p>
+</blockquote>
+</section>
+<section id="expand-the-seed-corpus-and-repeat" class="level3">
+<h3 class="anchored" data-anchor-id="expand-the-seed-corpus-and-repeat">4) Expand the Seed Corpus and Repeat</h3>
+<p>Finally, these new math related web pages are added to the seed corpus and the fastText classifier is retrained. This process is repeated until some sort of convergence is reached.</p>
+<p>This approach enables training an improved classifier with each iteration leading to better recall of math-related web pages in each subsequent iteration.</p>
+<blockquote class="blockquote">
+<p>According to the paper, the pipeline converges after 4 iterations with 98% of the data already collected in the third round.</p>
+</blockquote>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>DeepSeekMath is worth reading for a few reasons.</p>
+<ul>
+<li>First, it shows that a well-curated dataset matters more than model size for math reasoning.</li>
+<li>Second, the data curation pipeline is explained in enough detail that you can adapt it for other domains.</li>
+<li>And thirdly, the discussed ablation studies and experiments are genuinely useful.</li>
+</ul>
 
 
 </section>
@@ -828,5 +757,5 @@ Title
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
