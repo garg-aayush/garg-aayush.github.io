@@ -10,7 +10,254 @@
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>All posts on ML engineering, LLMs, and AI products.</description>
 <generator>quarto-1.8.26</generator>
-<lastBuildDate>Tue, 06 Jan 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 13 Jan 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>A Brief Introduction to Claude Agent Skills</title>
+  <link>https://garg-aayush.github.io/posts/2026-01-13-claude-skills.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>If you have been following X or LinkedIn for the last few weeks, you have probably noticed the buzz around Claude Skills (or Agent Skills), apart from all the fanfare around Claude Code. There are tweets and posts appreciating their simplicity, devs sharing custom skills for everything from document generation to API integrations. I would say the hype is well deserved and genuine.</p>
+<p>I had been aware of <a href="https://www.claude.com/news/skills">Claude Skills</a> when they launched in October 2025 (thanks to <a href="https://simonwillison.net/2025/Oct/16/claude-skills/">Simon Willison’s blog post</a>). However, I did not really dig into them until I came across <a href="https://huggingface.co/blog/hf-skills-training">this Hugging Face blog post</a> where they used Claude Code to fine-tune an open-source LLM. They built <a href="https://github.com/huggingface/skills">Hugging Face Skills</a> that let you do something like this <code>Fine-tune Qwen3-0.6B on the dataset open-r1/codeforces-cots</code> and Claude handles everything from GPU selection, script generation, job submission, progress monitoring and pushing the finished model to the Hub. That was a woah moment for me!</p>
+<p>Skills deserve all the attention they are getting. They provide the domain knowledge that modern LLMs and agents need despite their impressive general capabilities. They are simple folders with packaged expertise that agents can dynamically invoke for relevant requests.</p>
+<p>In this post, I will explain what skills are, why they matter and walk you through one of the skills I use daily: a <a href="https://github.com/garg-aayush/tutorials/tree/main/claude-skills/basic-image-editing">simple image editing skill</a> as an example of how you can quickly build skills for your own use.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/image-editing-skill-ex-1.png" class="img-fluid figure-img"></p>
+<figcaption>Image Editing Skill Example</figcaption>
+</figure>
+</div>
+<section id="what-are-agent-skills" class="level2">
+<h2 class="anchored" data-anchor-id="what-are-agent-skills">What Are Agent Skills?</h2>
+<p>Simply put, Skills are organized folders that package expertise into discoverable capabilities. Each skill contains a <code>SKILL.md</code>, a markdown file with some YAML metadata, with instructions that Claude reads when relevant. This is along with optional supporting files like scripts and templates.</p>
+<blockquote class="blockquote">
+<p>As Barry described in <a href="https://www.youtube.com/watch?v=CEvIs9y1uog">his AI Engineer talk</a>, think of them as <strong>“expertise packages”</strong> that Claude can discover and load dynamically.</p>
+</blockquote>
+<p>That is really all there is to skills. There are no complex protocols, no server infrastructure and no elaborate configuration. Just text files that describe how to do something optionally paired with scripts that make the task more reliable. Simon Wilson has rightly mentioned it in <a href="https://simonwillison.net/2025/Oct/16/claude-skills/">his blog post</a>: <strong>“Skills feel a lot closer to the spirit of LLMs - throw in some text and let the model figure it out.”</strong></p>
+<p>Since Anthropic released <a href="https://agentskills.io">Agent Skills</a> as an open standard in December 2025, skills are rapidly becoming available across different coding agents: GitHub Copilot, Codex CLI, Cursor and more.</p>
+<p>It is also important to distinguish skills from other customization options like <code>claude.md</code>, MCP servers, and subagents.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Skills</strong></th>
+<th><strong>Claude.md</strong></th>
+<th><strong>MCP Servers</strong></th>
+<th><strong>Subagents</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>What it is</strong></td>
+<td>Folders containing instructions, scripts, and resources that teach Claude <em>how</em> to perform specialized tasks</td>
+<td>A markdown file that tells Claude <em>about</em> a specific project</td>
+<td>A protocol that <em>connects</em> Claude to external data sources</td>
+<td>Specialized AI assistants with fixed roles and their own context window</td>
+</tr>
+<tr class="even">
+<td><strong>Scope</strong></td>
+<td>Portable across projects and agents</td>
+<td>Project-specific</td>
+<td>Tool/service-specific</td>
+<td>Task-specific</td>
+</tr>
+<tr class="odd">
+<td><strong>Lives in</strong></td>
+<td><code>~/.claude/skills/</code> or <code>.claude/skills/</code></td>
+<td>Root of your repository</td>
+<td>External servers (GitHub, Slack, databases)</td>
+<td>Spawned during task execution</td>
+</tr>
+<tr class="even">
+<td><strong>Example</strong></td>
+<td>Generate accessible PDF reports according to company guidelines</td>
+<td>This project uses Next.js 14, Tailwind, and PostgreSQL</td>
+<td>Connect to our PostgreSQL database</td>
+<td>Code review agent with read-only permissions</td>
+</tr>
+<tr class="odd">
+<td><strong>Use when</strong></td>
+<td>You need repeatable domain expertise across multiple projects</td>
+<td>You are onboarding Claude to a specific codebase</td>
+<td>You need Claude to access external data or services</td>
+<td>You want to delegate distinct subtasks to specialized assistants</td>
+</tr>
+</tbody>
+</table>
+<p>This is how I differential them: - <strong>Claude.md</strong> gives Claude <em>context</em> about where it’s working - <strong>MCP</strong> gives Claude <em>access</em> to data and services<br>
+- <strong>Skills</strong> give Claude <em>expertise</em> on how to do things well - <strong>Subagents</strong> let Claude <em>delegate</em> work to specialized assistants</p>
+<section id="how-skills-are-dynamically-loaded" class="level3">
+<h3 class="anchored" data-anchor-id="how-skills-are-dynamically-loaded">How Skills are Dynamically Loaded</h3>
+<p>I have used the term “dynamically loaded” quite a few times now. This is because Skills are <strong>progressively disclosed</strong> using a three-tier loading mechanism:</p>
+<ol type="1">
+<li><p><strong>Metadata only (~30-100 tokens):</strong> At startup, Claude sees just the <code>name</code> and <code>description</code> from each skill’s YAML frontmatter. This is enough to know the skill exists.</p></li>
+<li><p><strong>Full instructions (when relevant):</strong> When your request matches a skill’s description, Claude loads the complete <code>SKILL.md</code> content.</p></li>
+<li><p><strong>Supporting files (on demand):</strong> Scripts, templates, and reference docs are loaded only when actually needed.</p></li>
+</ol>
+<p><strong>This is what makes skills so useful and efficient</strong>. Claude can have hundreds of skills installed without blowing up the context window. Compare this to MCP servers where tool descriptions often consume hundreds or even thousands of tokens upfront regardless of whether you use them.</p>
+<blockquote class="blockquote">
+<p>For a deeper dive into the loading mechanics, please go through the <a href="https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction">Claude Skills Cookbook</a>.</p>
+</blockquote>
+</section>
+<section id="what-makes-skills-valuable" class="level3">
+<h3 class="anchored" data-anchor-id="what-makes-skills-valuable">What Makes Skills Valuable</h3>
+<p>Once you start using skills, you will discover many benefits. For me, the following ones stand out:</p>
+<ul>
+<li>Skills provide Claude domain expertise, turning <strong>Claude from a brilliant generalist into a domain expert for your specific workflows</strong>.</li>
+<li><strong>Write a skill once, use it anywhere</strong>. The same skill works in Claude.ai, Claude Code, and <a href="https://platform.claude.com/docs/en/build-with-claude/skills-guide">via the API</a>. And since Agent Skills became an open standard, they work across other agents like GitHub Copilot, Codex CLI and Cursor.</li>
+<li>Skills ensure <strong>repeatability and reliability</strong>. Often, skills include scripts and pre-defined workflows, so Claude does not reinvent the wheel every time. It uses code that is known to work consistently.</li>
+<li>They are progressively loaded which ensures not just <strong>token efficiency</strong> but also <strong>time saving</strong>. For example, it forces Claude to use existing solutions instead of generating code from scratch.</li>
+<li>Moreover, you <strong>don’t need to be a developer to create skills</strong>. You can use the <code>Skills-Creator</code> skill in the Claude app or Claude Code to build your own skills just by describing (and iterating) what you want.</li>
+</ul>
+</section>
+</section>
+<section id="how-skills-are-organized" class="level2">
+<h2 class="anchored" data-anchor-id="how-skills-are-organized">How Skills are Organized</h2>
+<p>The basic structure is surprisingly simple. Every skill follows the same pattern:</p>
+<pre><code>my-skill/
+├── SKILL.md          # Required: the brain of the skill
+├── scripts/          # Optional: utility scripts
+│   └── helper.py
+│.....                # Other optional files</code></pre>
+<p>The only required file is <code>SKILL.md</code>. Everything else is optional and loaded only when needed. It has two parts: YAML frontmatter for metadata and the markdown content for instructions.</p>
+<p>For example, here is the frontmatter from my <a href="https://github.com/garg-aayush/tutorials/blob/main/claude-skills/basic-image-editing/SKILL.md">basic image editing skill</a>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">name</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> basic-image-editing</span></span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">description</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> Image manipulation tool for resizing, rotation, flipping, cropping, padding, format conversion (JPEG/PNG/WebP/TIFF/HEIC), transparency operations (remove/replace/extract/blend), grayscale conversion, auto-cropping borders, and file size optimization. Use when users need to transform, convert, or optimize images.</span></span>
+<span id="cb2-4"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">---</span></span></code></pre></div></div>
+<blockquote class="blockquote">
+<p>This is what gets loaded in Claude’s context at startup. You can see the full <a href="https://github.com/garg-aayush/tutorials/blob/main/claude-skills/basic-image-editing/SKILL.md">SKILL.md</a> on GitHub.</p>
+</blockquote>
+<p>After the frontmatter comes the actual instruction content. Your SKILL.md content usually include:</p>
+<ul>
+<li><strong>A brief definition</strong> of what the skill does</li>
+<li><strong>Clear instructions</strong> on how to use it (commands, workflows, steps)</li>
+<li><strong>Examples</strong> showing common use cases with actual command snippets. <strong>I find that providing examples in the SKILL.md file really helps Claude understand the correct way to call the scripts.</strong></li>
+<li><strong>Edge cases or constraints</strong> if any exist</li>
+<li><strong>References</strong> to supporting scripts or templates if the skill uses them</li>
+</ul>
+</section>
+<section id="building-your-own-skill" class="level2">
+<h2 class="anchored" data-anchor-id="building-your-own-skill">Building Your Own Skill</h2>
+<p>There are multiple ways to create skills:</p>
+<ol type="1">
+<li><p><strong>Write everything from scratch</strong>: You have full control. Create the folder structure manually, write the SKILL.md yourself and add your own scripts. &gt; I would not recommend this approach. It is better to use Claude to generate the first version and iterate over it.</p></li>
+<li><p><strong>Use Claude Code with the Skills Creator skill</strong> — If you are already working in Claude Code, you can describe what you want and let Claude scaffold the skill for you. See <a href="https://www.youtube.com/watch?v=7LtCEJ4sfSE">Eleanor Berger’s videos</a> where she walks through an example of building invoice and reports generation skills in Claude Code.</p></li>
+<li><p><strong>Use the Claude web app</strong>: This is my preferred approach, especially for personal use. Everything happens in a UI-based interface. You describe what you want, have a conversation with Claude, test it immediately and iterate until it works.</p></li>
+</ol>
+<section id="walkthrough-creating-the-basic-image-editing-skill" class="level3">
+<h3 class="anchored" data-anchor-id="walkthrough-creating-the-basic-image-editing-skill">Walkthrough: Creating the Basic Image Editing Skill</h3>
+<p>Let me walk through how I created my basic image editing skill using the third approach.</p>
+<p><strong>Step 1: Have Clarity on What the Skill Should Do</strong></p>
+<p>Before creating a skill, <strong>you should have a clear idea of what it should do</strong>. Maybe you want a skill that generates PDF reports on the fly or one that handles data analysis or something else entirely. It doesn’t matter if you don’t know <em>how</em> to implement it. What matters is knowing <em>what</em> you want it to accomplish.</p>
+<p>For example, I work a lot with images. I often need to do basic editing operations like resizing, rotating, and cropping. These are simple operations but I do them constantly. <strong>A basic image editing skill accessible in Claude makes a lot of sense for my day to day work.</strong></p>
+<p><strong>Step 2: Bootstrap with the Skills Creator</strong></p>
+<p>First of all, ensure the <code>skill-creator</code> skill is enabled in your Claude account. You can do this by going to Settings -&gt; Capabilities and enabling the <code>skill-creator</code> skill.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_1.png" class="img-fluid figure-img"></p>
+<figcaption>enable-skill-creator</figcaption>
+</figure>
+</div>
+<p>Once you have enabled the skill-creator, you can describe what you want to create a skill for. For eg, I want to create a skill for basic image editing:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_2.png" class="img-fluid figure-img"></p>
+<figcaption>describe-skill</figcaption>
+</figure>
+</div>
+<p>Claude used the skill-creator framework to scaffold the initial structure: a <code>SKILL.md</code> with proper YAML frontmatter and a Python script with core operations.</p>
+<p><strong>Step 3: Test Immediately, Iterate Constantly</strong></p>
+<p>One thing I always make sure of: I dont try to create a polished skill in one go. Whatever skill gets created, test it immediately. This is one of the things I appreciate about creating skills in the Claude web app. You can test them instantly in the same conversation.</p>
+<p>For eg, I uploaded a test image and asked Claude to change the background to orange:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_3.png" class="img-fluid figure-img"></p>
+<figcaption>Testing the skill</figcaption>
+</figure>
+</div>
+<p>This gives you a tight feedback loop. You test what you’re building, and if something doesn’t work, Claude can fix it for you right there. No context-switching between environments. You build, test, and refine in one place.</p>
+<p><strong>Step 4: Iterate and Improve</strong></p>
+<p>Once you have a basic working version, you can start adding more operations and optimizing.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid figure-img"></p>
+<figcaption>More operations</figcaption>
+</figure>
+</div>
+<p>Similarly, since this skill runs Python scripts locally, I switched to PEP 723 inline metadata so <code>uv run</code> installs dependencies automatically on the fly:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid figure-img"></p>
+<figcaption>PEP 723 inline metadata</figcaption>
+</figure>
+</div>
+<p>If you have some domain knowledge, use it. Go through the code Claude generated and check if it’s doing something redundant. You can review and ask Claude to make those optimizations.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_5.png" class="img-fluid figure-img"></p>
+<figcaption>Optimizing the code</figcaption>
+</figure>
+</div>
+<p>Finally, once you have a version you are happy with, go through the <code>SKILL.md</code> file and make sure the examples are good. If not, add them manually. <strong>Good examples help Claude understand exactly how to use the skill.</strong></p>
+<p><strong>Step 5: Export and Use Across Agents</strong></p>
+<p>Once you have a skill you want to keep, export it. You can use it in the Claude web app, Claude Code, or other agents like Codex CLI and Cursor.</p>
+</section>
+<section id="the-iterative-philosophy" class="level3">
+<h3 class="anchored" data-anchor-id="the-iterative-philosophy">The Iterative Philosophy</h3>
+<p><strong>Treat skills as living documents, not finished products.</strong> Your first version may not be perfect. You will find gaps and discover better ways to do the same tasks. Maybe the description doesn’t trigger for certain phrasings. Maybe you forgot an edge case. That is expected.</p>
+<p>I think of skills the same way I think of code: you write it, use it, find gaps and improve it. Always make sure the skill you use today will be more polished than the one you started with.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Skills are simple yet powerful. They are simply a folder with markdown file and optionally some scripts that provides domain expertise to your agents without blowing up the context window. If you work with AI agents regularly, building your own skills is worth the investment. Start with something you do repeatedly. Create the simplest version that works and improve it iteratively.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="https://simonwillison.net/2025/Oct/16/claude-skills/">Simon Willison’s Blog Post</a>: A good overview of Claude Skills.</li>
+<li><a href="https://www.youtube.com/watch?v=CEvIs9y1uog">Barry’s AI Engineer Talk</a>: I highly recommend watching this talk if you’re interested in skills.</li>
+<li><a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview">Agent Skills Documentation</a></li>
+<li><a href="https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction">Claude Skills Cookbook</a></li>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/skills-guide">Using Skills with the API</a></li>
+<li><a href="https://agentskills.io">Agent Skills Open Standard</a></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-01-13-claude-skills.html</guid>
+  <pubDate>Tue, 13 Jan 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Key Insights from DeepSeekMath paper</title>
   <link>https://garg-aayush.github.io/posts/2026-01-06-review-deepseek-math.html</link>

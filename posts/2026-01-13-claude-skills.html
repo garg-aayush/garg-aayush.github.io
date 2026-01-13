@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-01-13">
+<meta name="description" content="A practical guide to Claude Skills, what they are, why they matter and how to build your own using a basic image editing skill as an example.">
+
+<title>A Brief Introduction to Claude Agent Skills – Aayush Garg</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-2d3f84a5f37526cd3979248aedf2fbfb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../blog/"> 
+<span class="menu-text">Blogs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-are-agent-skills" id="toc-what-are-agent-skills" class="nav-link active" data-scroll-target="#what-are-agent-skills">What Are Agent Skills?</a>
+  <ul class="collapse">
+  <li><a href="#how-skills-are-dynamically-loaded" id="toc-how-skills-are-dynamically-loaded" class="nav-link" data-scroll-target="#how-skills-are-dynamically-loaded">How Skills are Dynamically Loaded</a></li>
+  <li><a href="#what-makes-skills-valuable" id="toc-what-makes-skills-valuable" class="nav-link" data-scroll-target="#what-makes-skills-valuable">What Makes Skills Valuable</a></li>
+  </ul></li>
+  <li><a href="#how-skills-are-organized" id="toc-how-skills-are-organized" class="nav-link" data-scroll-target="#how-skills-are-organized">How Skills are Organized</a></li>
+  <li><a href="#building-your-own-skill" id="toc-building-your-own-skill" class="nav-link" data-scroll-target="#building-your-own-skill">Building Your Own Skill</a>
+  <ul class="collapse">
+  <li><a href="#walkthrough-creating-the-basic-image-editing-skill" id="toc-walkthrough-creating-the-basic-image-editing-skill" class="nav-link" data-scroll-target="#walkthrough-creating-the-basic-image-editing-skill">Walkthrough: Creating the Basic Image Editing Skill</a></li>
+  <li><a href="#the-iterative-philosophy" id="toc-the-iterative-philosophy" class="nav-link" data-scroll-target="#the-iterative-philosophy">The Iterative Philosophy</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">A Brief Introduction to Claude Agent Skills</h1>
+</div>
+
+<div>
+  <div class="description">
+    A practical guide to Claude Skills, what they are, why they matter and how to build your own using a basic image editing skill as an example.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 13, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>If you have been following X or LinkedIn for the last few weeks, you have probably noticed the buzz around Claude Skills (or Agent Skills), apart from all the fanfare around Claude Code. There are tweets and posts appreciating their simplicity, devs sharing custom skills for everything from document generation to API integrations. I would say the hype is well deserved and genuine.</p>
+<p>I had been aware of <a href="https://www.claude.com/news/skills">Claude Skills</a> when they launched in October 2025 (thanks to <a href="https://simonwillison.net/2025/Oct/16/claude-skills/">Simon Willison’s blog post</a>). However, I did not really dig into them until I came across <a href="https://huggingface.co/blog/hf-skills-training">this Hugging Face blog post</a> where they used Claude Code to fine-tune an open-source LLM. They built <a href="https://github.com/huggingface/skills">Hugging Face Skills</a> that let you do something like this <code>Fine-tune Qwen3-0.6B on the dataset open-r1/codeforces-cots</code> and Claude handles everything from GPU selection, script generation, job submission, progress monitoring and pushing the finished model to the Hub. That was a woah moment for me!</p>
+<p>Skills deserve all the attention they are getting. They provide the domain knowledge that modern LLMs and agents need despite their impressive general capabilities. They are simple folders with packaged expertise that agents can dynamically invoke for relevant requests.</p>
+<p>In this post, I will explain what skills are, why they matter and walk you through one of the skills I use daily: a <a href="https://github.com/garg-aayush/tutorials/tree/main/claude-skills/basic-image-editing">simple image editing skill</a> as an example of how you can quickly build skills for your own use.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/image-editing-skill-ex-1.png" class="img-fluid figure-img"></p>
+<figcaption>Image Editing Skill Example</figcaption>
+</figure>
+</div>
+<section id="what-are-agent-skills" class="level2">
+<h2 class="anchored" data-anchor-id="what-are-agent-skills">What Are Agent Skills?</h2>
+<p>Simply put, Skills are organized folders that package expertise into discoverable capabilities. Each skill contains a <code>SKILL.md</code>, a markdown file with some YAML metadata, with instructions that Claude reads when relevant. This is along with optional supporting files like scripts and templates.</p>
+<blockquote class="blockquote">
+<p>As Barry described in <a href="https://www.youtube.com/watch?v=CEvIs9y1uog">his AI Engineer talk</a>, think of them as <strong>“expertise packages”</strong> that Claude can discover and load dynamically.</p>
+</blockquote>
+<p>That is really all there is to skills. There are no complex protocols, no server infrastructure and no elaborate configuration. Just text files that describe how to do something optionally paired with scripts that make the task more reliable. Simon Wilson has rightly mentioned it in <a href="https://simonwillison.net/2025/Oct/16/claude-skills/">his blog post</a>: <strong>“Skills feel a lot closer to the spirit of LLMs - throw in some text and let the model figure it out.”</strong></p>
+<p>Since Anthropic released <a href="https://agentskills.io">Agent Skills</a> as an open standard in December 2025, skills are rapidly becoming available across different coding agents: GitHub Copilot, Codex CLI, Cursor and more.</p>
+<p>It is also important to distinguish skills from other customization options like <code>claude.md</code>, MCP servers, and subagents.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Skills</strong></th>
+<th><strong>Claude.md</strong></th>
+<th><strong>MCP Servers</strong></th>
+<th><strong>Subagents</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>What it is</strong></td>
+<td>Folders containing instructions, scripts, and resources that teach Claude <em>how</em> to perform specialized tasks</td>
+<td>A markdown file that tells Claude <em>about</em> a specific project</td>
+<td>A protocol that <em>connects</em> Claude to external data sources</td>
+<td>Specialized AI assistants with fixed roles and their own context window</td>
+</tr>
+<tr class="even">
+<td><strong>Scope</strong></td>
+<td>Portable across projects and agents</td>
+<td>Project-specific</td>
+<td>Tool/service-specific</td>
+<td>Task-specific</td>
+</tr>
+<tr class="odd">
+<td><strong>Lives in</strong></td>
+<td><code>~/.claude/skills/</code> or <code>.claude/skills/</code></td>
+<td>Root of your repository</td>
+<td>External servers (GitHub, Slack, databases)</td>
+<td>Spawned during task execution</td>
+</tr>
+<tr class="even">
+<td><strong>Example</strong></td>
+<td>Generate accessible PDF reports according to company guidelines</td>
+<td>This project uses Next.js 14, Tailwind, and PostgreSQL</td>
+<td>Connect to our PostgreSQL database</td>
+<td>Code review agent with read-only permissions</td>
+</tr>
+<tr class="odd">
+<td><strong>Use when</strong></td>
+<td>You need repeatable domain expertise across multiple projects</td>
+<td>You are onboarding Claude to a specific codebase</td>
+<td>You need Claude to access external data or services</td>
+<td>You want to delegate distinct subtasks to specialized assistants</td>
+</tr>
+</tbody>
+</table>
+<p>This is how I differential them: - <strong>Claude.md</strong> gives Claude <em>context</em> about where it’s working - <strong>MCP</strong> gives Claude <em>access</em> to data and services<br>
+- <strong>Skills</strong> give Claude <em>expertise</em> on how to do things well - <strong>Subagents</strong> let Claude <em>delegate</em> work to specialized assistants</p>
+<section id="how-skills-are-dynamically-loaded" class="level3">
+<h3 class="anchored" data-anchor-id="how-skills-are-dynamically-loaded">How Skills are Dynamically Loaded</h3>
+<p>I have used the term “dynamically loaded” quite a few times now. This is because Skills are <strong>progressively disclosed</strong> using a three-tier loading mechanism:</p>
+<ol type="1">
+<li><p><strong>Metadata only (~30-100 tokens):</strong> At startup, Claude sees just the <code>name</code> and <code>description</code> from each skill’s YAML frontmatter. This is enough to know the skill exists.</p></li>
+<li><p><strong>Full instructions (when relevant):</strong> When your request matches a skill’s description, Claude loads the complete <code>SKILL.md</code> content.</p></li>
+<li><p><strong>Supporting files (on demand):</strong> Scripts, templates, and reference docs are loaded only when actually needed.</p></li>
+</ol>
+<p><strong>This is what makes skills so useful and efficient</strong>. Claude can have hundreds of skills installed without blowing up the context window. Compare this to MCP servers where tool descriptions often consume hundreds or even thousands of tokens upfront regardless of whether you use them.</p>
+<blockquote class="blockquote">
+<p>For a deeper dive into the loading mechanics, please go through the <a href="https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction">Claude Skills Cookbook</a>.</p>
+</blockquote>
+</section>
+<section id="what-makes-skills-valuable" class="level3">
+<h3 class="anchored" data-anchor-id="what-makes-skills-valuable">What Makes Skills Valuable</h3>
+<p>Once you start using skills, you will discover many benefits. For me, the following ones stand out:</p>
+<ul>
+<li>Skills provide Claude domain expertise, turning <strong>Claude from a brilliant generalist into a domain expert for your specific workflows</strong>.</li>
+<li><strong>Write a skill once, use it anywhere</strong>. The same skill works in Claude.ai, Claude Code, and <a href="https://platform.claude.com/docs/en/build-with-claude/skills-guide">via the API</a>. And since Agent Skills became an open standard, they work across other agents like GitHub Copilot, Codex CLI and Cursor.</li>
+<li>Skills ensure <strong>repeatability and reliability</strong>. Often, skills include scripts and pre-defined workflows, so Claude does not reinvent the wheel every time. It uses code that is known to work consistently.</li>
+<li>They are progressively loaded which ensures not just <strong>token efficiency</strong> but also <strong>time saving</strong>. For example, it forces Claude to use existing solutions instead of generating code from scratch.</li>
+<li>Moreover, you <strong>don’t need to be a developer to create skills</strong>. You can use the <code>Skills-Creator</code> skill in the Claude app or Claude Code to build your own skills just by describing (and iterating) what you want.</li>
+</ul>
+</section>
+</section>
+<section id="how-skills-are-organized" class="level2">
+<h2 class="anchored" data-anchor-id="how-skills-are-organized">How Skills are Organized</h2>
+<p>The basic structure is surprisingly simple. Every skill follows the same pattern:</p>
+<pre><code>my-skill/
+├── SKILL.md          # Required: the brain of the skill
+├── scripts/          # Optional: utility scripts
+│   └── helper.py
+│.....                # Other optional files</code></pre>
+<p>The only required file is <code>SKILL.md</code>. Everything else is optional and loaded only when needed. It has two parts: YAML frontmatter for metadata and the markdown content for instructions.</p>
+<p>For example, here is the frontmatter from my <a href="https://github.com/garg-aayush/tutorials/blob/main/claude-skills/basic-image-editing/SKILL.md">basic image editing skill</a>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> basic-image-editing</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">description</span><span class="kw">:</span><span class="at"> Image manipulation tool for resizing, rotation, flipping, cropping, padding, format conversion (JPEG/PNG/WebP/TIFF/HEIC), transparency operations (remove/replace/extract/blend), grayscale conversion, auto-cropping borders, and file size optimization. Use when users need to transform, convert, or optimize images.</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote class="blockquote">
+<p>This is what gets loaded in Claude’s context at startup. You can see the full <a href="https://github.com/garg-aayush/tutorials/blob/main/claude-skills/basic-image-editing/SKILL.md">SKILL.md</a> on GitHub.</p>
+</blockquote>
+<p>After the frontmatter comes the actual instruction content. Your SKILL.md content usually include:</p>
+<ul>
+<li><strong>A brief definition</strong> of what the skill does</li>
+<li><strong>Clear instructions</strong> on how to use it (commands, workflows, steps)</li>
+<li><strong>Examples</strong> showing common use cases with actual command snippets. <strong>I find that providing examples in the SKILL.md file really helps Claude understand the correct way to call the scripts.</strong></li>
+<li><strong>Edge cases or constraints</strong> if any exist</li>
+<li><strong>References</strong> to supporting scripts or templates if the skill uses them</li>
+</ul>
+</section>
+<section id="building-your-own-skill" class="level2">
+<h2 class="anchored" data-anchor-id="building-your-own-skill">Building Your Own Skill</h2>
+<p>There are multiple ways to create skills:</p>
+<ol type="1">
+<li><p><strong>Write everything from scratch</strong>: You have full control. Create the folder structure manually, write the SKILL.md yourself and add your own scripts. &gt; I would not recommend this approach. It is better to use Claude to generate the first version and iterate over it.</p></li>
+<li><p><strong>Use Claude Code with the Skills Creator skill</strong> — If you are already working in Claude Code, you can describe what you want and let Claude scaffold the skill for you. See <a href="https://www.youtube.com/watch?v=7LtCEJ4sfSE">Eleanor Berger’s videos</a> where she walks through an example of building invoice and reports generation skills in Claude Code.</p></li>
+<li><p><strong>Use the Claude web app</strong>: This is my preferred approach, especially for personal use. Everything happens in a UI-based interface. You describe what you want, have a conversation with Claude, test it immediately and iterate until it works.</p></li>
+</ol>
+<section id="walkthrough-creating-the-basic-image-editing-skill" class="level3">
+<h3 class="anchored" data-anchor-id="walkthrough-creating-the-basic-image-editing-skill">Walkthrough: Creating the Basic Image Editing Skill</h3>
+<p>Let me walk through how I created my basic image editing skill using the third approach.</p>
+<p><strong>Step 1: Have Clarity on What the Skill Should Do</strong></p>
+<p>Before creating a skill, <strong>you should have a clear idea of what it should do</strong>. Maybe you want a skill that generates PDF reports on the fly or one that handles data analysis or something else entirely. It doesn’t matter if you don’t know <em>how</em> to implement it. What matters is knowing <em>what</em> you want it to accomplish.</p>
+<p>For example, I work a lot with images. I often need to do basic editing operations like resizing, rotating, and cropping. These are simple operations but I do them constantly. <strong>A basic image editing skill accessible in Claude makes a lot of sense for my day to day work.</strong></p>
+<p><strong>Step 2: Bootstrap with the Skills Creator</strong></p>
+<p>First of all, ensure the <code>skill-creator</code> skill is enabled in your Claude account. You can do this by going to Settings -&gt; Capabilities and enabling the <code>skill-creator</code> skill.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/walkthrough_1.png" class="img-fluid figure-img"></p>
+<figcaption>enable-skill-creator</figcaption>
+</figure>
+</div>
+<p>Once you have enabled the skill-creator, you can describe what you want to create a skill for. For eg, I want to create a skill for basic image editing:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/walkthrough_2.png" class="img-fluid figure-img"></p>
+<figcaption>describe-skill</figcaption>
+</figure>
+</div>
+<p>Claude used the skill-creator framework to scaffold the initial structure: a <code>SKILL.md</code> with proper YAML frontmatter and a Python script with core operations.</p>
+<p><strong>Step 3: Test Immediately, Iterate Constantly</strong></p>
+<p>One thing I always make sure of: I dont try to create a polished skill in one go. Whatever skill gets created, test it immediately. This is one of the things I appreciate about creating skills in the Claude web app. You can test them instantly in the same conversation.</p>
+<p>For eg, I uploaded a test image and asked Claude to change the background to orange:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/walkthrough_3.png" class="img-fluid figure-img"></p>
+<figcaption>Testing the skill</figcaption>
+</figure>
+</div>
+<p>This gives you a tight feedback loop. You test what you’re building, and if something doesn’t work, Claude can fix it for you right there. No context-switching between environments. You build, test, and refine in one place.</p>
+<p><strong>Step 4: Iterate and Improve</strong></p>
+<p>Once you have a basic working version, you can start adding more operations and optimizing.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid figure-img"></p>
+<figcaption>More operations</figcaption>
+</figure>
+</div>
+<p>Similarly, since this skill runs Python scripts locally, I switched to PEP 723 inline metadata so <code>uv run</code> installs dependencies automatically on the fly:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid figure-img"></p>
+<figcaption>PEP 723 inline metadata</figcaption>
+</figure>
+</div>
+<p>If you have some domain knowledge, use it. Go through the code Claude generated and check if it’s doing something redundant. You can review and ask Claude to make those optimizations.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../static/img/blog-2026-01-13/walkthrough_5.png" class="img-fluid figure-img"></p>
+<figcaption>Optimizing the code</figcaption>
+</figure>
+</div>
+<p>Finally, once you have a version you are happy with, go through the <code>SKILL.md</code> file and make sure the examples are good. If not, add them manually. <strong>Good examples help Claude understand exactly how to use the skill.</strong></p>
+<p><strong>Step 5: Export and Use Across Agents</strong></p>
+<p>Once you have a skill you want to keep, export it. You can use it in the Claude web app, Claude Code, or other agents like Codex CLI and Cursor.</p>
+</section>
+<section id="the-iterative-philosophy" class="level3">
+<h3 class="anchored" data-anchor-id="the-iterative-philosophy">The Iterative Philosophy</h3>
+<p><strong>Treat skills as living documents, not finished products.</strong> Your first version may not be perfect. You will find gaps and discover better ways to do the same tasks. Maybe the description doesn’t trigger for certain phrasings. Maybe you forgot an edge case. That is expected.</p>
+<p>I think of skills the same way I think of code: you write it, use it, find gaps and improve it. Always make sure the skill you use today will be more polished than the one you started with.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Skills are simple yet powerful. They are simply a folder with markdown file and optionally some scripts that provides domain expertise to your agents without blowing up the context window. If you work with AI agents regularly, building your own skills is worth the investment. Start with something you do repeatedly. Create the simplest version that works and improve it iteratively.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><a href="https://simonwillison.net/2025/Oct/16/claude-skills/">Simon Willison’s Blog Post</a>: A good overview of Claude Skills.</li>
+<li><a href="https://www.youtube.com/watch?v=CEvIs9y1uog">Barry’s AI Engineer Talk</a>: I highly recommend watching this talk if you’re interested in skills.</li>
+<li><a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview">Agent Skills Documentation</a></li>
+<li><a href="https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction">Claude Skills Cookbook</a></li>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/skills-guide">Using Skills with the API</a></li>
+<li><a href="https://agentskills.io">Agent Skills Open Standard</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
