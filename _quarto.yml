@@ -18,6 +18,9 @@ website:
   site-url: "https://garg-aayush.github.io"
   google-analytics: "G-16JWTLXJNG"
   favicon: "static/img/aayush_cropped.jpg"
+  open-graph: true
+  twitter-card:
+    card-style: summary_large_image
   navbar:
     title: false
     background: dark
