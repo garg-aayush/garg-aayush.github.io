@@ -10,6 +10,7 @@ project:
     - blog/index.qmd
     - pages/*.qmd
     - posts/*.qmd
+    - posts/*/index.qmd
 
 website:
   title: "Aayush Garg"

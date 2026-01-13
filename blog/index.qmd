@@ -13,7 +13,9 @@ listing:
   categories: false
   fields: [date, title]
   id: blog-listings
-  contents: "../posts/20*.qmd"
+  contents: 
+    - "../posts/20*.qmd"
+    - "../posts/20*/index.qmd"
   page-size: 20
 ---
 
