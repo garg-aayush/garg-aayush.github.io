@@ -15,7 +15,7 @@ Skills deserve all the attention they are getting. They provide the domain knowl
 
 In this post, I will explain what skills are, why they matter and walk you through one of the skills I use daily: a [simple image editing skill](https://github.com/garg-aayush/tutorials/tree/main/claude-skills/basic-image-editing) as an example of how you can quickly build skills for your own use.
 
-![Image Editing Skill Example](/static/img/blog-2026-01-13/image-editing-skill-ex-1.png)
+![](/static/img/blog-2026-01-13/image-editing-skill-ex-1.png)
 
 
 ## What Are Agent Skills?
@@ -39,6 +39,7 @@ It is also important to distinguish skills from other customization options like
 | **Use when** | You need repeatable domain expertise across multiple projects | You are onboarding Claude to a specific codebase | You need Claude to access external data or services | You want to delegate distinct subtasks to specialized assistants |
 
 This is how I differential them:
+
 - **Claude.md** gives Claude *context* about where it's working
 - **MCP** gives Claude *access* to data and services  
 - **Skills** give Claude *expertise* on how to do things well
@@ -128,11 +129,11 @@ For example, I work a lot with images. I often need to do basic editing operatio
 
 First of all, ensure the `skill-creator` skill is enabled in your Claude account. You can do this by going to Settings -> Capabilities and enabling the `skill-creator` skill.
 
-![enable-skill-creator](/static/img/blog-2026-01-13/walkthrough_1.png)
+![](/static/img/blog-2026-01-13/walkthrough_1.png)
 
 Once you have enabled the skill-creator, you can describe what you want to create a skill for. For eg, I want to create a skill for basic image editing:
 
-![describe-skill](/static/img/blog-2026-01-13/walkthrough_2.png)
+![](/static/img/blog-2026-01-13/walkthrough_2.png)
 
 Claude used the skill-creator framework to scaffold the initial structure: a `SKILL.md` with proper YAML frontmatter and a Python script with core operations. 
 
@@ -143,7 +144,7 @@ One thing I always make sure of: I dont try to create a polished skill in one go
 
 For eg, I uploaded a test image and asked Claude to change the background to orange:
 
-![Testing the skill](/static/img/blog-2026-01-13/walkthrough_3.png)
+![](/static/img/blog-2026-01-13/walkthrough_3.png)
 
 This gives you a tight feedback loop. You test what you're building, and if something doesn't work, Claude can fix it for you right there. No context-switching between environments. You build, test, and refine in one place.
 
@@ -151,15 +152,15 @@ This gives you a tight feedback loop. You test what you're building, and if some
 
 Once you have a basic working version, you can start adding more operations and optimizing. 
 
-![More operations](/static/img/blog-2026-01-13/walkthrough_4.png)
+![](/static/img/blog-2026-01-13/walkthrough_4.png)
 
 Similarly, since this skill runs Python scripts locally, I switched to PEP 723 inline metadata so `uv run` installs dependencies automatically on the fly:
 
-![PEP 723 inline metadata](/static/img/blog-2026-01-13/walkthrough_4.png)
+![](/static/img/blog-2026-01-13/walkthrough_4.png)
 
 If you have some domain knowledge, use it. Go through the code Claude generated and check if it's doing something redundant. You can review and ask Claude to make those optimizations.
 
-![Optimizing the code](/static/img/blog-2026-01-13/walkthrough_5.png)
+![](/static/img/blog-2026-01-13/walkthrough_5.png)
 
 Finally, once you have a version you are happy with, go through the `SKILL.md` file and make sure the examples are good. If not, add them manually. **Good examples help Claude understand exactly how to use the skill.**
 
@@ -179,7 +180,7 @@ Skills are simple yet powerful. They are simply a folder with markdown file and 
 
 ## References
 - [Simon Willison's Blog Post](https://simonwillison.net/2025/Oct/16/claude-skills/): A good overview of Claude Skills.
-- [Barry's AI Engineer Talk](https://www.youtube.com/watch?v=CEvIs9y1uog): I highly recommend watching this talk if you're interested in skills.
+- [Barry's AI Engineer Talk](https://www.youtube.com/watch?v=CEvIs9y1uog): I highly recommend watching this talk if you are interested in skills.
 - [Agent Skills Documentation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)
 - [Claude Skills Cookbook](https://platform.claude.com/cookbook/skills-notebooks-01-skills-introduction)
 - [Using Skills with the API](https://platform.claude.com/docs/en/build-with-claude/skills-guide)
