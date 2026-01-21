@@ -1,0 +1,43 @@
+---
+title: "Expert Iteration Experiments"
+tags: ["Expert Iteration", "LLMs"]
+mathjax: true
+description: Lorem ipsum
+date: 2026-01-21
+permalink: /2026-01-21-expert-iteration/
+---
+
+# Expert Iteration Experiments
+
+## What is Expert Iteration?
+
+Expert Iteration was first introduced by [Anthony et. al. (2017)](https://arxiv.org/abs/1705.08439) in the context of game-playing AI. The core idea is to alternate between using a slow but powerful "expert" to find high-quality solutions and training a fast "apprentice" to imitate those solutions. As the apprentice improves it provides a better starting point for the expert. Thus, creating a virtuous cycle of improvement.
+
+The [Self-Taught Reasoner (STaR)](https://arxiv.org/abs/2203.14465) uses Expert Iteration for improving reasoning capabilities. It works as follows, at each iteration we prompt the model to generate rationales for many problems, filter to keep only those that lead to correct answers, finetune on the filtered set and repeat.
+
+> Here, the filtering step acts as the "expert", it identifies which of the model own generations are correct. **The model then learns to imitate its own best behaviors**
+
+This is how I see Expert Iteration for LLMs: it is **SFT on self-generated, filtered data, repeated iteratively**. The below algorithm captures this loop:
+
+
+![](/static/img/blog-2026-01-22/expert-iteration-diagram.png)
+
+> Note: STaR also introduced *rationalization* where for problems the model fails, we provide the correct answer as a hint to generate a valid rationale. However, the assignment doesn't use this rationalization.
+
+A key advantage of expert iteration in comparison to SFT is we do not need human or other LLMs generated reasoning traces. The base model generates its own reasoning trace, and correctness filtering ensures quality. This makes Expert Iteration particularly attractive for domains with verifiable rewards like math or code.
+
+### Connection to Reinforcement Learning
+
+You can also understand expert iteration as an approximation to policy gradient RL. To see this, consider the REINFORCE objective with a binary reward $r \in \{0, 1\}$:
+
+$$
+\nabla J(\theta) = \mathbb{E}_{o \sim \pi_\theta}[r \cdot \nabla \log \pi_\theta(o|q)]
+$$
+
+When we filter for correct outputs (where $r = 1$), we are essentially zeroing out the gradient contribution from incorrect samples. The remaining gradient update:
+
+$$
+\nabla J(\theta) \approx \mathbb{E}_{o \sim \pi_\theta, r=1}[\nabla \log \pi_\theta(o|q)]
+$$
+
+is exactly what SFT on filtered data computes.
