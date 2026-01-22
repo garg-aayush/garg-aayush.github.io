@@ -41,3 +41,30 @@ $$
 $$
 
 is exactly what SFT on filtered data computes.
+
+
+## Experimental Setup
+
+I use the same model and evaluation setup as my [previous SFT experiments](https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up). Looking at the Expert Iteration diagram above, you can see how straightforward it is to extend an [SFT codebase](https://github.com/garg-aayush/building-from-scratch/tree/main/sft) to [Expert Iteration](https://github.com/garg-aayush/building-from-scratch/tree/main/expert-iteration). You just wrap the training loop with generation and filtering steps with other minor changes. 
+
+### Model and Dataset
+
+- **Model**: [Qwen2.5-Math-1.5B](https://huggingface.co/Qwen/Qwen2.5-Math-1.5B) (base, not instruction-tuned)
+- **Training data**: ~3.5K problems from the [MATH](https://huggingface.co/datasets/hiyouga/math12k) (same data as in SFT experiments)
+- **Validation data**: 5K problems from CS336 Assignment 5 for evaluation
+
+> This is the same dataset I used in the SFT experiments. However, unlike SFT where I trained on GPT-generated reasoning traces, **Expert Iteration only needs the problems and their ground-truth answers**. The model generates candidate reasoning traces on-the-fly.
+
+### Key Hyperparameters
+
+The Expert Iteration loop has three main key params:
+
+| Parameter | Symbol | Description |
+|-----------|--------|-------------|
+| `batch_per_ei` | $D$ | number of questions sampled per iteration |
+| `num_rollouts` | $R$ | number of outputs generated per question |
+| `num_ei` | $G$ | number of expert iteration steps (fixed at 5) |
+
+Each iteration samples $D$ questions, generates $R$ candidate solutions per question (yielding $D \times R$ total rollouts), filters for correct answers, and fine-tunes on the filtered set.
+
+I also use an **adaptive learning rate and batch size scheme** that scales based on the number of filtered examples per iteration. However, more on that in the next section. You can find the full hyperparameters configuration details in the [train_exp_iter.py](https://github.com/garg-aayush/building-from-scratch/blob/exp-iter/expert-iteration/train_exp_iter.py) script.
