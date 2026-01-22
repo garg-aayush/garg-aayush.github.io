@@ -68,3 +68,41 @@ The Expert Iteration loop has three main key params:
 Each iteration samples $D$ questions, generates $R$ candidate solutions per question (yielding $D \times R$ total rollouts), filters for correct answers, and fine-tunes on the filtered set.
 
 I also use an **adaptive learning rate and batch size scheme** that scales based on the number of filtered examples per iteration. However, more on that in the next section. You can find the full hyperparameters configuration details in the [train_exp_iter.py](https://github.com/garg-aayush/building-from-scratch/blob/exp-iter/expert-iteration/train_exp_iter.py) script.
+
+
+## Tuning the Training Setup
+
+### Finding the Right Learning Rate
+
+Expert Iteration training dynamics differ from standard SFT because the number of filtered examples varies significantly across iterations, with early iterations filtering fewer correct solutions since the model hasn't improved yet. **This makes learning rate selection important.**
+
+My initial experiments with a constant `7e-5` showed overfitting with val. accuracy plateauing and then declining. Using a large `lr=1e-5` avoided overfitting but resulted in painfully slow learning
+
+![](/static/img/blog-2026-01-22/lr_sweep_ei_acc.png){fig-align="center" width=70%}
+
+The solution was an **adaptive scheme** that scales both learning rate and batch size based on filtered data size:
+
+| Filtered Examples | Batch Size | Learning Rate |
+|-------------------|------------|---------------|
+| < 24              | 8          | 3.5e-5        |
+| 24–128            | 32         | 5e-5          |
+| > 128             | 64         | 7e-5          |
+
+When we have few filtered examples, we use smaller batch size and lower learning rate to avoid overfitting. As more rollouts pass the filter, we can train more aggressively. This setup achieved the best val. accuracy of **32.6%** after 5 iters.
+
+> As filtered dataset size varies across iterations, adaptive learning rate and batch size prevents overfitting when data is scarce while enabling efficient training when data is abundant.
+
+### Single vs. Multiple Reasoning Traces per Question
+
+When generating $R$ rollouts per question, multiple rollouts can produce correct answers for the same question often via different reasoning paths. This leads to the following question: **should we keep just one correct trace per question in every exp. iteration or all of them?**
+
+I ran two experiments:
+
+- **Single-trace**: Keep only 1 correct trace per question (randomly selected if multiple are correct)
+- **Multi-trace**: Keep all correct traces per question
+
+![](/static/img/blog-2026-01-22/sampling_strategy_ei_acc.png){fig-align="center" width=70%}
+
+Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.
+
+> Keeping all correct traces per question rather than just one provides diverse reasoning examples for improved training signal.
