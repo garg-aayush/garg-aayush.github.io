@@ -106,3 +106,40 @@ I ran two experiments:
 Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.
 
 > Keeping all correct traces per question rather than just one provides diverse reasoning examples for improved training signal.
+
+## Exploring D (Sample Size) and R (Rollouts)
+
+The assignment asks to vary the batch size $D$ and rollout count $R$ to understand what configurations work best. I ran a grid of experiments to find the best configuration and see if I could make some sense of the results:
+
+- **$D$ (batch_per_ei)**: {512, 1024, 2048}
+- **$R$ (num_rollouts)**: {2, 4}
+
+![](/static/img/blog-2026-01-22/ei_grid_plot.png)
+
+Looking at the results, some obeservations stand out:
+
+- The best configuration is $D=1024, R=4$ achieving **41.7%** accuracy.
+
+- Increasing $D$ does not always guarantee better performance, both $D=2048$ configurations underperform their $D=1024$ counterparts.
+
+> Beyond a certain batch size, sampling more questions with limited rollouts means pulling in harder problems without correct solutions (contributing nothing to training) and a filtered dataset skewed toward easy problems the model can already solve. This results in less diversity per question and degrade performance.
+
+- Increasing $R$ from 2 to 4 improves accuracy across all values of $D$, hinting that rollouts matter more than batch size.
+
+> More rollouts means higher probability of solving each question, more diverse reasoning traces when you do solve (which we saw helps in the multi-trace experiment) and better coverage of harder problems that rarely get solved with fewer attempts.
+
+This aligns with an observation from the [STaR paper](https://arxiv.org/abs/2203.14465): the loop performance stalls when the model receives no direct training signal for problems it fails to solve. The large rollouts help ensure you actually get training signal from each sampled question.
+
+### Filter Rate Analysis
+
+To better understand the above accuracy results, I also tracked the **filter rate (correct rollouts / total rollouts)** across iterations for different experiments.
+
+![](/static/img/blog-2026-01-22/ei_filter_rate_plot.png)
+
+A few things stand out:
+
+- The filter rate increase across iterations as the model improves, generating more correct solutions. This in turn provides more training signal and improves the model. **This is the core mechanism behind Expert Iteration.**
+
+- The filter rate correlates with final accuracy better than absolute example count. $D=2048, R=4$ produces the most correct examples (~4000) but $D=1024, R=4$ achieves the highest filter rate (~57%) and best accuracy. Basically, more data is not always better. You need better training examples than more examples.
+
+> This filter rate reflects how well the model is improving relative to what it attempts. A high filter rate means the model is genuinely getting better at solving problems not just accumulating easy examples. This is why $D=1024, R=4$ wins despite not having the most training data.
