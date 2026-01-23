@@ -1,13 +1,15 @@
 ---
-title: "Expert Iteration Experiments"
-tags: ["Expert Iteration", "LLMs"]
+title: "Expert Iteration for Math Reasoning"
+tags: ["Expert Iteration", "LLMs", "Reasoning", "Reinforcement Learning"]
 mathjax: true
-description: Lorem ipsum
-date: 2026-01-21
-permalink: /2026-01-21-expert-iteration/
+description: Hands-on experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.
+date: 2026-01-23
+permalink: /2026-01-23-expert-iteration/
 ---
 
-# Expert Iteration Experiments
+Expert Iteration, unlike SFT, does not require human-annotated reasoning traces. Instead, the model generates candidate solutions, filters for correct ones and trains on its own successful attempts. Thus, bypassing the need for external high-quality expensive annotations.
+
+This post discusses my experiments with Expert Iteration for math reasoning as part of [CS336 Assignment 5](https://github.com/stanford-cs336/assignment5-alignment). This post continues from my [previous SFT experiments](https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up). I will share what makes it work (and what doesn't), explore hyperparameter choices, and compare the performance against SFT.
 
 ## What is Expert Iteration?
 
@@ -20,7 +22,7 @@ The [Self-Taught Reasoner (STaR)](https://arxiv.org/abs/2203.14465) uses Expert 
 This is how I see Expert Iteration for LLMs: it is **SFT on self-generated, filtered data, repeated iteratively**. The below algorithm captures this loop:
 
 
-![](/static/img/blog-2026-01-22/expert-iteration-diagram.png)
+![](/static/img/blog-2026-01-23/expert-iteration-diagram.png)
 
 > Note: STaR also introduced *rationalization* where for problems the model fails, we provide the correct answer as a hint to generate a valid rationale. However, the assignment doesn't use this rationalization.
 
@@ -78,7 +80,7 @@ Expert Iteration training dynamics differ from standard SFT because the number o
 
 My initial experiments with a constant `7e-5` showed overfitting with val. accuracy plateauing and then declining. Using a large `lr=1e-5` avoided overfitting but resulted in painfully slow learning
 
-![](/static/img/blog-2026-01-22/lr_sweep_ei_acc.png){fig-align="center" width=70%}
+![](/static/img/blog-2026-01-23/lr_sweep_ei_acc.png){fig-align="center" width=70%}
 
 The solution was an **adaptive scheme** that scales both learning rate and batch size based on filtered data size:
 
@@ -101,7 +103,7 @@ I ran two experiments:
 - **Single-trace**: Keep only 1 correct trace per question (randomly selected if multiple are correct)
 - **Multi-trace**: Keep all correct traces per question
 
-![](/static/img/blog-2026-01-22/sampling_strategy_ei_acc.png){fig-align="center" width=70%}
+![](/static/img/blog-2026-01-23/sampling_strategy_ei_acc.png){fig-align="center" width=70%}
 
 Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.
 
@@ -114,7 +116,7 @@ The assignment asks to vary the batch size $D$ and rollout count $R$ to understa
 - **$D$ (batch_per_ei)**: {512, 1024, 2048}
 - **$R$ (num_rollouts)**: {2, 4}
 
-![](/static/img/blog-2026-01-22/ei_grid_plot.png)
+![](/static/img/blog-2026-01-23/ei_grid_plot.png)
 
 Looking at the results, some obeservations stand out:
 
@@ -134,7 +136,7 @@ This aligns with an observation from the [STaR paper](https://arxiv.org/abs/2203
 
 To better understand the above accuracy results, I also tracked the **filter rate (correct rollouts / total rollouts)** across iterations for different experiments.
 
-![](/static/img/blog-2026-01-22/ei_filter_rate_plot.png)
+![](/static/img/blog-2026-01-23/ei_filter_rate_plot.png)
 
 A few things stand out:
 
@@ -143,3 +145,61 @@ A few things stand out:
 - The filter rate correlates with final accuracy better than absolute example count. $D=2048, R=4$ produces the most correct examples (~4000) but $D=1024, R=4$ achieves the highest filter rate (~57%) and best accuracy. Basically, more data is not always better. You need better training examples than more examples.
 
 > This filter rate reflects how well the model is improving relative to what it attempts. A high filter rate means the model is genuinely getting better at solving problems not just accumulating easy examples. This is why $D=1024, R=4$ wins despite not having the most training data.
+
+Your revised version is good—it's more concise and has a nice personal touch. A few suggestions:
+
+1. Small grammar fix: "Frankly, speaking my initial intuitions was" → "Frankly speaking, my initial intuition was"
+2. Adding the results table would make the gains more concrete (readers can see them in the plot, but explicit numbers help)
+3. A blockquote summarizing the key insight would match your style in other sections
+
+## Pushing Accuracy with Multi-Epoch Training
+
+I wanted to see if I could push accuracy even higher and the simplest way to check this is by training for more epochs per iteration. So far, all my experiments used just 1 epoch of SFT per expert iteration step. I ran additional experiments with 2 epochs per iteration for two batch sizes: $D=512$ and $D=1024$ (both with $R=4$).
+
+![](/static/img/blog-2026-01-23/ei_multiepoch_plot.png)
+
+- Training for 2 epochs per iteration consistently outperforms 1 epoch across both configurations. Frankly speaking, my initial intuition was that 2 epochs might cause overfitting and hurt accuracy. However, the results are counterintuitive.
+- My understanding is that with a large rollout count $R$ the filtered dataset is already diverse enough that training for multiple epochs extracts more signal without memorizing. This improved learning leads to better filter rates and accracy in subsequent iterations.
+
+## Comparison to SFT Experiments
+
+In my [previous SFT experiments](https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up), I finetuned the same `Qwen2.5-Math-1.5B` using the same train and eval data, with train data being GPT-120B generated reasoning traces. Below is the comparison of SFT and Expert Iteration best experiments:
+
+| Method | Configuration | Reward Accuracy |
+|--------|---------------|-----------------|
+| Baseline | Untrained Qwen2.5-Math-1.5B | 2.9% |
+| **Expert Iteration (best)** | D=1024, R=4, 2 epochs | **47.1%** |
+| **SFT (best)** | Filtered data, 2 epochs | **53.4%** |
+
+Despite extensive tuning across batch sizes, rollout counts and learning rate schedules **Expert Iteration reached 47.1% accuracy—around 6% below SFT's 53.4%**.
+
+The gap comes down to **data quality**. SFT trains on reasoning traces from GPT-OSS-120B, a much more capable model. These traces aren't just correct but also demonstrate sophisticated problem-solving strategies. Expert Iteration, by contrast, trains on the model's *own* correct outputs which are inherently less refined. The model can only learn from its own best behaviors.
+
+> There are still experiments one could run to close this gap: larger rollout counts (8, 12), adaptive sampling strategies to limit correct rollouts per question and prevent overfitting, etc. However, I didn't find it compelling enough to run more experiments.
+
+
+I haven't seen too many experiments/blogs/papers of Expert Iteration and given my experiments, I think there are a few reasons:
+
+1. Expert Iteration requires a model that can already solve some problems correctly. A weaker base model would struggle to provide any training signal.
+
+2. The method is sensitive to learning rate, batch size, and rollout count. You need to find the right balance otherwise you risk overfitting. My grid search showed final accuracy ranging from 21.9% to 47.1% depending on configuration.
+
+3. Each iteration requires generating $D \times R$ rollouts before any training happens. With $D=1024$ and $R=4$, that is 4,096 generations per iteration. You end up spending as much or more compute on generation as on training.
+
+Despite all the above, Expert Iteration has one compelling advantage: **it does not require expensive annotated data and is well-suited for domains with verifiable rewards like math and code**.
+
+It is also worth noting that the core mechanism in expert iterations, generating many outputs and filtering for correct ones is essentially **rejection sampling**. D which has become a key component in recent reasoning models. [DeepSeek-Math](https://arxiv.org/abs/2402.03300) uses rejection sampling fine-tuning (RFT) and [DeepSeek-R1](https://arxiv.org/abs/2501.12948) employs rejection sampling for fine-tuning and boostrapping reasoning capabilities. You can think of Expert Iteration as rejection sampling applied iteratively: sample, filter, finetune, repeat.
+
+## Resources
+
+### Papers and blogposts
+- [Thinking Fast and Slow with Deep Learning and Tree Search (Anthony et. al., 2017)](https://arxiv.org/abs/1705.08439): Original Expert Iteration paper
+- [STaR: Self-Taught Reasoner (Zelikman et. al., 2022)](https://arxiv.org/abs/2203.14465): Expert Iteration for LLM reasoning
+- [CS336 Assignment 5](https://github.com/stanford-cs336/assignment5-alignment): Stanford CS336 alignment assignment
+- [Building SFT from Ground Up](https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up): Previous SFT experiments blogpost
+
+### Code
+- [Expert Iteration Implementation](https://github.com/garg-aayush/building-from-scratch/tree/main/expert-iteration): My Expert Iteration codebase
+- [Training and validation datasets](https://huggingface.co/datasets/garg-aayush/sft-cs336-assign5-datasets): Training and validation datasets used in the experiments
+- [wandb Training logs](https://wandb.ai/garg-aayush/expert-iter)
+- [Checkpoints](https://huggingface.co/garg-aayush/cs336_exp-iter_exps/)
