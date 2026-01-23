@@ -9,8 +9,270 @@
 <link>https://garg-aayush.github.io/</link>
 <atom:link href="https://garg-aayush.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>LLM fundamentals, fine-tuning experiments, and building reliable AI systems.</description>
-<generator>quarto-1.8.26</generator>
-<lastBuildDate>Tue, 13 Jan 2026 00:00:00 GMT</lastBuildDate>
+<generator>quarto-1.8.27</generator>
+<lastBuildDate>Fri, 23 Jan 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Expert Iteration for Math Reasoning</title>
+  <link>https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>Expert Iteration, unlike SFT, does not require human-annotated reasoning traces. Instead, the model generates candidate solutions, filters for correct ones and trains on its own successful attempts. Thus, bypassing the need for external high-quality expensive annotations.</p>
+<p>This post discusses my experiments with Expert Iteration for math reasoning as part of <a href="https://github.com/stanford-cs336/assignment5-alignment">CS336 Assignment 5</a>. This post continues from my <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">previous SFT experiments</a>. I will share what makes it work (and what does not), explore hyperparameter choices and compare the performance against SFT.</p>
+<section id="what-is-expert-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-expert-iteration">What is Expert Iteration?</h2>
+<p>Expert Iteration was first introduced by <a href="https://arxiv.org/abs/1705.08439">Anthony et. al.&nbsp;(2017)</a> in the context of game-playing AI. The core idea is to alternate between using a slow but powerful <strong>expert</strong> to find high-quality solutions and training a fast <strong>apprentice</strong> to imitate those solutions. As the apprentice improves, it provides a better starting point for the expert. Thus, creating a virtuous cycle of improvement.</p>
+<p>The <a href="https://arxiv.org/abs/2203.14465">Self-taught Reasoner (STaR)</a> uses Expert Iteration idea for improving reasoning capabilities. It works as follows: at each iteration, we prompt the model to generate rationales for many problems, filter to keep only those that lead to correct answers, finetune on the filtered set and repeat.</p>
+<blockquote class="blockquote">
+<p>Here, the filtering step acts as the “expert”. It identifies which of the model own generations are correct. <strong>The model then learns to imitate its own best behaviors.</strong></p>
+</blockquote>
+<p>I see Expert Iteration for LLMs as <strong>SFT on self-generated, filtered data, repeated iteratively</strong> as shown in this loop:</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/expert-iteration-diagram.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>Note: STaR paper retrains from the base pretrained model at each iteration to avoid overfitting and introduces rationalization for failed problems. The approach used here (following the CS336 assignment) does not uses rationalization and continues training from the previous iteration checkpoint.</p>
+</blockquote>
+<p>A key advantage of expert iteration in comparison to SFT is <strong>we do not need human or other LLMs generated reasoning traces</strong>. The model generates its own reasoning trace and correctness filtering ensures quality. This makes Expert Iteration particularly attractive for domains with verifiable rewards like math or code.</p>
+<section id="connection-to-reinforcement-learning" class="level3">
+<h3 class="anchored" data-anchor-id="connection-to-reinforcement-learning">Connection to Reinforcement Learning</h3>
+<p>You can also understand expert iteration as an approximation to policy gradient RL. To see this, consider the REINFORCE objective with a binary reward <img src="https://latex.codecogs.com/png.latex?r%20%5Cin%20%5C%7B0,%201%5C%7D">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cnabla%20J(%5Ctheta)%20=%20%5Cmathbb%7BE%7D_%7Bo%20%5Csim%20%5Cpi_%5Ctheta%7D%5Br%20%5Ccdot%20%5Cnabla%20%5Clog%20%5Cpi_%5Ctheta(o%7Cq)%5D%0A"></p>
+<p>When we filter for correct outputs (where <img src="https://latex.codecogs.com/png.latex?r%20=%201">) we are essntially zeroing out the gradient contribution from incorrect samples. The remaining gradient update:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cnabla%20J(%5Ctheta)%20%5Capprox%20%5Cmathbb%7BE%7D_%7Bo%20%5Csim%20%5Cpi_%5Ctheta,%20r=1%7D%5B%5Cnabla%20%5Clog%20%5Cpi_%5Ctheta(o%7Cq)%5D%0A"></p>
+<p>is exactly what SFT on filtered data computes.</p>
+</section>
+</section>
+<section id="experimental-setup" class="level2">
+<h2 class="anchored" data-anchor-id="experimental-setup">Experimental Setup</h2>
+<p>I use the same model and evaluation setup as my <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">previous SFT experiments</a>. Looking at the Expert Iteration diagram above, you can see how straightforward it is to extend an <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/sft">SFT</a> to <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/expert-iteration">Expert Iteration</a> codebase. You basically just wrap the training loop with generation and filtering steps with other minor changes.</p>
+<section id="model-and-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="model-and-dataset">Model and Dataset</h3>
+<ul>
+<li><strong>Model</strong>: <a href="https://huggingface.co/Qwen/Qwen2.5-Math-1.5B">Qwen2.5-Math-1.5B</a> (base, not instruction-tuned)</li>
+<li><strong>Training data</strong>: ~3.5K problems from the <a href="https://huggingface.co/datasets/hiyouga/math12k">MATH</a> (same data as in SFT experiments)</li>
+<li><strong>Validation data</strong>: 5K problems from CS336 Assignment 5 for evaluation</li>
+</ul>
+<blockquote class="blockquote">
+<p>This is the same dataset I used in the SFT experiments. However, unlike SFT where I trained on GPT-generated reasoning traces, <strong>Expert Iteration only needs the problems and their ground-truth answers</strong>. The model generates candidate reasoning traces on the fly.</p>
+</blockquote>
+</section>
+<section id="key-hyperparameters" class="level3">
+<h3 class="anchored" data-anchor-id="key-hyperparameters">Key Hyperparameters</h3>
+<p>The Expert Iteration loop has three main key params:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Symbol</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>batch_per_ei</code></td>
+<td><img src="https://latex.codecogs.com/png.latex?D"></td>
+<td>number of questions sampled per iteration</td>
+</tr>
+<tr class="even">
+<td><code>num_rollouts</code></td>
+<td><img src="https://latex.codecogs.com/png.latex?R"></td>
+<td>number of outputs generated per question</td>
+</tr>
+<tr class="odd">
+<td><code>num_ei</code></td>
+<td><img src="https://latex.codecogs.com/png.latex?G"></td>
+<td>number of expert iteration steps (fixed at 5)</td>
+</tr>
+</tbody>
+</table>
+<p>Each iteration samples <img src="https://latex.codecogs.com/png.latex?D"> questions, generates <img src="https://latex.codecogs.com/png.latex?R"> candidate solutions per question (giving <img src="https://latex.codecogs.com/png.latex?D%20%5Ctimes%20R"> total rollouts), filters for correct answers and finetunes on the filtered set.</p>
+<p>I also use an <strong>adaptive learning rate and batch size scheme</strong> that scales based on the number of filtered examples per iteration. However, more on that in the next section. You can find the full hyperparameters configuration details in the <a href="https://github.com/garg-aayush/building-from-scratch/blob/exp-iter/expert-iteration/train_exp_iter.py">train_exp_iter.py</a> script.</p>
+</section>
+</section>
+<section id="tuning-the-training-setup" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-the-training-setup">Tuning the Training Setup</h2>
+<section id="finding-the-right-learning-rate" class="level3">
+<h3 class="anchored" data-anchor-id="finding-the-right-learning-rate">Finding the Right Learning Rate</h3>
+<p>Expert Iteration training approach differs from standard SFT because the number of filtered examples varies significantly across iterations with early iterations filtering fewer correct solutions since the model hasn’t improved yet. <strong>This makes learning rate selection important.</strong></p>
+<p>My initial experiments with a constant <code>7e-5</code> showed overfitting with val. accuracy plateauing and then declining. Using a <code>lr=1e-5</code> avoided overfitting but resulted in extremely slow learning.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/lr_sweep_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<blockquote class="blockquote">
+<p><strong>Note</strong>: All accuracy values reported in the current and following sections is on the validation data.</p>
+</blockquote>
+<p>The solution was an <strong>adaptive scheme</strong> that scales both learning rate and batch size based on filtered data size:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Filtered Examples</th>
+<th>Batch Size</th>
+<th>Learning Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt; 24</td>
+<td>8</td>
+<td>3.5e-5</td>
+</tr>
+<tr class="even">
+<td>24–128</td>
+<td>32</td>
+<td>5e-5</td>
+</tr>
+<tr class="odd">
+<td>&gt; 128</td>
+<td>64</td>
+<td>7e-5</td>
+</tr>
+</tbody>
+</table>
+<p>When we have A few filtered examples, we use smaller batch size and lower learning rate to avoid overfitting. As more rollouts pass the filter, we can train more aggressively. This setup achieved the best val. accuracy of <strong>32.6%</strong> after 5 iters.</p>
+<blockquote class="blockquote">
+<p>As filtered dataset size varies across iterations, adaptive learning rate and batch size prevents overfitting when data is scarce while enabling efficient training when data is abundant.</p>
+</blockquote>
+</section>
+<section id="single-vs.-multiple-reasoning-traces-per-question" class="level3">
+<h3 class="anchored" data-anchor-id="single-vs.-multiple-reasoning-traces-per-question">Single vs.&nbsp;Multiple Reasoning Traces per Question</h3>
+<p>When generating <img src="https://latex.codecogs.com/png.latex?R"> rollouts per question, multiple rollouts can produce correct answers for the same question often with different reasoning paths. This leads to the following question: <strong>should we keep just one correct trace per question in every iteration or all of them?</strong></p>
+<p>I ran two experiments:</p>
+<ul>
+<li><strong>Single-trace</strong>: Keep only 1 correct trace per question (randomly selected if multiple are correct)</li>
+<li><strong>Multi-trace</strong>: Keep all correct traces per question</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/sampling_strategy_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<p>Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.</p>
+<blockquote class="blockquote">
+<p>Keeping all correct traces per question rather than just one provides diverse reasoning examples for improved training signal.</p>
+</blockquote>
+</section>
+</section>
+<section id="exploring-d-sample-size-and-r-rollouts" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-d-sample-size-and-r-rollouts">Exploring D (Sample Size) and R (Rollouts)</h2>
+<p>The assignment suggests to vary the batch size <img src="https://latex.codecogs.com/png.latex?D"> and rollout count <img src="https://latex.codecogs.com/png.latex?R"> to understand what configurations work best. I ran a grid of experiments to find the best configuration and see if I could make some sense of the results:</p>
+<ul>
+<li><strong><img src="https://latex.codecogs.com/png.latex?D"> (batch_per_ei)</strong>: <img src="https://latex.codecogs.com/png.latex?%7B512,%201024,%202048%7D"></li>
+<li><strong><img src="https://latex.codecogs.com/png.latex?R"> (num_rollouts)</strong>: <img src="https://latex.codecogs.com/png.latex?%7B2,%204%7D"></li>
+</ul>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/ei_grid_plot.png" class="img-fluid"></p>
+<p>Looking at the results, some observations stand out:</p>
+<ul>
+<li><p>The best configuration is <img src="https://latex.codecogs.com/png.latex?D=1024,%20R=4"> achieving <strong>41.7%</strong> accuracy.</p></li>
+<li><p>Increasing <img src="https://latex.codecogs.com/png.latex?D"> does not always guarantee better performance, both <img src="https://latex.codecogs.com/png.latex?D=2048"> configurations underperform their <img src="https://latex.codecogs.com/png.latex?D=1024"> counterparts.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p>Beyond a certain batch size, sampling more questions with limited rollouts means pulling in harder problems without correct solutions (contributing nothing to training) and a filtered dataset skewed toward easy problems the model can already solve. This results in less diversity per question and degrade performance.</p>
+</blockquote>
+<ul>
+<li>Increasing <img src="https://latex.codecogs.com/png.latex?R"> from 2 to 4 improves accuracy across all values of <img src="https://latex.codecogs.com/png.latex?D">, hinting that rollouts matter more than batch size.</li>
+</ul>
+<blockquote class="blockquote">
+<p>More rollouts means higher probability of solving each question, more diverse reasoning traces when you do solve (which we saw helps in the multi-trace experiment) and better coverage of harder problems that rarely get solved with fewer attempts.</p>
+</blockquote>
+<p>This aligns with an observation from the <a href="https://arxiv.org/abs/2203.14465">STaR paper</a> where the performance stalled when the model received no direct training signal for problems it failed to solve. The large rollouts helped with training signal from each sampled question.</p>
+<section id="filter-rate-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="filter-rate-analysis">Filter Rate Analysis</h3>
+<p>To better understand the above accuracy results, I also tracked the <strong>filter rate (correct rollouts / total rollouts)</strong> across iterations for different experiments.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/ei_filter_rate_plot.png" class="img-fluid"></p>
+<p>A few things stand out:</p>
+<ul>
+<li><p>The filter rate increase across iterations as the model improves, generating more correct solutions. This in turn provides more training signal and improves the model. <strong>This is the core mechanism behind Expert Iteration.</strong></p></li>
+<li><p>The filter rate correlates with final accuracy better than absolute example count. <img src="https://latex.codecogs.com/png.latex?D=2048,%20R=4"> produces the most correct examples (~4000) but <img src="https://latex.codecogs.com/png.latex?D=1024,%20R=4"> achieves the highest filter rate (~57%) and best accuracy. Basically, more data is not always better. You need better training examples than more examples.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p>This filter rate reflects how well the model is improving relative to what it attempts. A high filter rate means the model is genuinely getting better at solving problems not just accumulating easy examples.</p>
+</blockquote>
+</section>
+</section>
+<section id="pushing-accuracy-with-multi-epoch-training" class="level2">
+<h2 class="anchored" data-anchor-id="pushing-accuracy-with-multi-epoch-training">Pushing Accuracy with Multi-Epoch Training</h2>
+<p>So far, all my experiments used just 1 epoch of SFT per expert iteration step. I wanted to see if I could push accuracy even higher and the simplest way to check this is by training for more epochs per iteration. I ran additional experiments with 2 epochs per iteration for two batch sizes: <img src="https://latex.codecogs.com/png.latex?D=512"> and <img src="https://latex.codecogs.com/png.latex?D=1024"> (both with <img src="https://latex.codecogs.com/png.latex?R=4">).</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/ei_multiepoch_plot.png" class="img-fluid"></p>
+<p>Training for 2 epochs per iteration consistently outperforms 1 epoch across both configurations. My understanding is that with a large rollout count <img src="https://latex.codecogs.com/png.latex?R"> the filtered dataset is already diverse enough that training for multiple epochs extracts more signal without memorizing. This improved learning leads to better filter rates and accuracy in subsequent iterations.</p>
+</section>
+<section id="comparison-to-sft-experiments" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-to-sft-experiments">Comparison to SFT Experiments</h2>
+<p>In my <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">previous SFT experiments</a>, I finetuned the same <code>Qwen2.5-Math-1.5B</code> model using the same train and eval data, with train data being GPT-oss-120B generated reasoning traces. Below is the comparison of SFT and Expert Iteration best experiments:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Configuration</th>
+<th>Reward Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baseline</td>
+<td>Untrained Qwen2.5-Math-1.5B</td>
+<td>2.9%</td>
+</tr>
+<tr class="even">
+<td><strong>Expert Iteration (best)</strong></td>
+<td>D=1024, R=4, 2 epochs</td>
+<td><strong>47.1%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>SFT (best)</strong></td>
+<td>Filtered data, 2 epochs</td>
+<td><strong>53.4%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Despite extensive tuning across batch sizes, rollout counts and learning rate schedules <strong>Expert Iteration reached 47.1% accuracy which is around 6% below SFT’s 53.4%</strong>.</p>
+<p>In my understanding, the gap comes down to two factors: <strong>data quality</strong> and <strong>rationalization</strong>:</p>
+<ul>
+<li>SFT trains on reasoning traces from GPT-OSS-120B, a much more capable model. These traces aren’t just correct but also demonstrate sophisticated problem-solving strategies. Expert Iteration by contrast trains on the model <em>own</em> correct outputs which are inherently less refined. The model can only learn from its own best behaviors.</li>
+<li>Moroever, the STaR paper shows that rationalization (providing the answer as a hint to generate rationales for failed problems) provides crucial training signal that accelerates learning. Without it, the model receives no direct signal for problems it cannot solve.</li>
+</ul>
+<blockquote class="blockquote">
+<p>There are still experiments one could run to close this gap like larger rollout counts (8, 12), adaptive sampling strategies to limit correct rollouts per question and prevent overfitting etc. However, I didn’t find it compelling enough to run more experiments.</p>
+</blockquote>
+<p>Also, I have also not come across many experiments/blogs/papers on Expert Iteration replacing SFT and given my experiments, I think there are a few reasons:</p>
+<ol type="1">
+<li><p>Expert Iteration requires a model that can already solve some problems correctly. A weaker base model would struggle to provide any training signal.</p></li>
+<li><p>The method is sensitive to learning rate, batch size, and rollout count. You need to find the right balance otherwise you risk overfitting. My grid search showed final accuracy ranging from 21.9% to 47.1% depending on configuration.</p></li>
+<li><p>Each iteration requires generating <img src="https://latex.codecogs.com/png.latex?D%20%5Ctimes%20R"> rollouts before any training happens. With <img src="https://latex.codecogs.com/png.latex?D=1024"> and <img src="https://latex.codecogs.com/png.latex?R=4">, that is 4,096 generations per iteration. You end up spending as much or more compute on generation as on training.</p></li>
+</ol>
+<p>Despite all the above, Expert Iteration has one compelling advantage: <strong>it does not require expensive annotated data and is well-suited for domains with verifiable rewards like math and code</strong>.</p>
+<p>It is also worth noting that the core mechanism in expert iterations, generating many outputs and filtering for correct ones is linked to <strong>rejection sampling</strong> mentioned and used in <a href="https://arxiv.org/abs/2402.03300">DeepSeek-Math</a> and <a href="https://arxiv.org/abs/2501.12948">DeepSeek-R1</a> papers. You can think of Expert Iteration as rejection sampling applied iteratively: sample, filter, finetune, repeat.</p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<section id="papers-and-blogposts" class="level3">
+<h3 class="anchored" data-anchor-id="papers-and-blogposts">Papers and blogposts</h3>
+<ul>
+<li><a href="https://arxiv.org/abs/1705.08439">Thinking Fast and Slow with Deep Learning and Tree Search</a>: Original Expert Iteration paper</li>
+<li><a href="https://arxiv.org/abs/2203.14465">STaR: Bootstrapping Reasoning With Reasoning</a>: Expert Iteration for LLM reasoning</li>
+<li><a href="https://github.com/stanford-cs336/assignment5-alignment">CS336 Assignment 5</a>: Stanford CS336 alignment assignment</li>
+<li><a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">Building SFT from Ground Up</a>: Previous SFT experiments blogpost</li>
+</ul>
+</section>
+<section id="code" class="level3">
+<h3 class="anchored" data-anchor-id="code">Code</h3>
+<ul>
+<li><a href="https://github.com/garg-aayush/building-from-scratch/tree/main/expert-iteration">Expert Iteration Implementation</a>: My Expert Iteration codebase</li>
+<li><a href="https://huggingface.co/datasets/garg-aayush/sft-cs336-assign5-datasets">Training and validation datasets</a>: Training and validation datasets used in the experiments</li>
+<li><a href="https://wandb.ai/garg-aayush/expert-iter">wandb Training logs</a></li>
+<li><a href="https://huggingface.co/garg-aayush/cs336_exp-iter_exps/">Finetuned checkpoints</a></li>
+</ul>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</guid>
+  <pubDate>Fri, 23 Jan 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>A Brief Introduction to Claude Agent Skills</title>
   <link>https://garg-aayush.github.io/posts/2026-01-13-claude-skills/</link>

@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-01-23">
+<meta name="description" content="Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.">
+
+<title>Expert Iteration for Math Reasoning – Aayush Garg</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-2d3f84a5f37526cd3979248aedf2fbfb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Expert Iteration for Math Reasoning – Aayush Garg">
+<meta property="og:description" content="Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.">
+<meta property="og:image" content="https://garg-aayush.github.io/static/img/blog-2026-01-23/expert-iteration-diagram.png">
+<meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:height" content="640">
+<meta property="og:image:width" content="1400">
+<meta name="twitter:title" content="Expert Iteration for Math Reasoning – Aayush Garg">
+<meta name="twitter:description" content="Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.">
+<meta name="twitter:image" content="https://garg-aayush.github.io/static/img/blog-2026-01-23/expert-iteration-diagram.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="640">
+<meta name="twitter:image-width" content="1400">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../blog/"> 
+<span class="menu-text">Blogs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-expert-iteration" id="toc-what-is-expert-iteration" class="nav-link active" data-scroll-target="#what-is-expert-iteration">What is Expert Iteration?</a>
+  <ul class="collapse">
+  <li><a href="#connection-to-reinforcement-learning" id="toc-connection-to-reinforcement-learning" class="nav-link" data-scroll-target="#connection-to-reinforcement-learning">Connection to Reinforcement Learning</a></li>
+  </ul></li>
+  <li><a href="#experimental-setup" id="toc-experimental-setup" class="nav-link" data-scroll-target="#experimental-setup">Experimental Setup</a>
+  <ul class="collapse">
+  <li><a href="#model-and-dataset" id="toc-model-and-dataset" class="nav-link" data-scroll-target="#model-and-dataset">Model and Dataset</a></li>
+  <li><a href="#key-hyperparameters" id="toc-key-hyperparameters" class="nav-link" data-scroll-target="#key-hyperparameters">Key Hyperparameters</a></li>
+  </ul></li>
+  <li><a href="#tuning-the-training-setup" id="toc-tuning-the-training-setup" class="nav-link" data-scroll-target="#tuning-the-training-setup">Tuning the Training Setup</a>
+  <ul class="collapse">
+  <li><a href="#finding-the-right-learning-rate" id="toc-finding-the-right-learning-rate" class="nav-link" data-scroll-target="#finding-the-right-learning-rate">Finding the Right Learning Rate</a></li>
+  <li><a href="#single-vs.-multiple-reasoning-traces-per-question" id="toc-single-vs.-multiple-reasoning-traces-per-question" class="nav-link" data-scroll-target="#single-vs.-multiple-reasoning-traces-per-question">Single vs.&nbsp;Multiple Reasoning Traces per Question</a></li>
+  </ul></li>
+  <li><a href="#exploring-d-sample-size-and-r-rollouts" id="toc-exploring-d-sample-size-and-r-rollouts" class="nav-link" data-scroll-target="#exploring-d-sample-size-and-r-rollouts">Exploring D (Sample Size) and R (Rollouts)</a>
+  <ul class="collapse">
+  <li><a href="#filter-rate-analysis" id="toc-filter-rate-analysis" class="nav-link" data-scroll-target="#filter-rate-analysis">Filter Rate Analysis</a></li>
+  </ul></li>
+  <li><a href="#pushing-accuracy-with-multi-epoch-training" id="toc-pushing-accuracy-with-multi-epoch-training" class="nav-link" data-scroll-target="#pushing-accuracy-with-multi-epoch-training">Pushing Accuracy with Multi-Epoch Training</a></li>
+  <li><a href="#comparison-to-sft-experiments" id="toc-comparison-to-sft-experiments" class="nav-link" data-scroll-target="#comparison-to-sft-experiments">Comparison to SFT Experiments</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a>
+  <ul class="collapse">
+  <li><a href="#papers-and-blogposts" id="toc-papers-and-blogposts" class="nav-link" data-scroll-target="#papers-and-blogposts">Papers and blogposts</a></li>
+  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Expert Iteration for Math Reasoning</h1>
+</div>
+
+<div>
+  <div class="description">
+    Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 23, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Expert Iteration, unlike SFT, does not require human-annotated reasoning traces. Instead, the model generates candidate solutions, filters for correct ones and trains on its own successful attempts. Thus, bypassing the need for external high-quality expensive annotations.</p>
+<p>This post discusses my experiments with Expert Iteration for math reasoning as part of <a href="https://github.com/stanford-cs336/assignment5-alignment">CS336 Assignment 5</a>. This post continues from my <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">previous SFT experiments</a>. I will share what makes it work (and what does not), explore hyperparameter choices and compare the performance against SFT.</p>
+<section id="what-is-expert-iteration" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-expert-iteration">What is Expert Iteration?</h2>
+<p>Expert Iteration was first introduced by <a href="https://arxiv.org/abs/1705.08439">Anthony et. al.&nbsp;(2017)</a> in the context of game-playing AI. The core idea is to alternate between using a slow but powerful <strong>expert</strong> to find high-quality solutions and training a fast <strong>apprentice</strong> to imitate those solutions. As the apprentice improves, it provides a better starting point for the expert. Thus, creating a virtuous cycle of improvement.</p>
+<p>The <a href="https://arxiv.org/abs/2203.14465">Self-taught Reasoner (STaR)</a> uses Expert Iteration idea for improving reasoning capabilities. It works as follows: at each iteration, we prompt the model to generate rationales for many problems, filter to keep only those that lead to correct answers, finetune on the filtered set and repeat.</p>
+<blockquote class="blockquote">
+<p>Here, the filtering step acts as the “expert”. It identifies which of the model own generations are correct. <strong>The model then learns to imitate its own best behaviors.</strong></p>
+</blockquote>
+<p>I see Expert Iteration for LLMs as <strong>SFT on self-generated, filtered data, repeated iteratively</strong> as shown in this loop:</p>
+<p><img src="../../static/img/blog-2026-01-23/expert-iteration-diagram.png" class="img-fluid"></p>
+<blockquote class="blockquote">
+<p>Note: STaR paper retrains from the base pretrained model at each iteration to avoid overfitting and introduces rationalization for failed problems. The approach used here (following the CS336 assignment) does not uses rationalization and continues training from the previous iteration checkpoint.</p>
+</blockquote>
+<p>A key advantage of expert iteration in comparison to SFT is <strong>we do not need human or other LLMs generated reasoning traces</strong>. The model generates its own reasoning trace and correctness filtering ensures quality. This makes Expert Iteration particularly attractive for domains with verifiable rewards like math or code.</p>
+<section id="connection-to-reinforcement-learning" class="level3">
+<h3 class="anchored" data-anchor-id="connection-to-reinforcement-learning">Connection to Reinforcement Learning</h3>
+<p>You can also understand expert iteration as an approximation to policy gradient RL. To see this, consider the REINFORCE objective with a binary reward <span class="math inline">\(r \in \{0, 1\}\)</span>:</p>
+<p><span class="math display">\[
+\nabla J(\theta) = \mathbb{E}_{o \sim \pi_\theta}[r \cdot \nabla \log \pi_\theta(o|q)]
+\]</span></p>
+<p>When we filter for correct outputs (where <span class="math inline">\(r = 1\)</span>) we are essntially zeroing out the gradient contribution from incorrect samples. The remaining gradient update:</p>
+<p><span class="math display">\[
+\nabla J(\theta) \approx \mathbb{E}_{o \sim \pi_\theta, r=1}[\nabla \log \pi_\theta(o|q)]
+\]</span></p>
+<p>is exactly what SFT on filtered data computes.</p>
+</section>
+</section>
+<section id="experimental-setup" class="level2">
+<h2 class="anchored" data-anchor-id="experimental-setup">Experimental Setup</h2>
+<p>I use the same model and evaluation setup as my <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">previous SFT experiments</a>. Looking at the Expert Iteration diagram above, you can see how straightforward it is to extend an <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/sft">SFT</a> to <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/expert-iteration">Expert Iteration</a> codebase. You basically just wrap the training loop with generation and filtering steps with other minor changes.</p>
+<section id="model-and-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="model-and-dataset">Model and Dataset</h3>
+<ul>
+<li><strong>Model</strong>: <a href="https://huggingface.co/Qwen/Qwen2.5-Math-1.5B">Qwen2.5-Math-1.5B</a> (base, not instruction-tuned)</li>
+<li><strong>Training data</strong>: ~3.5K problems from the <a href="https://huggingface.co/datasets/hiyouga/math12k">MATH</a> (same data as in SFT experiments)</li>
+<li><strong>Validation data</strong>: 5K problems from CS336 Assignment 5 for evaluation</li>
+</ul>
+<blockquote class="blockquote">
+<p>This is the same dataset I used in the SFT experiments. However, unlike SFT where I trained on GPT-generated reasoning traces, <strong>Expert Iteration only needs the problems and their ground-truth answers</strong>. The model generates candidate reasoning traces on the fly.</p>
+</blockquote>
+</section>
+<section id="key-hyperparameters" class="level3">
+<h3 class="anchored" data-anchor-id="key-hyperparameters">Key Hyperparameters</h3>
+<p>The Expert Iteration loop has three main key params:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Symbol</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>batch_per_ei</code></td>
+<td><span class="math inline">\(D\)</span></td>
+<td>number of questions sampled per iteration</td>
+</tr>
+<tr class="even">
+<td><code>num_rollouts</code></td>
+<td><span class="math inline">\(R\)</span></td>
+<td>number of outputs generated per question</td>
+</tr>
+<tr class="odd">
+<td><code>num_ei</code></td>
+<td><span class="math inline">\(G\)</span></td>
+<td>number of expert iteration steps (fixed at 5)</td>
+</tr>
+</tbody>
+</table>
+<p>Each iteration samples <span class="math inline">\(D\)</span> questions, generates <span class="math inline">\(R\)</span> candidate solutions per question (giving <span class="math inline">\(D \times R\)</span> total rollouts), filters for correct answers and finetunes on the filtered set.</p>
+<p>I also use an <strong>adaptive learning rate and batch size scheme</strong> that scales based on the number of filtered examples per iteration. However, more on that in the next section. You can find the full hyperparameters configuration details in the <a href="https://github.com/garg-aayush/building-from-scratch/blob/exp-iter/expert-iteration/train_exp_iter.py">train_exp_iter.py</a> script.</p>
+</section>
+</section>
+<section id="tuning-the-training-setup" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-the-training-setup">Tuning the Training Setup</h2>
+<section id="finding-the-right-learning-rate" class="level3">
+<h3 class="anchored" data-anchor-id="finding-the-right-learning-rate">Finding the Right Learning Rate</h3>
+<p>Expert Iteration training approach differs from standard SFT because the number of filtered examples varies significantly across iterations with early iterations filtering fewer correct solutions since the model hasn’t improved yet. <strong>This makes learning rate selection important.</strong></p>
+<p>My initial experiments with a constant <code>7e-5</code> showed overfitting with val. accuracy plateauing and then declining. Using a <code>lr=1e-5</code> avoided overfitting but resulted in extremely slow learning.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../static/img/blog-2026-01-23/lr_sweep_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<blockquote class="blockquote">
+<p><strong>Note</strong>: All accuracy values reported in the current and following sections is on the validation data.</p>
+</blockquote>
+<p>The solution was an <strong>adaptive scheme</strong> that scales both learning rate and batch size based on filtered data size:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Filtered Examples</th>
+<th>Batch Size</th>
+<th>Learning Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt; 24</td>
+<td>8</td>
+<td>3.5e-5</td>
+</tr>
+<tr class="even">
+<td>24–128</td>
+<td>32</td>
+<td>5e-5</td>
+</tr>
+<tr class="odd">
+<td>&gt; 128</td>
+<td>64</td>
+<td>7e-5</td>
+</tr>
+</tbody>
+</table>
+<p>When we have A few filtered examples, we use smaller batch size and lower learning rate to avoid overfitting. As more rollouts pass the filter, we can train more aggressively. This setup achieved the best val. accuracy of <strong>32.6%</strong> after 5 iters.</p>
+<blockquote class="blockquote">
+<p>As filtered dataset size varies across iterations, adaptive learning rate and batch size prevents overfitting when data is scarce while enabling efficient training when data is abundant.</p>
+</blockquote>
+</section>
+<section id="single-vs.-multiple-reasoning-traces-per-question" class="level3">
+<h3 class="anchored" data-anchor-id="single-vs.-multiple-reasoning-traces-per-question">Single vs.&nbsp;Multiple Reasoning Traces per Question</h3>
+<p>When generating <span class="math inline">\(R\)</span> rollouts per question, multiple rollouts can produce correct answers for the same question often with different reasoning paths. This leads to the following question: <strong>should we keep just one correct trace per question in every iteration or all of them?</strong></p>
+<p>I ran two experiments:</p>
+<ul>
+<li><strong>Single-trace</strong>: Keep only 1 correct trace per question (randomly selected if multiple are correct)</li>
+<li><strong>Multi-trace</strong>: Keep all correct traces per question</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../static/img/blog-2026-01-23/sampling_strategy_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<p>Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.</p>
+<blockquote class="blockquote">
+<p>Keeping all correct traces per question rather than just one provides diverse reasoning examples for improved training signal.</p>
+</blockquote>
+</section>
+</section>
+<section id="exploring-d-sample-size-and-r-rollouts" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-d-sample-size-and-r-rollouts">Exploring D (Sample Size) and R (Rollouts)</h2>
+<p>The assignment suggests to vary the batch size <span class="math inline">\(D\)</span> and rollout count <span class="math inline">\(R\)</span> to understand what configurations work best. I ran a grid of experiments to find the best configuration and see if I could make some sense of the results:</p>
+<ul>
+<li><strong><span class="math inline">\(D\)</span> (batch_per_ei)</strong>: <span class="math inline">\({512, 1024, 2048}\)</span></li>
+<li><strong><span class="math inline">\(R\)</span> (num_rollouts)</strong>: <span class="math inline">\({2, 4}\)</span></li>
+</ul>
+<p><img src="../../static/img/blog-2026-01-23/ei_grid_plot.png" class="img-fluid"></p>
+<p>Looking at the results, some observations stand out:</p>
+<ul>
+<li><p>The best configuration is <span class="math inline">\(D=1024, R=4\)</span> achieving <strong>41.7%</strong> accuracy.</p></li>
+<li><p>Increasing <span class="math inline">\(D\)</span> does not always guarantee better performance, both <span class="math inline">\(D=2048\)</span> configurations underperform their <span class="math inline">\(D=1024\)</span> counterparts.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p>Beyond a certain batch size, sampling more questions with limited rollouts means pulling in harder problems without correct solutions (contributing nothing to training) and a filtered dataset skewed toward easy problems the model can already solve. This results in less diversity per question and degrade performance.</p>
+</blockquote>
+<ul>
+<li>Increasing <span class="math inline">\(R\)</span> from 2 to 4 improves accuracy across all values of <span class="math inline">\(D\)</span>, hinting that rollouts matter more than batch size.</li>
+</ul>
+<blockquote class="blockquote">
+<p>More rollouts means higher probability of solving each question, more diverse reasoning traces when you do solve (which we saw helps in the multi-trace experiment) and better coverage of harder problems that rarely get solved with fewer attempts.</p>
+</blockquote>
+<p>This aligns with an observation from the <a href="https://arxiv.org/abs/2203.14465">STaR paper</a> where the performance stalled when the model received no direct training signal for problems it failed to solve. The large rollouts helped with training signal from each sampled question.</p>
+<section id="filter-rate-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="filter-rate-analysis">Filter Rate Analysis</h3>
+<p>To better understand the above accuracy results, I also tracked the <strong>filter rate (correct rollouts / total rollouts)</strong> across iterations for different experiments.</p>
+<p><img src="../../static/img/blog-2026-01-23/ei_filter_rate_plot.png" class="img-fluid"></p>
+<p>A few things stand out:</p>
+<ul>
+<li><p>The filter rate increase across iterations as the model improves, generating more correct solutions. This in turn provides more training signal and improves the model. <strong>This is the core mechanism behind Expert Iteration.</strong></p></li>
+<li><p>The filter rate correlates with final accuracy better than absolute example count. <span class="math inline">\(D=2048, R=4\)</span> produces the most correct examples (~4000) but <span class="math inline">\(D=1024, R=4\)</span> achieves the highest filter rate (~57%) and best accuracy. Basically, more data is not always better. You need better training examples than more examples.</p></li>
+</ul>
+<blockquote class="blockquote">
+<p>This filter rate reflects how well the model is improving relative to what it attempts. A high filter rate means the model is genuinely getting better at solving problems not just accumulating easy examples.</p>
+</blockquote>
+</section>
+</section>
+<section id="pushing-accuracy-with-multi-epoch-training" class="level2">
+<h2 class="anchored" data-anchor-id="pushing-accuracy-with-multi-epoch-training">Pushing Accuracy with Multi-Epoch Training</h2>
+<p>So far, all my experiments used just 1 epoch of SFT per expert iteration step. I wanted to see if I could push accuracy even higher and the simplest way to check this is by training for more epochs per iteration. I ran additional experiments with 2 epochs per iteration for two batch sizes: <span class="math inline">\(D=512\)</span> and <span class="math inline">\(D=1024\)</span> (both with <span class="math inline">\(R=4\)</span>).</p>
+<p><img src="../../static/img/blog-2026-01-23/ei_multiepoch_plot.png" class="img-fluid"></p>
+<p>Training for 2 epochs per iteration consistently outperforms 1 epoch across both configurations. My understanding is that with a large rollout count <span class="math inline">\(R\)</span> the filtered dataset is already diverse enough that training for multiple epochs extracts more signal without memorizing. This improved learning leads to better filter rates and accuracy in subsequent iterations.</p>
+</section>
+<section id="comparison-to-sft-experiments" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-to-sft-experiments">Comparison to SFT Experiments</h2>
+<p>In my <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">previous SFT experiments</a>, I finetuned the same <code>Qwen2.5-Math-1.5B</code> model using the same train and eval data, with train data being GPT-oss-120B generated reasoning traces. Below is the comparison of SFT and Expert Iteration best experiments:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Configuration</th>
+<th>Reward Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baseline</td>
+<td>Untrained Qwen2.5-Math-1.5B</td>
+<td>2.9%</td>
+</tr>
+<tr class="even">
+<td><strong>Expert Iteration (best)</strong></td>
+<td>D=1024, R=4, 2 epochs</td>
+<td><strong>47.1%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>SFT (best)</strong></td>
+<td>Filtered data, 2 epochs</td>
+<td><strong>53.4%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Despite extensive tuning across batch sizes, rollout counts and learning rate schedules <strong>Expert Iteration reached 47.1% accuracy which is around 6% below SFT’s 53.4%</strong>.</p>
+<p>In my understanding, the gap comes down to two factors: <strong>data quality</strong> and <strong>rationalization</strong>:</p>
+<ul>
+<li>SFT trains on reasoning traces from GPT-OSS-120B, a much more capable model. These traces aren’t just correct but also demonstrate sophisticated problem-solving strategies. Expert Iteration by contrast trains on the model <em>own</em> correct outputs which are inherently less refined. The model can only learn from its own best behaviors.</li>
+<li>Moroever, the STaR paper shows that rationalization (providing the answer as a hint to generate rationales for failed problems) provides crucial training signal that accelerates learning. Without it, the model receives no direct signal for problems it cannot solve.</li>
+</ul>
+<blockquote class="blockquote">
+<p>There are still experiments one could run to close this gap like larger rollout counts (8, 12), adaptive sampling strategies to limit correct rollouts per question and prevent overfitting etc. However, I didn’t find it compelling enough to run more experiments.</p>
+</blockquote>
+<p>Also, I have also not come across many experiments/blogs/papers on Expert Iteration replacing SFT and given my experiments, I think there are a few reasons:</p>
+<ol type="1">
+<li><p>Expert Iteration requires a model that can already solve some problems correctly. A weaker base model would struggle to provide any training signal.</p></li>
+<li><p>The method is sensitive to learning rate, batch size, and rollout count. You need to find the right balance otherwise you risk overfitting. My grid search showed final accuracy ranging from 21.9% to 47.1% depending on configuration.</p></li>
+<li><p>Each iteration requires generating <span class="math inline">\(D \times R\)</span> rollouts before any training happens. With <span class="math inline">\(D=1024\)</span> and <span class="math inline">\(R=4\)</span>, that is 4,096 generations per iteration. You end up spending as much or more compute on generation as on training.</p></li>
+</ol>
+<p>Despite all the above, Expert Iteration has one compelling advantage: <strong>it does not require expensive annotated data and is well-suited for domains with verifiable rewards like math and code</strong>.</p>
+<p>It is also worth noting that the core mechanism in expert iterations, generating many outputs and filtering for correct ones is linked to <strong>rejection sampling</strong> mentioned and used in <a href="https://arxiv.org/abs/2402.03300">DeepSeek-Math</a> and <a href="https://arxiv.org/abs/2501.12948">DeepSeek-R1</a> papers. You can think of Expert Iteration as rejection sampling applied iteratively: sample, filter, finetune, repeat.</p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<section id="papers-and-blogposts" class="level3">
+<h3 class="anchored" data-anchor-id="papers-and-blogposts">Papers and blogposts</h3>
+<ul>
+<li><a href="https://arxiv.org/abs/1705.08439">Thinking Fast and Slow with Deep Learning and Tree Search</a>: Original Expert Iteration paper</li>
+<li><a href="https://arxiv.org/abs/2203.14465">STaR: Bootstrapping Reasoning With Reasoning</a>: Expert Iteration for LLM reasoning</li>
+<li><a href="https://github.com/stanford-cs336/assignment5-alignment">CS336 Assignment 5</a>: Stanford CS336 alignment assignment</li>
+<li><a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">Building SFT from Ground Up</a>: Previous SFT experiments blogpost</li>
+</ul>
+</section>
+<section id="code" class="level3">
+<h3 class="anchored" data-anchor-id="code">Code</h3>
+<ul>
+<li><a href="https://github.com/garg-aayush/building-from-scratch/tree/main/expert-iteration">Expert Iteration Implementation</a>: My Expert Iteration codebase</li>
+<li><a href="https://huggingface.co/datasets/garg-aayush/sft-cs336-assign5-datasets">Training and validation datasets</a>: Training and validation datasets used in the experiments</li>
+<li><a href="https://wandb.ai/garg-aayush/expert-iter">wandb Training logs</a></li>
+<li><a href="https://huggingface.co/garg-aayush/cs336_exp-iter_exps/">Finetuned checkpoints</a></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
