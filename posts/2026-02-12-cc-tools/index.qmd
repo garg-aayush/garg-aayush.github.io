@@ -32,9 +32,9 @@ One of the biggest challenges with AI assistants is getting the right context in
 
 ### Context Commands: `/context`, `/clear`, `/compact`
 
-Most of us are aware of these three Claude Code commands but more often or not, maybe out of habit, we don't use them often enough and end up hitting the session limit.
+Most of us are aware of these three Claude Code commands but more often than not, maybe out of habit, we dont use them often enough and end up hitting the session limit.
 
-- **`/context`** — it provides a great visualization of your current conversation context usage as a colored grid. **I prefere to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and correspodning tokens used.**
+- **`/context`** — it provides a great visualization of your current conversation context usage as a colored grid. **I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.**
 ![](/static/img/blog-2026-02-12/context-snapshot.jpg){width=75%}
 - **`/clear`** — this completely resets your conversation history. **I use it between unrelated tasks to start fresh with an empty context window avoiding both context degradation and session limit.**
 - **`/compact [instructions]`** — It summarizes your conversation to free up context space while preserving important information.
@@ -123,7 +123,7 @@ I would encourage you to write your own wrappers for whatever repetitive tasks y
 
 ## Upgrading Your Terminal Basics
 
-The below tools are not AI-specific tools but makes my terminal experience much better.
+The tools below are not AI-specific but make my terminal experience much better.
 
 ### eza
 
