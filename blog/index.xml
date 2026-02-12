@@ -10,7 +10,273 @@
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>All posts on ML engineering, LLMs, and AI products.</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Fri, 23 Jan 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 12 Feb 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Tools for Better Claude Code and Terminal Experience</title>
+  <link>https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I have been using <a href="https://cursor.com/">Cursor</a> for a long time and recently started using <a href="https://claude.com/code">Claude Code</a> in my day-to-day work. Thus, over the past few weeks I have spent a lot more time in the terminal and a handful of tools and practices have stuck with me. None of them are groundbreaking or elaborate but have made my overall experience noticeably more productive. This is a short post sharing what has worked for me in case any of it is useful to you.</p>
+<section id="tracking-your-ai-usage" class="level2">
+<h2 class="anchored" data-anchor-id="tracking-your-ai-usage">Tracking Your AI Usage</h2>
+<p>If you are using Claude Code you are prone to hitting the session limit more often than not. Thus, knowing how much you are consuming and session limits comes in quite handy. This visibility across claude code and different providers is quite useful.</p>
+<section id="codexbar" class="level3">
+<h3 class="anchored" data-anchor-id="codexbar">CodexBar</h3>
+<p><a href="https://github.com/steipete/CodexBar">CodexBar</a> is a lightweight menu bar app that tracks usage and limits across different AI providers. It shows session and weekly limits (credits) right in the menu bar. This is genuinely useful as you always know where you stand.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/codexbar-snapshot.jpg" class="img-fluid" style="width:40.0%"></p>
+</section>
+<section id="ccusage" class="level3">
+<h3 class="anchored" data-anchor-id="ccusage">ccusage</h3>
+<p><a href="https://github.com/ryoppippi/ccusage">ccusage</a> is a cli tool for analyzing claude code usage from local json files. It gives you session wise, daily and monthly breakdowns of your usage. It is useful for understanding your consumption patterns and keeping an eye on how much you are actually using. Most importantly, it is a great tool to have inline usage info in claude code. <img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/ccusage-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
+</section>
+</section>
+<section id="managing-your-ai-context" class="level2">
+<h2 class="anchored" data-anchor-id="managing-your-ai-context">Managing Your AI Context</h2>
+<p>One of the biggest challenges with AI assistants is getting the right context in and keeping the context window healthy.</p>
+<section id="context-commands-context-clear-compact" class="level3">
+<h3 class="anchored" data-anchor-id="context-commands-context-clear-compact">Context Commands: <code>/context</code>, <code>/clear</code>, <code>/compact</code></h3>
+<p>Most of us are aware of these three Claude Code commands but more often than not, maybe out of habit, we dont use them often enough and end up hitting the session limit.</p>
+<ul>
+<li><strong><code>/context</code></strong> — it provides a great visualization of your current conversation context usage as a colored grid. <strong>I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.</strong> <img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/context-snapshot.jpg" class="img-fluid" style="width:75.0%"></li>
+<li><strong><code>/clear</code></strong> — this completely resets your conversation history. <strong>I use it between unrelated tasks to start fresh with an empty context window avoiding both context degradation and session limit.</strong></li>
+<li><strong><code>/compact [instructions]</code></strong> — It summarizes your conversation to free up context space while preserving important information.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Thumb rules I follow while using claude code:</strong></p>
+<ul>
+<li><strong>Haiku / Sonnet:</strong> I start a new conversation or use <code>/compact</code> at ~50-60% context usage. Beyond this, I consistently see context rot with noticeable drop in model performance.</li>
+<li><strong>Opus:</strong> I can push it to ~70-80% but usually starts a fresh conversation whenever possible to save tokens and avoids hitting session limits.</li>
+<li><strong>Never start a new task mid-conversation.</strong> Either compact or preferrably start a new one.</li>
+</ul>
+</blockquote>
+</section>
+<section id="context7" class="level3">
+<h3 class="anchored" data-anchor-id="context7">Context7</h3>
+<p><a href="https://context7.com/">Context7</a> MCP server provides AI assistants with up-to-date documentation and code examples for various libraries and frameworks. As a developer, I find this genuinely useful as it solves the problem of outdated training data by fetching current docs in real-time. Whether I am writing boilerplate code, setting up tests or working with a library I have not used recently, Context7 ensures the AI has accurate and up to date API references instead of hallucinating outdated patterns.</p>
+<p>The free plan gives you around <code>1000</code> API requests per month which is more than enough for most use cases. <strong>This is one MCP server I use regularly and recommend to everyone.</strong></p>
+</section>
+<section id="repomix-and-jina-reader" class="level3">
+<h3 class="anchored" data-anchor-id="repomix-and-jina-reader">RepoMix and Jina Reader</h3>
+<p>Sometimes you need to provide context as a single file whether for web-based AI interfaces like ChatGPT or Claude where you cannot point at a codebase directly or when you want to feed a webpage content to an LLM.</p>
+<p><a href="https://repomix.com/">RepoMix</a> handles the codebase side. It lets you take a git repo or any local folder and concatenate all the files (based on a pattern) into a single file. You can create a context file for an entire repo or filter it down to just the files relevant to the bug or feature you are working on. It is on similar lines as Karpathy’s <a href="https://github.com/karpathy/rendergit">rendergit</a> which renders any git repo into a single static HTML page for humans or LLMs.</p>
+<p><a href="https://github.com/jina-ai/reader">Jina Reader</a> handles the web side. It converts any HTML page into clean markdown which is much better than feeding raw HTML as context to an LLM. You just need to prepend <code>https://r.jina.ai/</code> to any URL.</p>
+</section>
+</section>
+<section id="prefer-skills-over-mcp-servers" class="level2">
+<h2 class="anchored" data-anchor-id="prefer-skills-over-mcp-servers">Prefer Skills Over MCP Servers</h2>
+<p>MCP server tool descriptions consume tokens upfront and often hundreds or even thousands of tokens regardless of whether you actually use them in that session. <a href="https://agentskills.io/home">Skills</a> on the other hand use progressive loading where Claude sees only the name and description (~30-100 tokens) at startup and loads the full instructions only when relevant.</p>
+<p>For example, here is the difference in context usage between <a href="https://context7.com/skills/playwright-mcp">Playwright as an MCP server</a> versus <a href="https://github.com/microsoft/playwright-cli">Playwright as a skill</a>:</p>
+<table align="center">
+<tbody><tr>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/context-skills.jpg" alt="Playwright Skills" width="100%">
+</td>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/context-mcp.jpg" alt="Playwright MCP" width="100%">
+</td>
+</tr>
+</tbody></table>
+<p align="center">
+<em>Difference in context usage between Playwright as a skill vs Playwright as an MCP server</em>
+</p>
+<p>My recommendation is to use skills whenever possible. For example, <a href="https://github.com/huggingface/skills">Hugging Face Skills</a> and <a href="https://github.com/microsoft/playwright-cli">Playwright CLI Skills</a> instead of corresponding mcp servers.</p>
+</section>
+<section id="the-llm-cli-tool" class="level2">
+<h2 class="anchored" data-anchor-id="the-llm-cli-tool">The <code>llm</code> CLI Tool</h2>
+<p>This is the tool I use a lot in terminal outside of Claude Code itself. Simon Willison’s <a href="https://llm.datasette.io/en/stable/">llm</a> is a command-line tool for interacting with LLMs directly from the terminal. It supports multiple providers and models, stores conversation logs and is endlessly composable with other CLI tools.</p>
+<p>I still prefer working in <code>iTerm2</code>. I do not use agentic terminals like <a href="https://warp.dev/">Warp</a>. Cursor or claude code are my standard coding assistants but not everything needs a full agent session. For example while I am terminal, you sometimes need to quickly answer a question, run a bash or single command, explain/review a file. These are the tasks where <code>llm</code> comes in really handy. It is fast, intuitive to use and does not consume my Claude Code session limits.</p>
+<p>One way I use <code>llm</code> in my day-to-day work is by wrapping it as shell functions in my <code>.zshrc</code>. Each function has a specific system prompt tuned for its task, giving me dedicated LLM-based commands I can use for without thinking. Here are some I use most often:</p>
+<pre><code>cmd &lt;query&gt;                       Convert natural language to a shell command
+explain &lt;question&gt; [file]         Answer a question, optionally using a file as context
+image_qa &lt;question&gt; &lt;image&gt;       Ask a question about an image (vision)
+pycode [-x|--exec] &lt;task&gt;         Generate a Python script from a task description
+                                    -x  also execute the script via uv run</code></pre>
+<p>The pattern I follow for each function is the same: define a model, write a system prompt, wrap <code>llm</code> in a function. For example, here is the <code>cmd</code> function:</p>
+<section id="cmd" class="level4">
+<h4 class="anchored" data-anchor-id="cmd"><code>cmd</code></h4>
+<p>It converts natural language to a raw shell command (something we all need to do everyday).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">CMD_LLM</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gpt-5-mini"</span></span>
+<span id="cb2-2"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">CMD_SYSTEM_PROMPT</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"You are inside a macOS terminal. Output only the raw shell command(s). </span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-3"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">No formatting, no code blocks, no explanations, no extra text."</span></span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cmd()</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb2-6">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$1</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--help"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">||</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$1</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb2-7">        <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Usage: cmd &lt;natural language shell command&gt;"</span></span>
+<span id="cb2-8">        <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"  Converts natural language to a raw shell command using LLM."</span></span>
+<span id="cb2-9">        <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"  Example: cmd 'find all png files larger than 1MB'"</span></span>
+<span id="cb2-10">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb2-11">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb2-12">    <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">llm</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$CMD_LLM</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-s</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$CMD_SYSTEM_PROMPT</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$1</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-13"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span></span></code></pre></div></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">$</span> cmd <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"find all png files larger than 1MB"</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">find</span> . <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-name</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*.png"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-size</span> +1M</span></code></pre></div></div>
+<p>I would encourage you to write your own wrappers for whatever repetitive tasks you have. And since <code>llm</code> supports <a href="https://llm.datasette.io/en/stable/plugins/directory.html">many providers and models</a>, you can swap in whichever model works best for each task.</p>
+</section>
+</section>
+<section id="upgrading-your-terminal-basics" class="level2">
+<h2 class="anchored" data-anchor-id="upgrading-your-terminal-basics">Upgrading Your Terminal Basics</h2>
+<p>The tools below are not AI-specific but make my terminal experience much better.</p>
+<section id="eza" class="level3">
+<h3 class="anchored" data-anchor-id="eza">eza</h3>
+<p><a href="https://github.com/eza-community/eza">eza</a> is a feature rich replacement for <code>ls</code> with color highlighting, icons for different file types, git awareness and tree views.</p>
+<p>I have the following aliases in my <code>.zshrc</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">alias</span> lla=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'eza -alh --git --sort=modified --icons'</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># list view with hidden files</span></span>
+<span id="cb4-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">alias</span> ll=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'eza -lh --git --sort=modified --icons'</span>    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># list view sorted by timestamp</span></span>
+<span id="cb4-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">alias</span> lt=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'eza -lh --git --sort=modified --tree --level=2 --icons'</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tree view</span></span></code></pre></div></div>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/eza-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
+</section>
+<section id="bat" class="level3">
+<h3 class="anchored" data-anchor-id="bat">bat</h3>
+<p><a href="https://github.com/sharkdp/bat">bat</a> is simly <code>cat</code> with syntax highlighting, line numbers and git integration. It automatically detects the file type and renders accordingly.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/bat-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
+</section>
+<section id="yazi" class="level3">
+<h3 class="anchored" data-anchor-id="yazi">yazi</h3>
+<p><a href="https://github.com/sxyazi/yazi">yazi</a> is a fast terminal file manager with support for previewing different file types including images and PDFs right in the terminal. <strong>This is especially useful when you are already deep in a terminal session with Claude Code and need to quickly browse files or check an image without switching to Finder.</strong></p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/yazi-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
+</section>
+</section>
+<section id="wrapping-up" class="level2">
+<h2 class="anchored" data-anchor-id="wrapping-up">Wrapping Up</h2>
+<p>None of these tools and tips are complex or elaborate and most of them are not even AI-specific. But together they have quietly improved how I work with better visibility into usage, healthier context windows, quicker LLM access from the terminal and a slightly nicer shell experience.</p>
+
+
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</guid>
+  <pubDate>Thu, 12 Feb 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Expert Iteration for Math Reasoning</title>
   <link>https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</link>

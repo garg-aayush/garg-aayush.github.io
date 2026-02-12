@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/blog/index.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/2026-02-12-cc-tools/index.html",
       "/posts/2026-01-23-expert-iteration/index.html",
       "/posts/2026-01-13-claude-skills/index.html",
       "/posts/2026-01-06-review-deepseek-math.html",
@@ -20,8 +21,9 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/blog/index.html",
     "items": [
+      "/posts/2026-02-12-cc-tools/index.html",
       "/posts/2026-01-23-expert-iteration/index.html",
       "/posts/2026-01-13-claude-skills/index.html",
       "/posts/2026-01-06-review-deepseek-math.html",
