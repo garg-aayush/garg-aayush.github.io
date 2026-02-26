@@ -10,7 +10,289 @@
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>All posts on ML engineering, LLMs, and AI products.</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Thu, 12 Feb 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 26 Feb 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>GRPO: Building Intuition Through Ablation Studies</title>
+  <link>https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>Following the same approach as I did for <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">SFT</a> and <a href="https://huggingface.co/blog/garg-aayush/expert-iteration-math-reasoning">Expert Iteration</a>, I have written the GRPO training code from scratch. I loosely followed GRPO experiment part of Stanford CS336 <a href="https://github.com/stanford-cs336/assignment5-alignment/blob/main/cs336_spring2025_assignment5_alignment.pdf">Assignment 5</a> as a reference point and trained <a href="https://huggingface.co/Qwen/Qwen2.5-Math-1.5B">Qwen2.5-Math-1.5B</a> with verifiable math rewards. This time around I had 3 main motivations:</p>
+<ol type="1">
+<li>As usual, write the GRPO code from scratch for the sake of understanding.</li>
+<li>Train Qwen2.5-Math-1.5B model with verifiable math rewards and get a feel of what kind of accuracy we can push with pure RL (no supervised fine-tuning).</li>
+<li><strong>Most importantly</strong>, run a lot of ablation studies to understand and build intuition on what matters in GRPO training, the different design choices we can make and how to interpret the different metrics. <strong>Now I look back, I think this is the most important part of this long exercise.</strong></li>
+</ol>
+<p align="center">
+<img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/best_run/best_run.png" alt="Best GRPO run: eval reward accuracy and mean response length" width="700">
+</p><p align="center">
+<em>Best: <b>~75% reward accuracy</b> on MATH validation (up from ~3% base model accuracy)</em>
+</p>
+<p></p>
+<section id="quick-recap-on-grpo" class="level2">
+<h2 class="anchored" data-anchor-id="quick-recap-on-grpo">Quick Recap on GRPO</h2>
+<p><a href="https://huggingface.co/blog/garg-aayush/derive-grpo-loss">GRPO</a> (Group Relative Policy Optimization) is a RL algorithm that eliminates the need for a separate critic/value model by using group-relative advantages. It generates multiple candidate outputs per prompt, scores them and normalizes rewards within the group to get advantages. It also uses ratio clipping (similar to PPO) to prevent the policy from drifting too far from the reference distribution. Instead of imitating expert reasoning traces (SFT), it lets the model discover its own strategies by generating multiple candidate solutions per problem, scoring them and reinforcing the better ones.</p>
+<blockquote class="blockquote">
+<p>You can read more about it in the <a href="https://huggingface.co/blog/garg-aayush/derive-grpo-loss">GRPO derivation blog post</a> I wrote a few weeks back and in this <a href="https://substack.com/home/post/p-177823868">blog post</a>.</p>
+</blockquote>
+</section>
+<section id="building-the-training-loop" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-training-loop">Building the Training Loop</h2>
+<p>I followed the same approach as I mentioned in the assignment whiere I wrote and tested the helper functions first and made sure each piece works in isolation. Finally, wired all the helper functions together into the full training loop.</p>
+<p>The GRPO algorithm has two nested loops:</p>
+<ul>
+<li><strong>Outer loop</strong>: sample a batch of prompts, generate G <code>rollouts</code> per prompt via vLLM, compute rewards, normalize advantages within each group</li>
+<li><strong>Inner loop</strong>: policy gradient updates over the rollout batch (using gradient accumulation to fit on the GPU)</li>
+</ul>
+<blockquote class="blockquote">
+<p>Note, I have made sure to reuse the functions, data pipelines etc. from the <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/sft">SFT code</a> wherever possible.</p>
+</blockquote>
+<p>For the training data, I used the MATH dataset (problems only, no reasoning traces) sourced from this <a href="https://github.com/kkaitlyn111/cs336-a5-RL/tree/main/MATH">CS336 MATH dataset</a> repo.</p>
+<p>The core GRPO functions (group-normalized rewards, four loss variants, microbatch train step) live in <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/grpo/utils/grpo.py"><code>utils/grpo.py</code></a> and the main training script that wires the outer and inner loops together is <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/grpo/train_grpo.py"><code>train_grpo.py</code></a>. You can find all the key files and details in the <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/grpo/Readme.md">GRPO README</a>.</p>
+<p>A few important notes:</p>
+<ul>
+<li>I used the same vLLM colocate setup and workarounds as I did for SFT (see the <a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">SFT blog post</a> for the debugging details). This allowed me to run the training loop and intermediate evaluations and rollout generations on a single GPU.</li>
+<li>All training configs are managed via <a href="https://omegaconf.readthedocs.io/">OmegaConf</a> structured configs and yaml files. This is especially useful for ablation studies where each experiment config is a minimal diff from the defaults, making it easy to see exactly what changed and importantly to reproduce any run.</li>
+<li>As usual, I added intermediate evaluations, model checkpointing at configurable intervals, wandb logging, other eval and timging metrics for better observability.</li>
+</ul>
+<blockquote class="blockquote">
+<p>To keep costs manageable, all intermediate evaluations use a 1024 examples subset of the validation set rather than the full ~5K.</p>
+</blockquote>
+</section>
+<section id="gpu-memory-optimization-fitting-on-24-gb" class="level2">
+<h2 class="anchored" data-anchor-id="gpu-memory-optimization-fitting-on-24-gb">GPU Memory Optimization (Fitting on 24 GB)</h2>
+<p>I wrote the training code and tested it on my personal RTX 4090 with 24 GB of VRAM. With the default parameters suggested in the assignment, I immediately ran into OOM errors and had to do some memory optimizations to fit the training loop.</p>
+<ul>
+<li><strong>Peak memory tracking</strong>: Not an optimization in itself but an essential step to keep track of the peak memory usage. I made sure to log the peak memory at important junctures in the training loop.</li>
+<li><strong>Gradient checkpointing</strong>: The simplest one is to enable gradient checkpointing which recomputes activations during backward pass instead of storing them. You can trade up to ~30% memory savings for speed.</li>
+<li><strong>vLLM sleep mode</strong>: This is quite a nice trick to offload vLLM KV cache and weights to CPU during the training phase (when vLLM is not generating). This frees GPU memory for the backward pass and prevents the vLLM cache from competing with training activations.</li>
+<li><strong>8-bit AdamW</strong>: I added an option to use bitsandbytes <code>AdamW8bit</code> optimizer instead of the default <code>AdamW</code> optimizer. This reduces the optimizer state memory by almost half.</li>
+</ul>
+<p>After all the above optimization tricks, I was able to successfully train with <code>rollout_batch_size=256</code>, <code>group_size=8</code>, <code>gradient_accumulation_steps=256</code> (microbatch size = 1) on 24 GB.</p>
+<blockquote class="blockquote">
+<p>You should be able to run most of the ablation studies on your local RTX 4090/3090 GPU with the default configs and optimization flags.</p>
+</blockquote>
+</section>
+<section id="scaling-to-modal-h100s" class="level2">
+<h2 class="anchored" data-anchor-id="scaling-to-modal-h100s">Scaling to Modal (H100s)</h2>
+<p>The local training script runs fine on a 24 GB GPU (e.g.&nbsp;RTX 4090) but there are two practical limitations that made me want to scale to <a href="https://modal.com/">Modal</a>:</p>
+<ol type="1">
+<li><strong>Speed</strong>: Even with all memory optimizations, a single experiment on the 4090 takes a few hours. Some of the ablation studies and hyperparameter searches become impractical. It always helps to run the experiments on a larger GPU for faster iterations.</li>
+<li><strong>Parallelism</strong>: I wanted to run a lot of ablation experiments. On a single local GPU that means running them one at a time which would take weeks. <strong>I needed a way to fire off multiple experiments in parallel and compare them side-by-side in wandb.</strong> At the same time, I am not spending my full time on this and I work on it whenever I get time. Thus, I did not want to deal with spinning up and shutting down GPU instances each time.</li>
+</ol>
+<blockquote class="blockquote">
+<p><a href="https://modal.com/">Modal</a> lets you define GPU workloads purely in Python (no Docker/Kubernetes), with pay-per-second billing and containers that spin up in seconds. I could fire off multiple H100 runs in parallel and everything scales back to zero when done.</p>
+</blockquote>
+<section id="h100-config-optimization" class="level3">
+<h3 class="anchored" data-anchor-id="h100-config-optimization">H100 Config Optimization</h3>
+<p>On the H100, I disabled the memory tricks that only exist to fit on 24 GB (gradient checkpointing, 8-bit AdamW) and used larger microbatches (4 instead of 1) for better tensor core utilization. I kept vLLM sleep mode on since it is still useful to free KV cache during training.</p>
+<p><strong>Timing comparison (20 GRPO steps, <code>reinforce_with_baseline</code>):</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Hardware</th>
+<th>Config</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RTX 4090 (24 GB)</td>
+<td>RTX 4090 defaults</td>
+<td>~28 min</td>
+</tr>
+<tr class="even">
+<td>H100 (80 GB)</td>
+<td>RTX 4090 defaults (unchanged)</td>
+<td>~18 min</td>
+</tr>
+<tr class="odd">
+<td>H100 (80 GB)</td>
+<td>H100 optimized config</td>
+<td>~10 min</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>Cost note:</strong> Running all the ablation studies discussed below including failed experiments and runs I terminated early, cost approximately <strong>$140</strong> on Modal. I think that is well worth it for the understanding I gained.</p>
+</blockquote>
+</section>
+</section>
+<section id="ablation-studies" class="level2">
+<h2 class="anchored" data-anchor-id="ablation-studies">Ablation Studies</h2>
+<p>I ran a series of ablation studies as per the assignment to understand what matters in GRPO training. Each ablation isolates one design choice while keeping everything else fixed.</p>
+<blockquote class="blockquote">
+<p>You will notice the experiments vary in length: some run for 200 GRPO steps, some for 100/50 or some were terminated mid-way. This is intentional and done to keep the total cost manageable while still getting the information I needed.</p>
+</blockquote>
+<section id="learning-rate-sweep" class="level3">
+<h3 class="anchored" data-anchor-id="learning-rate-sweep">Learning Rate Sweep</h3>
+<p>The learning rate is the most critical hyperparameter to get right first. It determines whether the policy updates are large enough to learn but not so large to cause the policy to collapse. Moreover, unlike supervised learning where a bad <code>lr</code> just causes loss divergence, in GRPO a high <code>lr</code> can cause the policy to collapse onto degenerate outputs before learning anything useful.</p>
+<p>To find the right <code>lr</code>, I ran a log-spaced search from <code>1e-6</code> to <code>1e-4</code> for 100 steps each on H100.</p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/lr_sweep/lr_sweep.png" class="img-fluid"></p>
+<ul>
+<li><code>1e-6</code> and <code>3e-6</code> barely move the eval reward accuracy. The gradient signal is too small to update the policy meaningfully.</li>
+<li><code>1e-4</code> shows policy collapse with mean response length spikes and token entropy dropping to near zero.</li>
+<li><code>1e-5</code> to <code>3e-5</code>: reward rises steadily, response length stabilizes and token entropy drops smoothly.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Winner: <code>lr=3e-5</code></strong> as it gives the most stable training and highest reward accuracy. I used this for all future runs.</p>
+</blockquote>
+</section>
+<section id="baseline-ablation" class="level3">
+<h3 class="anchored" data-anchor-id="baseline-ablation">Baseline Ablation</h3>
+<p>The vanilla REINFORCE gradient has notoriously high variance. A common technique is to subtract a baseline (the group mean reward) from the advantage which reduces variance without introducing bias. Here I tested whether that variance reduction actually matters in practice.</p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/baselines/baseline_ablation.png" class="img-fluid"></p>
+<ul>
+<li><code>reinforce_with_baseline</code>: evaluation reward accuracy steadily climbs to ~0.61 with stable gradient norm and consistent mean response length around 300-350 tokens.</li>
+<li>Both <code>no_baseline</code> runs peak early then decline. Their gradient norm is way high and seems to keep increasing, and both suffer rapid response length collapse after some steps.</li>
+</ul>
+<blockquote class="blockquote">
+<p>Subtracting the group mean reward from the advantage reduces variance and prevents response length collapse. <code>reinforce_with_baseline</code> is the clear choice.</p>
+</blockquote>
+</section>
+<section id="length-normalization" class="level3">
+<h3 class="anchored" data-anchor-id="length-normalization">Length Normalization</h3>
+<p>When aggregating per-token losses over the sequence dimension, the choice of normalization affects how much gradient signal each individual token receives. As noted in the assignment, it is not necessary or even correct to always average losses by sequence length. I tested three modes:</p>
+<ul>
+<li><code>mean</code>: divide by number of response tokens per sequence. In this case, short correct answers get disproportionately large per-token gradients.</li>
+<li><code>constant</code>: divide by a fixed constant (<code>max_gen_len</code>=1024). Every token gets the same gradient magnitude regardless of sequence length (used in DeepSeek).</li>
+<li><code>microbatch</code>: normalize by the longest response in the current microbatch. This is a middle ground between <code>mean</code> and <code>constant</code>.</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/length_normalization/length_normalization.png" class="img-fluid"></p>
+<ul>
+<li>All three modes converge to similar final reward accuracy and mean response length.</li>
+<li>The main difference is in gradient norm. <code>constant</code> produces consistently lower norms in comparison to <code>microbatch</code> and <code>mean</code>. This is expected since <code>constant</code> divides everything by 1024 (max generation length), which is 2-2.5x larger than typical response length.</li>
+</ul>
+<blockquote class="blockquote">
+<p>Length normalization mode has minimal impact on final reward for math reasoning with binary reward. The primary observable difference is in gradient scale and not learning dynamics. I kept <code>mean</code> as the default.</p>
+</blockquote>
+</section>
+<section id="standard-deviation-normalization" class="level3">
+<h3 class="anchored" data-anchor-id="standard-deviation-normalization">Standard Deviation Normalization</h3>
+<p>The standard GRPO advantage computation divides by the group standard deviation: <code>advantage_i = (reward_i - mean(group)) / (std(group) + eps)</code>. But <a href="https://arxiv.org/abs/2503.20783">Dr.&nbsp;GRPO</a> argued that this can introduce unwanted biases where groups with low variance (too easy or too hard questions where all rollouts get the same reward) produce near-zero std deviation, inflating their advantages disproportionately. They proposed removing the division entirely. This ablation tests whether removing that division actually helps.</p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/std_dev/std_dev_normalization.png" class="img-fluid"></p>
+<ul>
+<li><strong>With std normalization</strong>: reaches higher final reward accuracy (~0.72).</li>
+<li><strong>Without</strong>: plateaus at ~0.65, but gradient norms are lower and more stable.</li>
+</ul>
+<p>Removing std dev normalization does improve gradient stability and this confirms the observation that dividing by group std dev. amplifies gradients for low-variance groups. However, the improved stability does not translate to better performance here. The ~0.07 reward gap is substantial enough to justify the slightly noisier gradients.</p>
+<blockquote class="blockquote">
+<p><strong>Winner: keep std normalization</strong> as the reward benefit outweighs the noisier gradients.</p>
+</blockquote>
+</section>
+<section id="off-policy-sweep" class="level3">
+<h3 class="anchored" data-anchor-id="off-policy-sweep">Off-Policy Sweep</h3>
+<p>On-policy training is clean but we are generating a full batch of rollouts just to take a single gradient step. I wanted to test how far I could push off-policy reuse (multiple gradient steps per rollout batch) before the policy drifts too far and training destabilizes.</p>
+<section id="broad-sweep-50-steps" class="level4">
+<h4 class="anchored" data-anchor-id="broad-sweep-50-steps">Broad sweep (50 steps)</h4>
+<p>First, I ran a broad sweep over 6 configs varying <code>epochs_per_rollout_batch</code> and <code>train_batch_size</code> ranging from on-policy (1 optimizer step per GRPO step) to aggressive off-policy (16 optimizer steps per GRPO step). All runs use <code>grpo_clip</code> loss, <code>lr=3e-5</code>.</p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_sweep/off_policy_sweep.png" class="img-fluid"></p>
+<ul>
+<li>Most configs converge to ~0.55-0.65. The clear outlier is <code>e4_tb64_ga16</code> (16 opt steps/GRPO). It collapses mid-way with gradient norm spikes and response length collapsing to ~100 tokens. <strong>This is a classic failure mode where the policy drifts too far from the rollout distribution and the model learns to produce minimal outputs.</strong></li>
+<li>Mild off-policy (2 opt steps/GRPO) works as well as on-policy.</li>
+</ul>
+<blockquote class="blockquote">
+<p>Aggressive off-policy reuse (16 opt steps/GRPO) causes policy collapse. Mild off-policy (2 opt steps) looks comparable to on-policy in this short sweep.</p>
+</blockquote>
+</section>
+<section id="full-sweep-200-steps" class="level4">
+<h4 class="anchored" data-anchor-id="full-sweep-200-steps">Full sweep (200 steps)</h4>
+<p>I then selected the three most promising configs (on-policy and two mild off-policy) for full 200 step training.</p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_full_sweep/off_policy_full_sweep.png" class="img-fluid"></p>
+<ul>
+<li>On-policy (<code>e1_tb256_ga64</code>) is consistently the best. It converges fastest and maintains highest reward accuracy (~0.65-0.75). The two mild off-policy configs track slightly behind it.</li>
+<li><code>e2_tb256_ga64</code> (2 epochs) shows higher gradient norm variance with spikes but doesn’t destabilize.</li>
+</ul>
+<blockquote class="blockquote">
+<p>On-policy training works better in this case. Reusing rollouts does not help and the extra compute per GRPO step is not justified by the performance gain.</p>
+</blockquote>
+</section>
+</section>
+<section id="prompt-template-ablation" class="level3">
+<h3 class="anchored" data-anchor-id="prompt-template-ablation">Prompt Template Ablation</h3>
+<p>Here, I compared the <code>r1_zero</code> prompt (structured <code>&lt;think&gt;...&lt;/think&gt;</code> and <code>&lt;answer&gt;...&lt;/answer&gt;</code> blocks) against question-only (just <code>{question}</code>), each with a matching reward function.</p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/prompt_ablation/prompt_ablation.png" class="img-fluid"></p>
+<ul>
+<li>Question-only starts with much higher accuracy because Qwen2.5-Math-1.5B seems to be pre-trained on math data with <code>\boxed{}</code> formatting. It already solves nearly half the problems out of the box. In comparison, r1-zero starts near zero (unfamiliar format) but catches up quickly once the model learns the structured format. Finally, r1-zero consistently performs better than question-only by the end.</li>
+<li>r1-zero settles at much lower entropy in comparison to question-only. This is expected since the r1-zero prompt is more structured and constrains the output space</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Winner: R1-zero structured prompt</strong> as it provides a dedicated reasoning scratchpad for the model to reason before committing to an answer. Without this, reasoning is interleaved with the answer in less predictable ways.</p>
+</blockquote>
+</section>
+<section id="sft-checkpoint-initialization" class="level3">
+<h3 class="anchored" data-anchor-id="sft-checkpoint-initialization">SFT Checkpoint Initialization</h3>
+<p>This was not part of the assignment but I thought it would be interesting to see how starting from an SFT checkpoint affects performance. We already have an SFT model that gets ~53% accuracy, can GRPO push it even higher?</p>
+<p>I ran five runs: base model (no SFT), three SFT checkpoints (early/mid/final) and final with lower <code>lr</code>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/sft_grpo/sft_grpo.png" class="img-fluid figure-img"></p>
+<figcaption>SFT -&gt; GRPO sweep: eval reward, format reward, entropy</figcaption>
+</figure>
+</div>
+<ul>
+<li>The base model (no SFT) still performs better than the SFT runs. As we use more and more SFT trained checkpoints, the GRPO ceiling plateaus at lower and lower accuracy. Similarly, we see higher entropy in the SFT runs in comparison to the base model.</li>
+<li>This indicates that the SFT checkpoints are not helping GRPO training and are actually hurting it. SFT narrows the policy distribution early on, limiting the exploration that RL needs to discover better strategies. The more SFT training the checkpoint has seen, the narrower the distribution and the lower the GRPO ceiling.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>SFT initialization hurts in this case</strong>, the pre-narrowed distribution limits exploration before RL even starts.</p>
+</blockquote>
+</section>
+</section>
+<section id="summary-and-key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="summary-and-key-takeaways">Summary and Key Takeaways</h2>
+<p><strong>Best configuration:</strong></p>
+<ul>
+<li>on-policy (<code>epochs_per_rollout_batch=1</code>)</li>
+<li>lr=<code>3e-5</code></li>
+<li>loss_type=<code>grpo_clip</code></li>
+<li>use_std_normalization=<code>True</code></li>
+<li><code>r1_zero</code> structured prompt</li>
+<li>base model (no SFT initialization)</li>
+</ul>
+<p><strong>Best performance:</strong> ~0.75 on MATH validation (up from ~3% base model accuracy).</p>
+<p><strong>Key lessons:</strong></p>
+<ul>
+<li><strong>Eval reward accuracy is the north star metric</strong>. It directly measures what we care about. Especially in the case of reinforcement learning with verifiable rewards.</li>
+<li>However, <strong>gradient norm</strong> and <strong>mean_response_length</strong> are the two other important metrics to watch. They are the early warning signals for instability and reward collapse.</li>
+<li><strong>Binary math reward is robust to some design choices</strong> (length normalization) <strong>but sensitive to others</strong> (baseline subtraction, learning rate).</li>
+<li><strong>On-policy training wins</strong> in this case, reusing rollouts introduces policy drift that is not worth the compute savings.</li>
+<li><strong>The R1-zero structured prompt matters</strong>. A dedicated reasoning scratchpad produces sharper final policies and higher accuracy.</li>
+<li><strong>SFT initialization does not help</strong> in this case.</li>
+</ul>
+<p>Ideally, I should now try to push the accuracy further by training for longer, using curriculum strategies or modifying the GRPO loss itself. <strong>But that’s for another time! I think it is enough learning and compute expense for now.</strong></p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<section id="papers-and-blog-posts" class="level3">
+<h3 class="anchored" data-anchor-id="papers-and-blog-posts">Papers and Blog Posts</h3>
+<ul>
+<li><a href="https://huggingface.co/blog/garg-aayush/derive-grpo-loss">Deriving the GRPO Loss</a>: My blog post deriving the GRPO loss function</li>
+<li><a href="https://github.com/stanford-cs336/assignment5-alignment">CS336 Assignment 5</a>: Stanford CS336 alignment assignment I followed as a reference</li>
+<li><a href="https://huggingface.co/blog/garg-aayush/building-sft-from-ground-up">Building SFT from Ground Up</a>: My previous SFT experiments blog post</li>
+<li><a href="https://huggingface.co/blog/garg-aayush/expert-iteration-math-reasoning">Expert Iteration for Math Reasoning</a>: My Expert Iteration experiments blog post</li>
+</ul>
+</section>
+<section id="code-and-artifacts" class="level3">
+<h3 class="anchored" data-anchor-id="code-and-artifacts">Code and Artifacts</h3>
+<ul>
+<li><strong>Code</strong>: <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/grpo">building-from-scratch/grpo</a></li>
+<li><strong>Configs</strong>: <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/grpo/configs">grpo/configs</a></li>
+<li><strong>Trained Checkpoints</strong>: <a href="https://huggingface.co/garg-aayush/cs336-grpo-exps">garg-aayush/cs336-grpo-exps</a></li>
+<li><strong>Datasets</strong>: <a href="https://github.com/kkaitlyn111/cs336-a5-RL/tree/main/MATH">CS336 MATH dataset</a></li>
+<li><strong>Training Logs</strong>: <a href="https://wandb.ai/garg-aayush/grpo">wandb.ai/garg-aayush/grpo</a></li>
+</ul>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Tools for Better Claude Code and Terminal Experience</title>
   <link>https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</link>
