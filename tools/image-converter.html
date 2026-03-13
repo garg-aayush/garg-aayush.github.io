@@ -320,76 +320,25 @@
     .result { display: none; }
     .result.visible { display: block; }
 
-    .result-stats {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .stat-box {
-      background: var(--bg-inset);
-      border-radius: 8px;
-      padding: 12px;
+    .size-line {
       text-align: center;
-      border: 1px solid var(--border);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .stat-format {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .stat-arrow {
-      color: var(--accent);
-      font-size: 18px;
-      text-align: center;
-    }
-
-    .savings-row {
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .stat-savings {
       font-size: 13px;
-      font-weight: 600;
-      padding: 3px 12px;
-      border-radius: 20px;
-      display: inline-block;
+      color: var(--text-content);
+      margin-bottom: 14px;
     }
 
-    .stat-savings.smaller {
-      color: var(--green);
-      background: var(--green-dim);
-    }
-
-    .stat-savings.larger {
-      color: var(--orange);
-      background: var(--orange-dim);
-    }
-
-    .stat-savings.same {
+    .size-line .arrow {
       color: var(--text-muted);
-      background: var(--bg-inset);
+      margin: 0 4px;
     }
+
+    .size-line .savings {
+      font-weight: 600;
+    }
+
+    .size-line .savings.smaller { color: var(--green); }
+    .size-line .savings.larger { color: var(--orange); }
+    .size-line .savings.same { color: var(--text-muted); }
 
     /* Preview */
     .preview-container {
@@ -490,8 +439,6 @@
       body { padding: 12px 10px; }
       .header h1 { font-size: 18px; }
       .panel { padding: 14px; }
-      .result-stats { grid-template-columns: 1fr; gap: 6px; }
-      .stat-arrow { transform: rotate(90deg); }
       .actions { flex-direction: column; }
     }
   </style>
@@ -559,27 +506,11 @@
       <div class="panel">
         <div class="panel-label">Result</div>
 
-        <div class="result-stats">
-          <div class="stat-box">
-            <div class="stat-label">Input</div>
-            <div class="stat-value" id="inputSize">&mdash;</div>
-            <div class="stat-format" id="inputFormat">&mdash;</div>
-          </div>
-          <div class="stat-arrow">&rarr;</div>
-          <div class="stat-box">
-            <div class="stat-label">Output</div>
-            <div class="stat-value" id="outputSize">&mdash;</div>
-            <div class="stat-format" id="outputFormat">&mdash;</div>
-          </div>
-        </div>
-
-        <div class="savings-row">
-          <span class="stat-savings" id="savings"></span>
-        </div>
-
         <div class="preview-container" id="previewContainer">
           <img class="preview-img" id="previewImg" src="" alt="Converted image preview">
         </div>
+
+        <div class="size-line" id="sizeLine"></div>
 
         <div class="actions">
           <button class="btn btn-primary" id="downloadBtn">Download</button>
@@ -611,11 +542,7 @@
     const bgRow = document.getElementById('bgRow');
     const bgColor = document.getElementById('bgColor');
     const result = document.getElementById('result');
-    const inputSize = document.getElementById('inputSize');
-    const inputFormat = document.getElementById('inputFormat');
-    const outputSize = document.getElementById('outputSize');
-    const outputFormat = document.getElementById('outputFormat');
-    const savings = document.getElementById('savings');
+    const sizeLine = document.getElementById('sizeLine');
     const previewContainer = document.getElementById('previewContainer');
     const previewImg = document.getElementById('previewImg');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -750,22 +677,19 @@
 
         const inBytes = originalFile.size;
         const outBytes = blob.size;
-        inputSize.textContent = formatBytes(inBytes);
-        inputFormat.textContent = friendlyType(originalFile.type);
-        outputSize.textContent = formatBytes(outBytes);
-        outputFormat.textContent = cfg.ext.toUpperCase();
-
         const pct = Math.round((1 - outBytes / inBytes) * 100);
+        let savingsClass, savingsText;
         if (pct > 0) {
-          savings.textContent = `${pct}% smaller`;
-          savings.className = 'stat-savings smaller';
+          savingsClass = 'smaller';
+          savingsText = `${pct}% smaller`;
         } else if (pct < 0) {
-          savings.textContent = `${Math.abs(pct)}% larger`;
-          savings.className = 'stat-savings larger';
+          savingsClass = 'larger';
+          savingsText = `${Math.abs(pct)}% larger`;
         } else {
-          savings.textContent = 'Same size';
-          savings.className = 'stat-savings same';
+          savingsClass = 'same';
+          savingsText = 'same size';
         }
+        sizeLine.innerHTML = `${formatBytes(inBytes)} ${friendlyType(originalFile.type)} <span class="arrow">&rarr;</span> ${formatBytes(outBytes)} ${cfg.ext.toUpperCase()} (<span class="savings ${savingsClass}">${savingsText}</span>)`;
 
         previewImg.src = convertedDataUrl;
         previewContainer.classList.toggle('has-transparency', cfg.supportsAlpha);

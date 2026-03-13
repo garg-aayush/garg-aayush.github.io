@@ -15,9 +15,6 @@ A collection of free, browser-based utilities. Everything runs locally in your b
 ### [Image Format Converter](image-converter.html)
 Convert images between PNG, JPEG, and WebP. Adjustable quality for lossy formats, automatic transparency handling, and instant file size comparison.
 
-### [Image to JPEG Optimizer](image-to-jpeg.html)
-Compress any image to JPEG with adjustable quality, compare original vs optimized side-by-side, and download the result.
-
 ---
 
 ::: {.template-credit}
