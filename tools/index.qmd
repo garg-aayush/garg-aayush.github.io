@@ -9,33 +9,21 @@ A collection of free, browser-based utilities. Everything runs locally in your b
 
 ## Image Tools
 
-::: {.tools-grid}
+::: {.tools-list}
 
-::: {.tool-card}
-::: {.tool-name}
+::: {.tool-item}
 [Image Format Converter](image-converter.html)
-:::
-::: {.tool-desc}
-Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
-:::
+: Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
 :::
 
-::: {.tool-card}
-::: {.tool-name}
+::: {.tool-item}
 [Image Resizer](image-resizer.html)
-:::
-::: {.tool-desc}
-Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
-:::
+: Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
 :::
 
-::: {.tool-card}
-::: {.tool-name}
+::: {.tool-item}
 [Image Cropper](image-cropper.html)
-:::
-::: {.tool-desc}
-Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
-:::
+: Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
 :::
 
 :::

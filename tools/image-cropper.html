@@ -443,12 +443,15 @@
       user-select: none;
       -webkit-user-select: none;
       touch-action: none;
+      overflow: hidden;
     }
 
     .crop-wrapper img {
       display: block;
       max-width: 100%;
+      max-height: 500px;
       height: auto;
+      object-fit: contain;
     }
 
     .crop-overlay {
@@ -466,18 +469,28 @@
       background: var(--accent);
       border-radius: 2px;
       z-index: 3;
+      transition: opacity 0.2s ease;
     }
 
-    .crop-dims {
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      color: #fff;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    /* Applied state: no darkening, subtle dashed outline, no handles */
+    .crop-wrapper.applied .crop-overlay {
+      box-shadow: none;
+      border: 2px dashed var(--text-dim);
+      cursor: pointer;
+    }
+
+    .crop-wrapper.applied .crop-handle {
+      opacity: 0;
       pointer-events: none;
-      white-space: nowrap;
+    }
+
+
+    .crop-dims-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
     }
 
     .crop-panel-center {
@@ -488,6 +501,13 @@
 
     .apply-btn-wrapper {
       margin-bottom: 16px;
+    }
+
+    .crop-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 10px;
     }
 
     .ratio-grid {
@@ -536,6 +556,18 @@
     <input type="file" id="fileInput" class="sr-only" accept="image/*">
     <div class="error-msg" id="errorMsg"></div>
 
+    <!-- Aspect Ratio -->
+    <div class="panel" id="ratioPanel" style="display:none;">
+      <div class="panel-label">Aspect Ratio</div>
+      <div class="ratio-grid">
+        <button class="format-btn active" data-ratio="free">Free</button>
+        <button class="format-btn" data-ratio="1:1">1:1</button>
+        <button class="format-btn" data-ratio="4:3">4:3</button>
+        <button class="format-btn" data-ratio="16:9">16:9</button>
+        <button class="format-btn" data-ratio="2:1">2:1</button>
+      </div>
+    </div>
+
     <!-- Crop Canvas -->
     <div class="panel" id="cropPanel" style="display:none;">
       <div class="panel-label">Crop Area</div>
@@ -543,7 +575,6 @@
         <div class="crop-wrapper" id="cropWrapper">
           <img id="cropImg" src="" alt="Image to crop">
           <div class="crop-overlay" id="cropOverlay">
-            <div class="crop-dims" id="cropDims"></div>
             <!-- 8 handles: 4 corners + 4 edges -->
             <div class="crop-handle" data-handle="tl" style="top:0;left:0;transform:translate(-50%,-50%);cursor:nwse-resize;"></div>
             <div class="crop-handle" data-handle="tr" style="top:0;right:0;transform:translate(50%,-50%);cursor:nesw-resize;"></div>
@@ -556,18 +587,8 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Aspect Ratio -->
-    <div class="panel" id="ratioPanel" style="display:none;">
-      <div class="panel-label">Aspect Ratio</div>
-      <div class="ratio-grid">
-        <button class="format-btn active" data-ratio="free">Free</button>
-        <button class="format-btn" data-ratio="1:1">1:1</button>
-        <button class="format-btn" data-ratio="4:3">4:3</button>
-        <button class="format-btn" data-ratio="16:9">16:9</button>
-        <button class="format-btn" data-ratio="2:1">2:1</button>
-      </div>
+      <div class="crop-dims-bar" id="cropDimsBar"><span id="cropDims"></span></div>
+      <div class="crop-hint">Drag to move, use handles to resize.</div>
     </div>
 
     <!-- Apply Crop -->
@@ -610,6 +631,7 @@
 
     // Crop state in display (CSS pixel) coordinates
     let crop = { x: 0, y: 0, w: 0, h: 0 };
+    let cropApplied = false;
 
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
@@ -632,6 +654,7 @@
     const previewImg = document.getElementById('previewImg');
     const downloadBtn = document.getElementById('downloadBtn');
     const ratioBtns = document.querySelectorAll('[data-ratio]');
+    const cropHint = document.querySelector('.crop-hint');
 
     const IMAGE_EXTENSIONS = /\.(png|jpe?g|webp|gif|bmp|svg|avif|heic|heif|tiff?)$/i;
 
@@ -672,6 +695,8 @@
     function handleFile(file) {
       clearError();
       result.classList.remove('visible');
+      cropApplied = false;
+      cropWrapper.classList.remove('applied');
 
       if (file.size > MAX_FILE_SIZE) {
         showError(`File too large (${formatBytes(file.size)}). Maximum allowed size is ${formatBytes(MAX_FILE_SIZE)}.`);
@@ -767,27 +792,21 @@
     });
 
     function snapCropToRatio(ratio) {
-      // Keep center, fit within current crop while matching ratio
-      const cx = crop.x + crop.w / 2;
-      const cy = crop.y + crop.h / 2;
+      // Always compute largest crop for this ratio relative to full image, centered
       const imgW = cropImg.offsetWidth;
       const imgH = cropImg.offsetHeight;
 
-      let newW = crop.w;
+      let newW = imgW;
       let newH = newW / ratio;
-      if (newH > crop.h) {
-        newH = crop.h;
+      if (newH > imgH) {
+        newH = imgH;
         newW = newH * ratio;
       }
 
-      // Ensure within image bounds
-      if (newW > imgW) { newW = imgW; newH = newW / ratio; }
-      if (newH > imgH) { newH = imgH; newW = newH * ratio; }
-
       crop.w = Math.round(newW);
       crop.h = Math.round(newH);
-      crop.x = Math.round(cx - crop.w / 2);
-      crop.y = Math.round(cy - crop.h / 2);
+      crop.x = Math.round((imgW - crop.w) / 2);
+      crop.y = Math.round((imgH - crop.h) / 2);
       clampCrop();
     }
 
@@ -816,7 +835,21 @@
     cropOverlay.addEventListener('mousedown', onPointerDown);
     cropOverlay.addEventListener('touchstart', onPointerDown, { passive: false });
 
+    function enterEditMode() {
+      cropApplied = false;
+      cropWrapper.classList.remove('applied');
+      cropHint.textContent = 'Drag to move, use handles to resize.';
+      applyBtn.textContent = 'Apply Crop';
+    }
+
     function onPointerDown(e) {
+      // If crop was already applied, re-enter editing mode
+      if (cropApplied) {
+        e.preventDefault();
+        enterEditMode();
+        return;
+      }
+
       e.preventDefault();
       const pos = getEventPos(e);
       startX = pos.x;
@@ -975,6 +1008,12 @@
     // Apply Crop
     applyBtn.addEventListener('click', () => {
       if (!originalImg) return;
+
+      // Transition to applied state
+      cropApplied = true;
+      cropWrapper.classList.add('applied');
+      cropHint.textContent = 'Click crop area to adjust selection.';
+      applyBtn.textContent = 'Re-apply Crop';
 
       const s = getScale();
       const sx = Math.round(crop.x * s.x);
