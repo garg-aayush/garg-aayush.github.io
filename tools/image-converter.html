@@ -462,6 +462,22 @@
       background: var(--green-dim);
     }
 
+    /* Error message */
+    .error-msg {
+      display: none;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .error-msg.visible { display: block; }
+
     .sr-only {
       position: absolute;
       width: 1px;
@@ -503,6 +519,7 @@
       </div>
     </div>
     <input type="file" id="fileInput" class="sr-only" accept="image/*">
+    <div class="error-msg" id="errorMsg"></div>
 
     <!-- Format & Quality -->
     <div class="panel">
@@ -573,13 +590,18 @@
   </div>
 
   <script>
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+    const MAX_DIMENSION = 8192; // px
+
     let originalFile = null;
     let originalImg = null;
+    let convertedBlob = null;
     let convertedDataUrl = null;
     let selectedFormat = 'jpeg';
 
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
+    const errorMsg = document.getElementById('errorMsg');
     const fileThumb = document.getElementById('fileThumb');
     const fileName = document.getElementById('fileName');
     const fileDetails = document.getElementById('fileDetails');
@@ -609,22 +631,65 @@
     // Upload
     dropzone.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', () => {
-      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+      if (fileInput.files[0]) validateAndHandle(fileInput.files[0]);
     });
     dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
     dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) handleFile(file);
+      if (e.dataTransfer.files[0]) validateAndHandle(e.dataTransfer.files[0]);
     });
 
+    const IMAGE_EXTENSIONS = /\.(png|jpe?g|webp|gif|bmp|svg|avif|heic|heif|tiff?)$/i;
+
+    function validateAndHandle(file) {
+      clearError();
+      const hasImageType = file.type.startsWith('image/');
+      const hasImageExt = IMAGE_EXTENSIONS.test(file.name);
+      if (!hasImageType && !hasImageExt) {
+        showError(`"${file.name}" is not an image file. Please upload a PNG, JPEG, WebP, GIF, BMP, SVG, or AVIF file.`);
+        fileInput.value = '';
+        return;
+      }
+      handleFile(file);
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function clearError() {
+      errorMsg.classList.remove('visible');
+    }
+
     function handleFile(file) {
+      clearError();
+      result.classList.remove('visible');
+
+      if (file.size > MAX_FILE_SIZE) {
+        showError(`File too large (${formatBytes(file.size)}). Maximum allowed size is ${formatBytes(MAX_FILE_SIZE)}.`);
+        fileInput.value = '';
+        return;
+      }
+
       originalFile = file;
       const url = URL.createObjectURL(file);
       const img = new Image();
+      img.onerror = () => {
+        showError('Could not load image. The file may be corrupted or in an unsupported format.');
+        URL.revokeObjectURL(url);
+        fileInput.value = '';
+      };
       img.onload = () => {
+        if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
+          showError(`Image dimensions too large (${img.width} \u00d7 ${img.height}). Maximum is ${MAX_DIMENSION} \u00d7 ${MAX_DIMENSION} px.`);
+          URL.revokeObjectURL(url);
+          fileInput.value = '';
+          return;
+        }
+
         originalImg = img;
         fileThumb.src = url;
         fileName.textContent = file.name;
@@ -671,59 +736,75 @@
 
       ctx.drawImage(originalImg, 0, 0);
       const quality = cfg.hasQuality ? qualitySlider.value / 100 : undefined;
-      convertedDataUrl = canvas.toDataURL(cfg.mime, quality);
 
-      result.classList.add('visible');
+      canvas.toBlob((blob) => {
+        if (!blob) return;
 
-      const inBytes = originalFile.size;
-      const outBytes = Math.round(convertedDataUrl.length * 3 / 4);
-      inputSize.textContent = formatBytes(inBytes);
-      inputFormat.textContent = friendlyType(originalFile.type);
-      outputSize.textContent = formatBytes(outBytes);
-      outputFormat.textContent = cfg.ext.toUpperCase();
+        // Revoke previous blob URL
+        if (convertedDataUrl) URL.revokeObjectURL(convertedDataUrl);
 
-      const pct = Math.round((1 - outBytes / inBytes) * 100);
-      if (pct > 0) {
-        savings.textContent = `${pct}% smaller`;
-        savings.className = 'stat-savings smaller';
-      } else if (pct < 0) {
-        savings.textContent = `${Math.abs(pct)}% larger`;
-        savings.className = 'stat-savings larger';
-      } else {
-        savings.textContent = 'Same size';
-        savings.className = 'stat-savings same';
-      }
+        convertedBlob = blob;
+        convertedDataUrl = URL.createObjectURL(blob);
 
-      previewImg.src = convertedDataUrl;
-      previewContainer.classList.toggle('has-transparency', cfg.supportsAlpha);
+        result.classList.add('visible');
 
-      const baseName = originalFile.name.replace(/\.[^.]+$/, '');
-      downloadBtn.dataset.filename = `${baseName}.${cfg.ext}`;
+        const inBytes = originalFile.size;
+        const outBytes = blob.size;
+        inputSize.textContent = formatBytes(inBytes);
+        inputFormat.textContent = friendlyType(originalFile.type);
+        outputSize.textContent = formatBytes(outBytes);
+        outputFormat.textContent = cfg.ext.toUpperCase();
+
+        const pct = Math.round((1 - outBytes / inBytes) * 100);
+        if (pct > 0) {
+          savings.textContent = `${pct}% smaller`;
+          savings.className = 'stat-savings smaller';
+        } else if (pct < 0) {
+          savings.textContent = `${Math.abs(pct)}% larger`;
+          savings.className = 'stat-savings larger';
+        } else {
+          savings.textContent = 'Same size';
+          savings.className = 'stat-savings same';
+        }
+
+        previewImg.src = convertedDataUrl;
+        previewContainer.classList.toggle('has-transparency', cfg.supportsAlpha);
+
+        const baseName = originalFile.name.replace(/\.[^.]+$/, '');
+        downloadBtn.dataset.filename = `${baseName}.${cfg.ext}`;
+      }, cfg.mime, quality);
     }
 
     downloadBtn.addEventListener('click', () => {
-      if (!convertedDataUrl) return;
+      if (!convertedBlob) return;
       const a = document.createElement('a');
-      a.href = convertedDataUrl;
+      a.href = URL.createObjectURL(convertedBlob);
       a.download = downloadBtn.dataset.filename || 'converted';
       a.click();
+      // Clean up after a short delay to allow the download to start
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     });
 
     copyUriBtn.addEventListener('click', async () => {
-      if (!convertedDataUrl) return;
-      try {
-        await navigator.clipboard.writeText(convertedDataUrl);
-      } catch {
-        const ta = document.createElement('textarea');
-        ta.value = convertedDataUrl;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      }
-      copyUriBtn.textContent = 'Copied!';
-      copyUriBtn.classList.add('copied');
-      setTimeout(() => { copyUriBtn.textContent = 'Copy Data URI'; copyUriBtn.classList.remove('copied'); }, 2000);
+      if (!convertedBlob) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUri = reader.result;
+        try {
+          await navigator.clipboard.writeText(dataUri);
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = dataUri;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        copyUriBtn.textContent = 'Copied!';
+        copyUriBtn.classList.add('copied');
+        setTimeout(() => { copyUriBtn.textContent = 'Copy Data URI'; copyUriBtn.classList.remove('copied'); }, 2000);
+      };
+      reader.readAsDataURL(convertedBlob);
     });
 
     function formatBytes(bytes) {
