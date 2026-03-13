@@ -1,0 +1,22 @@
+---
+title: "Tools"
+description: "Browser-based tools that run entirely client-side. No data leaves your browser."
+sidebar: false
+toc: false
+format:
+  html:
+    anchor-sections: false
+---
+
+A collection of free, browser-based utilities. Everything runs locally in your browser — no data is uploaded anywhere.
+
+---
+
+### [Image to JPEG Optimizer](image-to-jpeg.html)
+Drag-and-drop image converter and optimizer. Compress any image to JPEG with adjustable quality, compare original vs optimized side-by-side, and download the result.
+
+---
+
+::: {.template-credit}
+*Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
+:::

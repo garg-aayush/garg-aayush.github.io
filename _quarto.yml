@@ -11,6 +11,7 @@ project:
     - pages/*.qmd
     - posts/*.qmd
     - posts/*/index.qmd
+    - tools/index.qmd
 
 website:
   title: "Aayush Garg"
@@ -33,6 +34,8 @@ website:
         href: blog/
       - text: Publications
         href: publications.qmd
+      - text: Tools
+        href: tools/
       - text: About
         href: about.qmd
     right:
@@ -63,4 +66,5 @@ format:
 resources:
   - static
   - js
+  - tools/*.html
   - CNAME
