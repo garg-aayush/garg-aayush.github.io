@@ -20,6 +20,15 @@ Convert images between PNG, JPEG, and WebP with adjustable quality and transpare
 :::
 :::
 
+::: {.tool-card}
+::: {.tool-name}
+[Image Resizer](image-resizer.html)
+:::
+::: {.tool-desc}
+Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
+:::
+:::
+
 :::
 
 ::: {.template-credit}

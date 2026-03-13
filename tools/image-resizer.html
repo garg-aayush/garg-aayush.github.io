@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Resizer — Aayush Garg</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-body: #1d1e20;
+      --bg-card: #2e2e33;
+      --bg-inset: #37383e;
+      --bg-hover: #414244;
+      --border: #333333;
+      --text-primary: #dadada;
+      --text-content: #c4c4c5;
+      --text-muted: #9b9c9d;
+      --text-dim: #707073;
+      --accent: #75A8D9;
+      --accent-hover: #8fbce5;
+      --accent-dim: rgba(117, 168, 217, 0.15);
+      --green: #72994E;
+      --green-dim: rgba(114, 153, 78, 0.15);
+      --orange: #EE6331;
+      --orange-dim: rgba(238, 99, 49, 0.12);
+      --code-bg: #37383e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   Oxygen, Ubuntu, Cantarell, "Open Sans",
+                   "Helvetica Neue", sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px 16px;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .header .back a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .header .back a:hover { text-decoration: underline; }
+
+    /* Drop zone */
+    .dropzone {
+      border: 2px dashed var(--accent);
+      border-radius: 10px;
+      padding: 24px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-inset);
+      margin-bottom: 16px;
+    }
+
+    .dropzone:hover {
+      border-color: var(--accent-hover);
+      background: var(--bg-hover);
+    }
+
+    .dropzone.dragover {
+      border-color: var(--accent-hover);
+      background: var(--accent-dim);
+    }
+
+    .dropzone.has-file {
+      border-style: solid;
+      border-color: var(--border);
+      padding: 12px 16px;
+    }
+
+    .dropzone-prompt {
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .dropzone-prompt .formats {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    .dropzone-file {
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dropzone.has-file .dropzone-prompt { display: none; }
+    .dropzone.has-file .dropzone-file { display: flex; }
+
+    .file-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+
+    .file-meta {
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-details {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .file-change {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    /* Panel */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Format buttons */
+    .format-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .format-grid.cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .format-btn {
+      background: var(--bg-inset);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-content);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .format-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--text-primary);
+    }
+
+    .format-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .format-ext {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .format-note {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .format-btn.active .format-note { color: var(--accent); opacity: 0.7; }
+
+    /* Quality row */
+    .quality-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .quality-row.hidden { display: none; }
+
+    .row-label {
+      font-size: 14px;
+      color: var(--text-content);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .quality-slider {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-inset);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .quality-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .quality-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .quality-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 28px;
+      text-align: right;
+      background: var(--accent-dim);
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    /* Result */
+    .result { display: none; }
+    .result.visible { display: block; }
+
+    .size-line {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-content);
+      margin-bottom: 14px;
+    }
+
+    .size-line .arrow {
+      color: var(--text-muted);
+      margin: 0 4px;
+    }
+
+    .size-line .savings {
+      font-weight: 600;
+    }
+
+    .size-line .savings.smaller { color: var(--green); }
+    .size-line .savings.larger { color: var(--orange); }
+    .size-line .savings.same { color: var(--text-muted); }
+
+    /* Preview */
+    .preview-container {
+      position: relative;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-inset);
+      border: 1px solid var(--border);
+    }
+
+    .preview-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .preview-container.has-transparency {
+      background-image:
+        linear-gradient(45deg, #2a2b30 25%, transparent 25%),
+        linear-gradient(-45deg, #2a2b30 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a2b30 75%),
+        linear-gradient(-45deg, transparent 75%, #2a2b30 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg-body);
+    }
+
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--bg-inset);
+      color: var(--text-content);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary.copied {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-dim);
+    }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .error-msg.visible { display: block; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    /* Resize inputs */
+    .resize-inputs {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .input-row:last-child { margin-bottom: 0; }
+
+    .input-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      min-width: 65px;
+    }
+
+    .num-input {
+      flex: 1;
+      background: var(--bg-inset);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .num-input:focus {
+      border-color: var(--accent);
+    }
+
+    .lock-btn {
+      background: var(--bg-inset);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .lock-btn.locked {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .preset-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .preset-btn {
+      background: var(--bg-inset);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      color: var(--text-content);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px 10px; }
+      .header h1 { font-size: 18px; }
+      .panel { padding: 14px; }
+      .actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Image Resizer</h1>
+      <div class="back"><a href="./">&larr; Back to Tools</a></div>
+    </div>
+
+    <!-- Upload -->
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-prompt">
+        Click or drag and drop an image here
+        <span class="formats">PNG, JPEG, WebP, GIF, BMP, SVG, AVIF</span>
+      </div>
+      <div class="dropzone-file">
+        <img class="file-thumb" id="fileThumb" src="" alt="">
+        <div class="file-meta">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-details" id="fileDetails"></div>
+        </div>
+        <div class="file-change">Change</div>
+      </div>
+    </div>
+    <input type="file" id="fileInput" class="sr-only" accept="image/*">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Resize Mode -->
+    <div class="panel">
+      <div class="panel-label">Resize Mode</div>
+      <div class="format-grid">
+        <button class="format-btn active" data-mode="dimensions">Dimensions</button>
+        <button class="format-btn" data-mode="percentage">Percentage</button>
+        <button class="format-btn" data-mode="fit">Fit Within</button>
+      </div>
+
+      <!-- Dimensions mode inputs -->
+      <div class="resize-inputs" id="dimensionsInputs">
+        <div class="input-row">
+          <span class="input-label">Width</span>
+          <input type="number" class="num-input" id="dimWidth" min="1" max="8192" placeholder="Width">
+          <button class="lock-btn locked" id="lockBtn" title="Lock aspect ratio">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </button>
+          <span class="input-label">Height</span>
+          <input type="number" class="num-input" id="dimHeight" min="1" max="8192" placeholder="Height">
+        </div>
+      </div>
+
+      <!-- Percentage mode inputs -->
+      <div class="resize-inputs" id="percentageInputs" style="display:none;">
+        <div class="input-row">
+          <span class="input-label">Scale</span>
+          <input type="number" class="num-input" id="pctValue" min="1" max="1000" value="100" placeholder="100">
+          <span class="input-label" style="min-width:auto;">%</span>
+        </div>
+        <div class="preset-row">
+          <button class="preset-btn" data-pct="25">25%</button>
+          <button class="preset-btn" data-pct="50">50%</button>
+          <button class="preset-btn" data-pct="75">75%</button>
+        </div>
+      </div>
+
+      <!-- Fit Within mode inputs -->
+      <div class="resize-inputs" id="fitInputs" style="display:none;">
+        <div class="input-row">
+          <span class="input-label">Max Width</span>
+          <input type="number" class="num-input" id="fitWidth" min="1" max="8192" placeholder="Max Width">
+        </div>
+        <div class="input-row">
+          <span class="input-label">Max Height</span>
+          <input type="number" class="num-input" id="fitHeight" min="1" max="8192" placeholder="Max Height">
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Format -->
+    <div class="panel">
+      <div class="panel-label">Output Format</div>
+      <div class="format-grid cols-4">
+        <button class="format-btn active" data-format="auto">
+          <span class="format-ext">Auto</span>
+          <span class="format-note">Same as input</span>
+        </button>
+        <button class="format-btn" data-format="png">
+          <span class="format-ext">PNG</span>
+          <span class="format-note">Lossless</span>
+        </button>
+        <button class="format-btn" data-format="jpeg">
+          <span class="format-ext">JPEG</span>
+          <span class="format-note">Lossy</span>
+        </button>
+        <button class="format-btn" data-format="webp">
+          <span class="format-ext">WebP</span>
+          <span class="format-note">Lossy / Lossless</span>
+        </button>
+      </div>
+
+      <div class="quality-row hidden" id="qualityRow">
+        <span class="row-label">Quality</span>
+        <input type="range" class="quality-slider" id="qualitySlider" min="1" max="100" value="85">
+        <span class="quality-val" id="qualityVal">85</span>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result" id="result">
+      <div class="panel">
+        <div class="panel-label">Result</div>
+
+        <div class="preview-container" id="previewContainer">
+          <img class="preview-img" id="previewImg" src="" alt="Resized image preview">
+        </div>
+
+        <div class="size-line" id="dimLine"></div>
+        <div class="size-line" id="sizeLine"></div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="downloadBtn">Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+    const MAX_DIMENSION = 8192; // px
+
+    let originalFile = null;
+    let originalImg = null;
+    let originalWidth = 0;
+    let originalHeight = 0;
+    let aspectRatio = 1;
+    let aspectLocked = true;
+    let resizedBlob = null;
+    let resizedBlobUrl = null;
+    let selectedMode = 'dimensions';
+    let selectedFormat = 'auto';
+
+    // DOM refs
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const fileThumb = document.getElementById('fileThumb');
+    const fileName = document.getElementById('fileName');
+    const fileDetails = document.getElementById('fileDetails');
+    const qualityRow = document.getElementById('qualityRow');
+    const qualitySlider = document.getElementById('qualitySlider');
+    const qualityVal = document.getElementById('qualityVal');
+    const result = document.getElementById('result');
+    const dimLine = document.getElementById('dimLine');
+    const sizeLine = document.getElementById('sizeLine');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImg = document.getElementById('previewImg');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const modeBtns = document.querySelectorAll('[data-mode]');
+    const formatBtns = document.querySelectorAll('[data-format]');
+
+    const dimensionsInputs = document.getElementById('dimensionsInputs');
+    const percentageInputs = document.getElementById('percentageInputs');
+    const fitInputs = document.getElementById('fitInputs');
+
+    const dimWidth = document.getElementById('dimWidth');
+    const dimHeight = document.getElementById('dimHeight');
+    const lockBtn = document.getElementById('lockBtn');
+    const pctValue = document.getElementById('pctValue');
+    const fitWidth = document.getElementById('fitWidth');
+    const fitHeight = document.getElementById('fitHeight');
+
+    const LOCK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+    const UNLOCK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+
+    const FORMAT_CONFIG = {
+      png:  { mime: 'image/png',  ext: 'png',  hasQuality: false, supportsAlpha: true },
+      jpeg: { mime: 'image/jpeg', ext: 'jpg',  hasQuality: true,  supportsAlpha: false },
+      webp: { mime: 'image/webp', ext: 'webp', hasQuality: true,  supportsAlpha: true },
+    };
+
+    const IMAGE_EXTENSIONS = /\.(png|jpe?g|webp|gif|bmp|svg|avif|heic|heif|tiff?)$/i;
+
+    // Upload handlers
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) validateAndHandle(fileInput.files[0]);
+    });
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) validateAndHandle(e.dataTransfer.files[0]);
+    });
+
+    function validateAndHandle(file) {
+      clearError();
+      const hasImageType = file.type.startsWith('image/');
+      const hasImageExt = IMAGE_EXTENSIONS.test(file.name);
+      if (!hasImageType && !hasImageExt) {
+        showError(`"${file.name}" is not an image file. Please upload a PNG, JPEG, WebP, GIF, BMP, SVG, or AVIF file.`);
+        fileInput.value = '';
+        return;
+      }
+      handleFile(file);
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function clearError() {
+      errorMsg.classList.remove('visible');
+    }
+
+    function handleFile(file) {
+      clearError();
+      result.classList.remove('visible');
+
+      if (file.size > MAX_FILE_SIZE) {
+        showError(`File too large (${formatBytes(file.size)}). Maximum allowed size is ${formatBytes(MAX_FILE_SIZE)}.`);
+        fileInput.value = '';
+        return;
+      }
+
+      originalFile = file;
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onerror = () => {
+        showError('Could not load image. The file may be corrupted or in an unsupported format.');
+        URL.revokeObjectURL(url);
+        fileInput.value = '';
+      };
+      img.onload = () => {
+        if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
+          showError(`Image dimensions too large (${img.width} \u00d7 ${img.height}). Maximum is ${MAX_DIMENSION} \u00d7 ${MAX_DIMENSION} px.`);
+          URL.revokeObjectURL(url);
+          fileInput.value = '';
+          return;
+        }
+
+        originalImg = img;
+        originalWidth = img.width;
+        originalHeight = img.height;
+        aspectRatio = originalWidth / originalHeight;
+
+        fileThumb.src = url;
+        fileName.textContent = file.name;
+        fileDetails.textContent = `${img.width} \u00d7 ${img.height}  \u00b7  ${formatBytes(file.size)}  \u00b7  ${friendlyType(file.type)}`;
+        dropzone.classList.add('has-file');
+
+        // Populate dimension inputs with original values
+        dimWidth.value = originalWidth;
+        dimHeight.value = originalHeight;
+        fitWidth.value = originalWidth;
+        fitHeight.value = originalHeight;
+        pctValue.value = 100;
+
+        processResize();
+      };
+      img.src = url;
+    }
+
+    // Mode buttons
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedMode = btn.dataset.mode;
+        updateModeInputs();
+        processResize();
+      });
+    });
+
+    function updateModeInputs() {
+      dimensionsInputs.style.display = selectedMode === 'dimensions' ? '' : 'none';
+      percentageInputs.style.display = selectedMode === 'percentage' ? '' : 'none';
+      fitInputs.style.display = selectedMode === 'fit' ? '' : 'none';
+    }
+
+    // Format buttons
+    formatBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format;
+        updateQualityRow();
+        processResize();
+      });
+    });
+
+    function updateQualityRow() {
+      const fmt = resolveFormat();
+      const cfg = FORMAT_CONFIG[fmt];
+      qualityRow.classList.toggle('hidden', !cfg.hasQuality);
+    }
+
+    function resolveFormat() {
+      if (selectedFormat !== 'auto') return selectedFormat;
+      if (!originalFile) return 'png';
+      const typeMap = {
+        'image/png': 'png',
+        'image/jpeg': 'jpeg',
+        'image/webp': 'webp',
+      };
+      return typeMap[originalFile.type] || 'png';
+    }
+
+    // Quality slider
+    qualitySlider.addEventListener('input', () => {
+      qualityVal.textContent = qualitySlider.value;
+      processResize();
+    });
+
+    // Aspect ratio lock
+    lockBtn.addEventListener('click', () => {
+      aspectLocked = !aspectLocked;
+      lockBtn.classList.toggle('locked', aspectLocked);
+      lockBtn.innerHTML = aspectLocked ? LOCK_SVG : UNLOCK_SVG;
+      if (aspectLocked && originalImg) {
+        // Re-sync height from current width
+        const w = parseInt(dimWidth.value) || originalWidth;
+        dimHeight.value = Math.round(w / aspectRatio);
+        processResize();
+      }
+    });
+
+    // Dimension inputs
+    let updatingDim = false;
+    dimWidth.addEventListener('input', () => {
+      if (updatingDim) return;
+      updatingDim = true;
+      if (aspectLocked && originalImg) {
+        const w = parseInt(dimWidth.value);
+        if (w > 0) {
+          dimHeight.value = Math.round(w / aspectRatio);
+        }
+      }
+      updatingDim = false;
+      processResize();
+    });
+
+    dimHeight.addEventListener('input', () => {
+      if (updatingDim) return;
+      updatingDim = true;
+      if (aspectLocked && originalImg) {
+        const h = parseInt(dimHeight.value);
+        if (h > 0) {
+          dimWidth.value = Math.round(h * aspectRatio);
+        }
+      }
+      updatingDim = false;
+      processResize();
+    });
+
+    // Percentage input
+    pctValue.addEventListener('input', () => processResize());
+
+    // Preset buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pctValue.value = btn.dataset.pct;
+        processResize();
+      });
+    });
+
+    // Fit within inputs
+    fitWidth.addEventListener('input', () => processResize());
+    fitHeight.addEventListener('input', () => processResize());
+
+    function computeNewDimensions() {
+      if (!originalImg) return null;
+
+      let newW, newH;
+
+      if (selectedMode === 'dimensions') {
+        newW = parseInt(dimWidth.value);
+        newH = parseInt(dimHeight.value);
+        if (!newW || newW < 1 || !newH || newH < 1) return null;
+      } else if (selectedMode === 'percentage') {
+        const pct = parseFloat(pctValue.value);
+        if (!pct || pct < 1) return null;
+        newW = Math.round(originalWidth * pct / 100);
+        newH = Math.round(originalHeight * pct / 100);
+      } else if (selectedMode === 'fit') {
+        const maxW = parseInt(fitWidth.value);
+        const maxH = parseInt(fitHeight.value);
+        if (!maxW || maxW < 1 || !maxH || maxH < 1) return null;
+        const scale = Math.min(maxW / originalWidth, maxH / originalHeight, 1);
+        newW = Math.round(originalWidth * scale);
+        newH = Math.round(originalHeight * scale);
+      }
+
+      // Clamp to valid range
+      newW = Math.max(1, Math.min(newW, MAX_DIMENSION));
+      newH = Math.max(1, Math.min(newH, MAX_DIMENSION));
+
+      return { width: newW, height: newH };
+    }
+
+    function processResize() {
+      if (!originalImg) return;
+
+      const dims = computeNewDimensions();
+      if (!dims) {
+        result.classList.remove('visible');
+        return;
+      }
+
+      const fmt = resolveFormat();
+      const cfg = FORMAT_CONFIG[fmt];
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = dims.width;
+      canvas.height = dims.height;
+
+      // Fill background for JPEG (no alpha)
+      if (!cfg.supportsAlpha) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.drawImage(originalImg, 0, 0, dims.width, dims.height);
+
+      const quality = cfg.hasQuality ? qualitySlider.value / 100 : undefined;
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+
+        // Revoke previous blob URL
+        if (resizedBlobUrl) URL.revokeObjectURL(resizedBlobUrl);
+
+        resizedBlob = blob;
+        resizedBlobUrl = URL.createObjectURL(blob);
+
+        result.classList.add('visible');
+
+        // Dimension comparison line
+        dimLine.innerHTML = `${originalWidth} \u00d7 ${originalHeight} <span class="arrow">&rarr;</span> ${dims.width} \u00d7 ${dims.height}`;
+
+        // Size comparison line
+        const inBytes = originalFile.size;
+        const outBytes = blob.size;
+        const pct = Math.round((1 - outBytes / inBytes) * 100);
+        let savingsClass, savingsText;
+        if (pct > 0) {
+          savingsClass = 'smaller';
+          savingsText = `${pct}% smaller`;
+        } else if (pct < 0) {
+          savingsClass = 'larger';
+          savingsText = `${Math.abs(pct)}% larger`;
+        } else {
+          savingsClass = 'same';
+          savingsText = 'same size';
+        }
+        sizeLine.innerHTML = `${formatBytes(inBytes)} <span class="arrow">&rarr;</span> ${formatBytes(outBytes)} (<span class="savings ${savingsClass}">${savingsText}</span>)`;
+
+        previewImg.src = resizedBlobUrl;
+        previewContainer.classList.toggle('has-transparency', cfg.supportsAlpha);
+
+        // Store download filename
+        const baseName = originalFile.name.replace(/\.[^.]+$/, '');
+        downloadBtn.dataset.filename = `${baseName}-${dims.width}x${dims.height}.${cfg.ext}`;
+      }, cfg.mime, quality);
+    }
+
+    // Download
+    downloadBtn.addEventListener('click', () => {
+      if (!resizedBlob) return;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(resizedBlob);
+      a.download = downloadBtn.dataset.filename || 'resized';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+
+    // Helpers
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function friendlyType(mime) {
+      const map = {
+        'image/png': 'PNG', 'image/jpeg': 'JPEG', 'image/webp': 'WebP',
+        'image/gif': 'GIF', 'image/bmp': 'BMP', 'image/svg+xml': 'SVG',
+        'image/avif': 'AVIF', 'image/heic': 'HEIC', 'image/heif': 'HEIF',
+      };
+      return map[mime] || mime.replace('image/', '').toUpperCase();
+    }
+  </script>
+</body>
+</html>
