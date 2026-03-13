@@ -21,7 +21,7 @@ quarto render posts/    # Render only blog posts
 ### Site Configuration
 - `_quarto.yml` — Main site config (navbar, theme, format, analytics)
 - `theme-dark.scss` — Dark theme SCSS variables (Cosmo base + custom dark palette)
-- `styles.css` — Layout and component styles (profile, blog listing, experience grid, tools grid)
+- `styles.css` — Layout and component styles (profile, blog listing, experience grid, tools list)
 
 ### Content
 - **Blog posts** in `posts/` — Either `YYYY-MM-DD-title.qmd` (single file) or `YYYY-MM-DD-title/index.qmd` (directory with assets)
@@ -49,7 +49,7 @@ Browser-based utilities that run entirely client-side. Tools are organized by ca
 
 ### Adding a New Tool
 1. **Create the tool** as a standalone `.html` file in `tools/` (self-contained HTML/CSS/JS, no external dependencies)
-2. **Add a card entry** in `tools/index.qmd` under the appropriate `## Category` header using the `.tool-card` div pattern
+2. **Add a list entry** in `tools/index.qmd` under the appropriate `## Category` header using the `.tool-item` div pattern (link + definition list description)
 3. The `.html` files are copied as-is to `_site/` via the `resources: tools/*.html` entry in `_quarto.yml`
 4. After changes, run `quarto render tools/index.qmd` to rebuild the listing (standalone HTML tools don't need rendering)
 
