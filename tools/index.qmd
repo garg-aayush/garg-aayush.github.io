@@ -2,20 +2,25 @@
 title: "Tools"
 description: "Browser-based tools that run entirely client-side. No data leaves your browser."
 sidebar: false
-toc: false
-format:
-  html:
-    anchor-sections: false
+toc: true
 ---
 
-A collection of free, browser-based utilities. Everything runs locally in your browser — no data is uploaded anywhere.
+A collection of free, browser-based utilities. Everything runs locally in your browser.
 
----
+## Image Tools
 
-### [Image Format Converter](image-converter.html)
-Convert images between PNG, JPEG, and WebP. Adjustable quality for lossy formats, automatic transparency handling, and instant file size comparison.
+::: {.tools-grid}
 
----
+::: {.tool-card}
+::: {.tool-name}
+[Image Format Converter](image-converter.html)
+:::
+::: {.tool-desc}
+Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
+:::
+:::
+
+:::
 
 ::: {.template-credit}
 *Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
