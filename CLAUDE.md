@@ -21,11 +21,12 @@ quarto render posts/    # Render only blog posts
 ### Site Configuration
 - `_quarto.yml` — Main site config (navbar, theme, format, analytics)
 - `theme-dark.scss` — Dark theme SCSS variables (Cosmo base + custom dark palette)
-- `styles.css` — Layout and component styles (profile, blog listing, experience grid)
+- `styles.css` — Layout and component styles (profile, blog listing, experience grid, tools grid)
 
 ### Content
 - **Blog posts** in `posts/` — Either `YYYY-MM-DD-title.qmd` (single file) or `YYYY-MM-DD-title/index.qmd` (directory with assets)
 - **Static pages** in `pages/` — Project pages (doverlap, jsalt, overlap-aware-sc)
+- **Tools** in `tools/` — `index.qmd` (listing page) + standalone `.html` tool files
 - **Top-level pages**: `index.qmd` (homepage), `about.qmd`, `publications.qmd`, `resume.qmd`, `blog/index.qmd` (blog listing)
 - **Assets** in `static/` — Images, PDFs, videos, etc.
 
@@ -41,3 +42,21 @@ Custom dark theme inspired by Lil'Log. Key colors: background `#1d1e20`, accent 
 - **Blog post images** are stored in `static/img/blog-YYYY-MM-DD/` matching the post date (e.g., post `2026-01-23-expert-iteration` → images in `static/img/blog-2026-01-23/`)
 - Code execution is frozen (`freeze: true`) — rendered outputs are cached, not re-executed on each build
 - External links open in new tabs (configured globally in `_quarto.yml`)
+
+## Tools Section
+
+Browser-based utilities that run entirely client-side. Tools are organized by category (e.g., "Image Tools").
+
+### Adding a New Tool
+1. **Create the tool** as a standalone `.html` file in `tools/` (self-contained HTML/CSS/JS, no external dependencies)
+2. **Add a card entry** in `tools/index.qmd` under the appropriate `## Category` header using the `.tool-card` div pattern
+3. The `.html` files are copied as-is to `_site/` via the `resources: tools/*.html` entry in `_quarto.yml`
+4. After changes, run `quarto render tools/index.qmd` to rebuild the listing (standalone HTML tools don't need rendering)
+
+### Tool Design Conventions
+- **Theme**: Must match the site's dark theme — use colors from `theme-dark.scss` (background `#1d1e20`, card `#2e2e33`, inset `#37383e`, border `#333333`, accent `#75A8D9`)
+- **Fonts**: Use the site's system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`), not external fonts
+- **Back link**: Include a `← Back to Tools` link pointing to `./`
+- **Validation**: Validate input files (type, size, dimensions) with user-visible error messages
+- **Downloads**: Use blob-based downloads (`URL.createObjectURL`) instead of data URLs for large file support
+- **Listing**: Keep tool descriptions to a single line in `tools/index.qmd`
