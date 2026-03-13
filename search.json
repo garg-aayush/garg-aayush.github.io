@@ -11,7 +11,7 @@
     "href": "tools/index.html#image-tools",
     "title": "Tools",
     "section": "Image Tools",
-    "text": "Image Tools\n\n\n\nImage Format Converter\n\n\nConvert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.\n\n\n\n\nInspired by tools.simonwillison.net."
+    "text": "Image Tools\n\n\n\nImage Format Converter\n\nConvert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.\n\n\n\n\n\nImage Resizer\n\nResize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.\n\n\n\n\n\nImage Cropper\n\nInteractively crop images with draggable selection, aspect ratio presets, and full-resolution output.\n\n\n\n\n\nInspired by tools.simonwillison.net."
   },
   {
     "objectID": "posts/2026-02-12-cc-tools/index.html",
