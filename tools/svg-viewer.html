@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVG Viewer & Converter</title>
+<style>
+  :root {
+    --bg-body: #1d1e20;
+    --bg-card: #2e2e33;
+    --bg-inset: #37383e;
+    --bg-hover: #414244;
+    --border: #333333;
+    --text-primary: #dadada;
+    --text-content: #c4c4c5;
+    --text-muted: #9b9c9d;
+    --text-dim: #707073;
+    --accent: #75A8D9;
+    --accent-hover: #8fbce5;
+    --accent-dim: rgba(117, 168, 217, 0.15);
+    --green: #72994E;
+    --green-dim: rgba(114, 153, 78, 0.15);
+    --orange: #EE6331;
+    --orange-dim: rgba(238, 99, 49, 0.12);
+    --code-bg: #37383e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-content);
+    padding: 24px 20px;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip: rect(0,0,0,0);
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 24px; }
+  .header h1 { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .header .back a { color: var(--accent); text-decoration: none; font-size: 14px; }
+  .header .back a:hover { text-decoration: underline; }
+
+  /* Error */
+  .error-msg {
+    display: none; background: var(--orange-dim); border: 1px solid var(--orange);
+    color: var(--orange); border-radius: 8px; padding: 10px 14px; font-size: 13px;
+    font-weight: 500; margin-bottom: 16px; text-align: center;
+  }
+  .error-msg.visible { display: block; }
+
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--accent); border-radius: 10px; padding: 24px 20px;
+    text-align: center; cursor: pointer; transition: all 0.2s ease;
+    background: var(--bg-inset); margin-bottom: 8px;
+  }
+  .dropzone:hover { border-color: var(--accent-hover); background: var(--bg-hover); }
+  .dropzone.dragover { border-color: var(--accent-hover); background: var(--accent-dim); }
+  .dropzone.has-file { border-style: solid; border-color: var(--border); padding: 12px 16px; }
+  .dropzone-prompt { color: var(--accent); font-size: 15px; font-weight: 500; }
+  .dropzone-prompt .formats { display: block; font-size: 13px; color: var(--text-muted); margin-top: 4px; font-weight: 400; }
+  .dropzone-file { display: none; align-items: center; gap: 12px; }
+  .dropzone.has-file .dropzone-prompt { display: none; }
+  .dropzone.has-file .dropzone-file { display: flex; }
+  .file-thumb {
+    width: 44px; height: 44px; border-radius: 6px; object-fit: contain;
+    border: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0;
+  }
+  .file-meta { text-align: left; flex: 1; min-width: 0; }
+  .file-name { font-weight: 600; font-size: 14px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-details { font-size: 13px; color: var(--text-muted); }
+  .file-change { font-size: 13px; color: var(--accent); font-weight: 500; flex-shrink: 0; }
+
+  .paste-hint {
+    text-align: center; margin-bottom: 16px; font-size: 13px; color: var(--text-muted);
+  }
+  .paste-hint a {
+    color: var(--accent); text-decoration: none; cursor: pointer;
+  }
+  .paste-hint a:hover { text-decoration: underline; }
+
+  /* Panels */
+  .panel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 16px;
+  }
+  .panel-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Info Panel */
+  .info-grid {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
+    font-size: 13px;
+  }
+  .info-label { color: var(--text-muted); font-weight: 500; }
+  .info-value { color: var(--text-primary); word-break: break-all; }
+
+  .warning-msg {
+    display: flex; align-items: flex-start; gap: 6px;
+    background: var(--orange-dim); border: 1px solid rgba(238,99,49,0.25);
+    border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--orange);
+    margin-top: 10px;
+  }
+  .warning-msg + .warning-msg { margin-top: 6px; }
+
+  /* Preview Panel */
+  .preview-area {
+    position: relative; border-radius: 8px; overflow: auto;
+    border: 1px solid var(--border); min-height: 120px; max-height: 500px;
+  }
+  .preview-area.bg-dark { background: var(--bg-inset); }
+  .preview-area.bg-white { background: #ffffff; }
+  .preview-area.bg-checker {
+    background-image:
+      linear-gradient(45deg, #2a2b30 25%, transparent 25%),
+      linear-gradient(-45deg, #2a2b30 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #2a2b30 75%),
+      linear-gradient(-45deg, transparent 75%, #2a2b30 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  }
+  .preview-area img {
+    display: block; transform-origin: top left;
+  }
+  .preview-area.fit img { width: 100%; height: auto; }
+
+  .preview-controls {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .ctrl-group { display: flex; gap: 4px; }
+  .ctrl-btn {
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 10px; cursor: pointer; color: var(--text-content); font-family: inherit;
+    font-size: 12px; font-weight: 500; transition: all 0.15s;
+  }
+  .ctrl-btn:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--text-primary); }
+  .ctrl-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+  .zoom-slider {
+    width: 100px; height: 4px; border-radius: 2px; background: var(--bg-inset);
+    outline: none; -webkit-appearance: none; cursor: pointer;
+  }
+  .zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .zoom-slider::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+    cursor: pointer; border: none;
+  }
+  .zoom-val { font-size: 12px; color: var(--text-muted); min-width: 36px; }
+
+  /* Source Panel */
+  .source-header {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none;
+  }
+  .source-header .panel-label { margin-bottom: 0; }
+  .source-toggle { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+  .source-body { display: none; margin-top: 12px; }
+  .source-body.open { display: block; }
+  .source-code {
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 12px; font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+    font-size: 12px; color: var(--text-content); overflow: auto; max-height: 300px;
+    white-space: pre; line-height: 1.4; tab-size: 2;
+  }
+  .copy-src-btn {
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: 5px;
+    padding: 3px 10px; cursor: pointer; color: var(--text-muted); font-family: inherit;
+    font-size: 11px; font-weight: 500; transition: all 0.15s;
+  }
+  .copy-src-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-src-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+  /* Export Panel */
+  .format-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .format-btn {
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.15s;
+    color: var(--text-content); font-family: inherit; font-size: 14px; font-weight: 500;
+  }
+  .format-btn:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--text-primary); }
+  .format-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+  .format-ext { display: block; font-size: 15px; font-weight: 600; }
+  .format-note { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .format-btn.active .format-note { color: var(--accent); opacity: 0.7; }
+
+  .export-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+  /* Scale mode toggle */
+  .scale-toggle { display: flex; gap: 4px; margin-bottom: 10px; }
+  .scale-toggle-btn {
+    flex: 1; background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; cursor: pointer; color: var(--text-content); font-family: inherit;
+    font-size: 13px; font-weight: 500; text-align: center; transition: all 0.15s;
+  }
+  .scale-toggle-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+  .scale-toggle-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+  .scale-presets { display: flex; gap: 6px; margin-bottom: 8px; }
+  .scale-preset {
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; cursor: pointer; color: var(--text-content); font-family: inherit;
+    font-size: 13px; font-weight: 500; transition: all 0.15s;
+  }
+  .scale-preset:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--text-primary); }
+  .scale-preset.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+  .custom-scale-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .custom-scale-input {
+    width: 70px; background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 8px; color: var(--text-primary); font-family: inherit; font-size: 13px;
+    outline: none; text-align: center;
+  }
+  .custom-scale-input:focus { border-color: var(--accent); }
+
+  .input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .input-row:last-child { margin-bottom: 0; }
+  .input-label { font-size: 13px; color: var(--text-muted); min-width: 50px; }
+  .num-input {
+    flex: 1; background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 10px; color: var(--text-primary); font-family: inherit; font-size: 14px; outline: none;
+  }
+  .num-input:focus { border-color: var(--accent); }
+  .lock-btn {
+    background: var(--bg-inset); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center;
+    transition: all 0.15s;
+  }
+  .lock-btn.locked { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+
+  .output-readout {
+    font-size: 13px; color: var(--text-muted); margin-top: 8px; text-align: center;
+  }
+  .output-readout span { color: var(--text-primary); font-weight: 600; }
+
+  /* Quality row */
+  .quality-row {
+    display: flex; align-items: center; gap: 12px; margin-top: 14px;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .row-label { font-size: 14px; color: var(--text-content); font-weight: 500; white-space: nowrap; }
+  .quality-slider {
+    flex: 1; height: 6px; border-radius: 3px; background: var(--bg-inset);
+    outline: none; -webkit-appearance: none; cursor: pointer;
+  }
+  .quality-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .quality-slider::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+    cursor: pointer; border: none;
+  }
+  .quality-val {
+    font-size: 14px; font-weight: 600; color: var(--accent); min-width: 28px;
+    text-align: right; background: var(--accent-dim); padding: 2px 8px; border-radius: 5px;
+  }
+
+  /* Background color row */
+  .bg-color-row {
+    display: flex; align-items: center; gap: 12px; margin-top: 10px;
+  }
+  .bg-color-input {
+    width: 40px; height: 30px; border: 1px solid var(--border); border-radius: 6px;
+    background: none; cursor: pointer; padding: 2px;
+  }
+
+  /* Actions */
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    flex: 1; padding: 10px 16px; border-radius: 8px; font-family: inherit;
+    font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+    border: none; text-align: center;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg-body); }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: var(--bg-inset); color: var(--text-content); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--text-primary); }
+  .btn-secondary.copied { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+  @media (max-width: 480px) {
+    body { padding: 12px 10px; }
+    .header h1 { font-size: 18px; }
+    .panel { padding: 14px; }
+    .actions { flex-direction: column; }
+    .preview-controls { gap: 6px; }
+    .zoom-slider { width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SVG Viewer & Converter</h1>
+  <div class="back"><a href="./">&larr; Back to Tools</a></div>
+</div>
+
+<div class="error-msg" id="errorMsg"></div>
+
+<!-- Dropzone -->
+<div class="dropzone" id="dropzone">
+  <div class="dropzone-prompt">
+    Click or drag and drop an SVG file here
+    <span class="formats">SVG files up to 20 MB</span>
+  </div>
+  <div class="dropzone-file">
+    <img class="file-thumb" id="fileThumb" src="" alt="">
+    <div class="file-meta">
+      <div class="file-name" id="fileName"></div>
+      <div class="file-details" id="fileDetails"></div>
+    </div>
+    <div class="file-change">Change</div>
+  </div>
+</div>
+<input type="file" id="fileInput" class="sr-only" accept=".svg,image/svg+xml">
+<div class="paste-hint">or <a id="pasteBtn">paste SVG markup</a> (Ctrl/Cmd+V)</div>
+
+<!-- Content (hidden until SVG loaded) -->
+<div id="content" class="hidden">
+
+  <!-- Info Panel -->
+  <div class="panel" id="infoPanel">
+    <div class="panel-label">SVG Info</div>
+    <div class="info-grid" id="infoGrid"></div>
+    <div id="warnings"></div>
+  </div>
+
+  <!-- Preview Panel -->
+  <div class="panel">
+    <div class="panel-label">Preview</div>
+    <div class="preview-controls">
+      <div class="ctrl-group" id="zoomBtns">
+        <button class="ctrl-btn active" data-zoom="fit">Fit</button>
+        <button class="ctrl-btn" data-zoom="1">1:1</button>
+      </div>
+      <input type="range" class="zoom-slider" id="zoomSlider" min="25" max="400" value="100">
+      <span class="zoom-val" id="zoomVal">100%</span>
+      <div style="flex:1"></div>
+      <div class="ctrl-group" id="bgBtns">
+        <button class="ctrl-btn active" data-bg="dark">Dark</button>
+        <button class="ctrl-btn" data-bg="checker">Checker</button>
+        <button class="ctrl-btn" data-bg="white">White</button>
+      </div>
+    </div>
+    <div class="preview-area bg-dark fit" id="previewArea">
+      <img id="previewImg" alt="SVG Preview">
+    </div>
+  </div>
+
+  <!-- Source Panel -->
+  <div class="panel">
+    <div class="source-header" id="sourceHeader">
+      <span class="panel-label">SVG Source</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="copy-src-btn" id="copySrcBtn">Copy</button>
+        <span class="source-toggle" id="sourceToggle">&#9660;</span>
+      </div>
+    </div>
+    <div class="source-body" id="sourceBody">
+      <pre class="source-code"><code id="sourceCode"></code></pre>
+    </div>
+  </div>
+
+  <!-- Export Panel -->
+  <div class="panel">
+    <div class="panel-label">Export</div>
+    <div class="format-grid" id="formatGrid">
+      <button class="format-btn active" data-format="png">
+        <span class="format-ext">PNG</span>
+        <span class="format-note">Lossless</span>
+      </button>
+      <button class="format-btn" data-format="jpeg">
+        <span class="format-ext">JPEG</span>
+        <span class="format-note">Lossy</span>
+      </button>
+      <button class="format-btn" data-format="webp">
+        <span class="format-ext">WebP</span>
+        <span class="format-note">Lossy</span>
+      </button>
+    </div>
+
+    <div class="export-section">
+      <div class="scale-toggle">
+        <button class="scale-toggle-btn active" data-mode="factor">Scale Factor</button>
+        <button class="scale-toggle-btn" data-mode="custom">Custom Size</button>
+      </div>
+
+      <div id="factorMode">
+        <div class="scale-presets" id="scalePresets">
+          <button class="scale-preset" data-scale="1">1x</button>
+          <button class="scale-preset active" data-scale="2">2x</button>
+          <button class="scale-preset" data-scale="3">3x</button>
+          <button class="scale-preset" data-scale="4">4x</button>
+        </div>
+        <div class="custom-scale-row">
+          <span class="input-label">Custom</span>
+          <input type="number" class="custom-scale-input" id="customScale" min="0.1" max="100" step="0.1" placeholder="e.g. 5">
+          <span style="font-size:13px;color:var(--text-muted)">x</span>
+        </div>
+      </div>
+
+      <div id="customMode" class="hidden">
+        <div class="input-row">
+          <span class="input-label">Width</span>
+          <input type="number" class="num-input" id="customW" min="1" max="16384" placeholder="Width">
+          <button class="lock-btn locked" id="lockBtn" title="Lock aspect ratio">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </button>
+          <span class="input-label">Height</span>
+          <input type="number" class="num-input" id="customH" min="1" max="16384" placeholder="Height">
+        </div>
+      </div>
+
+      <div class="output-readout" id="outputReadout">Output: <span id="outputDims">—</span></div>
+    </div>
+
+    <div class="quality-row hidden" id="qualityRow">
+      <span class="row-label">Quality</span>
+      <input type="range" class="quality-slider" id="qualitySlider" min="1" max="100" value="92">
+      <span class="quality-val" id="qualityVal">92</span>
+    </div>
+
+    <div class="bg-color-row hidden" id="bgColorRow">
+      <span class="row-label">Background</span>
+      <input type="color" class="bg-color-input" id="bgColorInput" value="#ffffff">
+      <span style="font-size:13px;color:var(--text-muted)" id="bgColorHex">#ffffff</span>
+    </div>
+
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <div class="actions">
+        <button class="btn btn-primary" id="exportBtn">Export & Download</button>
+        <button class="btn btn-secondary" id="copySvgBtn">Copy SVG Source</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Elements
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const fileThumb = document.getElementById('fileThumb');
+  const fileName = document.getElementById('fileName');
+  const fileDetails = document.getElementById('fileDetails');
+  const pasteBtn = document.getElementById('pasteBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const content = document.getElementById('content');
+  const infoGrid = document.getElementById('infoGrid');
+  const warnings = document.getElementById('warnings');
+  const previewArea = document.getElementById('previewArea');
+  const previewImg = document.getElementById('previewImg');
+  const zoomSlider = document.getElementById('zoomSlider');
+  const zoomVal = document.getElementById('zoomVal');
+  const sourceHeader = document.getElementById('sourceHeader');
+  const sourceBody = document.getElementById('sourceBody');
+  const sourceToggle = document.getElementById('sourceToggle');
+  const sourceCode = document.getElementById('sourceCode');
+  const copySrcBtn = document.getElementById('copySrcBtn');
+  const formatGrid = document.getElementById('formatGrid');
+  const qualityRow = document.getElementById('qualityRow');
+  const qualitySlider = document.getElementById('qualitySlider');
+  const qualityVal = document.getElementById('qualityVal');
+  const bgColorRow = document.getElementById('bgColorRow');
+  const bgColorInput = document.getElementById('bgColorInput');
+  const bgColorHex = document.getElementById('bgColorHex');
+  const outputDims = document.getElementById('outputDims');
+  const exportBtn = document.getElementById('exportBtn');
+  const copySvgBtn = document.getElementById('copySvgBtn');
+  const customScale = document.getElementById('customScale');
+  const customW = document.getElementById('customW');
+  const customH = document.getElementById('customH');
+  const lockBtn = document.getElementById('lockBtn');
+
+  // State
+  let svgSource = '';
+  let svgBlobUrl = null;
+  let svgName = '';
+  let svgWidth = 0;
+  let svgHeight = 0;
+  let selectedFormat = 'png';
+  let scaleMode = 'factor';
+  let scaleFactor = 2;
+  let aspectLocked = true;
+  let zoomMode = 'fit'; // 'fit' or 'manual'
+
+  // Utilities
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.add('visible'); }
+  function clearError() { errorMsg.classList.remove('visible'); }
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  // Dropzone
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) validateAndLoad(fileInput.files[0]);
+  });
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) validateAndLoad(e.dataTransfer.files[0]);
+  });
+
+  // Paste
+  pasteBtn.addEventListener('click', () => {
+    navigator.clipboard.readText().then(text => {
+      handlePastedSvg(text);
+    }).catch(() => {
+      showError('Could not read clipboard. Try Ctrl/Cmd+V instead.');
+    });
+  });
+
+  document.addEventListener('paste', (e) => {
+    const text = e.clipboardData.getData('text/plain');
+    if (text) handlePastedSvg(text);
+  });
+
+  function handlePastedSvg(text) {
+    clearError();
+    const trimmed = text.trim();
+    if (!trimmed.match(/^(<\?xml|<svg)/i)) {
+      showError('Pasted text does not look like SVG markup.');
+      return;
+    }
+    // Validate via DOMParser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(trimmed, 'image/svg+xml');
+    if (doc.querySelector('parsererror')) {
+      showError('Invalid SVG markup: ' + doc.querySelector('parsererror').textContent.split('\n')[0]);
+      return;
+    }
+    const blob = new Blob([trimmed], { type: 'image/svg+xml' });
+    loadSvg(blob, 'pasted.svg');
+  }
+
+  function validateAndLoad(file) {
+    clearError();
+    if (!file.type.includes('svg') && !file.name.toLowerCase().endsWith('.svg')) {
+      showError('Please select an SVG file.');
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      showError('File too large (max 20 MB).');
+      return;
+    }
+    loadSvg(file, file.name);
+  }
+
+  function loadSvg(blob, name) {
+    svgName = name;
+    const reader = new FileReader();
+    reader.onload = () => {
+      svgSource = reader.result;
+      if (svgBlobUrl) URL.revokeObjectURL(svgBlobUrl);
+      svgBlobUrl = URL.createObjectURL(blob);
+
+      // Load as image to get dimensions
+      const img = new Image();
+      img.onload = () => {
+        resolveDimensions(img);
+        showFile(blob.size);
+        populateInfo(blob.size);
+        showPreview();
+        showSource();
+        updateOutputReadout();
+        content.classList.remove('hidden');
+      };
+      img.onerror = () => showError('Failed to render SVG.');
+      img.src = svgBlobUrl;
+    };
+    reader.readAsText(blob);
+  }
+
+  function parseUnit(val) {
+    if (!val) return null;
+    const match = val.toString().trim().match(/^([\d.]+)\s*(px|pt|cm|mm|in|em|rem|%)?$/i);
+    if (!match) return null;
+    const num = parseFloat(match[1]);
+    const unit = (match[2] || 'px').toLowerCase();
+    const conversions = { px: 1, pt: 1.333333, cm: 37.7953, mm: 3.77953, in: 96 };
+    if (unit === '%' || unit === 'em' || unit === 'rem') return null;
+    return num * (conversions[unit] || 1);
+  }
+
+  function resolveDimensions(img) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgSource, 'image/svg+xml');
+    const svg = doc.querySelector('svg');
+    if (!svg) { svgWidth = img.naturalWidth || 300; svgHeight = img.naturalHeight || 150; return; }
+
+    const wAttr = svg.getAttribute('width');
+    const hAttr = svg.getAttribute('height');
+    const vb = svg.getAttribute('viewBox');
+
+    const pw = parseUnit(wAttr);
+    const ph = parseUnit(hAttr);
+
+    if (pw && ph) {
+      svgWidth = Math.round(pw);
+      svgHeight = Math.round(ph);
+    } else if (vb) {
+      const parts = vb.split(/[\s,]+/).map(Number);
+      if (parts.length === 4 && parts[2] > 0 && parts[3] > 0) {
+        svgWidth = Math.round(parts[2]);
+        svgHeight = Math.round(parts[3]);
+      } else {
+        svgWidth = img.naturalWidth || 300;
+        svgHeight = img.naturalHeight || 150;
+      }
+    } else {
+      svgWidth = img.naturalWidth || 300;
+      svgHeight = img.naturalHeight || 150;
+    }
+  }
+
+  function showFile(size) {
+    fileThumb.src = svgBlobUrl;
+    fileName.textContent = svgName;
+    fileDetails.textContent = svgWidth + ' \u00d7 ' + svgHeight + '  \u00b7  ' + formatBytes(size);
+    dropzone.classList.add('has-file');
+  }
+
+  function populateInfo(size) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgSource, 'image/svg+xml');
+    const svg = doc.querySelector('svg');
+
+    const wAttr = svg ? svg.getAttribute('width') : null;
+    const hAttr = svg ? svg.getAttribute('height') : null;
+    const vb = svg ? svg.getAttribute('viewBox') : null;
+
+    let dims;
+    if (wAttr && hAttr) {
+      dims = wAttr + ' \u00d7 ' + hAttr;
+    } else if (vb) {
+      dims = 'viewBox only: ' + vb;
+    } else {
+      dims = 'auto (' + svgWidth + ' \u00d7 ' + svgHeight + ')';
+    }
+
+    // Count elements
+    let totalEls = 0, pathCount = 0, textCount = 0, groupCount = 0;
+    if (svg) {
+      const all = svg.querySelectorAll('*');
+      totalEls = all.length;
+      pathCount = svg.querySelectorAll('path').length;
+      textCount = svg.querySelectorAll('text').length;
+      groupCount = svg.querySelectorAll('g').length;
+    }
+    const parts = [];
+    if (pathCount) parts.push(pathCount + ' path' + (pathCount > 1 ? 's' : ''));
+    if (textCount) parts.push(textCount + ' text');
+    if (groupCount) parts.push(groupCount + ' group' + (groupCount > 1 ? 's' : ''));
+    const elSummary = totalEls + (parts.length ? ' (' + parts.join(', ') + ')' : '');
+
+    const rows = [
+      ['File name', svgName],
+      ['File size', formatBytes(size)],
+      ['Dimensions', dims],
+      ['viewBox', vb || 'none'],
+      ['Elements', elSummary],
+    ];
+
+    infoGrid.innerHTML = '';
+    rows.forEach(([label, value]) => {
+      const l = document.createElement('div');
+      l.className = 'info-label';
+      l.textContent = label;
+      const v = document.createElement('div');
+      v.className = 'info-value';
+      v.textContent = value;
+      infoGrid.appendChild(l);
+      infoGrid.appendChild(v);
+    });
+
+    // Warnings
+    warnings.innerHTML = '';
+    if (textCount > 0) {
+      addWarning('Contains <text> elements \u2014 exported fonts depend on your browser\u2019s available fonts.');
+    }
+    if (!wAttr || !hAttr) {
+      addWarning('No explicit width/height \u2014 export uses viewBox size.');
+    }
+  }
+
+  function addWarning(msg) {
+    const div = document.createElement('div');
+    div.className = 'warning-msg';
+    div.textContent = '\u26a0 ' + msg;
+    warnings.appendChild(div);
+  }
+
+  // Preview
+  function showPreview() {
+    previewImg.src = svgBlobUrl;
+    setZoomMode('fit');
+  }
+
+  function setZoomMode(mode) {
+    zoomMode = mode;
+    const area = previewArea;
+    if (mode === 'fit') {
+      area.classList.add('fit');
+      previewImg.style.width = '';
+      previewImg.style.height = '';
+      zoomSlider.value = 100;
+      zoomVal.textContent = 'Fit';
+    } else {
+      area.classList.remove('fit');
+      applyZoom(parseFloat(zoomSlider.value));
+    }
+    // Update active zoom button
+    document.querySelectorAll('#zoomBtns .ctrl-btn').forEach(b => {
+      b.classList.toggle('active',
+        (mode === 'fit' && b.dataset.zoom === 'fit') ||
+        (mode === 'manual' && b.dataset.zoom === '1' && parseFloat(zoomSlider.value) === 100)
+      );
+    });
+  }
+
+  function applyZoom(pct) {
+    const w = Math.round(svgWidth * pct / 100);
+    const h = Math.round(svgHeight * pct / 100);
+    previewImg.style.width = w + 'px';
+    previewImg.style.height = h + 'px';
+    zoomVal.textContent = Math.round(pct) + '%';
+  }
+
+  document.querySelectorAll('#zoomBtns .ctrl-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.zoom === 'fit') {
+        setZoomMode('fit');
+      } else {
+        zoomSlider.value = 100;
+        setZoomMode('manual');
+        applyZoom(100);
+      }
+    });
+  });
+
+  zoomSlider.addEventListener('input', () => {
+    setZoomMode('manual');
+    applyZoom(parseFloat(zoomSlider.value));
+    // Update 1:1 button active state
+    document.querySelectorAll('#zoomBtns .ctrl-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.zoom === '1' && parseFloat(zoomSlider.value) === 100);
+    });
+  });
+
+  // Background
+  document.querySelectorAll('#bgBtns .ctrl-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#bgBtns .ctrl-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      previewArea.classList.remove('bg-dark', 'bg-checker', 'bg-white');
+      previewArea.classList.add('bg-' + btn.dataset.bg);
+    });
+  });
+
+  // Source panel
+  sourceHeader.addEventListener('click', (e) => {
+    if (e.target.closest('.copy-src-btn')) return;
+    sourceBody.classList.toggle('open');
+    sourceToggle.textContent = sourceBody.classList.contains('open') ? '\u25b2' : '\u25bc';
+  });
+
+  function showSource() {
+    sourceCode.textContent = svgSource;
+    sourceBody.classList.remove('open');
+    sourceToggle.textContent = '\u25bc';
+  }
+
+  copySrcBtn.addEventListener('click', () => copySvgToClipboard(copySrcBtn));
+
+  // Format selection
+  document.querySelectorAll('#formatGrid .format-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#formatGrid .format-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedFormat = btn.dataset.format;
+      qualityRow.classList.toggle('hidden', selectedFormat === 'png');
+      bgColorRow.classList.toggle('hidden', selectedFormat !== 'jpeg');
+    });
+  });
+
+  // Scale mode
+  document.querySelectorAll('.scale-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scale-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      scaleMode = btn.dataset.mode;
+      document.getElementById('factorMode').classList.toggle('hidden', scaleMode !== 'factor');
+      document.getElementById('customMode').classList.toggle('hidden', scaleMode !== 'custom');
+      if (scaleMode === 'custom') {
+        const dims = getOutputDims();
+        customW.value = dims[0];
+        customH.value = dims[1];
+      }
+      updateOutputReadout();
+    });
+  });
+
+  // Scale presets
+  document.querySelectorAll('.scale-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scale-preset').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      scaleFactor = parseFloat(btn.dataset.scale);
+      customScale.value = '';
+      updateOutputReadout();
+    });
+  });
+
+  customScale.addEventListener('input', () => {
+    const v = parseFloat(customScale.value);
+    if (v > 0) {
+      scaleFactor = v;
+      document.querySelectorAll('.scale-preset').forEach(b => b.classList.remove('active'));
+      updateOutputReadout();
+    }
+  });
+
+  // Custom size inputs
+  customW.addEventListener('input', () => {
+    if (!aspectLocked) { updateOutputReadout(); return; }
+    const w = parseInt(customW.value);
+    if (w > 0 && svgWidth > 0) {
+      customH.value = Math.round(w * svgHeight / svgWidth);
+    }
+    updateOutputReadout();
+  });
+  customH.addEventListener('input', () => {
+    if (!aspectLocked) { updateOutputReadout(); return; }
+    const h = parseInt(customH.value);
+    if (h > 0 && svgHeight > 0) {
+      customW.value = Math.round(h * svgWidth / svgHeight);
+    }
+    updateOutputReadout();
+  });
+
+  lockBtn.addEventListener('click', () => {
+    aspectLocked = !aspectLocked;
+    lockBtn.classList.toggle('locked', aspectLocked);
+  });
+
+  // Quality slider
+  qualitySlider.addEventListener('input', () => {
+    qualityVal.textContent = qualitySlider.value;
+  });
+
+  // Background color
+  bgColorInput.addEventListener('input', () => {
+    bgColorHex.textContent = bgColorInput.value;
+  });
+
+  function getOutputDims() {
+    let w, h;
+    if (scaleMode === 'factor') {
+      w = Math.round(svgWidth * scaleFactor);
+      h = Math.round(svgHeight * scaleFactor);
+    } else {
+      w = parseInt(customW.value) || svgWidth;
+      h = parseInt(customH.value) || svgHeight;
+    }
+    w = clamp(w, 1, 16384);
+    h = clamp(h, 1, 16384);
+    return [w, h];
+  }
+
+  function updateOutputReadout() {
+    const [w, h] = getOutputDims();
+    outputDims.textContent = w + ' \u00d7 ' + h + ' px';
+  }
+
+  // Export
+  exportBtn.addEventListener('click', () => {
+    if (!svgBlobUrl) return;
+    const [w, h] = getOutputDims();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    // Background fill for JPEG (no alpha)
+    if (selectedFormat === 'jpeg') {
+      ctx.fillStyle = bgColorInput.value;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, w, h);
+
+      const mimeMap = { png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp' };
+      const mime = mimeMap[selectedFormat];
+      const quality = selectedFormat === 'png' ? undefined : qualitySlider.value / 100;
+
+      canvas.toBlob((blob) => {
+        if (!blob) { showError('Export failed.'); return; }
+        const baseName = svgName.replace(/\.svg$/i, '');
+        const dlName = baseName + '-' + w + 'x' + h + '.' + (selectedFormat === 'jpeg' ? 'jpg' : selectedFormat);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = dlName;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }, mime, quality);
+    };
+    img.onerror = () => showError('Failed to render SVG to canvas.');
+    img.src = svgBlobUrl;
+  });
+
+  // Copy SVG Source
+  copySvgBtn.addEventListener('click', () => copySvgToClipboard(copySvgBtn));
+
+  function copySvgToClipboard(btn) {
+    if (!svgSource) return;
+    const orig = btn.textContent;
+    navigator.clipboard.writeText(svgSource).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = svgSource;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+})();
+</script>
+</body>
+</html>
