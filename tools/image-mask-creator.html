@@ -592,10 +592,10 @@
         fileDetails.textContent = `${img.width} \u00d7 ${img.height}  \u00b7  ${formatBytes(file.size)}  \u00b7  ${friendlyType(file.type)}`;
         dropzone.classList.add('has-file');
 
-        initCanvas();
         toolbarPanel.classList.remove('hidden');
         canvasPanel.classList.remove('hidden');
         actionsPanel.classList.remove('hidden');
+        initCanvas();
       };
       img.src = url;
     }
@@ -911,10 +911,10 @@
         const baseName = originalFile.name.replace(/\.[^.]+$/, '');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `${baseName}-mask.png`;
+        a.download = `${baseName}-mask.jpg`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      }, 'image/png');
+      }, 'image/jpeg', 0.95);
     });
 
     /* ── Keyboard shortcuts ── */
