@@ -51,6 +51,14 @@ Flip, rotate, invert colors, convert to grayscale, and adjust brightness and con
 :::
 :::
 
+::: {.tool-item}
+[SVG Viewer & Converter](svg-viewer.html){.tool-link} [preview and export SVGs as raster images]{.tool-tagline}
+
+::: {.tool-desc}
+Preview SVG files with zoom and background controls, inspect metadata and source, and export to PNG, JPEG, or WebP at any scale.
+:::
+:::
+
 :::
 
 ::: {.template-credit}
