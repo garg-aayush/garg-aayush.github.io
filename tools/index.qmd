@@ -26,6 +26,16 @@ A collection of free, browser-based utilities. Everything runs locally in your b
 : Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
 :::
 
+::: {.tool-item}
+[Binary Mask Creator](image-mask-creator.html)
+: Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.
+:::
+
+::: {.tool-item}
+[Image Operations](image-operations.html)
+: Flip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.
+:::
+
 :::
 
 ::: {.template-credit}
