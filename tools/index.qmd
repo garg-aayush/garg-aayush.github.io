@@ -12,18 +12,43 @@ A collection of free, browser-based utilities. Everything runs locally in your b
 ::: {.tools-list}
 
 ::: {.tool-item}
-[Image Format Converter](image-converter.html)
-: Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
+[Image Format Converter](image-converter.html){.tool-link} [convert between formats]{.tool-tagline}
+
+::: {.tool-desc}
+Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
+:::
 :::
 
 ::: {.tool-item}
-[Image Resizer](image-resizer.html)
-: Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
+[Image Resizer](image-resizer.html){.tool-link} [resize by dimensions or percentage]{.tool-tagline}
+
+::: {.tool-desc}
+Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
+:::
 :::
 
 ::: {.tool-item}
-[Image Cropper](image-cropper.html)
-: Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
+[Image Cropper](image-cropper.html){.tool-link} [interactive crop with presets]{.tool-tagline}
+
+::: {.tool-desc}
+Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
+:::
+:::
+
+::: {.tool-item}
+[Binary Mask Creator](image-mask-creator.html){.tool-link} [masks for ai inpainting/edits]{.tool-tagline}
+
+::: {.tool-desc}
+Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.
+:::
+:::
+
+::: {.tool-item}
+[Image Adjust & Transform](image-operations.html){.tool-link} [flip, rotate, adjust colors]{.tool-tagline}
+
+::: {.tool-desc}
+Flip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.
+:::
 :::
 
 :::
@@ -31,3 +56,20 @@ A collection of free, browser-based utilities. Everything runs locally in your b
 ::: {.template-credit}
 *Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
 :::
+
+```{=html}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tool-item').forEach(item => {
+    const desc = item.querySelector('.tool-desc');
+    if (!desc) return;
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', (e) => {
+      // Don't toggle if they clicked the actual link to navigate
+      if (e.target.closest('a.tool-link')) return;
+      desc.classList.toggle('open');
+    });
+  });
+});
+</script>
+```
