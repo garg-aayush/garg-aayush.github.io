@@ -186,33 +186,53 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="image-tools">Image Tools</h2>
 <div class="tools-list">
 <div class="tool-item">
-<dl>
-<dt><a href="image-converter.html">Image Format Converter</a></dt>
-<dd>
-Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
-</dd>
-</dl>
+<p><a href="image-converter.html" class="tool-link">Image Format Converter</a> <span class="tool-tagline">convert between formats</span></p>
+<div class="tool-desc">
+<p>Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.</p>
+</div>
 </div>
 <div class="tool-item">
-<dl>
-<dt><a href="image-resizer.html">Image Resizer</a></dt>
-<dd>
-Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
-</dd>
-</dl>
+<p><a href="image-resizer.html" class="tool-link">Image Resizer</a> <span class="tool-tagline">resize by dimensions or percentage</span></p>
+<div class="tool-desc">
+<p>Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.</p>
+</div>
 </div>
 <div class="tool-item">
-<dl>
-<dt><a href="image-cropper.html">Image Cropper</a></dt>
-<dd>
-Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
-</dd>
-</dl>
+<p><a href="image-cropper.html" class="tool-link">Image Cropper</a> <span class="tool-tagline">interactive crop with presets</span></p>
+<div class="tool-desc">
+<p>Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.</p>
+</div>
+</div>
+<div class="tool-item">
+<p><a href="image-mask-creator.html" class="tool-link">Binary Mask Creator</a> <span class="tool-tagline">masks for ai inpainting/edits</span></p>
+<div class="tool-desc">
+<p>Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.</p>
+</div>
+</div>
+<div class="tool-item">
+<p><a href="image-operations.html" class="tool-link">Image Adjust &amp; Transform</a> <span class="tool-tagline">flip, rotate, adjust colors</span></p>
+<div class="tool-desc">
+<p>Flip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.</p>
+</div>
 </div>
 </div>
 <div class="template-credit">
 <p><em>Inspired by <a href="https://tools.simonwillison.net/">tools.simonwillison.net</a>.</em></p>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tool-item').forEach(item => {
+    const desc = item.querySelector('.tool-desc');
+    if (!desc) return;
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', (e) => {
+      // Don't toggle if they clicked the actual link to navigate
+      if (e.target.closest('a.tool-link')) return;
+      desc.classList.toggle('open');
+    });
+  });
+});
+</script>
 
 
 </section>

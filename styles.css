@@ -456,7 +456,7 @@ h2 {
 }
 
 .tool-item {
-  padding: 0.75rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -466,18 +466,43 @@ h2 {
 
 .tool-item p {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.95rem;
   line-height: 1.4;
 }
 
-.tool-item a {
+.tool-item a.tool-link {
   color: var(--accent);
   text-decoration: none;
+  font-weight: 600;
 }
 
-.tool-item a:hover {
+.tool-item a.tool-link:hover {
   text-decoration: underline;
+}
+
+.tool-tagline {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.tool-desc {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease, margin 0.2s ease;
+  margin-top: 0;
+}
+
+.tool-desc.open {
+  max-height: 6rem;
+  margin-top: 0.35rem;
+}
+
+.tool-desc p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-weight: 400;
+  line-height: 1.5;
 }
 
 .tool-item dl {

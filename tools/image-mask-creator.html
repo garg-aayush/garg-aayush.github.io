@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Mask Creator — Aayush Garg</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-body: #1d1e20;
+      --bg-card: #2e2e33;
+      --bg-inset: #37383e;
+      --bg-hover: #414244;
+      --border: #333333;
+      --text-primary: #dadada;
+      --text-content: #c4c4c5;
+      --text-muted: #9b9c9d;
+      --text-dim: #707073;
+      --accent: #75A8D9;
+      --accent-hover: #8fbce5;
+      --accent-dim: rgba(117, 168, 217, 0.15);
+      --green: #72994E;
+      --green-dim: rgba(114, 153, 78, 0.15);
+      --orange: #EE6331;
+      --orange-dim: rgba(238, 99, 49, 0.12);
+      --code-bg: #37383e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   Oxygen, Ubuntu, Cantarell, "Open Sans",
+                   "Helvetica Neue", sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 20px 16px;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .header .back a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .header .back a:hover { text-decoration: underline; }
+
+    /* Drop zone */
+    .dropzone {
+      border: 2px dashed var(--accent);
+      border-radius: 10px;
+      padding: 24px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-inset);
+      margin-bottom: 16px;
+    }
+
+    .dropzone:hover {
+      border-color: var(--accent-hover);
+      background: var(--bg-hover);
+    }
+
+    .dropzone.dragover {
+      border-color: var(--accent-hover);
+      background: var(--accent-dim);
+    }
+
+    .dropzone.has-file {
+      border-style: solid;
+      border-color: var(--border);
+      padding: 12px 16px;
+    }
+
+    .dropzone-prompt {
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .dropzone-prompt .formats {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    .dropzone-file {
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dropzone.has-file .dropzone-prompt { display: none; }
+    .dropzone.has-file .dropzone-file { display: flex; }
+
+    .file-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+
+    .file-meta {
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-details {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .file-change {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    /* Panel */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* Format buttons (used for brush/eraser toggle) */
+    .format-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .format-btn {
+      background: var(--bg-inset);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-content);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .format-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--text-primary);
+    }
+
+    .format-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Quality row (slider rows) */
+    .quality-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .quality-row.hidden { display: none; }
+
+    .row-label {
+      font-size: 14px;
+      color: var(--text-content);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .quality-slider {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-inset);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .quality-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .quality-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .quality-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 28px;
+      text-align: right;
+      background: var(--accent-dim);
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    /* Checkbox row */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-row label {
+      font-size: 14px;
+      color: var(--text-content);
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .checkbox-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* Canvas container */
+    .canvas-container {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background-image:
+        linear-gradient(45deg, #2a2b30 25%, transparent 25%),
+        linear-gradient(-45deg, #2a2b30 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a2b30 75%),
+        linear-gradient(-45deg, transparent 75%, #2a2b30 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      background-color: var(--bg-inset);
+      display: flex;
+      justify-content: center;
+    }
+
+    .canvas-container canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .canvas-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 10px;
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-align: center;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg-body);
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--bg-inset);
+      color: var(--text-content);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .error-msg.visible { display: block; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 480px) {
+      body { padding: 12px 10px; }
+      .header h1 { font-size: 18px; }
+      .panel { padding: 14px; }
+      .actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>Binary Mask Creator</h1>
+      <div class="back"><a href="./">&larr; Back to Tools</a></div>
+    </div>
+
+    <!-- Upload -->
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-prompt">
+        Click or drag and drop an image here
+        <span class="formats">PNG, JPEG, WebP &mdash; 20 MB max</span>
+      </div>
+      <div class="dropzone-file">
+        <img class="file-thumb" id="fileThumb" src="" alt="">
+        <div class="file-meta">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-details" id="fileDetails"></div>
+        </div>
+        <div class="file-change">Change</div>
+      </div>
+    </div>
+    <input type="file" id="fileInput" class="sr-only" accept="image/png,image/jpeg,image/webp">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Toolbar -->
+    <div class="panel hidden" id="toolbarPanel">
+      <div class="panel-label">Brush Settings</div>
+      <div class="format-grid">
+        <button class="format-btn active" id="brushBtn" data-tool="brush">Brush (B)</button>
+        <button class="format-btn" id="eraserBtn" data-tool="eraser">Eraser (E)</button>
+      </div>
+
+      <div class="quality-row">
+        <span class="row-label">Brush Size</span>
+        <input type="range" class="quality-slider" id="brushSizeSlider" min="5" max="100" value="20">
+        <span class="quality-val" id="brushSizeVal">20</span>
+      </div>
+
+      <div class="quality-row">
+        <span class="row-label">Overlay Opacity</span>
+        <input type="range" class="quality-slider" id="opacitySlider" min="10" max="100" value="50">
+        <span class="quality-val" id="opacityVal">50%</span>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="invertCheckbox">
+        <label for="invertCheckbox">Invert Mask</label>
+        <span class="checkbox-hint">Swap black/white on export</span>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="panel hidden" id="canvasPanel">
+      <div class="panel-label">Mask Canvas</div>
+      <div class="canvas-container" id="canvasContainer">
+        <canvas id="displayCanvas"></canvas>
+      </div>
+      <div class="canvas-hint">Paint to create mask. B=brush, E=eraser, [/]=size, Ctrl+Z=undo</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions hidden" id="actionsPanel">
+      <button class="btn btn-secondary" id="undoBtn" disabled>Undo</button>
+      <button class="btn btn-secondary" id="redoBtn" disabled>Redo</button>
+      <button class="btn btn-secondary" id="clearBtn">Clear</button>
+      <button class="btn btn-primary" id="downloadBtn">Download Mask</button>
+    </div>
+  </div>
+
+  <script>
+    /* ── Constants ── */
+    const MAX_FILE_SIZE = 20 * 1024 * 1024;
+    const MAX_DIMENSION = 8192;
+    const ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+    const ACCEPTED_EXT = /\.(png|jpe?g|webp)$/i;
+
+    /* ── State ── */
+    let originalFile = null;
+    let originalImg = null;
+    let currentTool = 'brush'; // 'brush' | 'eraser'
+    let brushSize = 20;
+    let overlayOpacity = 0.5;
+    let invertMask = false;
+    let painting = false;
+    let lastMaskX = null;
+    let lastMaskY = null;
+    let displayScale = 1;
+
+    // Undo/redo
+    let undoStack = [];
+    let redoStack = [];
+    let maxHistory = 30;
+
+    /* ── DOM refs ── */
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const fileThumb = document.getElementById('fileThumb');
+    const fileName = document.getElementById('fileName');
+    const fileDetails = document.getElementById('fileDetails');
+    const toolbarPanel = document.getElementById('toolbarPanel');
+    const canvasPanel = document.getElementById('canvasPanel');
+    const actionsPanel = document.getElementById('actionsPanel');
+    const canvasContainer = document.getElementById('canvasContainer');
+    const displayCanvas = document.getElementById('displayCanvas');
+    const displayCtx = displayCanvas.getContext('2d');
+    const brushBtn = document.getElementById('brushBtn');
+    const eraserBtn = document.getElementById('eraserBtn');
+    const brushSizeSlider = document.getElementById('brushSizeSlider');
+    const brushSizeVal = document.getElementById('brushSizeVal');
+    const opacitySlider = document.getElementById('opacitySlider');
+    const opacityVal = document.getElementById('opacityVal');
+    const invertCheckbox = document.getElementById('invertCheckbox');
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    // Offscreen mask canvas (full resolution, only black/white)
+    let maskCanvas = null;
+    let maskCtx = null;
+
+    // Cursor tracking for preview circle
+    let cursorX = -1;
+    let cursorY = -1;
+    let cursorVisible = false;
+
+    /* ── Upload handling ── */
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) validateAndHandle(fileInput.files[0]);
+    });
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) validateAndHandle(e.dataTransfer.files[0]);
+    });
+
+    function validateAndHandle(file) {
+      clearError();
+
+      const hasValidType = ACCEPTED_TYPES.includes(file.type);
+      const hasValidExt = ACCEPTED_EXT.test(file.name);
+      if (!hasValidType && !hasValidExt) {
+        showError(`"${file.name}" is not a supported image file. Please upload a PNG, JPEG, or WebP file.`);
+        fileInput.value = '';
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        showError(`File too large (${formatBytes(file.size)}). Maximum allowed size is ${formatBytes(MAX_FILE_SIZE)}.`);
+        fileInput.value = '';
+        return;
+      }
+
+      handleFile(file);
+    }
+
+    function handleFile(file) {
+      clearError();
+      originalFile = file;
+
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onerror = () => {
+        showError('Could not load image. The file may be corrupted or in an unsupported format.');
+        URL.revokeObjectURL(url);
+        fileInput.value = '';
+      };
+      img.onload = () => {
+        if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
+          showError(`Image dimensions too large (${img.width} \u00d7 ${img.height}). Maximum is ${MAX_DIMENSION} \u00d7 ${MAX_DIMENSION} px.`);
+          URL.revokeObjectURL(url);
+          fileInput.value = '';
+          return;
+        }
+
+        originalImg = img;
+        fileThumb.src = url;
+        fileName.textContent = file.name;
+        fileDetails.textContent = `${img.width} \u00d7 ${img.height}  \u00b7  ${formatBytes(file.size)}  \u00b7  ${friendlyType(file.type)}`;
+        dropzone.classList.add('has-file');
+
+        toolbarPanel.classList.remove('hidden');
+        canvasPanel.classList.remove('hidden');
+        actionsPanel.classList.remove('hidden');
+        initCanvas();
+      };
+      img.src = url;
+    }
+
+    /* ── Canvas initialization ── */
+    function initCanvas() {
+      // Create mask canvas at full resolution
+      maskCanvas = document.createElement('canvas');
+      maskCanvas.width = originalImg.naturalWidth;
+      maskCanvas.height = originalImg.naturalHeight;
+      maskCtx = maskCanvas.getContext('2d');
+      // Fill with black (unpainted = black by default)
+      maskCtx.fillStyle = '#000000';
+      maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+      // Compute dynamic history limit based on image size
+      const pixelCount = maskCanvas.width * maskCanvas.height;
+      const bytesPerSnapshot = pixelCount * 4;
+      // Target roughly 100MB max undo memory
+      const targetMemory = 100 * 1024 * 1024;
+      maxHistory = Math.max(5, Math.min(30, Math.floor(targetMemory / bytesPerSnapshot)));
+
+      // Reset history
+      undoStack = [];
+      redoStack = [];
+      pushUndoState();
+
+      // Size display canvas to fit container
+      sizeDisplayCanvas();
+      renderDisplay();
+    }
+
+    function sizeDisplayCanvas() {
+      const containerWidth = canvasContainer.clientWidth;
+      const imgW = originalImg.naturalWidth;
+      const imgH = originalImg.naturalHeight;
+
+      let dw, dh;
+      if (imgW <= containerWidth) {
+        dw = imgW;
+        dh = imgH;
+      } else {
+        dw = containerWidth;
+        dh = Math.round((imgH / imgW) * containerWidth);
+      }
+
+      displayCanvas.width = dw;
+      displayCanvas.height = dh;
+      displayScale = dw / imgW;
+    }
+
+    /* ── Rendering ── */
+    function renderDisplay() {
+      const dw = displayCanvas.width;
+      const dh = displayCanvas.height;
+
+      displayCtx.clearRect(0, 0, dw, dh);
+
+      // Draw original image
+      displayCtx.drawImage(originalImg, 0, 0, dw, dh);
+
+      // Draw mask overlay with accent color at user opacity
+      // We need to composite the mask: where mask is white (painted), show accent overlay
+      // Create a temporary canvas to build the overlay
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = dw;
+      tempCanvas.height = dh;
+      const tempCtx = tempCanvas.getContext('2d');
+
+      // Draw scaled mask
+      tempCtx.drawImage(maskCanvas, 0, 0, dw, dh);
+
+      // Get the mask data: white pixels are painted areas
+      const maskData = tempCtx.getImageData(0, 0, dw, dh);
+      const pixels = maskData.data;
+
+      // Replace white pixels with accent color at chosen opacity, black pixels become transparent
+      const r = 117, g = 168, b = 217; // accent #75A8D9
+      const a = Math.round(overlayOpacity * 255);
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i] > 128) {
+          // Painted (white on mask) -> accent color overlay
+          pixels[i] = r;
+          pixels[i + 1] = g;
+          pixels[i + 2] = b;
+          pixels[i + 3] = a;
+        } else {
+          // Unpainted -> transparent
+          pixels[i + 3] = 0;
+        }
+      }
+
+      tempCtx.putImageData(maskData, 0, 0);
+
+      // Draw overlay onto display
+      displayCtx.drawImage(tempCanvas, 0, 0);
+
+      // Draw cursor preview circle
+      if (cursorVisible && cursorX >= 0 && cursorY >= 0) {
+        const displayRadius = (brushSize * displayScale) / 2;
+        displayCtx.save();
+        displayCtx.strokeStyle = currentTool === 'brush' ? 'rgba(255,255,255,0.8)' : 'rgba(255,100,100,0.8)';
+        displayCtx.lineWidth = 1.5;
+        displayCtx.beginPath();
+        displayCtx.arc(cursorX, cursorY, displayRadius, 0, Math.PI * 2);
+        displayCtx.stroke();
+        displayCtx.restore();
+      }
+    }
+
+    /* ── Painting ── */
+    function getMaskCoords(e) {
+      const rect = displayCanvas.getBoundingClientRect();
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const displayX = clientX - rect.left;
+      const displayY = clientY - rect.top;
+      const maskX = displayX / displayScale;
+      const maskY = displayY / displayScale;
+      return { displayX, displayY, maskX, maskY };
+    }
+
+    function paintAt(maskX, maskY) {
+      maskCtx.fillStyle = currentTool === 'brush' ? '#FFFFFF' : '#000000';
+      maskCtx.beginPath();
+      maskCtx.arc(maskX, maskY, brushSize / 2, 0, Math.PI * 2);
+      maskCtx.fill();
+    }
+
+    function paintLine(fromX, fromY, toX, toY) {
+      const dx = toX - fromX;
+      const dy = toY - fromY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const step = Math.max(1, brushSize / 4);
+      const steps = Math.ceil(dist / step);
+
+      maskCtx.fillStyle = currentTool === 'brush' ? '#FFFFFF' : '#000000';
+
+      for (let i = 0; i <= steps; i++) {
+        const t = steps === 0 ? 0 : i / steps;
+        const x = fromX + dx * t;
+        const y = fromY + dy * t;
+        maskCtx.beginPath();
+        maskCtx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+        maskCtx.fill();
+      }
+    }
+
+    function onPointerDown(e) {
+      e.preventDefault();
+      painting = true;
+      const coords = getMaskCoords(e);
+      lastMaskX = coords.maskX;
+      lastMaskY = coords.maskY;
+      paintAt(coords.maskX, coords.maskY);
+      cursorX = coords.displayX;
+      cursorY = coords.displayY;
+      cursorVisible = true;
+      renderDisplay();
+    }
+
+    function onPointerMove(e) {
+      e.preventDefault();
+      const coords = getMaskCoords(e);
+      cursorX = coords.displayX;
+      cursorY = coords.displayY;
+      cursorVisible = true;
+
+      if (painting) {
+        paintLine(lastMaskX, lastMaskY, coords.maskX, coords.maskY);
+        lastMaskX = coords.maskX;
+        lastMaskY = coords.maskY;
+      }
+
+      renderDisplay();
+    }
+
+    function onPointerUp(e) {
+      if (painting) {
+        painting = false;
+        lastMaskX = null;
+        lastMaskY = null;
+        pushUndoState();
+        renderDisplay();
+      }
+    }
+
+    function onPointerLeave(e) {
+      cursorVisible = false;
+      if (painting) {
+        painting = false;
+        lastMaskX = null;
+        lastMaskY = null;
+        pushUndoState();
+      }
+      renderDisplay();
+    }
+
+    displayCanvas.addEventListener('pointerdown', onPointerDown);
+    displayCanvas.addEventListener('pointermove', onPointerMove);
+    displayCanvas.addEventListener('pointerup', onPointerUp);
+    displayCanvas.addEventListener('pointerleave', onPointerLeave);
+    displayCanvas.addEventListener('pointercancel', onPointerUp);
+
+    // Prevent context menu on canvas
+    displayCanvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    /* ── Undo / Redo ── */
+    function pushUndoState() {
+      if (!maskCanvas) return;
+      const data = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height);
+      undoStack.push(data);
+      if (undoStack.length > maxHistory + 1) {
+        undoStack.shift();
+      }
+      // Clear redo stack on new action
+      redoStack = [];
+      updateUndoRedoButtons();
+    }
+
+    function undo() {
+      if (undoStack.length <= 1) return;
+      const current = undoStack.pop();
+      redoStack.push(current);
+      const prev = undoStack[undoStack.length - 1];
+      maskCtx.putImageData(prev, 0, 0);
+      updateUndoRedoButtons();
+      renderDisplay();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      const next = redoStack.pop();
+      undoStack.push(next);
+      maskCtx.putImageData(next, 0, 0);
+      updateUndoRedoButtons();
+      renderDisplay();
+    }
+
+    function updateUndoRedoButtons() {
+      undoBtn.disabled = undoStack.length <= 1;
+      redoBtn.disabled = redoStack.length === 0;
+    }
+
+    /* ── Tool buttons ── */
+    brushBtn.addEventListener('click', () => setTool('brush'));
+    eraserBtn.addEventListener('click', () => setTool('eraser'));
+
+    function setTool(tool) {
+      currentTool = tool;
+      brushBtn.classList.toggle('active', tool === 'brush');
+      eraserBtn.classList.toggle('active', tool === 'eraser');
+      renderDisplay();
+    }
+
+    /* ── Sliders ── */
+    brushSizeSlider.addEventListener('input', () => {
+      brushSize = parseInt(brushSizeSlider.value, 10);
+      brushSizeVal.textContent = brushSize;
+      renderDisplay();
+    });
+
+    opacitySlider.addEventListener('input', () => {
+      overlayOpacity = parseInt(opacitySlider.value, 10) / 100;
+      opacityVal.textContent = opacitySlider.value + '%';
+      renderDisplay();
+    });
+
+    invertCheckbox.addEventListener('change', () => {
+      invertMask = invertCheckbox.checked;
+    });
+
+    /* ── Action buttons ── */
+    undoBtn.addEventListener('click', undo);
+    redoBtn.addEventListener('click', redo);
+
+    clearBtn.addEventListener('click', () => {
+      if (!maskCanvas) return;
+      maskCtx.fillStyle = '#000000';
+      maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+      pushUndoState();
+      renderDisplay();
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!maskCanvas || !originalFile) return;
+
+      let exportCanvas;
+
+      if (invertMask) {
+        // Invert: use globalCompositeOperation 'difference' with white fill
+        exportCanvas = document.createElement('canvas');
+        exportCanvas.width = maskCanvas.width;
+        exportCanvas.height = maskCanvas.height;
+        const exportCtx = exportCanvas.getContext('2d');
+        exportCtx.drawImage(maskCanvas, 0, 0);
+        exportCtx.globalCompositeOperation = 'difference';
+        exportCtx.fillStyle = '#FFFFFF';
+        exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      } else {
+        exportCanvas = maskCanvas;
+      }
+
+      exportCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const baseName = originalFile.name.replace(/\.[^.]+$/, '');
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${baseName}-mask.jpg`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }, 'image/jpeg', 0.95);
+    });
+
+    /* ── Keyboard shortcuts ── */
+    document.addEventListener('keydown', (e) => {
+      if (!maskCanvas) return;
+
+      // Don't capture shortcuts when typing in inputs
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      const key = e.key.toLowerCase();
+
+      if (key === 'b') {
+        setTool('brush');
+      } else if (key === 'e') {
+        setTool('eraser');
+      } else if (key === '[') {
+        brushSize = Math.max(5, brushSize - 5);
+        brushSizeSlider.value = brushSize;
+        brushSizeVal.textContent = brushSize;
+        renderDisplay();
+      } else if (key === ']') {
+        brushSize = Math.min(100, brushSize + 5);
+        brushSizeSlider.value = brushSize;
+        brushSizeVal.textContent = brushSize;
+        renderDisplay();
+      } else if (key === 'z' && (e.ctrlKey || e.metaKey) && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      } else if (key === 'z' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        undo();
+      }
+    });
+
+    /* ── Window resize ── */
+    window.addEventListener('resize', () => {
+      if (!originalImg || !maskCanvas) return;
+      sizeDisplayCanvas();
+      renderDisplay();
+    });
+
+    /* ── Error helpers ── */
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function clearError() {
+      errorMsg.classList.remove('visible');
+    }
+
+    /* ── Formatting helpers ── */
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function friendlyType(mime) {
+      const map = {
+        'image/png': 'PNG', 'image/jpeg': 'JPEG', 'image/webp': 'WebP',
+      };
+      return map[mime] || mime.replace('image/', '').toUpperCase();
+    }
+  </script>
+</body>
+</html>
