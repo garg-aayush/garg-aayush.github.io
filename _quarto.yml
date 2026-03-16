@@ -67,4 +67,5 @@ resources:
   - static
   - js
   - tools/*.html
+  - tools/analytics.js
   - CNAME

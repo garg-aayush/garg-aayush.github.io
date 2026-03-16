@@ -66,6 +66,7 @@ Browser-based utilities that run entirely client-side. Tools are organized by ca
 ### Tool Design Conventions
 - **Theme**: Must match the site's dark theme — use colors from `theme-dark.scss` (background `#1d1e20`, card `#2e2e33`, inset `#37383e`, border `#333333`, accent `#75A8D9`)
 - **Fonts**: Use the site's system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`), not external fonts
+- **Analytics**: Include `<script src="analytics.js"></script>` in `<head>` (after viewport meta) — this loads shared Google Analytics tracking
 - **Back link**: Include a `← Back to Tools` link pointing to `./`
 - **Validation**: Validate input files (type, size, dimensions) with user-visible error messages
 - **Downloads**: Use blob-based downloads (`URL.createObjectURL`) instead of data URLs for large file support
