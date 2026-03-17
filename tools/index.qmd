@@ -105,6 +105,12 @@ Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback
 :::
 :::
 
+:::
+
+## Data Tools
+
+::: {.tools-list}
+
 ::: {.tool-item}
 [YAML ↔ JSON Converter](yaml-json-converter.html){.tool-link} [bidirectional conversion with validation]{.tool-tagline}
 

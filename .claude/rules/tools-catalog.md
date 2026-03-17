@@ -27,6 +27,11 @@ Inventory of all browser-based tools. Check here before building a new tool to r
 | JSON Formatter & Viewer | `json-formatter.html` | Format, validate, collapsible tree, search, copy | None |
 | Diff Viewer | `diff-viewer.html` | Side-by-side and unified diff with word-level highlighting | jsdiff |
 | LaTeX Math Preview | `latex-preview.html` | Live KaTeX rendering, symbol palette, saved snippets | KaTeX |
+
+## Data Tools
+
+| Tool | File | Description | Dependencies |
+|------|------|-------------|--------------|
 | YAML ↔ JSON Converter | `yaml-json-converter.html` | Bidirectional YAML/JSON conversion with validation | js-yaml |
 
 ## CDN Libraries in Use
