@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="analytics.js"></script>
+    <title>LaTeX Math Preview</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #1d1e20;
+            --bg-card: #2e2e33;
+            --bg-inset: #37383e;
+            --bg-hover: #414244;
+            --border: #333333;
+            --text-primary: #dadada;
+            --text-content: #c4c4c5;
+            --text-muted: #9b9c9d;
+            --text-dim: #707073;
+            --accent: #75A8D9;
+            --accent-hover: #8fbce5;
+            --accent-dim: rgba(117, 168, 217, 0.15);
+            --green: #72994E;
+            --green-dim: rgba(114, 153, 78, 0.15);
+            --orange: #EE6331;
+            --orange-dim: rgba(238, 99, 49, 0.12);
+            --code-bg: #37383e;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-content);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+            padding: 24px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+            transition: color 0.15s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        header h1 {
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .error-msg {
+            display: none;
+            background: var(--orange-dim);
+            border: 1px solid var(--orange);
+            color: var(--orange);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .panel-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        .ctrl-btn {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: var(--text-content);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .ctrl-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--text-primary);
+        }
+
+        .ctrl-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .ctrl-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-dim);
+        }
+
+        .font-size-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0 2px;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        /* Textarea */
+        #latex-input {
+            width: 100%;
+            min-height: 180px;
+            resize: vertical;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--text-content);
+            line-height: 1.5;
+            tab-size: 2;
+            outline: none;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        #latex-input:focus {
+            border-color: var(--accent);
+        }
+
+        #latex-input.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .status-bar {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* Preview */
+        .preview-area {
+            min-height: 300px;
+            padding: 20px 16px;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .eq-block {
+            margin-bottom: 16px;
+        }
+
+        .eq-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .eq-display {
+            text-align: center;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .eq-inline {
+            text-align: left;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .eq-spacer {
+            height: 12px;
+        }
+
+        .eq-comment {
+            color: var(--text-dim);
+            font-style: italic;
+            font-size: 13px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            padding: 2px 0;
+        }
+
+        .eq-error-source {
+            color: var(--text-muted);
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            padding: 4px 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .eq-error-msg {
+            color: var(--orange);
+            font-size: 12px;
+            margin-top: 4px;
+            padding-left: 8px;
+        }
+
+        .preview-empty {
+            color: var(--text-dim);
+            font-size: 14px;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        /* Details / collapsible sections */
+        details {
+            margin-bottom: 12px;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            list-style: none;
+            user-select: none;
+            transition: all 0.15s;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary::before {
+            content: "▸ ";
+            color: var(--text-dim);
+            transition: transform 0.15s;
+            display: inline-block;
+        }
+
+        details[open] summary::before {
+            content: "▾ ";
+        }
+
+        details summary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        details[open] summary {
+            border-radius: 8px 8px 0 0;
+            border-bottom-color: transparent;
+        }
+
+        .details-body {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 12px;
+        }
+
+        /* Symbol grid */
+        .symbol-category {
+            margin-bottom: 10px;
+        }
+
+        .symbol-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .symbol-cat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+
+        .symbol-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .symbol-btn {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 12px;
+            color: var(--text-content);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .symbol-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--text-primary);
+        }
+
+        /* Snippets */
+        .snippet-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .snippet-name-input {
+            flex: 1;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: 12px;
+            color: var(--text-content);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .snippet-name-input:focus {
+            border-color: var(--accent);
+        }
+
+        .snippet-name-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .snippet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .snippet-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .snippet-item-name {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-content);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .snippet-item-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .snippet-item-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .snippet-item-btn.delete:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .snippet-empty {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-align: center;
+            padding: 8px;
+        }
+
+        /* KaTeX overrides for dark theme */
+        .katex { color: var(--text-primary); }
+        .katex .mord, .katex .mop, .katex .mrel,
+        .katex .mopen, .katex .mclose, .katex .mpunct,
+        .katex .mbin, .katex .minner { color: inherit; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="./" class="back-link">&larr; Back to Tools</a>
+            <h1>LaTeX Math Preview</h1>
+        </header>
+
+        <div id="error-msg" class="error-msg"></div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="ctrl-btn active" id="btn-display" onclick="setMode('display')">Display</button>
+                <button class="ctrl-btn" id="btn-inline" onclick="setMode('inline')">Inline</button>
+                <button class="ctrl-btn" id="btn-auto" onclick="setMode('auto')">Auto</button>
+            </div>
+            <div class="toolbar-sep"></div>
+            <div class="toolbar-group">
+                <button class="ctrl-btn" id="btn-copy" onclick="copyLatex()">Copy LaTeX</button>
+                <button class="ctrl-btn" onclick="clearAll()">Clear</button>
+                <button class="ctrl-btn" onclick="loadSample()">Load Sample</button>
+            </div>
+            <div class="toolbar-sep"></div>
+            <div class="toolbar-group">
+                <button class="ctrl-btn" onclick="changeFontSize(-2)">A&minus;</button>
+                <span class="font-size-label" id="font-size-label">18px</span>
+                <button class="ctrl-btn" onclick="changeFontSize(2)">A+</button>
+            </div>
+        </div>
+
+        <!-- Common Symbols -->
+        <details>
+            <summary>Common Symbols</summary>
+            <div class="details-body" id="symbols-body"></div>
+        </details>
+
+        <!-- Saved Snippets -->
+        <details>
+            <summary>Saved Snippets</summary>
+            <div class="details-body">
+                <div class="snippet-controls">
+                    <input type="text" class="snippet-name-input" id="snippet-name" placeholder="Snippet name (optional)" maxlength="60">
+                    <button class="ctrl-btn" onclick="saveSnippet()">Save Current</button>
+                </div>
+                <div class="snippet-list" id="snippet-list"></div>
+            </div>
+        </details>
+
+        <!-- Input panel -->
+        <div class="panel">
+            <div class="panel-label">LaTeX Input</div>
+            <textarea id="latex-input" spellcheck="false" placeholder="Type LaTeX equations here, one per line...&#10;Lines starting with % are comments.&#10;Empty lines create spacing."></textarea>
+            <div class="status-bar" id="status-bar">0 equations</div>
+        </div>
+
+        <!-- Preview panel -->
+        <div class="panel">
+            <div class="panel-label">Preview</div>
+            <div class="preview-area" id="preview-area">
+                <div class="preview-empty">Type LaTeX above to see a live preview</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+(function() {
+    "use strict";
+
+    // --- State ---
+    let currentMode = 'display'; // 'display' | 'inline' | 'auto'
+    let fontSize = 18;
+    let debounceTimer = null;
+
+    const MACROS = {
+        "\\argmax": "\\operatorname*{arg\\,max}",
+        "\\argmin": "\\operatorname*{arg\\,min}",
+        "\\KL": "\\operatorname{KL}",
+        "\\SFT": "\\operatorname{SFT}",
+        "\\ref": "\\operatorname{ref}"
+    };
+
+    const SAMPLE = `% === PPO Clipped Surrogate Objective ===
+L^{CLIP}(\\theta) = \\hat{\\mathbb{E}}_t \\left[ \\min\\left( r_t(\\theta) \\hat{A}_t, \\; \\text{clip}\\left( r_t(\\theta), 1-\\epsilon, 1+\\epsilon \\right) \\hat{A}_t \\right) \\right]
+
+% === DPO Loss ===
+\\mathcal{L}_{\\text{DPO}}(\\pi_\\theta; \\pi_{\\text{ref}}) = -\\mathbb{E}_{(x, y_w, y_l) \\sim \\mathcal{D}} \\left[ \\log \\sigma \\left( \\beta \\log \\frac{\\pi_\\theta(y_w|x)}{\\pi_{\\text{ref}}(y_w|x)} - \\beta \\log \\frac{\\pi_\\theta(y_l|x)}{\\pi_{\\text{ref}}(y_l|x)} \\right) \\right]
+
+% === GRPO Group Advantage ===
+\\hat{A}_i = \\frac{r_i - \\text{mean}(\\{r_1, \\ldots, r_G\\})}{\\text{std}(\\{r_1, \\ldots, r_G\\})}
+
+% === KL Divergence ===
+D_{\\text{KL}}(P \\| Q) = \\sum_{x \\in \\mathcal{X}} P(x) \\log \\frac{P(x)}{Q(x)}
+
+% === Bradley-Terry Preference Model ===
+P(y_w \\succ y_l | x) = \\frac{\\exp(r(x, y_w))}{\\exp(r(x, y_w)) + \\exp(r(x, y_l))} = \\sigma(r(x, y_w) - r(x, y_l))`;
+
+    const SYMBOLS = [
+        {
+            label: "Greek Letters",
+            items: [
+                "\\alpha", "\\beta", "\\gamma", "\\delta", "\\epsilon", "\\theta",
+                "\\lambda", "\\mu", "\\sigma", "\\pi", "\\phi", "\\psi", "\\omega",
+                "\\Gamma", "\\Delta", "\\Theta", "\\Lambda", "\\Sigma", "\\Phi", "\\Psi", "\\Omega"
+            ]
+        },
+        {
+            label: "Operators",
+            items: [
+                "\\sum", "\\prod", "\\int", "\\partial", "\\nabla", "\\infty",
+                "\\approx", "\\neq", "\\leq", "\\geq", "\\pm", "\\times", "\\cdot", "\\div"
+            ]
+        },
+        {
+            label: "Relations & Logic",
+            items: [
+                "\\in", "\\notin", "\\subset", "\\subseteq", "\\cup", "\\cap",
+                "\\forall", "\\exists", "\\neg", "\\implies", "\\iff"
+            ]
+        },
+        {
+            label: "ML / Probability",
+            items: [
+                "\\mathbb{E}", "\\mathbb{R}", "\\mathcal{L}", "\\mathcal{D}",
+                "\\log", "\\exp", "\\max", "\\min", "\\argmax", "\\argmin",
+                "\\KL", "\\text{softmax}", "\\text{sigmoid}"
+            ]
+        },
+        {
+            label: "Arrows & Misc",
+            items: [
+                "\\rightarrow", "\\leftarrow", "\\leftrightarrow",
+                "\\Rightarrow", "\\Leftarrow", "\\mapsto",
+                "\\ldots", "\\cdots", "\\underbrace{}", "\\overbrace{}"
+            ]
+        },
+        {
+            label: "Decorations",
+            items: [
+                "\\hat{}", "\\bar{}", "\\tilde{}", "\\vec{}",
+                "\\dot{}", "\\mathbf{}", "\\mathrm{}", "\\boldsymbol{}"
+            ]
+        }
+    ];
+
+    // --- DOM refs ---
+    const textarea = document.getElementById('latex-input');
+    const previewArea = document.getElementById('preview-area');
+    const statusBar = document.getElementById('status-bar');
+    const errorMsg = document.getElementById('error-msg');
+    const fontSizeLabel = document.getElementById('font-size-label');
+
+    // --- Init ---
+    function init() {
+        loadFontSize();
+        buildSymbolGrid();
+        renderSnippetList();
+        loadSample();
+
+        textarea.addEventListener('input', scheduleRender);
+        setupDragDrop();
+    }
+
+    // --- Mode ---
+    window.setMode = function(mode) {
+        currentMode = mode;
+        document.getElementById('btn-display').classList.toggle('active', mode === 'display');
+        document.getElementById('btn-inline').classList.toggle('active', mode === 'inline');
+        document.getElementById('btn-auto').classList.toggle('active', mode === 'auto');
+        renderPreview();
+    };
+
+    // --- Font size ---
+    function loadFontSize() {
+        try {
+            const saved = localStorage.getItem('latex-preview-font-size');
+            if (saved) {
+                const v = parseInt(saved, 10);
+                if (v >= 12 && v <= 32) fontSize = v;
+            }
+        } catch(e) {}
+        updateFontSizeLabel();
+    }
+
+    function saveFontSize() {
+        try { localStorage.setItem('latex-preview-font-size', fontSize); } catch(e) {}
+    }
+
+    function updateFontSizeLabel() {
+        fontSizeLabel.textContent = fontSize + 'px';
+    }
+
+    window.changeFontSize = function(delta) {
+        const next = fontSize + delta;
+        if (next < 12 || next > 32) return;
+        fontSize = next;
+        updateFontSizeLabel();
+        saveFontSize();
+        renderPreview();
+    };
+
+    // --- Copy ---
+    window.copyLatex = function() {
+        const btn = document.getElementById('btn-copy');
+        const text = textarea.value;
+        if (!text.trim()) return;
+        navigator.clipboard.writeText(text).then(function() {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(function() {
+                btn.textContent = 'Copy LaTeX';
+                btn.classList.remove('copied');
+            }, 1500);
+        }).catch(function() {
+            // Fallback
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(function() {
+                btn.textContent = 'Copy LaTeX';
+                btn.classList.remove('copied');
+            }, 1500);
+        });
+    };
+
+    // --- Clear ---
+    window.clearAll = function() {
+        textarea.value = '';
+        renderPreview();
+        textarea.focus();
+    };
+
+    // --- Load sample ---
+    window.loadSample = function() {
+        textarea.value = SAMPLE;
+        renderPreview();
+    };
+
+    // --- Render logic ---
+    function scheduleRender() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(renderPreview, 200);
+    }
+
+    function renderPreview() {
+        hideError();
+        const text = textarea.value;
+        const lines = text.split('\n');
+
+        if (!text.trim()) {
+            previewArea.innerHTML = '<div class="preview-empty">Type LaTeX above to see a live preview</div>';
+            statusBar.textContent = '0 equations';
+            return;
+        }
+
+        let html = '';
+        let eqCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmed = line.trim();
+
+            // Empty line = spacer
+            if (trimmed === '') {
+                html += '<div class="eq-spacer"></div>';
+                continue;
+            }
+
+            // Comment line
+            if (trimmed.startsWith('%')) {
+                html += '<div class="eq-block"><div class="eq-comment">' + escapeHtml(trimmed) + '</div></div>';
+                continue;
+            }
+
+            // Math line
+            eqCount++;
+            const parsed = parseLine(trimmed);
+            const latex = parsed.latex;
+            const displayMode = parsed.displayMode;
+
+            try {
+                const rendered = katex.renderToString(latex, {
+                    throwOnError: true,
+                    displayMode: displayMode,
+                    macros: MACROS
+                });
+                const wrapClass = displayMode ? 'eq-display' : 'eq-inline';
+                html += '<div class="eq-block"><div class="' + wrapClass + '" style="font-size:' + fontSize + 'px;">' + rendered + '</div></div>';
+            } catch(e) {
+                const errText = e.message || String(e);
+                html += '<div class="eq-block">';
+                html += '<div class="eq-error-source">' + escapeHtml(trimmed) + '</div>';
+                html += '<div class="eq-error-msg">' + escapeHtml(errText) + '</div>';
+                html += '</div>';
+            }
+        }
+
+        previewArea.innerHTML = html;
+        statusBar.textContent = eqCount + ' equation' + (eqCount !== 1 ? 's' : '');
+    }
+
+    function parseLine(line) {
+        if (currentMode === 'display') {
+            return { latex: line, displayMode: true };
+        }
+        if (currentMode === 'inline') {
+            return { latex: line, displayMode: false };
+        }
+
+        // Auto mode: detect delimiters
+        // $$...$$ or \[...\]
+        let m;
+        m = line.match(/^\$\$([\s\S]*)\$\$$/);
+        if (m) return { latex: m[1], displayMode: true };
+
+        m = line.match(/^\\\[([\s\S]*)\\\]$/);
+        if (m) return { latex: m[1], displayMode: true };
+
+        // $...$ or \(...\)
+        m = line.match(/^\$((?:[^$]|\\\$)*)\$$/);
+        if (m) return { latex: m[1], displayMode: false };
+
+        m = line.match(/^\\\(([\s\S]*)\\\)$/);
+        if (m) return { latex: m[1], displayMode: false };
+
+        // No delimiters: default to display
+        return { latex: line, displayMode: true };
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // --- Error display ---
+    function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.add('visible');
+    }
+
+    function hideError() {
+        errorMsg.textContent = '';
+        errorMsg.classList.remove('visible');
+    }
+
+    // --- Drag and drop ---
+    function setupDragDrop() {
+        textarea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            textarea.classList.add('drag-over');
+        });
+
+        textarea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            textarea.classList.remove('drag-over');
+        });
+
+        textarea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            textarea.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (!files || files.length === 0) return;
+
+            const file = files[0];
+            const name = file.name.toLowerCase();
+            const validExts = ['.tex', '.txt', '.latex'];
+            const ext = name.substring(name.lastIndexOf('.'));
+
+            if (!validExts.includes(ext)) {
+                showError('Invalid file type. Please drop a .tex, .txt, or .latex file.');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showError('File too large. Maximum size is 5 MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                textarea.value = ev.target.result;
+                renderPreview();
+            };
+            reader.onerror = function() {
+                showError('Failed to read file.');
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    // --- Symbol grid ---
+    function buildSymbolGrid() {
+        const container = document.getElementById('symbols-body');
+        let html = '';
+
+        for (let c = 0; c < SYMBOLS.length; c++) {
+            const cat = SYMBOLS[c];
+            html += '<div class="symbol-category">';
+            html += '<div class="symbol-cat-label">' + escapeHtml(cat.label) + '</div>';
+            html += '<div class="symbol-grid">';
+            for (let s = 0; s < cat.items.length; s++) {
+                const sym = cat.items[s];
+                html += '<button class="symbol-btn" data-symbol="' + escapeHtml(sym) + '">' + escapeHtml(sym) + '</button>';
+            }
+            html += '</div></div>';
+        }
+
+        container.innerHTML = html;
+
+        container.addEventListener('click', function(e) {
+            const btn = e.target.closest('.symbol-btn');
+            if (!btn) return;
+            const sym = btn.getAttribute('data-symbol');
+            insertSymbol(sym);
+        });
+    }
+
+    function insertSymbol(sym) {
+        textarea.focus();
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const before = textarea.value.substring(0, start);
+        const after = textarea.value.substring(end);
+
+        textarea.value = before + sym + after;
+
+        // If symbol ends with {}, place cursor inside braces
+        if (sym.endsWith('{}')) {
+            const cursorPos = start + sym.length - 1;
+            textarea.setSelectionRange(cursorPos, cursorPos);
+        } else {
+            const cursorPos = start + sym.length;
+            textarea.setSelectionRange(cursorPos, cursorPos);
+        }
+
+        scheduleRender();
+    }
+
+    // --- Snippets ---
+    function getSnippets() {
+        try {
+            const raw = localStorage.getItem('latex-preview-snippets');
+            if (raw) {
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr)) return arr;
+            }
+        } catch(e) {}
+        return [];
+    }
+
+    function saveSnippets(arr) {
+        try {
+            localStorage.setItem('latex-preview-snippets', JSON.stringify(arr));
+        } catch(e) {}
+    }
+
+    window.saveSnippet = function() {
+        const content = textarea.value.trim();
+        if (!content) {
+            showError('Nothing to save. Type some LaTeX first.');
+            return;
+        }
+
+        const nameInput = document.getElementById('snippet-name');
+        let name = nameInput.value.trim();
+        if (!name) {
+            // Use first 40 chars of content
+            name = content.substring(0, 40).replace(/\n/g, ' ');
+            if (content.length > 40) name += '...';
+        }
+
+        const snippets = getSnippets();
+        if (snippets.length >= 20) {
+            showError('Maximum 20 snippets. Please delete some before saving.');
+            return;
+        }
+
+        snippets.push({ name: name, content: content });
+        saveSnippets(snippets);
+        nameInput.value = '';
+        renderSnippetList();
+    };
+
+    function renderSnippetList() {
+        const container = document.getElementById('snippet-list');
+        const snippets = getSnippets();
+
+        if (snippets.length === 0) {
+            container.innerHTML = '<div class="snippet-empty">No saved snippets yet</div>';
+            return;
+        }
+
+        let html = '';
+        for (let i = 0; i < snippets.length; i++) {
+            html += '<div class="snippet-item">';
+            html += '<span class="snippet-item-name">' + escapeHtml(snippets[i].name) + '</span>';
+            html += '<button class="snippet-item-btn" onclick="loadSnippet(' + i + ')">Load</button>';
+            html += '<button class="snippet-item-btn delete" onclick="deleteSnippet(' + i + ')">&times;</button>';
+            html += '</div>';
+        }
+        container.innerHTML = html;
+    }
+
+    window.loadSnippet = function(index) {
+        const snippets = getSnippets();
+        if (index >= 0 && index < snippets.length) {
+            textarea.value = snippets[index].content;
+            renderPreview();
+            textarea.focus();
+        }
+    };
+
+    window.deleteSnippet = function(index) {
+        const snippets = getSnippets();
+        if (index >= 0 && index < snippets.length) {
+            snippets.splice(index, 1);
+            saveSnippets(snippets);
+            renderSnippetList();
+        }
+    };
+
+    // --- Start ---
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+</body>
+</html>

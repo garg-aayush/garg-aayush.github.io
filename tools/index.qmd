@@ -81,6 +81,30 @@ Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted cod
 :::
 :::
 
+::: {.tool-item}
+[JSON Formatter & Viewer](json-formatter.html){.tool-link} [format, validate, and explore JSON]{.tool-tagline}
+
+::: {.tool-desc}
+Paste or drop JSON to format with syntax highlighting, collapsible tree view, validation with line-level error reporting, search, and one-click copy.
+:::
+:::
+
+::: {.tool-item}
+[Diff Viewer](diff-viewer.html){.tool-link} [compare text side-by-side with word-level highlighting]{.tool-tagline}
+
+::: {.tool-desc}
+Compare two text blocks with line-level and word-level diff highlighting. Side-by-side and unified diff modes. Requires internet for diff library.
+:::
+:::
+
+::: {.tool-item}
+[LaTeX Math Preview](latex-preview.html){.tool-link} [scratchpad for previewing LaTeX equations]{.tool-tagline}
+
+::: {.tool-desc}
+Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback, symbol palette, render mode toggle, and saved snippets. Requires internet for KaTeX.
+:::
+:::
+
 :::
 
 ::: {.template-credit}
