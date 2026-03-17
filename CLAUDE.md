@@ -36,6 +36,10 @@ Posts use YAML frontmatter with: `title`, `tags`, `date`, `permalink`, `descript
 ### Theme
 Custom dark theme inspired by Lil'Log. Key colors: background `#1d1e20`, accent `#75A8D9` (cyan). Theme is layered as `[cosmo, theme-dark.scss]` with `styles.css` on top.
 
+## Pull Requests
+- Do **not** include a "Test plan" section in PR descriptions unless explicitly asked
+- PR body should have a `## Summary` with bullet points and the Claude Code footer
+
 ## Conventions
 - Blog post dates use `YYYY-MM-DD` prefix format
 - **Always create new blog posts** using the directory format: `posts/YYYY-MM-DD-title/index.qmd` (not single `.qmd` files)
