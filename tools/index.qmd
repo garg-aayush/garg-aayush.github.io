@@ -61,6 +61,28 @@ Preview SVG files with zoom and background controls, inspect metadata and source
 
 :::
 
+## Text & Document Tools
+
+::: {.tools-list}
+
+::: {.tool-item}
+[HTML Viewer](html-viewer.html){.tool-link} [paste HTML, see it rendered live]{.tool-tagline}
+
+::: {.tool-desc}
+Paste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.
+:::
+:::
+
+::: {.tool-item}
+[Markdown Viewer](markdown-viewer.html){.tool-link} [live preview with math & code highlighting]{.tool-tagline}
+
+::: {.tool-desc}
+Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries.
+:::
+:::
+
+:::
+
 ::: {.template-credit}
 *Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
 :::
