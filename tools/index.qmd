@@ -84,6 +84,8 @@ Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted cod
 :::
 
 ::: {.template-credit}
+*Most of these tools were vibe-coded. I've tested them, but if you run into any quirks or issues, that's probably why.*
+
 *Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
 :::
 
