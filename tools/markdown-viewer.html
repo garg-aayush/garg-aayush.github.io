@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="analytics.js"></script>
+    <title>Markdown Viewer</title>
+
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
+    <!-- highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11/highlight.min.js"></script>
+    <!-- KaTeX for LaTeX math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #1d1e20;
+            --bg-card: #2e2e33;
+            --bg-inset: #37383e;
+            --bg-hover: #414244;
+            --border: #333333;
+            --text-primary: #dadada;
+            --text-content: #c4c4c5;
+            --text-muted: #9b9c9d;
+            --text-dim: #707073;
+            --accent: #75A8D9;
+            --accent-hover: #8fbce5;
+            --accent-dim: rgba(117, 168, 217, 0.15);
+            --green: #72994E;
+            --green-dim: rgba(114, 153, 78, 0.15);
+            --orange: #EE6331;
+            --orange-dim: rgba(238, 99, 49, 0.12);
+            --code-bg: #37383e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-content);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+            padding: 24px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+            transition: color 0.15s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        header h1 {
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .error-msg {
+            display: none;
+            background: var(--orange-dim);
+            border: 1px solid var(--orange);
+            color: var(--orange);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .split-pane {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 12px;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .ctrl-btn {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: var(--text-content);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+
+        .ctrl-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--text-primary);
+        }
+
+        .ctrl-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .ctrl-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-dim);
+        }
+
+        #editor {
+            width: 100%;
+            min-height: 600px;
+            resize: vertical;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--text-content);
+            line-height: 1.4;
+            tab-size: 2;
+            white-space: pre;
+            overflow-x: auto;
+            outline: none;
+            flex: 1;
+            transition: border-color 0.15s;
+        }
+
+        #editor:focus {
+            border-color: var(--accent);
+        }
+
+        #editor.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .status-bar {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .markdown-body {
+            min-height: 600px;
+            max-height: 800px;
+            overflow-y: auto;
+            padding: 16px;
+            flex: 1;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        /* Markdown body styles */
+        .markdown-body {
+            color: var(--text-content);
+            font-size: 15px;
+            line-height: 1.7;
+            word-wrap: break-word;
+        }
+
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3,
+        .markdown-body h4,
+        .markdown-body h5,
+        .markdown-body h6 {
+            color: var(--text-primary);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .markdown-body h1 {
+            font-size: 1.8em;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .markdown-body h2 {
+            font-size: 1.4em;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .markdown-body h3 {
+            font-size: 1.2em;
+        }
+
+        .markdown-body h1:first-child,
+        .markdown-body h2:first-child,
+        .markdown-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .markdown-body p {
+            margin-bottom: 12px;
+        }
+
+        .markdown-body a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .markdown-body a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-body strong {
+            color: var(--text-primary);
+        }
+
+        .markdown-body blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 8px 16px;
+            margin: 12px 0;
+            color: var(--text-muted);
+            background: var(--bg-inset);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .markdown-body code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 0.88em;
+        }
+
+        .markdown-body pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 14px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .markdown-body pre code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .markdown-body pre code.hljs {
+            background: var(--code-bg);
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+        }
+
+        .markdown-body th {
+            background: var(--bg-inset);
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: left;
+        }
+
+        .markdown-body th,
+        .markdown-body td {
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .markdown-body tr:nth-child(even) {
+            background: rgba(55, 56, 62, 0.3);
+        }
+
+        .markdown-body img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
+
+        .markdown-body hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 20px 0;
+        }
+
+        .markdown-body ul,
+        .markdown-body ol {
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        .markdown-body li {
+            margin-bottom: 4px;
+        }
+
+        .markdown-body input[type="checkbox"] {
+            margin-right: 6px;
+            accent-color: var(--accent);
+        }
+
+        .markdown-body .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 8px 0;
+        }
+
+        @media (max-width: 768px) {
+            .split-pane {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="./" class="back-link">&larr; Back to Tools</a>
+            <h1>Markdown Viewer</h1>
+        </header>
+
+        <div id="errorMsg" class="error-msg"></div>
+
+        <div class="split-pane">
+            <div class="panel">
+                <div class="panel-label">Markdown</div>
+                <div class="toolbar">
+                    <button class="ctrl-btn" id="btnCopyMd">Copy Markdown</button>
+                    <button class="ctrl-btn" id="btnClear">Clear</button>
+                </div>
+                <textarea id="editor" spellcheck="false" placeholder="Type or paste Markdown here..."></textarea>
+                <div class="status-bar" id="statusBar">0 characters &middot; 0 lines</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-label">Preview</div>
+                <div class="preview-container">
+                    <div class="markdown-body" id="preview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // DOM elements
+            const editor = document.getElementById('editor');
+            const preview = document.getElementById('preview');
+            const statusBar = document.getElementById('statusBar');
+            const errorMsg = document.getElementById('errorMsg');
+            const btnCopyMd = document.getElementById('btnCopyMd');
+            const btnClear = document.getElementById('btnClear');
+
+            // Configure marked
+            try {
+                marked.setOptions({
+                    gfm: true,
+                    breaks: false,
+                    highlight: function(code, lang) {
+                        try {
+                            if (lang && hljs && hljs.getLanguage(lang)) {
+                                return hljs.highlight(code, { language: lang }).value;
+                            }
+                            if (hljs) {
+                                return hljs.highlightAuto(code).value;
+                            }
+                        } catch (e) {
+                            // Fall through to return plain code
+                        }
+                        return code;
+                    }
+                });
+            } catch (e) {
+                console.warn('Marked.js configuration failed:', e);
+            }
+
+            // Render markdown with math protection
+            function renderMarkdown(text) {
+                const mathBlocks = [];
+                let processed = text;
+
+                // Extract display math $$...$$ (must come before inline)
+                processed = processed.replace(/\$\$([\s\S]*?)\$\$/g, function(match) {
+                    mathBlocks.push(match);
+                    return '%%MATH_BLOCK_' + (mathBlocks.length - 1) + '%%';
+                });
+
+                // Extract display math \[...\]
+                processed = processed.replace(/\\\[([\s\S]*?)\\\]/g, function(match) {
+                    mathBlocks.push(match);
+                    return '%%MATH_BLOCK_' + (mathBlocks.length - 1) + '%%';
+                });
+
+                // Extract inline math $...$ (not greedy, no newlines)
+                processed = processed.replace(/\$([^\$\n]+?)\$/g, function(match) {
+                    mathBlocks.push(match);
+                    return '%%MATH_BLOCK_' + (mathBlocks.length - 1) + '%%';
+                });
+
+                // Extract inline math \(...\)
+                processed = processed.replace(/\\\((.*?)\\\)/g, function(match) {
+                    mathBlocks.push(match);
+                    return '%%MATH_BLOCK_' + (mathBlocks.length - 1) + '%%';
+                });
+
+                // Parse markdown
+                var html = '';
+                try {
+                    html = marked.parse(processed);
+                } catch (e) {
+                    console.warn('Marked parse error:', e);
+                    html = '<p>' + escapeHtml(processed) + '</p>';
+                }
+
+                // Restore math blocks
+                for (var i = 0; i < mathBlocks.length; i++) {
+                    html = html.replace('%%MATH_BLOCK_' + i + '%%', mathBlocks[i]);
+                }
+
+                return html;
+            }
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Render KaTeX
+            function renderMath(element) {
+                try {
+                    if (typeof renderMathInElement === 'function') {
+                        renderMathInElement(element, {
+                            delimiters: [
+                                { left: "$$", right: "$$", display: true },
+                                { left: "\\[", right: "\\]", display: true },
+                                { left: "$", right: "$", display: false },
+                                { left: "\\(", right: "\\)", display: false }
+                            ],
+                            throwOnError: false
+                        });
+                    }
+                } catch (e) {
+                    console.warn('KaTeX rendering error:', e);
+                }
+            }
+
+            // Update preview
+            var debounceTimer = null;
+            function updatePreview() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    var text = editor.value;
+                    var html = renderMarkdown(text);
+                    preview.innerHTML = html;
+                    renderMath(preview);
+                    updateStatusBar();
+                }, 300);
+            }
+
+            // Update status bar
+            function updateStatusBar() {
+                var text = editor.value;
+                var charCount = text.length;
+                var lineCount = text === '' ? 0 : text.split('\n').length;
+                statusBar.textContent = charCount + ' characters \u00B7 ' + lineCount + ' lines';
+            }
+
+            // Show error
+            function showError(msg) {
+                errorMsg.textContent = msg;
+                errorMsg.classList.add('visible');
+                setTimeout(function() {
+                    errorMsg.classList.remove('visible');
+                }, 5000);
+            }
+
+            // Hide error
+            function hideError() {
+                errorMsg.classList.remove('visible');
+            }
+
+            // Copy feedback
+            function copyFeedback(btn, originalText) {
+                btn.classList.add('copied');
+                btn.textContent = 'Copied!';
+                setTimeout(function() {
+                    btn.classList.remove('copied');
+                    btn.textContent = originalText;
+                }, 1500);
+            }
+
+            // Copy Markdown
+            btnCopyMd.addEventListener('click', function() {
+                var text = editor.value;
+                if (!text.trim()) return;
+                navigator.clipboard.writeText(text).then(function() {
+                    copyFeedback(btnCopyMd, 'Copy Markdown');
+                }).catch(function() {
+                    showError('Failed to copy to clipboard.');
+                });
+            });
+
+            // Clear
+            btnClear.addEventListener('click', function() {
+                editor.value = '';
+                preview.innerHTML = '';
+                updateStatusBar();
+                hideError();
+            });
+
+            // Live preview on input
+            editor.addEventListener('input', function() {
+                updatePreview();
+            });
+
+            // Tab key support in textarea
+            editor.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 2;
+                    updatePreview();
+                }
+            });
+
+            // Drag and drop
+            editor.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                editor.classList.add('drag-over');
+            });
+
+            editor.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                editor.classList.remove('drag-over');
+            });
+
+            editor.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                editor.classList.remove('drag-over');
+                hideError();
+
+                var files = e.dataTransfer.files;
+                if (files.length === 0) return;
+
+                var file = files[0];
+                var validExtensions = ['.md', '.markdown', '.txt'];
+                var fileName = file.name.toLowerCase();
+                var isValid = validExtensions.some(function(ext) {
+                    return fileName.endsWith(ext);
+                });
+
+                if (!isValid) {
+                    showError('Unsupported file type. Please drop a .md, .markdown, or .txt file.');
+                    return;
+                }
+
+                var maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    showError('File too large. Maximum size is 5MB.');
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    editor.value = evt.target.result;
+                    updatePreview();
+                };
+                reader.onerror = function() {
+                    showError('Failed to read file.');
+                };
+                reader.readAsText(file);
+            });
+
+            // Prevent default drop behavior on window
+            window.addEventListener('dragover', function(e) { e.preventDefault(); });
+            window.addEventListener('drop', function(e) { e.preventDefault(); });
+
+            // Sample markdown
+            var sampleMarkdown = '# Markdown Viewer Demo\n\nThis is a **live preview** of your Markdown. Edit the text on the left to see changes here.\n\n## Features\n\n- **GFM** tables, strikethrough, and task lists\n- Syntax-highlighted code blocks\n- LaTeX math with KaTeX\n\n## Code Example\n\n```python\ndef fibonacci(n):\n    """Generate Fibonacci sequence up to n terms."""\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nlist(fibonacci(10))\n```\n\n## Table\n\n| Library | Purpose | Stars |\n|---------|---------|-------|\n| Marked | Markdown parser | 33k |\n| highlight.js | Syntax highlighting | 23k |\n| KaTeX | Math rendering | 18k |\n\n## Math\n\nInline math: $E = mc^2$\n\nDisplay math:\n\n$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$\n\nThe quadratic formula: $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$\n\n## Task List\n\n- [x] Live preview\n- [x] Syntax highlighting  \n- [x] Math support\n- [ ] Your content here\n\n> **Tip:** Drag and drop `.md` files onto the editor to load them.';
+
+            // Initialize
+            editor.value = sampleMarkdown;
+            // Run the first render immediately (no debounce)
+            var html = renderMarkdown(editor.value);
+            preview.innerHTML = html;
+            renderMath(preview);
+            updateStatusBar();
+        })();
+    </script>
+</body>
+</html>
