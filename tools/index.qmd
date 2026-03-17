@@ -61,7 +61,7 @@ Preview SVG files with zoom and background controls, inspect metadata and source
 
 :::
 
-## Text & Document Tools
+## Viewer Tools
 
 ::: {.tools-list}
 
