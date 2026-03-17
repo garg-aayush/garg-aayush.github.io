@@ -183,7 +183,13 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </header>
 
 
-<p>A collection of free, browser-based utilities. Everything runs locally in your browser.</p>
+<div class="listing-actions-group">
+  <div class="input-group input-group-sm quarto-listing-filter">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input id="tools-filter" type="text" class="search form-control" placeholder="Filter">
+  </div>
+</div>
+<div id="tools-no-results" style="display: none; padding: 1.5rem 0; color: #888; font-style: italic;">No tools match your search.</div>
 <section id="image-tools" class="level2">
 <h2 class="anchored" data-anchor-id="image-tools">Image Tools</h2>
 <div class="tools-list">
@@ -285,6 +291,45 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target.closest('a.tool-link')) return;
       desc.classList.toggle('open');
     });
+  });
+
+  // Search/filter functionality
+  const filterInput = document.getElementById('tools-filter');
+  const noResults = document.getElementById('tools-no-results');
+  if (!filterInput) return;
+
+  filterInput.addEventListener('input', () => {
+    const query = filterInput.value.toLowerCase().trim();
+    let totalVisible = 0;
+
+    document.querySelectorAll('.tools-list').forEach(list => {
+      const heading = list.previousElementSibling;
+      let visibleInSection = 0;
+
+      list.querySelectorAll('.tool-item').forEach(item => {
+        const link = item.querySelector('.tool-link');
+        const tagline = item.querySelector('.tool-tagline');
+        const desc = item.querySelector('.tool-desc');
+        const text = [
+          link ? link.textContent : '',
+          tagline ? tagline.textContent : '',
+          desc ? desc.textContent : ''
+        ].join(' ').toLowerCase();
+
+        const match = !query || text.includes(query);
+        item.style.display = match ? '' : 'none';
+        if (match) visibleInSection++;
+      });
+
+      const sectionHidden = visibleInSection === 0;
+      list.style.display = sectionHidden ? 'none' : '';
+      if (heading && heading.tagName === 'H2') {
+        heading.style.display = sectionHidden ? 'none' : '';
+      }
+      totalVisible += visibleInSection;
+    });
+
+    noResults.style.display = totalVisible === 0 && query ? 'block' : 'none';
   });
 });
 </script>
