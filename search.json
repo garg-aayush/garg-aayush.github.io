@@ -18,7 +18,7 @@
     "href": "tools/index.html#viewer-tools",
     "title": "Tools",
     "section": "Viewer Tools",
-    "text": "Viewer Tools\n\n\nHTML Viewer paste HTML, see it rendered live\n\nPaste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.\n\n\n\nMarkdown Viewer live preview with math & code highlighting\n\nPaste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries.\n\n\n\n\nInspired by tools.simonwillison.net."
+    "text": "Viewer Tools\n\n\nHTML Viewer paste HTML, see it rendered live\n\nPaste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.\n\n\n\nMarkdown Viewer live preview with math & code highlighting\n\nPaste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries.\n\n\n\n\nMost of these tools were vibe-coded. I’ve tested them, but if you run into any quirks or issues, that’s probably why.\nInspired by tools.simonwillison.net."
   },
   {
     "objectID": "posts/2026-02-12-cc-tools/index.html",
