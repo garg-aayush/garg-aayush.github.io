@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="analytics.js"></script>
+    <title>Base64 Encoder/Decoder</title>
+    <style>
+        :root {
+            --bg-body: #1d1e20;
+            --bg-card: #2e2e33;
+            --bg-inset: #37383e;
+            --bg-hover: #414244;
+            --border: #333333;
+            --text-primary: #dadada;
+            --text-content: #c4c4c5;
+            --text-muted: #9b9c9d;
+            --text-dim: #707073;
+            --accent: #75A8D9;
+            --accent-hover: #8fbce5;
+            --accent-dim: rgba(117, 168, 217, 0.15);
+            --green: #72994E;
+            --green-dim: rgba(114, 153, 78, 0.15);
+            --orange: #EE6331;
+            --orange-dim: rgba(238, 99, 49, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-content);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+            padding: 24px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 12px;
+            transition: color 0.15s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+        }
+
+        header h1 {
+            font-size: 22px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            transition: color 0.15s, border-color 0.15s;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-content);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Split pane */
+        .split-pane {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .split-pane {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .panel-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .ctrl-btn {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: var(--text-content);
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+        .ctrl-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .ctrl-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .ctrl-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-dim);
+        }
+
+        .ctrl-btn.primary {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .ctrl-btn.primary:hover {
+            background: var(--accent);
+            color: var(--bg-body);
+        }
+
+        textarea {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--text-content);
+            min-height: 420px;
+            flex: 1;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s, background 0.15s;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        textarea[readonly] {
+            opacity: 0.85;
+        }
+
+        .toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .group-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-right: 2px;
+        }
+
+        .sep {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        .error-msg {
+            display: none;
+            background: var(--orange-dim);
+            border: 1px solid var(--orange);
+            color: var(--orange);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .status-bar {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* File drop zone */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            margin-bottom: 12px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .drop-zone-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .drop-zone-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .drop-zone-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-meta {
+            display: none;
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .file-meta.visible {
+            display: flex;
+        }
+
+        .file-meta span strong {
+            color: var(--text-content);
+        }
+
+        /* Image preview */
+        .img-preview {
+            display: none;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .img-preview.visible {
+            display: block;
+        }
+
+        .img-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .img-preview-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* MIME input */
+        .mime-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .mime-input {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+            color: var(--text-content);
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            outline: none;
+            transition: border-color 0.15s;
+            width: 200px;
+        }
+
+        .mime-input:focus {
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="./" class="back-link">← Back to Tools</a>
+            <h1>Base64 Encoder/Decoder</h1>
+        </header>
+
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('text')">Text</button>
+            <button class="tab-btn" onclick="switchTab('file-encode')">File → Base64</button>
+            <button class="tab-btn" onclick="switchTab('file-decode')">Base64 → File</button>
+        </div>
+
+        <!-- TEXT TAB -->
+        <div id="tab-text" class="tab-panel active">
+            <div class="toolbar-row">
+                <span class="group-label">Mode:</span>
+                <button id="textBtnEncode" class="ctrl-btn active" onclick="setTextMode('encode')">Encode</button>
+                <button id="textBtnDecode" class="ctrl-btn" onclick="setTextMode('decode')">Decode</button>
+                <div class="sep"></div>
+                <button class="ctrl-btn" onclick="clearText()">Clear</button>
+            </div>
+            <div id="textError" class="error-msg"></div>
+            <div class="split-pane">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-label" id="textInputLabel">Plain Text</span>
+                        <div class="toolbar">
+                            <button class="ctrl-btn" onclick="copyFrom('textInput', this)">Copy</button>
+                        </div>
+                    </div>
+                    <textarea id="textInput" placeholder="Type or paste text here…" spellcheck="false"></textarea>
+                    <div class="status-bar"><span id="textStatus"></span></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-label" id="textOutputLabel">Base64</span>
+                        <div class="toolbar">
+                            <button class="ctrl-btn" onclick="copyFrom('textOutput', this)">Copy</button>
+                        </div>
+                    </div>
+                    <textarea id="textOutput" placeholder="Base64 output appears here…" readonly spellcheck="false"></textarea>
+                    <div class="status-bar"><span id="textOutStatus"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILE → BASE64 TAB -->
+        <div id="tab-file-encode" class="tab-panel">
+            <div id="fileEncodeError" class="error-msg"></div>
+
+            <div class="drop-zone" id="encodeDropZone" onclick="document.getElementById('encodeFileInput').click()">
+                <div class="drop-zone-icon">📂</div>
+                <div class="drop-zone-text">Drop any file here</div>
+                <div class="drop-zone-sub">or click to browse</div>
+            </div>
+            <input type="file" id="encodeFileInput" class="file-input">
+
+            <div id="fileMeta" class="file-meta">
+                <span><strong id="fileName">—</strong></span>
+                <span>Size: <strong id="fileSize">—</strong></span>
+                <span>Type: <strong id="fileType">—</strong></span>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-label">Base64 Output</span>
+                    <div class="toolbar">
+                        <button class="ctrl-btn" onclick="copyFrom('encodeOutput', this)">Copy</button>
+                        <button class="ctrl-btn" onclick="clearFileEncode()">Clear</button>
+                    </div>
+                </div>
+                <textarea id="encodeOutput" placeholder="Base64 will appear here after selecting a file…" readonly spellcheck="false"></textarea>
+            </div>
+        </div>
+
+        <!-- BASE64 → FILE TAB -->
+        <div id="tab-file-decode" class="tab-panel">
+            <div id="fileDecodeError" class="error-msg"></div>
+
+            <div class="mime-row">
+                <label for="mimeInput">MIME type (optional):</label>
+                <input type="text" id="mimeInput" class="mime-input" placeholder="e.g. image/png" spellcheck="false">
+                <span style="color:var(--text-dim);font-size:11px;">auto-detected from data URI prefix</span>
+            </div>
+
+            <div class="split-pane">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-label">Base64 Input</span>
+                        <div class="toolbar">
+                            <button class="ctrl-btn" onclick="clearFileDecode()">Clear</button>
+                        </div>
+                    </div>
+                    <textarea id="decodeInput" placeholder="Paste base64 string or data URI here…" spellcheck="false"></textarea>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-label">Preview / Download</span>
+                    </div>
+                    <div id="imgPreview" class="img-preview">
+                        <div class="img-preview-label">Image Preview</div>
+                        <img id="previewImg" src="" alt="Preview">
+                    </div>
+                    <div id="decodeStatus" style="font-size:13px;color:var(--text-muted);margin-top:8px;flex:1;display:flex;align-items:center;justify-content:center;">
+                        Decoded file will appear here
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="ctrl-btn primary" onclick="decodeFile()">Decode &amp; Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── Tab switching ──────────────────────────────────────────────────────
+        function switchTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                if (b.getAttribute('onclick').includes("'" + name + "'")) b.classList.add('active');
+            });
+        }
+
+        // ─── Shared helpers ─────────────────────────────────────────────────────
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.classList.add('visible');
+        }
+
+        function hideError(id) {
+            const el = document.getElementById(id);
+            el.textContent = '';
+            el.classList.remove('visible');
+        }
+
+        function copyFrom(id, btn) {
+            const val = document.getElementById(id).value;
+            if (!val.trim()) return;
+            navigator.clipboard.writeText(val).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1200);
+            });
+        }
+
+        function formatBytes(n) {
+            if (n < 1024) return n + ' B';
+            if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+            return (n / 1048576).toFixed(1) + ' MB';
+        }
+
+        // ─── TEXT TAB ───────────────────────────────────────────────────────────
+        const textInput = document.getElementById('textInput');
+        const textOutput = document.getElementById('textOutput');
+        let textMode = 'encode';
+
+        function setTextMode(mode) {
+            textMode = mode;
+            document.getElementById('textBtnEncode').classList.toggle('active', mode === 'encode');
+            document.getElementById('textBtnDecode').classList.toggle('active', mode === 'decode');
+            document.getElementById('textInputLabel').textContent = mode === 'encode' ? 'Plain Text' : 'Base64';
+            document.getElementById('textOutputLabel').textContent = mode === 'encode' ? 'Base64' : 'Plain Text';
+            textInput.placeholder = mode === 'encode' ? 'Type or paste text here…' : 'Paste base64 string here…';
+            textOutput.placeholder = mode === 'encode' ? 'Base64 output appears here…' : 'Decoded text appears here…';
+            clearText();
+        }
+
+        let liveTimer;
+        textInput.addEventListener('input', () => {
+            clearTimeout(liveTimer);
+            liveTimer = setTimeout(convertText, 300);
+        });
+
+        function convertText() {
+            hideError('textError');
+            const src = textInput.value;
+            document.getElementById('textStatus').textContent = src.length ? src.length + ' chars' : '';
+            if (!src) { textOutput.value = ''; document.getElementById('textOutStatus').textContent = ''; return; }
+            try {
+                let result;
+                if (textMode === 'encode') {
+                    result = btoa(unescape(encodeURIComponent(src)));
+                } else {
+                    const cleaned = src.trim().replace(/\s/g, '');
+                    try {
+                        result = decodeURIComponent(escape(atob(cleaned)));
+                    } catch (e) {
+                        // Only show error when input looks complete, not while still typing
+                        if (cleaned.length >= 4 && (cleaned.length % 4 === 0 || cleaned.endsWith('='))) {
+                            showError('textError', 'Invalid base64 string.');
+                        }
+                        textOutput.value = '';
+                        document.getElementById('textOutStatus').textContent = '';
+                        return;
+                    }
+                }
+                textOutput.value = result;
+                document.getElementById('textOutStatus').textContent = result.length + ' chars';
+            } catch (e) {
+                showError('textError', (textMode === 'encode' ? 'Encode' : 'Decode') + ' error: ' + e.message);
+                textOutput.value = '';
+                document.getElementById('textOutStatus').textContent = '';
+            }
+        }
+
+        function clearText() {
+            textInput.value = '';
+            textOutput.value = '';
+            hideError('textError');
+            document.getElementById('textStatus').textContent = '';
+            document.getElementById('textOutStatus').textContent = '';
+        }
+
+        // ─── FILE → BASE64 TAB ──────────────────────────────────────────────────
+        const encodeDropZone = document.getElementById('encodeDropZone');
+        const encodeFileInput = document.getElementById('encodeFileInput');
+
+        encodeDropZone.addEventListener('dragover', (e) => { e.preventDefault(); encodeDropZone.classList.add('drag-over'); });
+        encodeDropZone.addEventListener('dragleave', () => encodeDropZone.classList.remove('drag-over'));
+        encodeDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            encodeDropZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) processFileEncode(file);
+        });
+
+        encodeFileInput.addEventListener('change', () => {
+            if (encodeFileInput.files[0]) processFileEncode(encodeFileInput.files[0]);
+        });
+
+        function processFileEncode(file) {
+            hideError('fileEncodeError');
+            const reader = new FileReader();
+            reader.onload = () => {
+                // result is data URL: data:<mime>;base64,<data>
+                const dataUrl = reader.result;
+                const b64 = dataUrl.split(',')[1];
+                document.getElementById('encodeOutput').value = b64;
+
+                const meta = document.getElementById('fileMeta');
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = formatBytes(file.size);
+                document.getElementById('fileType').textContent = file.type || 'unknown';
+                meta.classList.add('visible');
+            };
+            reader.onerror = () => showError('fileEncodeError', 'Failed to read file.');
+            reader.readAsDataURL(file);
+        }
+
+        function clearFileEncode() {
+            document.getElementById('encodeOutput').value = '';
+            document.getElementById('fileMeta').classList.remove('visible');
+            encodeFileInput.value = '';
+            hideError('fileEncodeError');
+        }
+
+        // ─── BASE64 → FILE TAB ──────────────────────────────────────────────────
+        const decodeInput = document.getElementById('decodeInput');
+
+        // Auto-detect MIME from data URI prefix as user types
+        let decodeTimer;
+        decodeInput.addEventListener('input', () => {
+            clearTimeout(decodeTimer);
+            decodeTimer = setTimeout(() => {
+                const val = decodeInput.value.trim();
+                if (val.startsWith('data:')) {
+                    const match = val.match(/^data:([^;]+);base64,/);
+                    if (match) document.getElementById('mimeInput').value = match[1];
+                }
+            }, 300);
+        });
+
+        function isValidBase64(str) {
+            return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && str.length % 4 === 0;
+        }
+
+        function decodeFile() {
+            hideError('fileDecodeError');
+            let raw = decodeInput.value.trim();
+            if (!raw) { showError('fileDecodeError', 'Paste a base64 string first.'); return; }
+
+            let mime = document.getElementById('mimeInput').value.trim() || 'application/octet-stream';
+            let b64 = raw;
+
+            // Strip data URI prefix if present
+            if (raw.startsWith('data:')) {
+                const match = raw.match(/^data:([^;]+);base64,(.+)$/s);
+                if (match) {
+                    mime = match[1];
+                    b64 = match[2];
+                    document.getElementById('mimeInput').value = mime;
+                } else {
+                    showError('fileDecodeError', 'Invalid data URI format.');
+                    return;
+                }
+            }
+
+            // Validate
+            const cleaned = b64.replace(/\s/g, '');
+            if (!isValidBase64(cleaned)) {
+                showError('fileDecodeError', 'Invalid base64 string — check for non-base64 characters or incorrect padding.');
+                return;
+            }
+
+            let binary;
+            try {
+                binary = atob(cleaned);
+            } catch (e) {
+                showError('fileDecodeError', 'Decode error: ' + e.message);
+                return;
+            }
+
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+            const blob = new Blob([bytes], { type: mime });
+            const url = URL.createObjectURL(blob);
+
+            // Image preview
+            const imgPreview = document.getElementById('imgPreview');
+            const previewImg = document.getElementById('previewImg');
+            if (mime.startsWith('image/')) {
+                previewImg.src = url;
+                imgPreview.classList.add('visible');
+            } else {
+                imgPreview.classList.remove('visible');
+            }
+
+            // Download
+            const ext = mime.split('/')[1] || 'bin';
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'decoded.' + ext;
+            a.click();
+
+            const statusEl = document.getElementById('decodeStatus');
+            statusEl.textContent = `✓ Decoded ${formatBytes(bytes.length)} · ${mime}`;
+            statusEl.style.color = 'var(--green)';
+        }
+
+        function clearFileDecode() {
+            decodeInput.value = '';
+            document.getElementById('mimeInput').value = '';
+            document.getElementById('imgPreview').classList.remove('visible');
+            document.getElementById('decodeStatus').textContent = 'Decoded file will appear here';
+            document.getElementById('decodeStatus').style.color = 'var(--text-muted)';
+            hideError('fileDecodeError');
+        }
+    </script>
+</body>
+</html>
