@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="analytics.js"></script>
+    <title>URL Encoder/Decoder</title>
+    <style>
+        :root {
+            --bg-body: #1d1e20;
+            --bg-card: #2e2e33;
+            --bg-inset: #37383e;
+            --bg-hover: #414244;
+            --border: #333333;
+            --text-primary: #dadada;
+            --text-content: #c4c4c5;
+            --text-muted: #9b9c9d;
+            --text-dim: #707073;
+            --accent: #75A8D9;
+            --accent-hover: #8fbce5;
+            --accent-dim: rgba(117, 168, 217, 0.15);
+            --green: #72994E;
+            --green-dim: rgba(114, 153, 78, 0.15);
+            --orange: #EE6331;
+            --orange-dim: rgba(238, 99, 49, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-content);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+            padding: 24px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .back-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 12px;
+            transition: color 0.15s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+        }
+
+        header h1 {
+            font-size: 22px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .group-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-right: 2px;
+        }
+
+        .ctrl-btn {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: var(--text-content);
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+        .ctrl-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .ctrl-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .ctrl-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-dim);
+        }
+
+        .sep {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        .mode-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        .mode-group.hidden {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .error-msg {
+            display: none;
+            background: var(--orange-dim);
+            border: 1px solid var(--orange);
+            color: var(--orange);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .split-pane {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .split-pane {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .panel-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .panel-toolbar {
+            display: flex;
+            gap: 6px;
+        }
+
+        textarea {
+            background: var(--bg-inset);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+            color: var(--text-content);
+            min-height: 480px;
+            flex: 1;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s, background 0.15s;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        textarea[readonly] {
+            opacity: 0.85;
+        }
+
+        .status-bar {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="./" class="back-link">← Back to Tools</a>
+            <h1>URL Encoder/Decoder</h1>
+        </header>
+
+        <div class="toolbar-row">
+            <span class="group-label">Mode:</span>
+            <button id="btnEncode" class="ctrl-btn active" onclick="setAction('encode')">Encode</button>
+            <button id="btnDecode" class="ctrl-btn" onclick="setAction('decode')">Decode</button>
+
+            <div class="sep"></div>
+
+            <div id="funcGroup" class="mode-group">
+                <span class="group-label">Function:</span>
+                <button id="btnComponent" class="ctrl-btn active" onclick="setFunc('component')">encodeURIComponent</button>
+                <button id="btnUri" class="ctrl-btn" onclick="setFunc('uri')">encodeURI</button>
+            </div>
+
+            <div class="sep"></div>
+
+            <button class="ctrl-btn" onclick="clearAll()">Clear</button>
+        </div>
+
+        <div id="errorMsg" class="error-msg"></div>
+
+        <div class="split-pane">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-label" id="inputLabel">Input</span>
+                </div>
+                <textarea id="inputArea" placeholder="Paste or type your text here…" spellcheck="false"></textarea>
+                <div class="status-bar">
+                    <span id="inputCount"></span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-label" id="outputLabel">Output</span>
+                    <div class="panel-toolbar">
+                        <button class="ctrl-btn" id="copyBtn" onclick="copyOutput(this)">Copy</button>
+                    </div>
+                </div>
+                <textarea id="outputArea" readonly placeholder="Result appears here…" spellcheck="false"></textarea>
+                <div class="status-bar">
+                    <span id="outputCount"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let action = 'encode'; // 'encode' | 'decode'
+        let func = 'component'; // 'component' | 'uri'
+
+        const inputArea = document.getElementById('inputArea');
+        const outputArea = document.getElementById('outputArea');
+        const errorMsg = document.getElementById('errorMsg');
+        const funcGroup = document.getElementById('funcGroup');
+
+        function setAction(a) {
+            action = a;
+            document.getElementById('btnEncode').classList.toggle('active', a === 'encode');
+            document.getElementById('btnDecode').classList.toggle('active', a === 'decode');
+            funcGroup.classList.toggle('hidden', a === 'decode');
+            updateLabels();
+            convert();
+        }
+
+        function setFunc(f) {
+            func = f;
+            document.getElementById('btnComponent').classList.toggle('active', f === 'component');
+            document.getElementById('btnUri').classList.toggle('active', f === 'uri');
+            convert();
+        }
+
+        function updateLabels() {
+            document.getElementById('inputLabel').textContent = action === 'encode' ? 'Plain' : 'Encoded';
+            document.getElementById('outputLabel').textContent = action === 'encode' ? 'Encoded' : 'Decoded';
+            inputArea.placeholder = action === 'encode'
+                ? 'Paste or type plain text / URL here…'
+                : 'Paste percent-encoded string here…';
+        }
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.classList.add('visible');
+        }
+
+        function hideError() {
+            errorMsg.textContent = '';
+            errorMsg.classList.remove('visible');
+        }
+
+        function convert() {
+            hideError();
+            const src = inputArea.value;
+            document.getElementById('inputCount').textContent = src.length ? src.length + ' chars in' : '';
+
+            if (!src) {
+                outputArea.value = '';
+                document.getElementById('outputCount').textContent = '';
+                return;
+            }
+
+            let result;
+            try {
+                if (action === 'encode') {
+                    result = func === 'component' ? encodeURIComponent(src) : encodeURI(src);
+                } else {
+                    result = decodeURIComponent(src);
+                }
+                outputArea.value = result;
+                document.getElementById('outputCount').textContent = result.length + ' chars out';
+            } catch (e) {
+                outputArea.value = '';
+                document.getElementById('outputCount').textContent = '';
+                showError('Error: ' + e.message);
+            }
+        }
+
+        function copyOutput(btn) {
+            const val = outputArea.value;
+            if (!val) return;
+            navigator.clipboard.writeText(val).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1200);
+            });
+        }
+
+        function clearAll() {
+            inputArea.value = '';
+            outputArea.value = '';
+            hideError();
+            document.getElementById('inputCount').textContent = '';
+            document.getElementById('outputCount').textContent = '';
+        }
+
+        // Live conversion, debounced
+        let timer;
+        inputArea.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(convert, 300);
+        });
+
+        updateLabels();
+    </script>
+</body>
+</html>
