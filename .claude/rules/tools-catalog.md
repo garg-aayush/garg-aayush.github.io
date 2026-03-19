@@ -34,6 +34,13 @@ Inventory of all browser-based tools. Check here before building a new tool to r
 |------|------|-------------|--------------|
 | YAML ↔ JSON Converter | `yaml-json-converter.html` | Bidirectional YAML/JSON conversion with validation | js-yaml |
 
+## Encoding Tools
+
+| Tool | File | Description | Dependencies |
+|------|------|-------------|--------------|
+| Base64 Encoder/Decoder | `base64.html` | Text encode/decode, file-to-base64 (drag-drop), base64-to-file with image preview | None |
+| URL Encoder/Decoder | `url-encoder.html` | Percent-encode/decode with encodeURIComponent or encodeURI toggle | None |
+
 ## CDN Libraries in Use
 
 | Library | CDN URL | Used By |
