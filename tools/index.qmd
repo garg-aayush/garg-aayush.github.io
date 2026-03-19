@@ -131,7 +131,7 @@ Convert between YAML and JSON with live validation, configurable indentation, fi
 [Base64 Encoder/Decoder](base64.html){.tool-link} [encode/decode text and binary files]{.tool-tagline}
 
 ::: {.tool-desc}
-Encode and decode base64 in three modes: live text encode/decode, file-to-base64 (any binary, with drag-and-drop), and base64-to-file with image preview and download. Useful for JWT inspection, Basic Auth, and data URIs.
+Encode and decode base64 in three modes: live text, file-to-base64 (drag-and-drop), and base64-to-file with image preview and download.
 :::
 :::
 
@@ -139,7 +139,7 @@ Encode and decode base64 in three modes: live text encode/decode, file-to-base64
 [URL Encoder/Decoder](url-encoder.html){.tool-link} [percent-encode and decode URL components]{.tool-tagline}
 
 ::: {.tool-desc}
-Encode and decode URL strings with live conversion. Toggle between encodeURIComponent (encodes everything including &, =, ?) and encodeURI (preserves URL structure). Handles malformed input gracefully.
+Percent-encode and decode URL strings with live conversion. Toggle between encodeURIComponent and encodeURI modes.
 :::
 :::
 

@@ -170,6 +170,13 @@
             background: var(--accent-dim);
         }
 
+        .ctrl-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
         .ctrl-btn.copied {
             border-color: var(--green);
             color: var(--green);
@@ -212,16 +219,28 @@
             opacity: 0.85;
         }
 
-        .action-row {
+        .toolbar-row {
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 14px 0;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
-        .action-row .ctrl-btn {
-            padding: 8px 20px;
-            font-size: 13px;
+        .group-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-right: 2px;
+        }
+
+        .sep {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 4px;
         }
 
         .error-msg {
@@ -375,14 +394,20 @@
 
         <!-- TEXT TAB -->
         <div id="tab-text" class="tab-panel active">
+            <div class="toolbar-row">
+                <span class="group-label">Mode:</span>
+                <button id="textBtnEncode" class="ctrl-btn active" onclick="setTextMode('encode')">Encode</button>
+                <button id="textBtnDecode" class="ctrl-btn" onclick="setTextMode('decode')">Decode</button>
+                <div class="sep"></div>
+                <button class="ctrl-btn" onclick="clearText()">Clear</button>
+            </div>
             <div id="textError" class="error-msg"></div>
             <div class="split-pane">
                 <div class="panel">
                     <div class="panel-header">
-                        <span class="panel-label">Plain Text</span>
+                        <span class="panel-label" id="textInputLabel">Plain Text</span>
                         <div class="toolbar">
                             <button class="ctrl-btn" onclick="copyFrom('textInput', this)">Copy</button>
-                            <button class="ctrl-btn" onclick="clearText()">Clear</button>
                         </div>
                     </div>
                     <textarea id="textInput" placeholder="Type or paste text here…" spellcheck="false"></textarea>
@@ -390,7 +415,7 @@
                 </div>
                 <div class="panel">
                     <div class="panel-header">
-                        <span class="panel-label">Base64</span>
+                        <span class="panel-label" id="textOutputLabel">Base64</span>
                         <div class="toolbar">
                             <button class="ctrl-btn" onclick="copyFrom('textOutput', this)">Copy</button>
                         </div>
@@ -398,10 +423,6 @@
                     <textarea id="textOutput" placeholder="Base64 output appears here…" readonly spellcheck="false"></textarea>
                     <div class="status-bar"><span id="textOutStatus"></span></div>
                 </div>
-            </div>
-            <div class="action-row">
-                <button class="ctrl-btn primary" onclick="encodeText()">Encode →</button>
-                <button class="ctrl-btn primary" onclick="decodeText()">← Decode</button>
             </div>
         </div>
 
@@ -518,44 +539,54 @@
         // ─── TEXT TAB ───────────────────────────────────────────────────────────
         const textInput = document.getElementById('textInput');
         const textOutput = document.getElementById('textOutput');
+        let textMode = 'encode';
+
+        function setTextMode(mode) {
+            textMode = mode;
+            document.getElementById('textBtnEncode').classList.toggle('active', mode === 'encode');
+            document.getElementById('textBtnDecode').classList.toggle('active', mode === 'decode');
+            document.getElementById('textInputLabel').textContent = mode === 'encode' ? 'Plain Text' : 'Base64';
+            document.getElementById('textOutputLabel').textContent = mode === 'encode' ? 'Base64' : 'Plain Text';
+            textInput.placeholder = mode === 'encode' ? 'Type or paste text here…' : 'Paste base64 string here…';
+            textOutput.placeholder = mode === 'encode' ? 'Base64 output appears here…' : 'Decoded text appears here…';
+            clearText();
+        }
 
         let liveTimer;
         textInput.addEventListener('input', () => {
             clearTimeout(liveTimer);
-            liveTimer = setTimeout(encodeText, 300);
+            liveTimer = setTimeout(convertText, 300);
         });
 
-        function encodeText() {
+        function convertText() {
             hideError('textError');
             const src = textInput.value;
-            if (!src) { textOutput.value = ''; document.getElementById('textStatus').textContent = ''; document.getElementById('textOutStatus').textContent = ''; return; }
+            document.getElementById('textStatus').textContent = src.length ? src.length + ' chars' : '';
+            if (!src) { textOutput.value = ''; document.getElementById('textOutStatus').textContent = ''; return; }
             try {
-                const encoded = btoa(unescape(encodeURIComponent(src)));
-                textOutput.value = encoded;
-                document.getElementById('textStatus').textContent = src.length + ' chars';
-                document.getElementById('textOutStatus').textContent = encoded.length + ' chars';
+                let result;
+                if (textMode === 'encode') {
+                    result = btoa(unescape(encodeURIComponent(src)));
+                } else {
+                    const cleaned = src.trim().replace(/\s/g, '');
+                    try {
+                        result = decodeURIComponent(escape(atob(cleaned)));
+                    } catch (e) {
+                        // Only show error when input looks complete, not while still typing
+                        if (cleaned.length >= 4 && (cleaned.length % 4 === 0 || cleaned.endsWith('='))) {
+                            showError('textError', 'Invalid base64 string.');
+                        }
+                        textOutput.value = '';
+                        document.getElementById('textOutStatus').textContent = '';
+                        return;
+                    }
+                }
+                textOutput.value = result;
+                document.getElementById('textOutStatus').textContent = result.length + ' chars';
             } catch (e) {
-                showError('textError', 'Encode error: ' + e.message);
-            }
-        }
-
-        function decodeText() {
-            hideError('textError');
-            const src = textOutput.value.trim() || textInput.value.trim();
-            if (!src) return;
-            // If output has content, decode that; otherwise treat input as base64
-            const b64 = textOutput.value.trim() ? textOutput.value.trim() : textInput.value.trim();
-            if (!isValidBase64(b64)) {
-                showError('textError', 'Invalid base64 string.');
-                return;
-            }
-            try {
-                const decoded = decodeURIComponent(escape(atob(b64)));
-                textInput.value = decoded;
-                textOutput.value = b64;
-                document.getElementById('textStatus').textContent = decoded.length + ' chars';
-            } catch (e) {
-                showError('textError', 'Decode error: ' + e.message);
+                showError('textError', (textMode === 'encode' ? 'Encode' : 'Decode') + ' error: ' + e.message);
+                textOutput.value = '';
+                document.getElementById('textOutStatus').textContent = '';
             }
         }
 
