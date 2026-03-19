@@ -18,7 +18,7 @@
     "href": "tools/index.html#data-tools",
     "title": "Tools",
     "section": "Data Tools",
-    "text": "Data Tools\n\n\nYAML ↔︎ JSON Converter bidirectional conversion with validation\n\nConvert between YAML and JSON with live validation, configurable indentation, file drop support, and sample data. Requires internet for js-yaml library.\n\n\n\nBase64 Encoder/Decoder encode/decode text and binary files\n\nEncode and decode base64 in three modes: live text, file-to-base64 (drag-and-drop), and base64-to-file with image preview and download.\n\n\n\nURL Encoder/Decoder percent-encode and decode URL components\n\nPercent-encode and decode URL strings with live conversion. Toggle between encodeURIComponent and encodeURI modes.\n\n\n\n\nMost of these tools were vibe-coded. I’ve tested them, but if you run into any quirks or issues, that’s probably why.\nInspired by tools.simonwillison.net."
+    "text": "Data Tools\n\n\nYAML ↔︎ JSON Converter bidirectional conversion with validation\n\nConvert between YAML and JSON with live validation, configurable indentation, file drop support, and sample data. Requires internet for js-yaml library.\n\n\n\nBase64 Encoder/Decoder encode/decode images and text\n\nDecode base64 to image with live preview and download, encode images to base64 data URIs (drag-and-drop), or encode/decode plain text.\n\n\n\nURL Encoder/Decoder percent-encode and decode URL components\n\nPercent-encode and decode URL strings with live conversion. Toggle between encodeURIComponent and encodeURI modes.\n\n\n\n\nMost of these tools were vibe-coded. I’ve tested them, but if you run into any quirks or issues, that’s probably why.\nInspired by tools.simonwillison.net."
   },
   {
     "objectID": "posts/2026-02-12-cc-tools/index.html",
