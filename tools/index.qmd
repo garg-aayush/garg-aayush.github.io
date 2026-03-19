@@ -127,12 +127,6 @@ Convert between YAML and JSON with live validation, configurable indentation, fi
 :::
 :::
 
-:::
-
-## Encoding Tools
-
-::: {.tools-list}
-
 ::: {.tool-item}
 [Base64 Encoder/Decoder](base64.html){.tool-link} [encode/decode text and binary files]{.tool-tagline}
 
