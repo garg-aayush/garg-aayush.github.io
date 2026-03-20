@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/blog/index.html",
     "items": [
+      "/posts/2026-03-20-browser-tools/index.html",
       "/posts/2026-02-26-grpo-from-scratch/index.html",
       "/posts/2026-02-12-cc-tools/index.html",
       "/posts/2026-01-23-expert-iteration/index.html",
@@ -22,8 +23,9 @@
     ]
   },
   {
-    "listing": "/blog/index.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/2026-03-20-browser-tools/index.html",
       "/posts/2026-02-26-grpo-from-scratch/index.html",
       "/posts/2026-02-12-cc-tools/index.html",
       "/posts/2026-01-23-expert-iteration/index.html",

@@ -10,7 +10,88 @@
 <atom:link href="https://garg-aayush.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>LLM fundamentals, fine-tuning experiments, and building reliable AI systems.</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Thu, 26 Feb 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 20 Mar 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Building Browser Tools with Claude Code</title>
+  <link>https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I have been an admirer of Simon Willison’s <a href="https://tools.simonwillison.net/">tools site</a> for a while now. On his website you can find hundreds of single-file HTML tools he has built using LLMs which are basically self-contained HTML files where everything runs client-side.</p>
+<p>I always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using <a href="https://claude.ai/code">Claude Code</a> and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/tools_preview.jpg" class="img-fluid" style="width:100.0%"></p>
+<section id="the-tools" class="level2">
+<h2 class="anchored" data-anchor-id="the-tools">The Tools</h2>
+<p>Here is what is there so far, grouped by category. All tools support drag-and-drop for file input and run entirely in the browser (nothing leaves your machine).</p>
+<section id="image-tools" class="level3">
+<h3 class="anchored" data-anchor-id="image-tools">Image Tools</h3>
+<ul>
+<li><a href="../../tools/image-converter.html"><strong>Image Format Converter</strong></a>: Convert between PNG, JPEG, and WebP with transparency handling.</li>
+<li><a href="../../tools/image-resizer.html"><strong>Image Resizer</strong></a>: Resize imagesby by dimensions, aspect ratio and percentage.</li>
+<li><a href="../../tools/image-cropper.html"><strong>Image Cropper</strong></a>: Interactive crop with draggable selection and aspect ratio presets.</li>
+<li><a href="../../tools/image-mask-creator.html"><strong>Binary Mask Creator</strong></a>: Paint binary black and white masks for AI inpainting and fill models.</li>
+<li><a href="../../tools/image-operations.html"><strong>Image Adjust &amp; Transform</strong></a>: Flip, rotate, invert, grayscale, brightness, and contrast adjustments.</li>
+<li><a href="../../tools/svg-viewer.html"><strong>SVG Viewer &amp; Converter</strong></a>: Preview SVGs, inspect metadata, export to raster formats.</li>
+</ul>
+<p>I find the Binary Mask Creator pretty handy, especially when working with inpainting models like <a href="https://replicate.com/black-forest-labs/flux-fill-dev">FLUX Fill</a> or <a href="https://replicate.com/ideogram-ai/ideogram-v3-turbo">Ideogram v3</a>. Creating clean masks is usually a bit of a pain using some clunky web app. The SVG Viewer is another one I reach for often to preview and convert SVGs on the go (saves me time).</p>
+<table align="center">
+<tbody><tr>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/binary_mask_creator.jpg" alt="Binary Mask Creator" width="100%">
+</td>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/svg_convertor.jpg" alt="SVG Viewer &amp; Converter" width="100%">
+</td>
+</tr>
+</tbody></table>
+<p align="center">
+<em>Binary Mask Creator and SVG Viewer &amp; Converter</em>
+</p>
+</section>
+<section id="viewer-tools" class="level3">
+<h3 class="anchored" data-anchor-id="viewer-tools">Viewer Tools</h3>
+<ul>
+<li><a href="../../tools/html-viewer.html"><strong>HTML Viewer</strong></a>: Paste HTML and see it rendered in a sandboxed frame.</li>
+<li><a href="../../tools/markdown-viewer.html"><strong>Markdown Viewer</strong></a>: Live markdown preview with syntax highlighting and latex math support.</li>
+<li><a href="../../tools/json-formatter.html"><strong>JSON Formatter &amp; Viewer</strong></a>: Format, validate, collapsible tree view, and search.</li>
+<li><a href="../../tools/diff-viewer.html"><strong>Diff Viewer</strong></a>: Side-by-side and unified diff with word-level highlighting.</li>
+<li><a href="../../tools/latex-preview.html"><strong>LaTeX Math Preview</strong></a>: Live math latex rendering with a symbol palette and saved snippets.</li>
+</ul>
+<p>The HTML and Markdown viewers comes in handy especially if you are working with an OCR model and quickly want to see the generated preview of an image or PDF. And whenever I am working with math equations, the LaTeX Preview is a nice scratchpad where I can quickly test out an equation and make sure it renders correctly.</p>
+</section>
+<section id="data-tools" class="level3">
+<h3 class="anchored" data-anchor-id="data-tools">Data Tools</h3>
+<ul>
+<li><a href="../../tools/yaml-json-converter.html"><strong>YAML/JSON Converter</strong></a>: Bidirectional conversion with validation and configurable indentation.</li>
+<li><a href="../../tools/base64.html"><strong>Base64 Encoder/Decoder</strong></a>: Encode/decode images and text with image preview.</li>
+<li><a href="../../tools/url-encoder.html"><strong>URL Encoder/Decoder</strong></a>: Percent encode and decode useful for API calls and debugging.</li>
+</ul>
+<p>The YAML/JSON converter I like a lot, especially when working with training configs. The Base64 tool is another one I use often when working with llm/image-gen APIs, sometimes they send back base64 encoded images or require base64 encoded images as input and I can directly do that here.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/yaml2json.jpg" class="img-fluid" style="width:100.0%"></p>
+<blockquote class="blockquote">
+<p>For what it is worth, I do have all of these set up as skills in my Claude Code setup too. But it is always nice to have something in the browser where you can quickly drag and drop an image and get the <strong>result without opening a terminal session or burning tokens</strong>.</p>
+</blockquote>
+</section>
+</section>
+<section id="how-i-built-them" class="level2">
+<h2 class="anchored" data-anchor-id="how-i-built-them">How I Built Them</h2>
+<p>Nathan Lambert wrote a good piece on how <a href="https://www.interconnects.ai/p/claude-code-hits-different">Claude Code hits different</a> and Sergey Karayev put it well when he said Claude Code with Opus is <em>“moving software creation from an artisanal, craftsman activity to a true industrial process”</em>. I think that captures it. The bottleneck is no longer writing the code, it is planning, designing and validating.</p>
+<p>When I was building these tools, most of my time went into two things. First, planning out what tools to build with focus on being simple, standalone HTML files that serve my purpose. I would plan everything out, write a detailed plan of tools description and then fire multiple sub-agents in Claude Code to build them in parallel. Second, <strong>doing that last ~10% of the work</strong> where you polish things according to your needs, making sure there are no missing libraries, no edge cases falling through, testing each tool to make sure it actually works as expected.</p>
+<p>I did not sit down and write HTML or JavaScript. I spent my time figuring out what these tools should do and then verifying that they do it correctly. Without Claude Code I would not have attempted this not because the tools are complex but because HTML and JavaScript are not what I work in daily. With Claude Code, I could just focus on the requirements and planning part, ensure a correct test path, and let it handle the implementation.</p>
+</section>
+<section id="try-them-out" class="level2">
+<h2 class="anchored" data-anchor-id="try-them-out">Try Them Out</h2>
+<p>All tools are at <a href="../../tools/">aayushgarg.dev/tools</a>. If you have ideas for useful tools, feel free to reach out.</p>
+
+
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</guid>
+  <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>GRPO: Building Intuition Through Ablation Studies</title>
   <link>https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</link>
