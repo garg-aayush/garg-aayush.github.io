@@ -15,7 +15,8 @@ paths:
 - **Always work on the `tools` branch** when adding a new tool — never commit directly to `master`
 - **Commit locally at important checkpoints** on the `tools` branch while developing
 - Only after the user has tested locally and confirms: **push to remote -> create PR to `master` -> merge -> `git checkout master && git pull`**
-- When building multiple tools at once, use **parallel worktree agents** — one agent per tool in isolated worktrees, all running concurrently
+- After merging, update `tools` and `blog-posts` branches to match `master`
+- When building multiple tools at once, use **parallel worktree agents**, one agent per tool in isolated worktrees, all running concurrently
 - Each agent should receive the full CSS variable set and reference file patterns to match the site theme
 - Worktree agents may not auto-commit — after they finish, **copy the generated files** from the worktree paths into the main repo and commit from there
 - Always **unhide panels before initializing canvases** — `display: none` elements have zero `clientWidth`, which breaks canvas sizing

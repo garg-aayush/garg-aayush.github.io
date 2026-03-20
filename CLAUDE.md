@@ -43,9 +43,15 @@ Custom dark theme inspired by Lil'Log. Key colors: background `#1d1e20`, accent 
 ## Conventions
 - Blog post dates use `YYYY-MM-DD` prefix format
 - **Always create new blog posts** using the directory format: `posts/YYYY-MM-DD-title/index.qmd` (not single `.qmd` files)
-- **Blog post images** are stored in `static/img/blog-YYYY-MM-DD/` matching the post date (e.g., post `2026-01-23-expert-iteration` → images in `static/img/blog-2026-01-23/`)
-- Code execution is frozen (`freeze: true`) — rendered outputs are cached, not re-executed on each build
+- **Blog post images** are stored in `static/img/blog-YYYY-MM-DD/` matching the post date (e.g., post `2026-01-23-expert-iteration` images in `static/img/blog-2026-01-23/`)
+- Code execution is frozen (`freeze: true`), rendered outputs are cached, not re-executed on each build
 - External links open in new tabs (configured globally in `_quarto.yml`)
+
+## Blog Posts
+
+Detailed rules are in `.claude/rules/` and auto-load when working in `posts/`:
+- **`.claude/rules/blog-workflow.md`** - branching, image conventions, and commit/PR flow
+- **`.claude/rules/blog-writing-style.md`** - tone, formatting, and style preferences
 
 ## Tools Section
 
