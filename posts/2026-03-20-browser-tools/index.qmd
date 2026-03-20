@@ -7,7 +7,7 @@ date: 2026-03-20
 permalink: /2026-03-20-browser-tools/
 ---
 
-I have been an admirer of Simon Willison's [tools site](https://tools.simonwillison.net/) for a while now. On his website you can find hundreds of single-file HTML tools he has built using LLMs which are basically self-contained HTML files where everything runs client-side.
+I have been an admirer of Simon Willison's [tools site](https://tools.simonwillison.net/) for a while now. On his website you can find more than a hundred single-file HTML + JavaScript tools he has built using LLMs. They are mostly self-contained HTML + JavaScript files.
 
 I always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using [Claude Code](https://claude.ai/code) and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too.
 
