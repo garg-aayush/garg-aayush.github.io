@@ -146,7 +146,7 @@ Percent-encode and decode URL strings with live conversion. Toggle between encod
 :::
 
 ::: {.template-credit}
-*Most of these tools were vibe-coded. I've tested them, but if you run into any quirks or issues, that's probably why.*
+*Most of these tools were vibe-coded so if you run into any quirks, that's probably why.*
 
 *Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
 :::
