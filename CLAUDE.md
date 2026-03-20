@@ -27,7 +27,7 @@ quarto render posts/    # Render only blog posts
 - **Blog posts** in `posts/` — Either `YYYY-MM-DD-title.qmd` (single file) or `YYYY-MM-DD-title/index.qmd` (directory with assets)
 - **Static pages** in `pages/` — Project pages (doverlap, jsalt, overlap-aware-sc)
 - **Tools** in `tools/` — `index.qmd` (listing page) + standalone `.html` tool files
-- **Top-level pages**: `index.qmd` (homepage), `about.qmd`, `publications.qmd`, `resume.qmd`, `blog/index.qmd` (blog listing)
+- **Top-level pages**: `index.qmd` (homepage), `about.qmd`, `publications.qmd`, `blog/index.qmd` (blog listing)
 - **Assets** in `static/` — Images, PDFs, videos, etc.
 
 ### Post Metadata
