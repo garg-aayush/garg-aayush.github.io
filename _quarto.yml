@@ -9,6 +9,7 @@ project:
     - pages/*.qmd
     - posts/*.qmd
     - posts/*/index.qmd
+    - projects.qmd
     - tools/index.qmd
 
 website:
@@ -30,6 +31,8 @@ website:
         href: index.qmd
       - text: Blogs
         href: blog/
+      - text: Projects
+        href: projects.qmd
       - text: Publications
         href: publications.qmd
       - text: Tools
