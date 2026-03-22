@@ -1,6 +1,6 @@
 ---
 title: "Projects"
-description: "Some of the projects I've worked on over the years, all publicly available on GitHub."
+description: "Some of the projects I have worked on over the years, all publicly available on my [GitHub](https://github.com/garg-aayush)."
 sidebar: false
 toc: false
 ---
@@ -10,13 +10,47 @@ toc: false
 ::: {.project-item}
 [building-from-scratch](https://github.com/garg-aayush/building-from-scratch)
 
-My ongoing repo where I build language models and related concepts from first principles. I've worked through seven sub-projects so far: a character-level GPT, a GPT-2 124M reimplementation with RoPE, a BPE tokenizer from scratch (with a Rust encoder for 3.7x speedup), LLM inference with KV cache and speculative decoding, supervised fine-tuning for reasoning and instruction following, expert iteration for self-improvement on math, and Group Relative Policy Optimization (GRPO).
+My ongoing repo where I build language models and related concepts from first principles. I've worked through multiple sub-projects so far:
+
+- Character-level GPT
+- GPT-2 124M reimplementation with RoPE
+- BPE tokenizer from scratch (with a Rust encoder for 3.7x speedup)
+- LLM inference with KV cache and speculative decoding
+- Supervised fine-tuning for reasoning and instruction following
+- Expert iteration for self-improvement on math
+- Group Relative Policy Optimization (GRPO)
+
+Currently working on a FlashAttention2 implementation from first principles.
 :::
 
 ::: {.project-item}
 [cv-skills](https://github.com/garg-aayush/cv-skills)
 
-I built this as a Claude Code plugin that provides seven skills for classical image processing: format conversion, SVG-to-raster, resize/crop/rotate, color adjustments, blur/sharpen/denoise, edge detection and segmentation, and image compositing with background removal.
+I built this as a Claude Code plugin that provides multiple skills for classical image processing: format conversion, SVG-to-raster, resize/crop/rotate, color adjustments, blur/sharpen/denoise, edge detection and segmentation, and image compositing with background removal.
+:::
+
+::: {.project-item}
+[ComfyUI-Svg2Raster](https://github.com/garg-aayush/ComfyUI-Svg2Raster)
+
+I wrote this ComfyUI custom node package for loading SVG files and rasterizing them into images with configurable width, scale, background color, and border. Uses CairoSVG under the hood.
+:::
+
+::: {.project-item}
+[tutorials](https://github.com/garg-aayush/tutorials)
+
+A collection of various tutorials I wrote for my own use and to share with others.
+:::
+
+::: {.project-item}
+[spatial-alias-removal](https://github.com/garg-aayush/spatial-alias-removal)
+
+I used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data by 2x in the spatial direction and remove spatial aliasing. This work was published as a paper back in 2019, built during my time at TU Delft and University of Amsterdam.
+:::
+
+::: {.project-item}
+[research-papers](https://github.com/garg-aayush/research-papers)
+
+My reading notes and summaries for deep learning papers organized by category. Covers diffusion models (DDPM, DDIM, ControlNet, SDXL, and more), Transformers (Attention Is All You Need), and GANs.
 :::
 
 ::: {.project-item}
@@ -28,37 +62,13 @@ I put together four progressively more sophisticated PyTorch training templates 
 ::: {.project-item}
 [model-parallelism](https://github.com/garg-aayush/model-parallelism)
 
-I explored how to pipeline models with skip connections (ResNets, UNets) across multiple GPUs using torchgpipe. Covers the `@skippable` decorator for stashing/popping tensors across partitions, automatic model balancing, and micro-batch tuning.
-:::
-
-::: {.project-item}
-[research-papers](https://github.com/garg-aayush/research-papers)
-
-My reading notes and summaries for deep learning papers organized by category. Covers diffusion models (DDPM, DDIM, ControlNet, SDXL, and more), Transformers (Attention Is All You Need), and GANs.
-:::
-
-::: {.project-item}
-[spatial-alias-removal](https://github.com/garg-aayush/spatial-alias-removal)
-
-I used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data by 2x in the spatial direction and remove spatial aliasing. Built during my time at TU Delft and University of Amsterdam.
-:::
-
-::: {.project-item}
-[ComfyUI-Svg2Raster](https://github.com/garg-aayush/ComfyUI-Svg2Raster)
-
-I wrote this ComfyUI custom node package for loading SVG files and rasterizing them into images with configurable width, scale, background color, and border. Uses CairoSVG under the hood.
+I explored how to pipeline models with skip connections (ResNets, UNets) across multiple GPUs using torchgpipe.
 :::
 
 ::: {.project-item}
 [finance_dashboard_example](https://github.com/garg-aayush/finance_dashboard_example)
 
 A sample Plotly Dash interactive dashboard I built for tracking stock price movement with simple moving average and candlestick pattern charts.
-:::
-
-::: {.project-item}
-[tutorials](https://github.com/garg-aayush/tutorials)
-
-A collection of various tutorials I wrote for my own use and to share with others.
 :::
 
 :::
