@@ -33,10 +33,10 @@ website:
         href: blog/
       - text: Projects
         href: projects.qmd
-      - text: Publications
-        href: publications.qmd
       - text: Tools
         href: tools/
+      - text: Publications
+        href: publications.qmd
       - text: About
         href: about.qmd
     right:
