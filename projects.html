@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="All posts on ML engineering, LLMs, and AI products.">
+<meta name="description" content="Some of the projects I have worked on over the years, all publicly available on my GitHub.">
 
-<title>Blogs – Aayush Garg</title>
+<title>Projects – Aayush Garg</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,25 +27,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-187c3a6a2bf3126b0ac4c15cf52441de.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-187c3a6a2bf3126b0ac4c15cf52441de.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -73,35 +71,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-blog-listings'] = new List('listing-blog-listings', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
 
 <script type="text/javascript">
@@ -113,42 +82,13 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"><meta property="og:title" content="Blogs – Aayush Garg">
-<meta property="og:description" content="All posts on ML engineering, LLMs, and AI products.">
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Projects – Aayush Garg">
+<meta property="og:description" content="Some of the projects I have worked on over the years, all publicly available on my GitHub.">
 <meta property="og:site_name" content="Aayush Garg">
-<meta name="twitter:title" content="Blogs – Aayush Garg">
-<meta name="twitter:description" content="All posts on ML engineering, LLMs, and AI products.">
+<meta name="twitter:title" content="Projects – Aayush Garg">
+<meta name="twitter:description" content="Some of the projects I have worked on over the years, all publicly available on my GitHub.">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -160,27 +100,27 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../blog/"> 
+    <a class="nav-link" href="./blog/"> 
 <span class="menu-text">Blogs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../projects.html"> 
+    <a class="nav-link active" href="./projects.html" aria-current="page"> 
 <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../tools/"> 
+    <a class="nav-link" href="./tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../publications.html"> 
+    <a class="nav-link" href="./publications.html"> 
 <span class="menu-text">Publications</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -217,12 +157,12 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Blogs</h1>
+<h1 class="title">Projects</h1>
 </div>
 
 <div>
   <div class="description">
-    All posts on ML engineering, LLMs, and AI products.
+    Some of the projects I have worked on over the years, all publicly available on my <a href="https://github.com/garg-aayush">GitHub</a>.
   </div>
 </div>
 
@@ -239,216 +179,69 @@ window.Quarto = {
 </header>
 
 
-<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-<div class="listing-actions-group">
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
+<div class="projects-list">
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/building-from-scratch">building-from-scratch</a></p>
+<p>My ongoing repo where I build language models and related concepts from first principles. I’ve worked through multiple sub-projects so far:</p>
+<ul>
+<li>Character-level GPT</li>
+<li>GPT-2 124M reimplementation with RoPE</li>
+<li>BPE tokenizer from scratch (with a Rust encoder for 3.7x speedup)</li>
+<li>LLM inference with KV cache and speculative decoding</li>
+<li>Supervised fine-tuning for reasoning and instruction following</li>
+<li>Expert iteration for self-improvement on math</li>
+<li>Group Relative Policy Optimization (GRPO)</li>
+</ul>
+<p>Currently working on a FlashAttention2 implementation from first principles.</p>
 </div>
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-
-<th>
-Date
-</th>
-
-<th>
-Title
-</th>
-
-</tr>
-</thead>
-<tbody class="list">
-
-<tr data-index="0" data-listing-date-sort="1773964800000" data-listing-file-modified-sort="1774204225633" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="817" data-listing-title-sort="Building Browser Tools with Claude Code" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/20/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-20-browser-tools/index.html" class="title listing-title">Building Browser Tools with Claude Code</a>
-</td>
-
-</tr>
-
-<tr data-index="1" data-listing-date-sort="1772064000000" data-listing-file-modified-sort="1774204225633" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2624" data-listing-title-sort="GRPO: Building Intuition Through Ablation Studies" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/26/26</span>
-</td>
-<td>
-<a href="../posts/2026-02-26-grpo-from-scratch/index.html" class="title listing-title">GRPO: Building Intuition Through Ablation Studies</a>
-</td>
-
-</tr>
-
-<tr data-index="2" data-listing-date-sort="1770854400000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1545" data-listing-title-sort="Tools for Better Claude Code and Terminal Experience" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/12/26</span>
-</td>
-<td>
-<a href="../posts/2026-02-12-cc-tools/index.html" class="title listing-title">Tools for Better Claude Code and Terminal Experience</a>
-</td>
-
-</tr>
-
-<tr data-index="3" data-listing-date-sort="1769126400000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2050" data-listing-title-sort="Expert Iteration for Math Reasoning" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/23/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-23-expert-iteration/index.html" class="title listing-title">Expert Iteration for Math Reasoning</a>
-</td>
-
-</tr>
-
-<tr data-index="4" data-listing-date-sort="1768262400000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1983" data-listing-title-sort="A Brief Introduction to Claude Agent Skills" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/13/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-13-claude-skills/index.html" class="title listing-title">A Brief Introduction to Claude Agent Skills</a>
-</td>
-
-</tr>
-
-<tr data-index="5" data-listing-date-sort="1767657600000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Key Insights from DeepSeekMath paper" data-listing-filename-sort="2026-01-06-review-deepseek-math.qmd">
-<td>
-<span class="listing-date">1/6/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-06-review-deepseek-math.html" class="title listing-title">Key Insights from DeepSeekMath paper</a>
-</td>
-
-</tr>
-
-<tr data-index="6" data-listing-date-sort="1767225600000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2213" data-listing-title-sort="Understanding GRPO: PPO without the Critic" data-listing-filename-sort="2026-01-01-understanding-grpo.qmd">
-<td>
-<span class="listing-date">1/1/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-01-understanding-grpo.html" class="title listing-title">Understanding GRPO: PPO without the Critic</a>
-</td>
-
-</tr>
-
-<tr data-index="7" data-listing-date-sort="1767052800000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2409" data-listing-title-sort="Deriving the DPO Loss from First Principles" data-listing-filename-sort="2025-12-30-deriving-dpo-loss.qmd">
-<td>
-<span class="listing-date">12/30/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-30-deriving-dpo-loss.html" class="title listing-title">Deriving the DPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="8" data-listing-date-sort="1766620800000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6096" data-listing-title-sort="Deriving the PPO Loss from First Principles" data-listing-filename-sort="2025-12-25-deriving-ppo-loss.qmd">
-<td>
-<span class="listing-date">12/25/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-25-deriving-ppo-loss.html" class="title listing-title">Deriving the PPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="9" data-listing-date-sort="1764720000000" data-listing-file-modified-sort="1774204225632" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1981" data-listing-title-sort="What I Learned Building SFT from the Ground Up" data-listing-filename-sort="2025-12-28-sft-from-scratch.qmd">
-<td>
-<span class="listing-date">12/3/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-28-sft-from-scratch.html" class="title listing-title">What I Learned Building SFT from the Ground Up</a>
-</td>
-
-</tr>
-
-<tr data-index="10" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365" data-listing-title-sort="A Guide to Building Custom Nodes in ComfyUI" data-listing-filename-sort="2025-09-10-build-custom-comfyui-node.qmd">
-<td>
-<span class="listing-date">9/10/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="title listing-title">A Guide to Building Custom Nodes in ComfyUI</a>
-</td>
-
-</tr>
-
-<tr data-index="11" data-listing-date-sort="1757289600000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Building GPT from Scratch: Following Karpathy's Tutorial" data-listing-filename-sort="2025-09-08-building-gpt-from-scratch.qmd">
-<td>
-<span class="listing-date">9/8/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-08-building-gpt-from-scratch.html" class="title listing-title">Building GPT from Scratch: Following Karpathy’s Tutorial</a>
-</td>
-
-</tr>
-
-<tr data-index="12" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035" data-listing-title-sort="Key Takeaways from Lecture 1: LLM Evaluation Lifecycle" data-listing-filename-sort="2025-09-02-llm-evaluation-lifecycle.qmd">
-<td>
-<span class="listing-date">9/2/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="title listing-title">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
-</td>
-
-</tr>
-
-<tr data-index="13" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299" data-listing-title-sort="Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-15-finetune-llama3-8B-predibase.qmd">
-<td>
-<span class="listing-date">7/15/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title listing-title">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="14" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288" data-listing-title-sort="Part II: Comparison of Model Performances on Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-09-compare-models-structured-data.qmd">
-<td>
-<span class="listing-date">7/9/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-09-compare-models-structured-data.html" class="title listing-title">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="15" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429" data-listing-title-sort="Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction" data-listing-filename-sort="2024-07-03-baseline-gpt4o-structured-data.qmd">
-<td>
-<span class="listing-date">7/3/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="title listing-title">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="16" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744" data-listing-title-sort="Step-by-Step Guide to Setup Your Personal GPU Server" data-listing-filename-sort="2024-06-30-remote-gpu-server.qmd">
-<td>
-<span class="listing-date">6/30/24</span>
-</td>
-<td>
-<a href="../posts/2024-06-30-remote-gpu-server.html" class="title listing-title">Step-by-Step Guide to Setup Your Personal GPU Server</a>
-</td>
-
-</tr>
-
-<tr data-index="17" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1774204225631" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858" data-listing-title-sort="Managing multiple CUDA versions using environment modules in Ubuntu" data-listing-filename-sort="2024-05-19-manage-multiple-cuda.qmd">
-<td>
-<span class="listing-date">5/19/24</span>
-</td>
-<td>
-<a href="../posts/2024-05-19-manage-multiple-cuda.html" class="title listing-title">Managing multiple CUDA versions using environment modules in Ubuntu</a>
-</td>
-
-</tr>
-
-</tbody>
-</table>
-<div class="listing-no-matching d-none">No matching items</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/cv-skills">cv-skills</a></p>
+<p>I built this as a Claude Code plugin that provides multiple skills for classical image processing: format conversion, SVG-to-raster, resize/crop/rotate, color adjustments, blur/sharpen/denoise, edge detection and segmentation, and image compositing with background removal.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">ComfyUI-Svg2Raster</a></p>
+<p>I wrote this ComfyUI custom node package for loading SVG files and rasterizing them into images with configurable width, scale, background color, and border. Uses CairoSVG under the hood.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/tutorials">tutorials</a></p>
+<p>A collection of various tutorials I wrote for my own use and to share with others.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/spatial-alias-removal">spatial-alias-removal</a></p>
+<p>I used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data by 2x in the spatial direction and remove spatial aliasing. This work was published as a paper back in 2019, built during my time at TU Delft and University of Amsterdam.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/research-papers">research-papers</a></p>
+<p>My reading notes and summaries for deep learning papers organized by category. Covers diffusion models (DDPM, DDIM, ControlNet, SDXL, and more), Transformers (Attention Is All You Need), and GANs.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/pytorch-pl-hydra-templates">pytorch-pl-hydra-templates</a></p>
+<p>I put together four progressively more sophisticated PyTorch training templates using CIFAR-10: vanilla single-GPU, multi-GPU with DistributedDataParallel, PyTorch Lightning with TensorBoard, and PyTorch Lightning + Hydra for rapid experimentation with swappable models, optimizers, and configs.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/model-parallelism">model-parallelism</a></p>
+<p>I explored how to pipeline models with skip connections (ResNets, UNets) across multiple GPUs using torchgpipe.</p>
+</div>
+<div class="project-item">
+<p><a href="https://github.com/garg-aayush/finance_dashboard_example">finance_dashboard_example</a></p>
+<p>A sample Plotly Dash interactive dashboard I built for tracking stock price movement with simple moving average and candlestick pattern charts.</p>
+</div>
+</div>
+<section id="gists" class="level2">
+<h2 class="anchored" data-anchor-id="gists">Gists</h2>
+<div class="projects-list">
+<div class="project-item">
+<p><a href="https://gist.github.com/garg-aayush/d377557b20ef9f206c1d6381e174d8a7">Step-by-Step Guide to setup your own personal GPU server</a></p>
+<p>I wrote this comprehensive guide for setting up remote SSH access to a personal GPU workstation running Ubuntu, covering SSH keys, firewall setup, and ngrok tunneling.</p>
+</div>
+<div class="project-item">
+<p><a href="https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956">Managing multiple CUDA versions using environment modules</a></p>
+<p>My notes on installing multiple CUDA versions side by side on Ubuntu and switching between them using <code>environment-modules</code>.</p>
+</div>
 </div>
 
 
-
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -893,5 +686,5 @@ Title
 
 
 
-<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

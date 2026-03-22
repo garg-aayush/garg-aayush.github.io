@@ -516,6 +516,42 @@ h2 {
   line-height: 1.5;
 }
 
+/* Projects listing */
+.projects-list {
+  margin-top: 0.5rem;
+}
+
+.project-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.project-item:last-child {
+  border-bottom: none;
+}
+
+.project-item p:first-child {
+  margin-bottom: 0.25rem;
+}
+
+.project-item p:first-child a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.project-item p:first-child a:hover {
+  text-decoration: underline;
+}
+
+.project-item p:last-child {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* Template credit */
 .template-credit {
   margin-top: 3rem;
