@@ -26,13 +26,13 @@ format:
 
 ![](static/img/aayush_cropped.jpg){.profile-pic fig-alt="Aayush Garg"}
 
-I am an applied machine learning engineer focused on building resilient AI-driven products and systems. At Jiffy, I specialize in building intelligent image enhancement pipelines and agentic systems, developing custom ML models, and deploying ML/LLM models at scale for diverse verticals.
+I am a Senior ML Engineer who builds and ships production generative AI systems, from image enhancement pipelines to multi-agent systems. At Jiffy, I build the core image enhancement pipeline, architect multi-agent editing systems and deploy custom ML/LLM models at scale.
 
 :::
 
 ## 💼 Current Work
 
-I work at the intersection of computer vision and LLMs, building practical AI systems that deliver real business value. My background is in computational geophysics which keeps me grounded in first principles and pragmatic experimentation.
+I work at the intersection of computer vision and LLMs, building production AI systems that drive business impact. My background in computational geophysics keeps me grounded in first principles and pragmatic experimentation.
 
 If you're interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) or [Twitter](https://twitter.com/Aayush_ander).
 

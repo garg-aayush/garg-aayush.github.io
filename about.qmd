@@ -4,13 +4,13 @@ sidebar: false
 toc: true
 ---
 
-I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is "Applied AI should always be product-driven".
+I am a Senior ML Engineer who builds and ships production generative AI systems, from AI workflows and image enhancement pipelines to multi-agent systems. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.
 
-Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/), where I specialize in building intelligent image enhancement pipelines and agentic systems. My work also encompasses developing custom in-house ML models, deploying both ML and LLM models at scale and creating LLM-powered solutions for diverse verticals. I work at the intersection of computer vision and language models, building practical AI systems that deliver real business value.
+Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/), where I build and maintain the core image enhancement pipeline, architect multi-agent systems for AI-powered image editin, and develop end-to-end ML solutions spanning VLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation across verticals.
 
-Previously at [Flixstock](https://www.flixstock.com/), I predominantly developed vision generative AI solutions, with a focus on building virtual try-on and background generation solutions emphasizing identity and pose control.
+Previously at [Flixstock](https://www.flixstock.com/), I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.
 
-Unlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics, and I worked for [Shell](https://www.shell.com/) as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.
+Unlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics and I worked for [Shell](https://www.shell.com/) as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.
 
 I love connecting and collaborating with new people. Please don't hesitate to reach out! 😊
 
@@ -31,7 +31,7 @@ Jan 2024 - Present
 Senior Machine Learning Engineer
 :::
 ::: {.card-description}
-Building image enhancement agents, developing and deploying custom ML/LLM models at scale.
+Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system), and end-to-end ML solutions spanning VLM fine-tuning, custom model deployment and LLM-powered automation.
 :::
 :::
 
@@ -41,14 +41,14 @@ Building image enhancement agents, developing and deploying custom ML/LLM models
 Flixstock
 :::
 ::: {.card-date}
-Aug 2022 - Dec 2024
+Aug 2022 - Dec 2023
 :::
 :::
 ::: {.card-role}
 Software Development Engineer III
 :::
 ::: {.card-description}
-Developed vision-based generative AI solutions for virtual try-on and background generation.
+Built Stable Diffusion pipelines for background generation, identity transfer, and fashion video generation.
 :::
 :::
 
@@ -65,7 +65,7 @@ Oct 2019 - Jul 2022
 Research Geophysicist
 :::
 ::: {.card-description}
-Focused on uncertainty quantification and denoising of subsurface seismic data.
+Built DL-based denoising models for seismic data, worked on uncertainty quantification and DL-based Hessian operators for wave-equation optimization.
 :::
 :::
 
@@ -75,14 +75,14 @@ Focused on uncertainty quantification and denoising of subsurface seismic data.
 TU Delft
 :::
 ::: {.card-date}
-Aug 2015 - Sep 2019
+Aug 2015 - Aug 2019
 :::
 :::
 ::: {.card-role}
 PhD Researcher
 :::
 ::: {.card-description}
-Worked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties.
+Developed JMI-res for high-resolution subsurface imaging and created a DL-based super-resolution approach for seismic spatial aliasing removal.
 :::
 :::
 
