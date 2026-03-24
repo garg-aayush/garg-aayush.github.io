@@ -21,13 +21,14 @@ quarto render posts/    # Render only blog posts
 ### Site Configuration
 - `_quarto.yml` — Main site config (navbar, theme, format, analytics)
 - `theme-dark.scss` — Dark theme SCSS variables (Cosmo base + custom dark palette)
-- `styles.css` — Layout and component styles (profile, blog listing, experience grid, tools list)
+- `styles.css` — Layout and component styles (profile, blog listing, experience grid, projects list, tools list)
 
 ### Content
 - **Blog posts** in `posts/` — Either `YYYY-MM-DD-title.qmd` (single file) or `YYYY-MM-DD-title/index.qmd` (directory with assets)
 - **Static pages** in `pages/` — Project pages (doverlap, jsalt, overlap-aware-sc)
 - **Tools** in `tools/` — `index.qmd` (listing page) + standalone `.html` tool files
-- **Top-level pages**: `index.qmd` (homepage), `about.qmd`, `publications.qmd`, `blog/index.qmd` (blog listing)
+- **Top-level pages**: `index.qmd` (homepage), `about.qmd`, `projects.qmd`, `publications.qmd`, `blog/index.qmd` (blog listing)
+- **Navbar order**: Home, Blogs, Projects, Tools, Publications, About
 - **Assets** in `static/` — Images, PDFs, videos, etc.
 
 ### Post Metadata
@@ -39,6 +40,13 @@ Custom dark theme inspired by Lil'Log. Key colors: background `#1d1e20`, accent 
 ## Pull Requests
 - Do **not** include a "Test plan" section in PR descriptions unless explicitly asked
 - PR body should have a `## Summary` with bullet points and the Claude Code footer
+
+## Branching
+- **Never commit directly to `master`** -- always use a feature branch, create a PR, and merge
+- Blog posts use the `blog-posts` branch (see `.claude/rules/blog-workflow.md`)
+- Tools use the `tools` branch (see `.claude/rules/tools-workflow.md`)
+- Other site updates (about page, homepage, config, styles) use descriptive feature branches (e.g., `update-about-intro`)
+- After merging a PR, switch back to `master` and pull
 
 ## Conventions
 - Blog post dates use `YYYY-MM-DD` prefix format
