@@ -6,7 +6,7 @@ toc: true
 
 I am a Senior ML Engineer who builds and ships production generative AI systems, from AI workflows and image enhancement pipelines to multi-agent systems. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.
 
-Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/), where I build and maintain the core image enhancement pipeline, architect multi-agent systems for AI-powered image editin, and develop end-to-end ML solutions spanning VLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation across verticals.
+Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/), where I build and maintain the core image enhancement pipeline, architect multi-agent systems for AI-powered image editing, and develop end-to-end ML solutions spanning VLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation across verticals.
 
 Previously at [Flixstock](https://www.flixstock.com/), I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.
 
