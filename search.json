@@ -431,14 +431,14 @@
     "href": "index.html",
     "title": "Aayush Garg",
     "section": "",
-    "text": "I am an applied machine learning engineer focused on building resilient AI-driven products and systems. At Jiffy, I specialize in building intelligent image enhancement pipelines and agentic systems, developing custom ML models, and deploying ML/LLM models at scale for diverse verticals."
+    "text": "I am a Senior ML Engineer who builds and ships production generative AI systems, from image enhancement pipelines to multi-agent systems. At Jiffy, I build the core image enhancement pipeline, architect multi-agent editing systems and deploy custom ML/LLM models at scale."
   },
   {
     "objectID": "index.html#current-work",
     "href": "index.html#current-work",
     "title": "Aayush Garg",
     "section": "💼 Current Work",
-    "text": "💼 Current Work\nI work at the intersection of computer vision and LLMs, building practical AI systems that deliver real business value. My background is in computational geophysics which keeps me grounded in first principles and pragmatic experimentation.\nIf you’re interested in my work or want to collaborate, feel free to reach out via email or connect on LinkedIn or Twitter."
+    "text": "💼 Current Work\nI work at the intersection of computer vision and LLMs, building production AI systems that drive business impact. My background in computational geophysics keeps me grounded in first principles and pragmatic experimentation.\nIf you’re interested in my work or want to collaborate, feel free to reach out via email or connect on LinkedIn or Twitter."
   },
   {
     "objectID": "index.html#blog",
@@ -459,14 +459,14 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I am an applied machine learning engineer passionate about building AI-driven products to solve real-world problems. My motto is “Applied AI should always be product-driven”.\nCurrently, I am working as a Senior Machine Learning Engineer at Jiffy, where I specialize in building intelligent image enhancement pipelines and agentic systems. My work also encompasses developing custom in-house ML models, deploying both ML and LLM models at scale and creating LLM-powered solutions for diverse verticals. I work at the intersection of computer vision and language models, building practical AI systems that deliver real business value.\nPreviously at Flixstock, I predominantly developed vision generative AI solutions, with a focus on building virtual try-on and background generation solutions emphasizing identity and pose control.\nUnlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics, and I worked for Shell as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.\nI love connecting and collaborating with new people. Please don’t hesitate to reach out! 😊"
+    "text": "I am a Senior ML Engineer who builds and ships production generative AI systems, from AI workflows and image enhancement pipelines to multi-agent systems. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.\nCurrently, I am working as a Senior Machine Learning Engineer at Jiffy, where I build and maintain the core image enhancement pipeline, architect multi-agent systems for AI-powered image editing, and develop end-to-end ML solutions spanning VLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation across verticals.\nPreviously at Flixstock, I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.\nUnlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics and I worked for Shell as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.\nI love connecting and collaborating with new people. Please don’t hesitate to reach out! 😊"
   },
   {
     "objectID": "about.html#professional-experience",
     "href": "about.html#professional-experience",
     "title": "About",
     "section": "Professional Experience",
-    "text": "Professional Experience\n\n\n\n\nJiffy\n\n\nJan 2024 - Present\n\n\n\nSenior Machine Learning Engineer\n\n\nBuilding image enhancement agents, developing and deploying custom ML/LLM models at scale.\n\n\n\n\n\nFlixstock\n\n\nAug 2022 - Dec 2024\n\n\n\nSoftware Development Engineer III\n\n\nDeveloped vision-based generative AI solutions for virtual try-on and background generation.\n\n\n\n\n\nShell\n\n\nOct 2019 - Jul 2022\n\n\n\nResearch Geophysicist\n\n\nFocused on uncertainty quantification and denoising of subsurface seismic data.\n\n\n\n\n\nTU Delft\n\n\nAug 2015 - Sep 2019\n\n\n\nPhD Researcher\n\n\nWorked on a new imaging approach, JMI-res, for high-resolution subsurface physical properties."
+    "text": "Professional Experience\n\n\n\n\nJiffy\n\n\nJan 2024 - Present\n\n\n\nSenior Machine Learning Engineer\n\n\nBuilt and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system), and end-to-end ML solutions spanning VLM fine-tuning, custom model deployment and LLM-powered automation.\n\n\n\n\n\nFlixstock\n\n\nAug 2022 - Dec 2023\n\n\n\nSoftware Development Engineer III\n\n\nBuilt Stable Diffusion pipelines for background generation, identity transfer, and fashion video generation.\n\n\n\n\n\nShell\n\n\nOct 2019 - Jul 2022\n\n\n\nResearch Geophysicist\n\n\nBuilt DL-based denoising models for seismic data, worked on uncertainty quantification and DL-based Hessian operators for wave-equation optimization.\n\n\n\n\n\nTU Delft\n\n\nAug 2015 - Aug 2019\n\n\n\nPhD Researcher\n\n\nDeveloped JMI-res for high-resolution subsurface imaging and created a DL-based super-resolution approach for seismic spatial aliasing removal."
   },
   {
     "objectID": "blog/index.html",
