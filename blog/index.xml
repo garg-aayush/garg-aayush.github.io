@@ -10,7 +10,224 @@
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>All posts on ML engineering, LLMs, and AI products.</description>
 <generator>quarto-1.9.36</generator>
-<lastBuildDate>Fri, 20 Mar 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 27 Mar 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>FlashAttention: Making Attention I/O-Aware</title>
+  <link>https://garg-aayush.github.io/posts/2026-03-27-flash-attention/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p><a href="https://arxiv.org/abs/2205.14135">FlashAttention</a> is the default attention implementation across the stack. Whether you are training or running inference on GPUs and whether using MHA/GQA/MLA variants, you are almost certainly running a variant of it.</p>
+<p>Standard attention is memory-bound, i.e.&nbsp;it does not account for the GPU memory hierarchy, repeatedly shuffling large intermediate matrices between slow and fast GPU memory. FlashAttention addresses this by making attention <strong>IO-aware</strong>. It computes exact standard attention with the same numerical output but restructures the computation to minimize data movement between these memory levels. It does this through a combination of operator fusion, tiling, recomputation and a particularly elegant online softmax algorithm that computes softmax in a single pass without needing to see all the scores first. The result is faster and longer context length training and lower memory usage without approximation.</p>
+<p>This post walks through the “why” behind each of these pieces along with a bit deeper discussion on online softmax derivation. I also plan to follow this up with blogs on implementing FlashAttention in pure PyTorch and as a fused Triton kernel to build a deeper hands-on understanding of these ideas.</p>
+<section id="the-gpu-memory-hierarchy" class="level2">
+<h2 class="anchored" data-anchor-id="the-gpu-memory-hierarchy">The GPU Memory Hierarchy</h2>
+<p>It is helpful to have a basic understanding of GPU memory hierarchy before diving into FlashAttention. A GPU has two levels of memory that matter here:</p>
+<ul>
+<li><p><strong>HBM (High Bandwidth Memory)</strong>: It is the GPU’s main (slow) memory which you see when you run <code>nvidia-smi</code>. It sits off-compute chip. An A100 has about 80 GB of HBM with a bandwidth of ~2 TB/s.</p></li>
+<li><p><strong>SRAM (Static RAM)</strong> is on-chip memory. A A100 has about ~20 MB total (spread across 108 SMs) with ~19 TB/s bandwidth. This is roughly <strong>10x</strong> the bandwidth of HBM but nearly <strong>4000x</strong> smaller in capacity.</p></li>
+</ul>
+<p>These numbers scale with each generation: an H100 SXM has 80 GB HBM3 at 3.35 TB/s, a B200 pushes to 192 GB HBM3e at 8 TB/s but the SRAM-to-HBM bandwidth gap persists across all of them. The principles apply regardless of which GPU you are on.</p>
+<p>Every GPU kernel (operation) must load its inputs from HBM into SRAM, do the computation and write results back to HBM. The key intuition: <strong>SRAM is where compute happens. HBM is where data lives</strong>.</p>
+<section id="compute-bound-vs.-memory-bound-operations" class="level3">
+<h3 class="anchored" data-anchor-id="compute-bound-vs.-memory-bound-operations">Compute-bound vs.&nbsp;memory-bound operations</h3>
+<p>Given these two memory levels, the operations on GPU can either be <code>compute-bound</code> or <code>memory-bound</code>.</p>
+<ul>
+<li><p><strong>Compute-bound</strong>: An operation where the GPU’s compute cores are the bottleneck because they cannot do matmuls as fast as the data is fed. Typical examples are large matrix multiplications and convolutions ops.</p></li>
+<li><p><strong>Memory-bound</strong>: An operation where the GPU’s memory bandwidth is the bottleneck, leaving the compute cores sitting idle while they wait for data to arrive from main memory (HBM &lt;-&gt; SRAM). Examples include elementwise operations (eactivations, dropout) and reductions (sum, softmax, batch norm, layer norm).</p></li>
+</ul>
+<p>The way to quantify this is <strong>arithmetic intensity</strong>: how many FLOPs the operation performs per byte it moves to/from HBM.</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctext%7BArithmetic%20Intensity%7D%20=%20%5Cfrac%7B%5Ctext%7BFLOPs%7D%7D%7B%5Ctext%7BBytes%20accessed%20from%20HBM%7D%7D%0A"></p>
+<p>Every GPU has a theoretical arithmetic intensity where compute time and memory transfer time are exactly balanced. For an A100, this is <img src="https://latex.codecogs.com/png.latex?%5Capprox"> <strong>156 FLOPs/byte</strong>. Operations above this threshold are compute-bound, operations below it are memory-bound. This framework is known as the <a href="https://en.wikipedia.org/wiki/Roofline_model">roofline model</a>.</p>
+<blockquote class="blockquote">
+<p>Note, <a href="https://horace.io/brrr_intro.html">Horace He’s “Making Deep Learning Go Brrrr”</a> is a great resource to understand this concept in detail. Also, remember a punchline from the blog, <em>if an operation is memory-bound, making it faster is not about fewer FLOPs. It is about moving fewer bytes.</em> This holds true for FlashAttention.</p>
+</blockquote>
+</section>
+</section>
+<section id="standard-attention-and-its-io-cost" class="level2">
+<h2 class="anchored" data-anchor-id="standard-attention-and-its-io-cost">Standard Attention and Its IO Cost</h2>
+<p>Now that we have the memory hierarchy picture, we can revisit the standard attention and forward and backward pass implementation.</p>
+<section id="the-attention-formula" class="level3">
+<h3 class="anchored" data-anchor-id="the-attention-formula">The attention formula</h3>
+<p>Standard scaled dot-product attention computes:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AO%20=%20%5Ctext%7Bsoftmax%7D%5C!%5Cleft(%5Cfrac%7BQK%5ET%7D%7B%5Csqrt%7Bd%7D%7D%5Cright)%20V%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?Q,%20K,%20V%20%5Cin%20%5Cmathbb%7BR%7D%5E%7BN%20%5Ctimes%20d%7D">, <img src="https://latex.codecogs.com/png.latex?N"> is the sequence length and <img src="https://latex.codecogs.com/png.latex?d"> is the head dimension. This is for a single attention head, multi-head attention just runs this independently across heads. Note, I am ignoring masking and dropout here to keep the IO analysis clean, they do not change the fundamental bottleneck.</p>
+<p>The formula looks like one operation but in practice PyTorch executes it as a sequence of separate GPU kernels. Each kernel reads its inputs from HBM, does its computation in SRAM and writes the results back to HBM. Then the next kernel reads those results from HBM again.</p>
+</section>
+<section id="standard-forward-pass" class="level3">
+<h3 class="anchored" data-anchor-id="standard-forward-pass">Standard forward pass</h3>
+<blockquote class="blockquote">
+<p><strong>Algorithm: Standard Attention Forward</strong></p>
+<p>Require: <img src="https://latex.codecogs.com/png.latex?Q,%20K,%20V%20%5Cin%20%5Cmathbb%7BR%7D%5E%7BN%20%5Ctimes%20d%7D"> in HBM.</p>
+<ol type="1">
+<li>Load <img src="https://latex.codecogs.com/png.latex?Q,%20K"> from HBM, compute <img src="https://latex.codecogs.com/png.latex?S%20=%20QK%5ET">, write <img src="https://latex.codecogs.com/png.latex?S"> to HBM.</li>
+<li>Read <img src="https://latex.codecogs.com/png.latex?S"> from HBM, compute <img src="https://latex.codecogs.com/png.latex?P%20=%20%5Ctext%7Bsoftmax%7D(S)">, write <img src="https://latex.codecogs.com/png.latex?P"> to HBM.</li>
+<li>Load <img src="https://latex.codecogs.com/png.latex?P"> and <img src="https://latex.codecogs.com/png.latex?V"> from HBM, compute <img src="https://latex.codecogs.com/png.latex?O%20=%20PV">, write <img src="https://latex.codecogs.com/png.latex?O"> to HBM.</li>
+<li>Return <img src="https://latex.codecogs.com/png.latex?O">.</li>
+</ol>
+</blockquote>
+<p>We have <strong>3 separate kernels and 3 HBM round-trips</strong>! The <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> attention matrix is read and written multiple times. Here, total HBM IO is ~<img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> dominated by sequence length (<img src="https://latex.codecogs.com/png.latex?N">).</p>
+</section>
+<section id="standard-backward-pass" class="level3">
+<h3 class="anchored" data-anchor-id="standard-backward-pass">Standard backward pass</h3>
+<blockquote class="blockquote">
+<p><strong>Algorithm: Standard Attention Backward</strong></p>
+<p>Require: <img src="https://latex.codecogs.com/png.latex?Q,%20K,%20V,%20dO%20%5Cin%20%5Cmathbb%7BR%7D%5E%7BN%20%5Ctimes%20d%7D">, <img src="https://latex.codecogs.com/png.latex?P%20%5Cin%20%5Cmathbb%7BR%7D%5E%7BN%20%5Ctimes%20N%7D"> in HBM.</p>
+<ol type="1">
+<li>Load <img src="https://latex.codecogs.com/png.latex?P,%20dO">, compute <img src="https://latex.codecogs.com/png.latex?dV%20=%20P%5ET%20dO">, write <img src="https://latex.codecogs.com/png.latex?dV"> to HBM.</li>
+<li>Load <img src="https://latex.codecogs.com/png.latex?dO,%20V">, compute <img src="https://latex.codecogs.com/png.latex?dP%20=%20dO%20V%5ET">, write <img src="https://latex.codecogs.com/png.latex?dP"> to HBM.</li>
+<li>Read <img src="https://latex.codecogs.com/png.latex?P,%20dP">, compute <img src="https://latex.codecogs.com/png.latex?dS_%7Bij%7D%20=%20P_%7Bij%7D(dP_%7Bij%7D%20-%20%5Csum_l%20P_%7Bil%7D%20dP_%7Bil%7D)">, write <img src="https://latex.codecogs.com/png.latex?dS"> to HBM.</li>
+<li>Load <img src="https://latex.codecogs.com/png.latex?dS"> and <img src="https://latex.codecogs.com/png.latex?K">, compute <img src="https://latex.codecogs.com/png.latex?dQ%20=%20dS%20K">, write <img src="https://latex.codecogs.com/png.latex?dQ"> to HBM.</li>
+<li>Load <img src="https://latex.codecogs.com/png.latex?dS"> and <img src="https://latex.codecogs.com/png.latex?Q">, compute <img src="https://latex.codecogs.com/png.latex?dK%20=%20dS%5ET%20Q">, write <img src="https://latex.codecogs.com/png.latex?dK"> to HBM.</li>
+<li>Return <img src="https://latex.codecogs.com/png.latex?dQ,%20dK,%20dV">.</li>
+</ol>
+</blockquote>
+<p>Here, we even have more HBM traffic with the backward pass reads and writes multiple <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> intermediates (<img src="https://latex.codecogs.com/png.latex?P">, <img src="https://latex.codecogs.com/png.latex?dP">, <img src="https://latex.codecogs.com/png.latex?dS">), giving <img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> IO again.</p>
+</section>
+<section id="the-two-problems" class="level3">
+<h3 class="anchored" data-anchor-id="the-two-problems">The two problems</h3>
+<p>Looking at these algorithms, there are two issues:</p>
+<p><strong>Problem 1: Multiple HBM round-trips.</strong> Every step shuffles <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> matrices between HBM and SRAM. As a result, your standard attention is dominated by comparatively slow HBM accesses while the compute cores sit idle waiting for data to arrive.</p>
+<p><strong>Problem 2: <img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> activation memory.</strong> The forward pass must save <img src="https://latex.codecogs.com/png.latex?P"> (<img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N">) per head per layer for backpropagation. This not only creates extra HBM traffic but also consumes a lot of GPU memory especially for long sequences.</p>
+<blockquote class="blockquote">
+<p><strong>Standard attention implementation is memory-bound and not “IO-AWARE”!</strong> The <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> matrices are repeatedly read and write in HBM during both forward and backward passes.</p>
+</blockquote>
+</section>
+</section>
+<section id="what-flashattention-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-flashattention-does">What FlashAttention Does</h2>
+<p><strong>FlashAttention is an IO-aware, exact attention algorithm</strong>. It computes the same output as standard attention but it never materializes the <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> attention matrix in HBM. The total HBM IO drops from <img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> to <img src="https://latex.codecogs.com/png.latex?O(N%5E2%20d%5E2%20/%20M)">, where <img src="https://latex.codecogs.com/png.latex?M"> is the SRAM size per SM. For typical values of <img src="https://latex.codecogs.com/png.latex?d"> and <img src="https://latex.codecogs.com/png.latex?M">, this is dramatically less than <img src="https://latex.codecogs.com/png.latex?O(N%5E2)">.</p>
+<p>The algorithm achieves this through five interdependent fixes:</p>
+<ol type="1">
+<li><strong>Operator fusion</strong>: run the entire attention computation (matmul, softmax, matmul) in a single kernel so intermediates stay in SRAM.</li>
+<li><strong>Tiling</strong>: partition <img src="https://latex.codecogs.com/png.latex?Q">, <img src="https://latex.codecogs.com/png.latex?K">, <img src="https://latex.codecogs.com/png.latex?V"> into blocks that fit in SRAM, processing one block at a time.</li>
+<li><strong>Recomputation</strong>: do not store the <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> probability matrix <img src="https://latex.codecogs.com/png.latex?P">. Recompute it from <img src="https://latex.codecogs.com/png.latex?Q">, <img src="https://latex.codecogs.com/png.latex?K">, and a tiny normalization constant during the backward pass.</li>
+<li><strong>Online softmax</strong>: compute softmax incrementally across tiles using running statistics so that tiling produces the exact result without ever seeing the full row.</li>
+<li><strong>The logsumexp value <img src="https://latex.codecogs.com/png.latex?L"></strong>: a single scalar per query row that encodes everything needed to recover <img src="https://latex.codecogs.com/png.latex?P"> during the backward pass.</li>
+</ol>
+<p>These fixes are not independent. Fusion needs tiling (intermediates are too large for SRAM otherwise). Tiling needs online softmax (softmax is not directly associative). Recomputation needs <img src="https://latex.codecogs.com/png.latex?L"> (the backward pass must recover <img src="https://latex.codecogs.com/png.latex?P"> without storing it). I will walk through each fix in turn, building up the complete algorithm.</p>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-03-27/flashattention.png" class="img-fluid" style="width:100.0%">
+<p align="center">
+<em>Left: GPU memory hierarchy. Center: FlashAttention tiled computation with Q, K, V blocks loaded into SRAM. Right: FlashAttention fuses all attention ops into a single kernel, eliminating separate HBM round-trips. (Source: <a href="https://arxiv.org/abs/2205.14135">Dao et al., 2022</a>)</em>
+</p>
+<section id="operator-fusion" class="level3">
+<h3 class="anchored" data-anchor-id="operator-fusion">Operator Fusion</h3>
+<p>As shown above, standard attention launches three separate GPU kernels, each writing <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> intermediates to HBM. For instance, the softmax step is especially wasteful, it does very little arithmetic per element but reads and writes the entire attention matrix. The compute cores sit almost entirely idle waiting for data.</p>
+<p>The most common approach to accelerate memory-bound operations is <strong>kernel fusion</strong>: if there are multiple operations applied to the same input, the input can be loaded once from HBM instead of multiple times for each operation.</p>
+<p>Often, compilers (e.g.&nbsp;PyTorch’s torch.compile) can automatically fuse operations but they are not always able to fuse complex operations like matmul + softmax in attention as it requires domain specific knowledge about how to tile and reorder the computation. <strong>FlashAttention is a hand-crafted fused kernel that exploits the specific structure of attention.</strong></p>
+<p>Fusion alone is not enough. For it to actually deliver the speedups we want two independent problems need to be solved:</p>
+<ol type="1">
+<li><p><strong>The intermediates must fit in SRAM.</strong> Even a single block of query rows scored against all <img src="https://latex.codecogs.com/png.latex?N"> keys produces a score matrix that exceeds SRAM capacity, and this only gets worse as <img src="https://latex.codecogs.com/png.latex?N"> grows. We need a way to break the computation into pieces that fit. That is <strong>tiling</strong> (next section).</p></li>
+<li><p><strong>We need to avoid storing <img src="https://latex.codecogs.com/png.latex?P"> for the backward pass.</strong> Even if we fuse the forward pass perfectly, backpropagation requires the <img src="https://latex.codecogs.com/png.latex?P"> matrix to be saved in HBM for gradient computation. This reintroduces the <img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> memory cost we are trying to eliminate. The fix is <strong>recomputation</strong>.</p></li>
+</ol>
+</section>
+<section id="tiling" class="level3">
+<h3 class="anchored" data-anchor-id="tiling">Tiling</h3>
+<p>As mentioned above the full <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> attention matrix does not fit in SRAM. Moreover, we do not need to hold it all at once. <strong>The attention computation does not require the full matrix to be in memory simultaneously. The output <img src="https://latex.codecogs.com/png.latex?O"> can be computed tile by tile.</strong> This ensures all intermediate values stays in SRAM and only touch HBM at the start (to read <img src="https://latex.codecogs.com/png.latex?Q">, <img src="https://latex.codecogs.com/png.latex?K">, <img src="https://latex.codecogs.com/png.latex?V">) and at the end (to write <img src="https://latex.codecogs.com/png.latex?O">).</p>
+<p>We partition <img src="https://latex.codecogs.com/png.latex?Q"> into row blocks and <img src="https://latex.codecogs.com/png.latex?K">, <img src="https://latex.codecogs.com/png.latex?V"> into column blocks. For each query block, we loop over all key/value blocks, compute a small score tile that fits in SRAM, apply softmax, multiply by the value block, and accumulate into an output block that also stays in SRAM. <strong>The block sizes are chosen so that all the tiles (query, key, value, score, output) fit in SRAM simultaneously.</strong></p>
+<p>The key point is that the full <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> attention matrix is never materialized, neither in HBM nor in SRAM. The HBM IO cost of the tiled algorithm is <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BIO%20cost%7D%20%5Capprox%20O(Nd)"> instead of <img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> for vanilla attention.</p>
+<section id="the-softmax-problem" class="level4">
+<h4 class="anchored" data-anchor-id="the-softmax-problem">The Softmax Problem</h4>
+<p>There is a subtlety that makes tiling attention fundamentally harder than tiling a standard matrix multiplication. For matmul, tiling works because addition is associative: the partial products from each tile can simply be summed. But attention has a softmax sandwiched between two matmuls and <strong>softmax is not directly associative across tiles</strong>. Softmax for each query row needs the global maximum (<img src="https://latex.codecogs.com/png.latex?m">) and global denominator (<img src="https://latex.codecogs.com/png.latex?l">) over all keys. If we are processing key tiles one at a time, we do not know these global statistics until we have seen every tile. The online softmax algorithm (discussed later) solves this problem.</p>
+</section>
+</section>
+<section id="recomputation" class="level3">
+<h3 class="anchored" data-anchor-id="recomputation">Recomputation</h3>
+<p>Tiling eliminates the <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> matrix from the forward pass. However, the gradient computation requires the probability matrix <img src="https://latex.codecogs.com/png.latex?P"> (see the backward algorithm above). If we store <img src="https://latex.codecogs.com/png.latex?P"> for the backward pass, we reintroduce <img src="https://latex.codecogs.com/png.latex?O(N%5E2)"> memory per head which is exactly the cost we just eliminated.</p>
+<p>FlashAttention makes a deliberate choice: <strong>do not store <img src="https://latex.codecogs.com/png.latex?P">, recompute it during the backward pass from the saved <img src="https://latex.codecogs.com/png.latex?Q">, <img src="https://latex.codecogs.com/png.latex?K">, and <img src="https://latex.codecogs.com/png.latex?V"> tiles.</strong></p>
+<p>This trades memory for compute. Since, standard attention is memory-bound, the additional compute is small in comparison. You need one extra forward pass over the <img src="https://latex.codecogs.com/png.latex?QK%5ET"> tiles per backward pass. Since the backward pass already has to load <img src="https://latex.codecogs.com/png.latex?Q">, <img src="https://latex.codecogs.com/png.latex?K">, and <img src="https://latex.codecogs.com/png.latex?V"> from HBM, recomputation adds no extra HBM reads. The memory savings are enormous. Thus, we only need to store <img src="https://latex.codecogs.com/png.latex?Q">, <img src="https://latex.codecogs.com/png.latex?K">, <img src="https://latex.codecogs.com/png.latex?V">, <img src="https://latex.codecogs.com/png.latex?O"> (all <img src="https://latex.codecogs.com/png.latex?O(Nd)">) and one additional scalar <img src="https://latex.codecogs.com/png.latex?L">.</p>
+<blockquote class="blockquote">
+<p>In practice, FlashAttention backward pass is <em>faster</em> than standard attention despite doing more FLOPs, because it eliminates the massive HBM reads and writes of <img src="https://latex.codecogs.com/png.latex?P"> (remember FlashAttention is memory-bound!). This is the same principle as <a href="https://arxiv.org/abs/1604.06174">gradient checkpointing</a> but applied surgically to a single intermediate rather than at the coarse granularity of entire layers.</p>
+</blockquote>
+</section>
+<section id="online-softmax" class="level3">
+<h3 class="anchored" data-anchor-id="online-softmax">Online Softmax</h3>
+<p>As hinted before, tiling works naturally for matmul because addition is associative. But attention has a softmax sandwiched between two matmuls and softmax needs two global statistics the row maximum <img src="https://latex.codecogs.com/png.latex?m"> and the denominator <img src="https://latex.codecogs.com/png.latex?l"> before any output can be produced. The numerically stable (“safe”) softmax for a row <img src="https://latex.codecogs.com/png.latex?x%20=%20(x_1,%20%5Cldots,%20x_N)"> is:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctext%7Bsoftmax%7D(x)_i%20=%20%5Cfrac%7Be%5E%7Bx_i%20-%20m%7D%7D%7B%5Csum_%7Bj=1%7D%5E%7BN%7D%20e%5E%7Bx_j%20-%20m%7D%7D,%20%5Cquad%20m%20=%20%5Cmax_%7Bj=1%7D%5E%7BN%7D%20x_j%0A"></p>
+<p>Computing this requires three sequential passes over the data (<a href="https://arxiv.org/abs/1805.02867">Milakov &amp; Gimelshein, 2018</a>):</p>
+<ul>
+<li>Pass 1 sweeps for the max <img src="https://latex.codecogs.com/png.latex?m_N"></li>
+<li>Pass 2 uses <img src="https://latex.codecogs.com/png.latex?m_N"> to accumulate the denominator <img src="https://latex.codecogs.com/png.latex?%5Cell_N%20=%20%5Csum_j%20e%5E%7Bx_j%20-%20m_N%7D"></li>
+<li>Pass 3 uses both to emit the final values <img src="https://latex.codecogs.com/png.latex?a_i%20=%20e%5E%7Bx_i%20-%20m_N%7D/%5Cell_N">.</li>
+</ul>
+<p>Each pass depends on the result of the previous one. If the full row of logits does not fit in SRAM (which it generally does not for long sequences), each pass must re-read <img src="https://latex.codecogs.com/png.latex?Q"> and <img src="https://latex.codecogs.com/png.latex?K"> from HBM to recompute logits on the fly. This causes three passes, three HBM round-trips!</p>
+<section id="passes-to-2-the-surrogate-denominator" class="level4">
+<h4 class="anchored" data-anchor-id="passes-to-2-the-surrogate-denominator">3 passes to 2: the surrogate denominator</h4>
+<p>The denominator update <img src="https://latex.codecogs.com/png.latex?%5Cell_i%20=%20%5Cell_%7Bi-1%7D%20+%20e%5E%7Bx_i%20-%20m_N%7D"> depends on the <em>final</em> max <img src="https://latex.codecogs.com/png.latex?m_N"> which blocks fusion with the max pass. The trick (<a href="https://arxiv.org/abs/1805.02867">Milakov &amp; Gimelshein, 2018</a>) is to define a <strong>surrogate denominator</strong> that uses the running max <img src="https://latex.codecogs.com/png.latex?m_i"> instead:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cell_i%20:=%20%5Csum_%7Bj=1%7D%5E%7Bi%7D%20e%5E%7Bx_j%20-%20m_i%7D%0A"></p>
+<p>At position <img src="https://latex.codecogs.com/png.latex?N"> the running max equals the final max, so the surrogate <img src="https://latex.codecogs.com/png.latex?%5Cell_N"> equals the true denominator. If we can update <img src="https://latex.codecogs.com/png.latex?%5Cell_i"> incrementally, we get the final denominator for free.</p>
+<p>Start from the definition and split off the <img src="https://latex.codecogs.com/png.latex?i">-th term:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cell_i%20=%20%5Cleft(%5Csum_%7Bj=1%7D%5E%7Bi-1%7D%20e%5E%7Bx_j%20-%20m_i%7D%5Cright)%20+%20e%5E%7Bx_i%20-%20m_i%7D%0A"></p>
+<p>The key move is to relate each <img src="https://latex.codecogs.com/png.latex?e%5E%7Bx_j%20-%20m_i%7D"> in the sum to <img src="https://latex.codecogs.com/png.latex?e%5E%7Bx_j%20-%20m_%7Bi-1%7D%7D"> (which is what <img src="https://latex.codecogs.com/png.latex?%5Cell_%7Bi-1%7D"> uses) by factoring out <img src="https://latex.codecogs.com/png.latex?e%5E%7Bm_%7Bi-1%7D%20-%20m_i%7D">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cell_i%20=%20%5Cunderbrace%7B%5Cleft(%5Csum_%7Bj=1%7D%5E%7Bi-1%7D%20e%5E%7Bx_j%20-%20m_%7Bi-1%7D%7D%5Cright)%7D_%7B%5Cell_%7Bi-1%7D%7D%20%5Ccdot%5C;%20e%5E%7Bm_%7Bi-1%7D%20-%20m_i%7D%20%5C;+%5C;%20e%5E%7Bx_i%20-%20m_i%7D%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7B%5Cell_i%20=%20%5Cell_%7Bi-1%7D%20%5Ccdot%20e%5E%7Bm_%7Bi-1%7D%20-%20m_i%7D%20+%20e%5E%7Bx_i%20-%20m_i%7D%7D%0A"></p>
+<p>Everything on the right is available at step <img src="https://latex.codecogs.com/png.latex?i"> with no dependency on the future. This fuses the max and denominator into a single pass, reducing 3 passes to 2.</p>
+</section>
+<section id="passes-to-1-the-surrogate-output" class="level4">
+<h4 class="anchored" data-anchor-id="passes-to-1-the-surrogate-output">2 passes to 1: the surrogate output</h4>
+<p>In attention, our final target is not the attention score matrix but the output matrix <img src="https://latex.codecogs.com/png.latex?O"> or more specifically <img src="https://latex.codecogs.com/png.latex?O%20=%20A%20%5Ccdot%20V"> which still requires a second sweep. The same surrogate trick eliminates it, you define a <strong>surrogate output</strong> <img src="https://latex.codecogs.com/png.latex?o'_i"> using the running statistics <img src="https://latex.codecogs.com/png.latex?m_i"> and <img src="https://latex.codecogs.com/png.latex?%5Cell_i"> instead of the final ones. Applying the identical factor and rescale algebra yields:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cboxed%7Bo'_i%20=%20o'_%7Bi-1%7D%20%5Ccdot%20%5Cfrac%7B%5Cell_%7Bi-1%7D%20%5Ccdot%20e%5E%7Bm_%7Bi-1%7D%20-%20m_i%7D%7D%7B%5Cell_i%7D%20+%20%5Cfrac%7Be%5E%7Bx_i%20-%20m_i%7D%7D%7B%5Cell_i%7D%20%5Ccdot%20V%5Bi,%20:%5D%7D%0A"></p>
+<p>At position <img src="https://latex.codecogs.com/png.latex?N">, the running statistics equal the final statistics, so <img src="https://latex.codecogs.com/png.latex?o'_N"> equals the true output <img src="https://latex.codecogs.com/png.latex?o_N">. <strong>The online update is not an approximation</strong>. It produces the same result as computing softmax over the full row.</p>
+<p>In practice, FlashAttention track <img src="https://latex.codecogs.com/png.latex?m"> and <img src="https://latex.codecogs.com/png.latex?%5Cell"> as scalar registers in SRAM, updated once per key tile per query tile.</p>
+<blockquote class="blockquote">
+<p>I would recommend reading these excellent notes <a href="https://courses.cs.washington.edu/courses/cse599m/23sp/notes/flashattn.pdf">“From online softmax to flash attention”</a> to understand all the derivations in more detail.</p>
+</blockquote>
+</section>
+</section>
+<section id="the-logsumexp-value-l" class="level3">
+<h3 class="anchored" data-anchor-id="the-logsumexp-value-l">The Logsumexp Value L</h3>
+<p>At the end of the forward pass, the online softmax loop has produced the final row maximum <img src="https://latex.codecogs.com/png.latex?m_i"> and denominator <img src="https://latex.codecogs.com/png.latex?%5Cell_i"> for each query row <img src="https://latex.codecogs.com/png.latex?i">. <a href="https://tridao.me/publications/flash2/flash2.pdf">FlashAttention-2</a> compresses these two scalars into a single value, the <strong>logsumexp value</strong>:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AL_i%20=%20m_i%20+%20%5Clog%20%5Cell_i%20=%20%5Clog%5C!%5Cleft(%5Csum_j%20e%5E%7BS_%7Bij%7D%7D%5Cright)%0A"></p>
+<p><img src="https://latex.codecogs.com/png.latex?L_i"> is the log of the softmax partition function for row <img src="https://latex.codecogs.com/png.latex?i">, one scalar per query row and can be used to compute the <img src="https://latex.codecogs.com/png.latex?P"> as follows:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AP_%7Bij%7D%20=%20e%5E%7BS_%7Bij%7D%20-%20L_i%7D%0A"></p>
+<p>This ensures we don’t need to store the <img src="https://latex.codecogs.com/png.latex?P"> during the forward pass. Together with <img src="https://latex.codecogs.com/png.latex?Q,%20K,%20V,%20O"> and <img src="https://latex.codecogs.com/png.latex?L">, we have everything we need to compute the backward pass.</p>
+<blockquote class="blockquote">
+<p><a href="https://tridao.me/publications/flash2/flash2.pdf">FlashAttention-2</a> also introduces other parallelization and loop order engineering efficiencies which I would discuss in later blogs, for now I have focused on the core conceptual improvements that are part of FlashAttention algorithm.</p>
+</blockquote>
+</section>
+</section>
+<section id="wrapping-up" class="level2">
+<h2 class="anchored" data-anchor-id="wrapping-up">Wrapping Up</h2>
+<p>The core insight behind FlashAttention is not about clever matmul tricks. It is about bytes and minimizing the data movement. Standard attention is slow because it moves too much data through the memory bus: the <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> attention matrix gets written to and read from HBM multiple times across three separate kernel launches.</p>
+<p>The five fixes of FlashAttention addresses that bottleneck systematically:</p>
+<ul>
+<li><strong>Operator fusion</strong> eliminates HBM round-trips by running the entire attention computation in a single kernel.</li>
+<li><strong>Tiling</strong> breaks the computation into SRAM-sized blocks so that fusion is actually possible.</li>
+<li><strong>Recomputation</strong> removes the need to store the <img src="https://latex.codecogs.com/png.latex?N%20%5Ctimes%20N"> probability matrix <img src="https://latex.codecogs.com/png.latex?P">, trading cheap extra compute for a massive reduction in activation memory.</li>
+<li><strong>Online softmax</strong> makes tiling exact by maintaining running statistics that converge to the correct answer in a single pass.</li>
+<li><strong>The logsumexp value <img src="https://latex.codecogs.com/png.latex?L"></strong> bridges the forward and backward passes, compressing everything needed to recover <img src="https://latex.codecogs.com/png.latex?P"> into one scalar per query row.</li>
+</ul>
+<p>The result is an attention algorithm with the same numerical output, dramatically less HBM IO and less memory. It is faster despite doing slightly more work because the bottleneck is memory, not compute.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<section id="papers" class="level3">
+<h3 class="anchored" data-anchor-id="papers">Papers</h3>
+<ul>
+<li><a href="https://arxiv.org/abs/2205.14135">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</a>: The original FlashAttention paper</li>
+<li><a href="https://tridao.me/publications/flash2/flash2.pdf">FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning</a>: FlashAttention-2 paper that improves upon the original FlashAttention using better parallelism and work partitioning</li>
+<li><a href="https://arxiv.org/abs/1805.02867">Online Normalizer Calculation for Softmax</a>: Original derivation of the online softmax recurrence</li>
+<li><a href="https://courses.cs.washington.edu/courses/cse599m/23sp/notes/flashattn.pdf">From Online Softmax to FlashAttention</a>: Excellent notes bridging online softmax to FlashAttention</li>
+</ul>
+</section>
+<section id="blogs" class="level3">
+<h3 class="anchored" data-anchor-id="blogs">Blogs</h3>
+<ul>
+<li><a href="https://horace.io/brrr_intro.html">Making Deep Learning Go Brrrr From First Principles</a>: A must read to understand memory-bound vs compute-bound workloads</li>
+<li><a href="https://gordicaleksa.medium.com/eli5-flash-attention-5c44017022ad">ELI5: FlashAttention</a>: Accessible conceptual explanation of FlashAttention</li>
+<li><a href="https://modal.com/gpu-glossary">Modal GPU Performance Glossary</a>: dictionary of terms and concepts related to programming GPUs</li>
+</ul>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://garg-aayush.github.io/posts/2026-03-27-flash-attention/</guid>
+  <pubDate>Fri, 27 Mar 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Building Browser Tools with Claude Code</title>
   <link>https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</link>

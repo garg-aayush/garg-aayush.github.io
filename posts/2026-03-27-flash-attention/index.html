@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-03-27">
+<meta name="description" content="Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware">
+
+<title>FlashAttention: Making Attention I/O-Aware – Aayush Garg</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-6afb1252fb47aed0dd21b959f7202bb6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="FlashAttention: Making Attention I/O-Aware – Aayush Garg">
+<meta property="og:description" content="Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware">
+<meta property="og:image" content="https://garg-aayush.github.io/static/img/blog-2026-03-27/flashattention.png">
+<meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:height" content="874">
+<meta property="og:image:width" content="2450">
+<meta name="twitter:title" content="FlashAttention: Making Attention I/O-Aware – Aayush Garg">
+<meta name="twitter:description" content="Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware">
+<meta name="twitter:image" content="https://garg-aayush.github.io/static/img/blog-2026-03-27/flashattention.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="874">
+<meta name="twitter:image-width" content="2450">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../blog/"> 
+<span class="menu-text">Blogs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../tools/"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-gpu-memory-hierarchy" id="toc-the-gpu-memory-hierarchy" class="nav-link active" data-scroll-target="#the-gpu-memory-hierarchy">The GPU Memory Hierarchy</a>
+  <ul class="collapse">
+  <li><a href="#compute-bound-vs.-memory-bound-operations" id="toc-compute-bound-vs.-memory-bound-operations" class="nav-link" data-scroll-target="#compute-bound-vs.-memory-bound-operations">Compute-bound vs.&nbsp;memory-bound operations</a></li>
+  </ul></li>
+  <li><a href="#standard-attention-and-its-io-cost" id="toc-standard-attention-and-its-io-cost" class="nav-link" data-scroll-target="#standard-attention-and-its-io-cost">Standard Attention and Its IO Cost</a>
+  <ul class="collapse">
+  <li><a href="#the-attention-formula" id="toc-the-attention-formula" class="nav-link" data-scroll-target="#the-attention-formula">The attention formula</a></li>
+  <li><a href="#standard-forward-pass" id="toc-standard-forward-pass" class="nav-link" data-scroll-target="#standard-forward-pass">Standard forward pass</a></li>
+  <li><a href="#standard-backward-pass" id="toc-standard-backward-pass" class="nav-link" data-scroll-target="#standard-backward-pass">Standard backward pass</a></li>
+  <li><a href="#the-two-problems" id="toc-the-two-problems" class="nav-link" data-scroll-target="#the-two-problems">The two problems</a></li>
+  </ul></li>
+  <li><a href="#what-flashattention-does" id="toc-what-flashattention-does" class="nav-link" data-scroll-target="#what-flashattention-does">What FlashAttention Does</a>
+  <ul class="collapse">
+  <li><a href="#operator-fusion" id="toc-operator-fusion" class="nav-link" data-scroll-target="#operator-fusion">Operator Fusion</a></li>
+  <li><a href="#tiling" id="toc-tiling" class="nav-link" data-scroll-target="#tiling">Tiling</a></li>
+  <li><a href="#recomputation" id="toc-recomputation" class="nav-link" data-scroll-target="#recomputation">Recomputation</a></li>
+  <li><a href="#online-softmax" id="toc-online-softmax" class="nav-link" data-scroll-target="#online-softmax">Online Softmax</a></li>
+  <li><a href="#the-logsumexp-value-l" id="toc-the-logsumexp-value-l" class="nav-link" data-scroll-target="#the-logsumexp-value-l">The Logsumexp Value L</a></li>
+  </ul></li>
+  <li><a href="#wrapping-up" id="toc-wrapping-up" class="nav-link" data-scroll-target="#wrapping-up">Wrapping Up</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a>
+  <ul class="collapse">
+  <li><a href="#papers" id="toc-papers" class="nav-link" data-scroll-target="#papers">Papers</a></li>
+  <li><a href="#blogs" id="toc-blogs" class="nav-link" data-scroll-target="#blogs">Blogs</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">FlashAttention: Making Attention I/O-Aware</h1>
+</div>
+
+<div>
+  <div class="description">
+    Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 27, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="https://arxiv.org/abs/2205.14135">FlashAttention</a> is the default attention implementation across the stack. Whether you are training or running inference on GPUs and whether using MHA/GQA/MLA variants, you are almost certainly running a variant of it.</p>
+<p>Standard attention is memory-bound, i.e.&nbsp;it does not account for the GPU memory hierarchy, repeatedly shuffling large intermediate matrices between slow and fast GPU memory. FlashAttention addresses this by making attention <strong>IO-aware</strong>. It computes exact standard attention with the same numerical output but restructures the computation to minimize data movement between these memory levels. It does this through a combination of operator fusion, tiling, recomputation and a particularly elegant online softmax algorithm that computes softmax in a single pass without needing to see all the scores first. The result is faster and longer context length training and lower memory usage without approximation.</p>
+<p>This post walks through the “why” behind each of these pieces along with a bit deeper discussion on online softmax derivation. I also plan to follow this up with blogs on implementing FlashAttention in pure PyTorch and as a fused Triton kernel to build a deeper hands-on understanding of these ideas.</p>
+<section id="the-gpu-memory-hierarchy" class="level2">
+<h2 class="anchored" data-anchor-id="the-gpu-memory-hierarchy">The GPU Memory Hierarchy</h2>
+<p>It is helpful to have a basic understanding of GPU memory hierarchy before diving into FlashAttention. A GPU has two levels of memory that matter here:</p>
+<ul>
+<li><p><strong>HBM (High Bandwidth Memory)</strong>: It is the GPU’s main (slow) memory which you see when you run <code>nvidia-smi</code>. It sits off-compute chip. An A100 has about 80 GB of HBM with a bandwidth of ~2 TB/s.</p></li>
+<li><p><strong>SRAM (Static RAM)</strong> is on-chip memory. A A100 has about ~20 MB total (spread across 108 SMs) with ~19 TB/s bandwidth. This is roughly <strong>10x</strong> the bandwidth of HBM but nearly <strong>4000x</strong> smaller in capacity.</p></li>
+</ul>
+<p>These numbers scale with each generation: an H100 SXM has 80 GB HBM3 at 3.35 TB/s, a B200 pushes to 192 GB HBM3e at 8 TB/s but the SRAM-to-HBM bandwidth gap persists across all of them. The principles apply regardless of which GPU you are on.</p>
+<p>Every GPU kernel (operation) must load its inputs from HBM into SRAM, do the computation and write results back to HBM. The key intuition: <strong>SRAM is where compute happens. HBM is where data lives</strong>.</p>
+<section id="compute-bound-vs.-memory-bound-operations" class="level3">
+<h3 class="anchored" data-anchor-id="compute-bound-vs.-memory-bound-operations">Compute-bound vs.&nbsp;memory-bound operations</h3>
+<p>Given these two memory levels, the operations on GPU can either be <code>compute-bound</code> or <code>memory-bound</code>.</p>
+<ul>
+<li><p><strong>Compute-bound</strong>: An operation where the GPU’s compute cores are the bottleneck because they cannot do matmuls as fast as the data is fed. Typical examples are large matrix multiplications and convolutions ops.</p></li>
+<li><p><strong>Memory-bound</strong>: An operation where the GPU’s memory bandwidth is the bottleneck, leaving the compute cores sitting idle while they wait for data to arrive from main memory (HBM &lt;-&gt; SRAM). Examples include elementwise operations (eactivations, dropout) and reductions (sum, softmax, batch norm, layer norm).</p></li>
+</ul>
+<p>The way to quantify this is <strong>arithmetic intensity</strong>: how many FLOPs the operation performs per byte it moves to/from HBM.</p>
+<p><span class="math display">\[
+\text{Arithmetic Intensity} = \frac{\text{FLOPs}}{\text{Bytes accessed from HBM}}
+\]</span></p>
+<p>Every GPU has a theoretical arithmetic intensity where compute time and memory transfer time are exactly balanced. For an A100, this is <span class="math inline">\(\approx\)</span> <strong>156 FLOPs/byte</strong>. Operations above this threshold are compute-bound, operations below it are memory-bound. This framework is known as the <a href="https://en.wikipedia.org/wiki/Roofline_model">roofline model</a>.</p>
+<blockquote class="blockquote">
+<p>Note, <a href="https://horace.io/brrr_intro.html">Horace He’s “Making Deep Learning Go Brrrr”</a> is a great resource to understand this concept in detail. Also, remember a punchline from the blog, <em>if an operation is memory-bound, making it faster is not about fewer FLOPs. It is about moving fewer bytes.</em> This holds true for FlashAttention.</p>
+</blockquote>
+</section>
+</section>
+<section id="standard-attention-and-its-io-cost" class="level2">
+<h2 class="anchored" data-anchor-id="standard-attention-and-its-io-cost">Standard Attention and Its IO Cost</h2>
+<p>Now that we have the memory hierarchy picture, we can revisit the standard attention and forward and backward pass implementation.</p>
+<section id="the-attention-formula" class="level3">
+<h3 class="anchored" data-anchor-id="the-attention-formula">The attention formula</h3>
+<p>Standard scaled dot-product attention computes:</p>
+<p><span class="math display">\[
+O = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d}}\right) V
+\]</span></p>
+<p>where <span class="math inline">\(Q, K, V \in \mathbb{R}^{N \times d}\)</span>, <span class="math inline">\(N\)</span> is the sequence length and <span class="math inline">\(d\)</span> is the head dimension. This is for a single attention head, multi-head attention just runs this independently across heads. Note, I am ignoring masking and dropout here to keep the IO analysis clean, they do not change the fundamental bottleneck.</p>
+<p>The formula looks like one operation but in practice PyTorch executes it as a sequence of separate GPU kernels. Each kernel reads its inputs from HBM, does its computation in SRAM and writes the results back to HBM. Then the next kernel reads those results from HBM again.</p>
+</section>
+<section id="standard-forward-pass" class="level3">
+<h3 class="anchored" data-anchor-id="standard-forward-pass">Standard forward pass</h3>
+<blockquote class="blockquote">
+<p><strong>Algorithm: Standard Attention Forward</strong></p>
+<p>Require: <span class="math inline">\(Q, K, V \in \mathbb{R}^{N \times d}\)</span> in HBM.</p>
+<ol type="1">
+<li>Load <span class="math inline">\(Q, K\)</span> from HBM, compute <span class="math inline">\(S = QK^T\)</span>, write <span class="math inline">\(S\)</span> to HBM.</li>
+<li>Read <span class="math inline">\(S\)</span> from HBM, compute <span class="math inline">\(P = \text{softmax}(S)\)</span>, write <span class="math inline">\(P\)</span> to HBM.</li>
+<li>Load <span class="math inline">\(P\)</span> and <span class="math inline">\(V\)</span> from HBM, compute <span class="math inline">\(O = PV\)</span>, write <span class="math inline">\(O\)</span> to HBM.</li>
+<li>Return <span class="math inline">\(O\)</span>.</li>
+</ol>
+</blockquote>
+<p>We have <strong>3 separate kernels and 3 HBM round-trips</strong>! The <span class="math inline">\(N \times N\)</span> attention matrix is read and written multiple times. Here, total HBM IO is ~<span class="math inline">\(O(N^2)\)</span> dominated by sequence length (<span class="math inline">\(N\)</span>).</p>
+</section>
+<section id="standard-backward-pass" class="level3">
+<h3 class="anchored" data-anchor-id="standard-backward-pass">Standard backward pass</h3>
+<blockquote class="blockquote">
+<p><strong>Algorithm: Standard Attention Backward</strong></p>
+<p>Require: <span class="math inline">\(Q, K, V, dO \in \mathbb{R}^{N \times d}\)</span>, <span class="math inline">\(P \in \mathbb{R}^{N \times N}\)</span> in HBM.</p>
+<ol type="1">
+<li>Load <span class="math inline">\(P, dO\)</span>, compute <span class="math inline">\(dV = P^T dO\)</span>, write <span class="math inline">\(dV\)</span> to HBM.</li>
+<li>Load <span class="math inline">\(dO, V\)</span>, compute <span class="math inline">\(dP = dO V^T\)</span>, write <span class="math inline">\(dP\)</span> to HBM.</li>
+<li>Read <span class="math inline">\(P, dP\)</span>, compute <span class="math inline">\(dS_{ij} = P_{ij}(dP_{ij} - \sum_l P_{il} dP_{il})\)</span>, write <span class="math inline">\(dS\)</span> to HBM.</li>
+<li>Load <span class="math inline">\(dS\)</span> and <span class="math inline">\(K\)</span>, compute <span class="math inline">\(dQ = dS K\)</span>, write <span class="math inline">\(dQ\)</span> to HBM.</li>
+<li>Load <span class="math inline">\(dS\)</span> and <span class="math inline">\(Q\)</span>, compute <span class="math inline">\(dK = dS^T Q\)</span>, write <span class="math inline">\(dK\)</span> to HBM.</li>
+<li>Return <span class="math inline">\(dQ, dK, dV\)</span>.</li>
+</ol>
+</blockquote>
+<p>Here, we even have more HBM traffic with the backward pass reads and writes multiple <span class="math inline">\(N \times N\)</span> intermediates (<span class="math inline">\(P\)</span>, <span class="math inline">\(dP\)</span>, <span class="math inline">\(dS\)</span>), giving <span class="math inline">\(O(N^2)\)</span> IO again.</p>
+</section>
+<section id="the-two-problems" class="level3">
+<h3 class="anchored" data-anchor-id="the-two-problems">The two problems</h3>
+<p>Looking at these algorithms, there are two issues:</p>
+<p><strong>Problem 1: Multiple HBM round-trips.</strong> Every step shuffles <span class="math inline">\(N \times N\)</span> matrices between HBM and SRAM. As a result, your standard attention is dominated by comparatively slow HBM accesses while the compute cores sit idle waiting for data to arrive.</p>
+<p><strong>Problem 2: <span class="math inline">\(O(N^2)\)</span> activation memory.</strong> The forward pass must save <span class="math inline">\(P\)</span> (<span class="math inline">\(N \times N\)</span>) per head per layer for backpropagation. This not only creates extra HBM traffic but also consumes a lot of GPU memory especially for long sequences.</p>
+<blockquote class="blockquote">
+<p><strong>Standard attention implementation is memory-bound and not “IO-AWARE”!</strong> The <span class="math inline">\(N \times N\)</span> matrices are repeatedly read and write in HBM during both forward and backward passes.</p>
+</blockquote>
+</section>
+</section>
+<section id="what-flashattention-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-flashattention-does">What FlashAttention Does</h2>
+<p><strong>FlashAttention is an IO-aware, exact attention algorithm</strong>. It computes the same output as standard attention but it never materializes the <span class="math inline">\(N \times N\)</span> attention matrix in HBM. The total HBM IO drops from <span class="math inline">\(O(N^2)\)</span> to <span class="math inline">\(O(N^2 d^2 / M)\)</span>, where <span class="math inline">\(M\)</span> is the SRAM size per SM. For typical values of <span class="math inline">\(d\)</span> and <span class="math inline">\(M\)</span>, this is dramatically less than <span class="math inline">\(O(N^2)\)</span>.</p>
+<p>The algorithm achieves this through five interdependent fixes:</p>
+<ol type="1">
+<li><strong>Operator fusion</strong>: run the entire attention computation (matmul, softmax, matmul) in a single kernel so intermediates stay in SRAM.</li>
+<li><strong>Tiling</strong>: partition <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(V\)</span> into blocks that fit in SRAM, processing one block at a time.</li>
+<li><strong>Recomputation</strong>: do not store the <span class="math inline">\(N \times N\)</span> probability matrix <span class="math inline">\(P\)</span>. Recompute it from <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, and a tiny normalization constant during the backward pass.</li>
+<li><strong>Online softmax</strong>: compute softmax incrementally across tiles using running statistics so that tiling produces the exact result without ever seeing the full row.</li>
+<li><strong>The logsumexp value <span class="math inline">\(L\)</span></strong>: a single scalar per query row that encodes everything needed to recover <span class="math inline">\(P\)</span> during the backward pass.</li>
+</ol>
+<p>These fixes are not independent. Fusion needs tiling (intermediates are too large for SRAM otherwise). Tiling needs online softmax (softmax is not directly associative). Recomputation needs <span class="math inline">\(L\)</span> (the backward pass must recover <span class="math inline">\(P\)</span> without storing it). I will walk through each fix in turn, building up the complete algorithm.</p>
+<img src="../../static/img/blog-2026-03-27/flashattention.png" class="img-fluid" style="width:100.0%">
+<p align="center">
+<em>Left: GPU memory hierarchy. Center: FlashAttention tiled computation with Q, K, V blocks loaded into SRAM. Right: FlashAttention fuses all attention ops into a single kernel, eliminating separate HBM round-trips. (Source: <a href="https://arxiv.org/abs/2205.14135">Dao et al., 2022</a>)</em>
+</p>
+<section id="operator-fusion" class="level3">
+<h3 class="anchored" data-anchor-id="operator-fusion">Operator Fusion</h3>
+<p>As shown above, standard attention launches three separate GPU kernels, each writing <span class="math inline">\(N \times N\)</span> intermediates to HBM. For instance, the softmax step is especially wasteful, it does very little arithmetic per element but reads and writes the entire attention matrix. The compute cores sit almost entirely idle waiting for data.</p>
+<p>The most common approach to accelerate memory-bound operations is <strong>kernel fusion</strong>: if there are multiple operations applied to the same input, the input can be loaded once from HBM instead of multiple times for each operation.</p>
+<p>Often, compilers (e.g.&nbsp;PyTorch’s torch.compile) can automatically fuse operations but they are not always able to fuse complex operations like matmul + softmax in attention as it requires domain specific knowledge about how to tile and reorder the computation. <strong>FlashAttention is a hand-crafted fused kernel that exploits the specific structure of attention.</strong></p>
+<p>Fusion alone is not enough. For it to actually deliver the speedups we want two independent problems need to be solved:</p>
+<ol type="1">
+<li><p><strong>The intermediates must fit in SRAM.</strong> Even a single block of query rows scored against all <span class="math inline">\(N\)</span> keys produces a score matrix that exceeds SRAM capacity, and this only gets worse as <span class="math inline">\(N\)</span> grows. We need a way to break the computation into pieces that fit. That is <strong>tiling</strong> (next section).</p></li>
+<li><p><strong>We need to avoid storing <span class="math inline">\(P\)</span> for the backward pass.</strong> Even if we fuse the forward pass perfectly, backpropagation requires the <span class="math inline">\(P\)</span> matrix to be saved in HBM for gradient computation. This reintroduces the <span class="math inline">\(O(N^2)\)</span> memory cost we are trying to eliminate. The fix is <strong>recomputation</strong>.</p></li>
+</ol>
+</section>
+<section id="tiling" class="level3">
+<h3 class="anchored" data-anchor-id="tiling">Tiling</h3>
+<p>As mentioned above the full <span class="math inline">\(N \times N\)</span> attention matrix does not fit in SRAM. Moreover, we do not need to hold it all at once. <strong>The attention computation does not require the full matrix to be in memory simultaneously. The output <span class="math inline">\(O\)</span> can be computed tile by tile.</strong> This ensures all intermediate values stays in SRAM and only touch HBM at the start (to read <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(V\)</span>) and at the end (to write <span class="math inline">\(O\)</span>).</p>
+<p>We partition <span class="math inline">\(Q\)</span> into row blocks and <span class="math inline">\(K\)</span>, <span class="math inline">\(V\)</span> into column blocks. For each query block, we loop over all key/value blocks, compute a small score tile that fits in SRAM, apply softmax, multiply by the value block, and accumulate into an output block that also stays in SRAM. <strong>The block sizes are chosen so that all the tiles (query, key, value, score, output) fit in SRAM simultaneously.</strong></p>
+<p>The key point is that the full <span class="math inline">\(N \times N\)</span> attention matrix is never materialized, neither in HBM nor in SRAM. The HBM IO cost of the tiled algorithm is <span class="math inline">\(\text{IO cost} \approx O(Nd)\)</span> instead of <span class="math inline">\(O(N^2)\)</span> for vanilla attention.</p>
+<section id="the-softmax-problem" class="level4">
+<h4 class="anchored" data-anchor-id="the-softmax-problem">The Softmax Problem</h4>
+<p>There is a subtlety that makes tiling attention fundamentally harder than tiling a standard matrix multiplication. For matmul, tiling works because addition is associative: the partial products from each tile can simply be summed. But attention has a softmax sandwiched between two matmuls and <strong>softmax is not directly associative across tiles</strong>. Softmax for each query row needs the global maximum (<span class="math inline">\(m\)</span>) and global denominator (<span class="math inline">\(l\)</span>) over all keys. If we are processing key tiles one at a time, we do not know these global statistics until we have seen every tile. The online softmax algorithm (discussed later) solves this problem.</p>
+</section>
+</section>
+<section id="recomputation" class="level3">
+<h3 class="anchored" data-anchor-id="recomputation">Recomputation</h3>
+<p>Tiling eliminates the <span class="math inline">\(N \times N\)</span> matrix from the forward pass. However, the gradient computation requires the probability matrix <span class="math inline">\(P\)</span> (see the backward algorithm above). If we store <span class="math inline">\(P\)</span> for the backward pass, we reintroduce <span class="math inline">\(O(N^2)\)</span> memory per head which is exactly the cost we just eliminated.</p>
+<p>FlashAttention makes a deliberate choice: <strong>do not store <span class="math inline">\(P\)</span>, recompute it during the backward pass from the saved <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, and <span class="math inline">\(V\)</span> tiles.</strong></p>
+<p>This trades memory for compute. Since, standard attention is memory-bound, the additional compute is small in comparison. You need one extra forward pass over the <span class="math inline">\(QK^T\)</span> tiles per backward pass. Since the backward pass already has to load <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, and <span class="math inline">\(V\)</span> from HBM, recomputation adds no extra HBM reads. The memory savings are enormous. Thus, we only need to store <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(V\)</span>, <span class="math inline">\(O\)</span> (all <span class="math inline">\(O(Nd)\)</span>) and one additional scalar <span class="math inline">\(L\)</span>.</p>
+<blockquote class="blockquote">
+<p>In practice, FlashAttention backward pass is <em>faster</em> than standard attention despite doing more FLOPs, because it eliminates the massive HBM reads and writes of <span class="math inline">\(P\)</span> (remember FlashAttention is memory-bound!). This is the same principle as <a href="https://arxiv.org/abs/1604.06174">gradient checkpointing</a> but applied surgically to a single intermediate rather than at the coarse granularity of entire layers.</p>
+</blockquote>
+</section>
+<section id="online-softmax" class="level3">
+<h3 class="anchored" data-anchor-id="online-softmax">Online Softmax</h3>
+<p>As hinted before, tiling works naturally for matmul because addition is associative. But attention has a softmax sandwiched between two matmuls and softmax needs two global statistics the row maximum <span class="math inline">\(m\)</span> and the denominator <span class="math inline">\(l\)</span> before any output can be produced. The numerically stable (“safe”) softmax for a row <span class="math inline">\(x = (x_1, \ldots, x_N)\)</span> is:</p>
+<p><span class="math display">\[
+\text{softmax}(x)_i = \frac{e^{x_i - m}}{\sum_{j=1}^{N} e^{x_j - m}}, \quad m = \max_{j=1}^{N} x_j
+\]</span></p>
+<p>Computing this requires three sequential passes over the data (<a href="https://arxiv.org/abs/1805.02867">Milakov &amp; Gimelshein, 2018</a>):</p>
+<ul>
+<li>Pass 1 sweeps for the max <span class="math inline">\(m_N\)</span></li>
+<li>Pass 2 uses <span class="math inline">\(m_N\)</span> to accumulate the denominator <span class="math inline">\(\ell_N = \sum_j e^{x_j - m_N}\)</span></li>
+<li>Pass 3 uses both to emit the final values <span class="math inline">\(a_i = e^{x_i - m_N}/\ell_N\)</span>.</li>
+</ul>
+<p>Each pass depends on the result of the previous one. If the full row of logits does not fit in SRAM (which it generally does not for long sequences), each pass must re-read <span class="math inline">\(Q\)</span> and <span class="math inline">\(K\)</span> from HBM to recompute logits on the fly. This causes three passes, three HBM round-trips!</p>
+<section id="passes-to-2-the-surrogate-denominator" class="level4">
+<h4 class="anchored" data-anchor-id="passes-to-2-the-surrogate-denominator">3 passes to 2: the surrogate denominator</h4>
+<p>The denominator update <span class="math inline">\(\ell_i = \ell_{i-1} + e^{x_i - m_N}\)</span> depends on the <em>final</em> max <span class="math inline">\(m_N\)</span> which blocks fusion with the max pass. The trick (<a href="https://arxiv.org/abs/1805.02867">Milakov &amp; Gimelshein, 2018</a>) is to define a <strong>surrogate denominator</strong> that uses the running max <span class="math inline">\(m_i\)</span> instead:</p>
+<p><span class="math display">\[
+\ell_i := \sum_{j=1}^{i} e^{x_j - m_i}
+\]</span></p>
+<p>At position <span class="math inline">\(N\)</span> the running max equals the final max, so the surrogate <span class="math inline">\(\ell_N\)</span> equals the true denominator. If we can update <span class="math inline">\(\ell_i\)</span> incrementally, we get the final denominator for free.</p>
+<p>Start from the definition and split off the <span class="math inline">\(i\)</span>-th term:</p>
+<p><span class="math display">\[
+\ell_i = \left(\sum_{j=1}^{i-1} e^{x_j - m_i}\right) + e^{x_i - m_i}
+\]</span></p>
+<p>The key move is to relate each <span class="math inline">\(e^{x_j - m_i}\)</span> in the sum to <span class="math inline">\(e^{x_j - m_{i-1}}\)</span> (which is what <span class="math inline">\(\ell_{i-1}\)</span> uses) by factoring out <span class="math inline">\(e^{m_{i-1} - m_i}\)</span>:</p>
+<p><span class="math display">\[
+\ell_i = \underbrace{\left(\sum_{j=1}^{i-1} e^{x_j - m_{i-1}}\right)}_{\ell_{i-1}} \cdot\; e^{m_{i-1} - m_i} \;+\; e^{x_i - m_i}
+\]</span></p>
+<p><span class="math display">\[
+\boxed{\ell_i = \ell_{i-1} \cdot e^{m_{i-1} - m_i} + e^{x_i - m_i}}
+\]</span></p>
+<p>Everything on the right is available at step <span class="math inline">\(i\)</span> with no dependency on the future. This fuses the max and denominator into a single pass, reducing 3 passes to 2.</p>
+</section>
+<section id="passes-to-1-the-surrogate-output" class="level4">
+<h4 class="anchored" data-anchor-id="passes-to-1-the-surrogate-output">2 passes to 1: the surrogate output</h4>
+<p>In attention, our final target is not the attention score matrix but the output matrix <span class="math inline">\(O\)</span> or more specifically <span class="math inline">\(O = A \cdot V\)</span> which still requires a second sweep. The same surrogate trick eliminates it, you define a <strong>surrogate output</strong> <span class="math inline">\(o'_i\)</span> using the running statistics <span class="math inline">\(m_i\)</span> and <span class="math inline">\(\ell_i\)</span> instead of the final ones. Applying the identical factor and rescale algebra yields:</p>
+<p><span class="math display">\[
+\boxed{o'_i = o'_{i-1} \cdot \frac{\ell_{i-1} \cdot e^{m_{i-1} - m_i}}{\ell_i} + \frac{e^{x_i - m_i}}{\ell_i} \cdot V[i, :]}
+\]</span></p>
+<p>At position <span class="math inline">\(N\)</span>, the running statistics equal the final statistics, so <span class="math inline">\(o'_N\)</span> equals the true output <span class="math inline">\(o_N\)</span>. <strong>The online update is not an approximation</strong>. It produces the same result as computing softmax over the full row.</p>
+<p>In practice, FlashAttention track <span class="math inline">\(m\)</span> and <span class="math inline">\(\ell\)</span> as scalar registers in SRAM, updated once per key tile per query tile.</p>
+<blockquote class="blockquote">
+<p>I would recommend reading these excellent notes <a href="https://courses.cs.washington.edu/courses/cse599m/23sp/notes/flashattn.pdf">“From online softmax to flash attention”</a> to understand all the derivations in more detail.</p>
+</blockquote>
+</section>
+</section>
+<section id="the-logsumexp-value-l" class="level3">
+<h3 class="anchored" data-anchor-id="the-logsumexp-value-l">The Logsumexp Value L</h3>
+<p>At the end of the forward pass, the online softmax loop has produced the final row maximum <span class="math inline">\(m_i\)</span> and denominator <span class="math inline">\(\ell_i\)</span> for each query row <span class="math inline">\(i\)</span>. <a href="https://tridao.me/publications/flash2/flash2.pdf">FlashAttention-2</a> compresses these two scalars into a single value, the <strong>logsumexp value</strong>:</p>
+<p><span class="math display">\[
+L_i = m_i + \log \ell_i = \log\!\left(\sum_j e^{S_{ij}}\right)
+\]</span></p>
+<p><span class="math inline">\(L_i\)</span> is the log of the softmax partition function for row <span class="math inline">\(i\)</span>, one scalar per query row and can be used to compute the <span class="math inline">\(P\)</span> as follows:</p>
+<p><span class="math display">\[
+P_{ij} = e^{S_{ij} - L_i}
+\]</span></p>
+<p>This ensures we don’t need to store the <span class="math inline">\(P\)</span> during the forward pass. Together with <span class="math inline">\(Q, K, V, O\)</span> and <span class="math inline">\(L\)</span>, we have everything we need to compute the backward pass.</p>
+<blockquote class="blockquote">
+<p><a href="https://tridao.me/publications/flash2/flash2.pdf">FlashAttention-2</a> also introduces other parallelization and loop order engineering efficiencies which I would discuss in later blogs, for now I have focused on the core conceptual improvements that are part of FlashAttention algorithm.</p>
+</blockquote>
+</section>
+</section>
+<section id="wrapping-up" class="level2">
+<h2 class="anchored" data-anchor-id="wrapping-up">Wrapping Up</h2>
+<p>The core insight behind FlashAttention is not about clever matmul tricks. It is about bytes and minimizing the data movement. Standard attention is slow because it moves too much data through the memory bus: the <span class="math inline">\(N \times N\)</span> attention matrix gets written to and read from HBM multiple times across three separate kernel launches.</p>
+<p>The five fixes of FlashAttention addresses that bottleneck systematically:</p>
+<ul>
+<li><strong>Operator fusion</strong> eliminates HBM round-trips by running the entire attention computation in a single kernel.</li>
+<li><strong>Tiling</strong> breaks the computation into SRAM-sized blocks so that fusion is actually possible.</li>
+<li><strong>Recomputation</strong> removes the need to store the <span class="math inline">\(N \times N\)</span> probability matrix <span class="math inline">\(P\)</span>, trading cheap extra compute for a massive reduction in activation memory.</li>
+<li><strong>Online softmax</strong> makes tiling exact by maintaining running statistics that converge to the correct answer in a single pass.</li>
+<li><strong>The logsumexp value <span class="math inline">\(L\)</span></strong> bridges the forward and backward passes, compressing everything needed to recover <span class="math inline">\(P\)</span> into one scalar per query row.</li>
+</ul>
+<p>The result is an attention algorithm with the same numerical output, dramatically less HBM IO and less memory. It is faster despite doing slightly more work because the bottleneck is memory, not compute.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<section id="papers" class="level3">
+<h3 class="anchored" data-anchor-id="papers">Papers</h3>
+<ul>
+<li><a href="https://arxiv.org/abs/2205.14135">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</a>: The original FlashAttention paper</li>
+<li><a href="https://tridao.me/publications/flash2/flash2.pdf">FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning</a>: FlashAttention-2 paper that improves upon the original FlashAttention using better parallelism and work partitioning</li>
+<li><a href="https://arxiv.org/abs/1805.02867">Online Normalizer Calculation for Softmax</a>: Original derivation of the online softmax recurrence</li>
+<li><a href="https://courses.cs.washington.edu/courses/cse599m/23sp/notes/flashattn.pdf">From Online Softmax to FlashAttention</a>: Excellent notes bridging online softmax to FlashAttention</li>
+</ul>
+</section>
+<section id="blogs" class="level3">
+<h3 class="anchored" data-anchor-id="blogs">Blogs</h3>
+<ul>
+<li><a href="https://horace.io/brrr_intro.html">Making Deep Learning Go Brrrr From First Principles</a>: A must read to understand memory-bound vs compute-bound workloads</li>
+<li><a href="https://gordicaleksa.medium.com/eli5-flash-attention-5c44017022ad">ELI5: FlashAttention</a>: Accessible conceptual explanation of FlashAttention</li>
+<li><a href="https://modal.com/gpu-glossary">Modal GPU Performance Glossary</a>: dictionary of terms and concepts related to programming GPUs</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
