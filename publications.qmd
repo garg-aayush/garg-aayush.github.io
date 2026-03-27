@@ -50,7 +50,7 @@ Garg, A., Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J.
 
 ::: {.publication-item}
 ::: {.pub-title}
-Spatial aliasing removal using deep learning super-resolution
+Estimation of reservoir elastic parameters via full-wavefield redatuming: Comparison of approaches
 :::
 ::: {.pub-authors}
 Garg, A., Verschuur, D. J.
