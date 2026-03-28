@@ -250,9 +250,17 @@ I ran through a few prompts in OpenCode using the `Qwen3.5-27B` model to see how
 4. I use `/explain-code` (a custom OpenCode skill) to have the model explain the generated script
 5. Finally, I ask it to save the explanation as a readme
 
+{{< video https://youtu.be/Hc98yck9AXU >}}
+
 The model handles all of this well. It picks up the tool calls, uses the skills correctly, follows up on corrections and produces working code. Honestly, for a 27B model running quantized on a single 4090, the quality is surprisingly good.
 
-{{< video https://youtu.be/Hc98yck9AXU >}}
+For reference, here are the speeds I am getting across some of the sessions:
+
+|  |  |
+|--------|-------|
+| Prefill speed | ~2400 tokens/s |
+| Generation speed | ~40 tokens/s |
+
 
 
 ## References
