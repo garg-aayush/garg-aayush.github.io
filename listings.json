@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/blog/index.html",
+    "listing": "/index.html",
     "items": [
+      "/posts/2026-03-29-local-llm-opencode/index.html",
       "/posts/2026-03-27-flash-attention/index.html",
       "/posts/2026-03-20-browser-tools/index.html",
       "/posts/2026-02-26-grpo-from-scratch/index.html",
@@ -24,8 +25,9 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/blog/index.html",
     "items": [
+      "/posts/2026-03-29-local-llm-opencode/index.html",
       "/posts/2026-03-27-flash-attention/index.html",
       "/posts/2026-03-20-browser-tools/index.html",
       "/posts/2026-02-26-grpo-from-scratch/index.html",
