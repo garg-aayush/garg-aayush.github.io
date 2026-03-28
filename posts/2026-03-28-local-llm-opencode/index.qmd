@@ -8,7 +8,7 @@ permalink: /2026-03-28-local-llm-opencode/
 
 This is a quick reference for setting up a local LLM with [llama.cpp](https://github.com/ggml-org/llama.cpp) and using it as an [OpenCode](https://opencode.ai) provider. My setup is an RTX 4090 running the model, a MacBook as the client, and [Tailscale](https://tailscale.com) connecting the two. If you are running everything on the same machine, you can skip the Tailscale steps and just use `127.0.0.1`.
 
-## Step 1: Build [llama.cpp](https://github.com/ggml-org/llama.cpp) on your GPU machine
+## Step 1: Build llama.cpp on your GPU machine
 
 ```bash
 sudo apt-get update
@@ -108,39 +108,7 @@ curl http://127.0.0.1:8001/v1/chat/completions \
 
 ## Step 5: Start the server on the Tailscale IP
 
-Now start the server bound to your Tailscale IP so it is accessible from your MacBook.
-
-### Testing configuration (smaller context)
-
-This uses `--ctx-size 16384` for a quick sanity check over Tailscale before committing more VRAM:
-
-```bash
-QWEN35_27B_MODEL_PATH=~/MODELS/unsloth/Qwen3.5-27B-GGUF
-TEMPLATES_DIR=~/MODELS/templates
-./llama.cpp/build/bin/llama-server \
-    --model $QWEN35_27B_MODEL_PATH/Qwen3.5-27B-UD-Q4_K_XL.gguf \
-    --jinja \
-    --chat-template-file $TEMPLATES_DIR/qwen35-chat-template-corrected.jinja \
-    --host <YOUR_GPU_SERVER_IP> \
-    --port 8001 \
-    --ctx-size 16384 \
-    --parallel 1 \
-    --batch-size 2048 \
-    --ubatch-size 512 \
-    --temp 0.6 \
-    --top-p 0.95 \
-    --top-k 20 \
-    --min-p 0.00 \
-    --cache-type-k bf16 --cache-type-v bf16 \
-    --flash-attn on \
-    --context-shift \
-    --metrics \
-    --chat-template-kwargs '{"enable_thinking":true}'
-```
-
-### Production configuration (larger context for OpenCode)
-
-Once you've verified the connection works, restart with `--ctx-size 65536` for actual OpenCode usage where larger context matters:
+Now start the server bound to your Tailscale IP so it is accessible from your MacBook:
 
 ```bash
 QWEN35_27B_MODEL_PATH=~/MODELS/unsloth/Qwen3.5-27B-GGUF
@@ -166,11 +134,14 @@ TEMPLATES_DIR=~/MODELS/templates
     --chat-template-kwargs '{"enable_thinking":true}'
 ```
 
-Replace `<YOUR_GPU_SERVER_IP>` with your GPU server's IP (Tailscale IP if remote, or `127.0.0.1` if local). Check with `tailscale status`.
+- Replace `<YOUR_GPU_SERVER_IP>` with your GPU server's IP (Tailscale IP if remote, or `127.0.0.1` if local). Check with `tailscale status`.
+- I'd recommend starting with a smaller `--ctx-size` (e.g. 16384) first to verify everything works. The server starts faster with less KV cache allocation, so you can catch misconfigurations quickly. Once confirmed, restart with your target context size.
+- The sampling parameters (`--temp 0.6`, `--top-p 0.95`, `--top-k 20`) are the [recommended values from Qwen3.5](https://unsloth.ai/docs/models/qwen3.5#thinking-mode) for thinking mode with precise coding tasks.
+- I chose `--ctx-size 65536` because at this context length the total VRAM usage sits around 22 GB on a 24 GB card. I could probably go higher, but this leaves enough breathing room to avoid OOM on longer prompts or during prefill spikes.
 
 ### About the corrected chat template
 
-The `--chat-template-file` flag overrides the template embedded in the GGUF. The corrected template fixes system message ordering that tools like OpenCode and Codex depend on. Without the fix, the model may misinterpret tool-calling system prompts. The `--jinja` flag is required for the template and thinking toggle to work.
+The `--chat-template-file` flag overrides the template embedded in the GGUF. The corrected template fixes system message ordering that tools like OpenCode and Codex depend on. Without the fix, the model may misinterpret tool-calling system prompts. The `--jinja` flag is required for the template and thinking toggle to work. You can grab the corrected template [here](https://gist.github.com/garg-aayush/c0211a5fdca3e237d248d52806ff8d96).
 
 ### Test it over Tailscale
 
@@ -192,18 +163,33 @@ You can use either the Tailscale hostname or IP.
 
 ::: {.callout-note collapse="true" title="Understanding the llama.cpp flags"}
 
+| Flag | What it does |
+|------|-------------|
+| `--model` | Path to quantized model weights |
+| `--jinja` | Enable Jinja2 template engine (needed for thinking toggle) |
+| `--chat-template-file` | Patched template that fixes system message ordering for OpenCode/Codex |
+| `--host` | IP to bind the server to (Tailscale IP for remote access) |
+| `--port` | Port to listen on |
+| `--ctx-size` | Max context window in tokens (default 262K would OOM) |
+| `--parallel` | Number of concurrent request slots (each reserves its own KV cache) |
+| `--batch-size` | Tokens scheduled per prompt processing chunk |
+| `--ubatch-size` | Tokens hitting GPU at once (controls peak VRAM during prefill) |
+| `--temp` | Sampling temperature (0.6 for precise coding, 1.0 for general) |
+| `--top-p` | Nucleus sampling cutoff |
+| `--top-k` | Keep top K tokens before sampling |
+| `--min-p` | Minimum probability threshold (disabled at 0.00) |
+| `--cache-type-k/v` | KV cache precision (bf16 works best for hybrid architectures) |
+| `--flash-attn` | Reduces VRAM usage and speeds up attention computation |
+| `--context-shift` | Auto-trims oldest tokens when context fills up |
+| `--metrics` | Exposes performance stats (tokens/s, eval time) in API responses |
+| `--chat-template-kwargs` | Enable thinking/reasoning mode by default |
+
+**Some flags worth understanding in more detail:**
+
 - **`--ctx-size`** must be set explicitly. If omitted, llama.cpp tries to allocate the full 262K context window from the model metadata. On a 24GB card, this will OOM immediately. The value determines KV cache VRAM allocation at startup, not on demand. Start with 16384, increase after checking VRAM with `nvidia-smi`.
-
 - **`--parallel`** is more expensive than it looks. Each slot gets its own KV cache. `--parallel 4` with `--ctx-size 16384` allocates 4 separate 16K KV caches. For single-user OpenCode, `--parallel 1` is the right choice.
-
 - **`--batch-size` and `--ubatch-size`** only affect prompt ingestion, not generation. These matter when sending large system prompts or codebases as context. `--ubatch-size` controls peak VRAM during prefill. If you OOM only on large prompts (not during generation), reduce `--ubatch-size` first.
-
 - **`--cache-type-k bf16 --cache-type-v bf16`** is non-negotiable for Qwen3.5. The hybrid DeltaNet + Attention architecture has confirmed issues with quantized KV caches. FP8 silently produces corrupt output. bf16 is the only option with consistent quality. VRAM cost is manageable because Qwen3.5 only has attention KV cache on 25% of its layers (16 out of 64 for 27B).
-
-- **`--flash-attn`** is free performance. Reduces VRAM and speeds up attention. Your 4090 (sm_89) fully supports it. No quality tradeoff.
-
-- **`--metrics`** exposes performance stats (tokens per second, prompt eval time, etc.) in the server's API responses. Useful for monitoring inference speed.
-
 - **`--context-shift`** silently drops the oldest tokens when context fills up. For coding workflows this can be dangerous since the model might lose your original instructions. OpenCode manages its own context, so this acts as a safety net.
 
 - **`--chat-template-file`** overrides the embedded template completely. If the GGUF ships an updated template in a future release, you won't get those improvements unless you re-extract and re-patch.
