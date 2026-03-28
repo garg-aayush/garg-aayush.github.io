@@ -2,8 +2,8 @@
 title: "Using a local LLM in OpenCode with llama.cpp"
 tags: ["llama.cpp", "OpenCode", "Tailscale", "Qwen3.5", "local LLM", "GGUF"]
 description: "Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex)."
-date: 2026-03-28
-permalink: /2026-03-28-local-llm-opencode/
+date: 2026-03-29
+permalink: /2026-03-29-local-llm-opencode/
 ---
 
 This post covers the full setup for running a local LLM ([Qwen3.5-27B](https://huggingface.co/unsloth/Qwen3.5-27B-GGUF)) with [llama.cpp](https://github.com/ggml-org/llama.cpp) and using it as an [OpenCode](https://opencode.ai) provider. 
@@ -62,7 +62,7 @@ sudo tailscale up --ssh
 
 If everything worked, you should be able to ping your GPU machine from your MacBook using the Tailscale IP and see both devices connected to your tailscale VPN:
 
-![](/static/img/blog-2026-03-28/tailscale-status.png){width=75%}
+![](/static/img/blog-2026-03-29/tailscale-status.png){width=75%}
 
 
 ## Step 3: Download the Qwen3.5-27B GGUF model
@@ -112,7 +112,7 @@ curl http://127.0.0.1:8001/v1/chat/completions \
   }' | python3 -m json.tool
 ```
 
-![](/static/img/blog-2026-03-28/local-server-test.png){width=100%}
+![](/static/img/blog-2026-03-29/local-server-test.png){width=100%}
 
 
 ## Step 5: Start the server on the Tailscale IP
@@ -232,7 +232,7 @@ Update `~/.config/opencode/opencode.json`:
 
 If everything worked, you should see the local model available in OpenCode's model selector:
 
-![](/static/img/blog-2026-03-28/models-in-opencode.png){width=50%}
+![](/static/img/blog-2026-03-29/models-in-opencode.png){width=50%}
 
 
 ## Trying it out
@@ -291,7 +291,7 @@ Some of the choices I made and what I picked up in the process.
 - **Why Qwen3.5-27B over 35B-A3B?**  The MoE variant is 3-5x faster (~60-100 tok/s) because only 3B parameters are active per token but the 27B has all 27B parameters active and [consistently scores higher across benchmarks](https://www.reddit.com/r/LocalLLaMA/comments/1rivckt/visualizing_all_qwen_35_vs_qwen_3_benchmarks/). For coding tasks, I preferred quality.
 - **Why UD-Q4_K_XL quantization?** [Unsloth's Dynamic 2.0](https://unsloth.ai/blog/dynamic-v2) quantization selectively upcasts important layers to 8 or 16-bit precision, so you get better quality without paying the full VRAM cost of a higher quant. [Benjamin Marie's benchmarks](https://kaitchup.substack.com/p/summary-of-qwen35-gguf-evaluations) show UD-Q4_K_XL stays within a 1-point accuracy drop of the original while being ~8GB smaller than comparable quants.
 - **Hybrid architecture and KV cache.** Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all.
-![](/static/img/blog-2026-03-28/kv-cache-comparison.png){width=75%}
+![](/static/img/blog-2026-03-29/kv-cache-comparison.png){width=75%}
 - **KV cache type.** Qwen3.5 is trained in bfloat16, so bf16 is a better choice than llama.cpp's default f16 given it has a better dynamic range. This [r/LocalLLaMA discussion](https://www.reddit.com/r/LocalLLaMA/comments/1ryoab7/qwen_35_27b_quantize_kv_cache_or_not/) mentions that `q8_0` doesn't seem to hurt quality too much but I haven't tested it myself and decided to go with the safe option of `bf16`.
 - **Start with a small context size.** Begin with `--ctx-size 16384` to verify everything works (correct IP, template path, model loading) before committing more VRAM. The server starts faster with a smaller KV cache, so you can iterate quickly on configuration issues.
 - **Use `-j4` instead of `-j` when building llama.cpp.** The `-j` flag without a number spawns as many parallel compiler processes as it can. This can lead to an OOM kill (Error 137). Limiting to `-j4/2/8` depending on your available RAM avoids this.
