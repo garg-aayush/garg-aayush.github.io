@@ -1,12 +1,18 @@
 ---
-title: "Running a Local LLM in OpenCode with llama.cpp"
+title: "Using a local LLM in OpenCode with llama.cpp"
 tags: ["llama.cpp", "OpenCode", "Tailscale", "Qwen3.5", "local LLM", "GGUF"]
-description: "Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale, and using it as a provider in OpenCode."
+description: "Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex)."
 date: 2026-03-28
 permalink: /2026-03-28-local-llm-opencode/
 ---
 
-This is a quick reference for setting up a local LLM with [llama.cpp](https://github.com/ggml-org/llama.cpp) and using it as an [OpenCode](https://opencode.ai) provider. My setup is an RTX 4090 running the model, a MacBook as the client, and [Tailscale](https://tailscale.com) connecting the two. If you are running everything on the same machine, you can skip the Tailscale steps and just use `127.0.0.1`.
+This post covers the full setup for running a local LLM ([Qwen3.5-27B](https://huggingface.co/unsloth/Qwen3.5-27B-GGUF)) with [llama.cpp](https://github.com/ggml-org/llama.cpp) and using it as an [OpenCode](https://opencode.ai) provider. 
+
+I have focused a lot on actually getting it to work well with an agentic coding tools like OpenCode/Codex. When you try to do that there are a bunch of choices and gotchas you run into like, **which model variant, which quantization, why the chat template breaks with tool-calling, how much context you can actually fit on your GPU, and so on.** I have made sure to include all of these so that whether you have a similar setup to mine or a different one, you can go ahead and set it up.
+
+My setup is an RTX 4090 workstation running the model, my personal Macbook as the client and [Tailscale](https://tailscale.com) connecting the two.
+
+> If you already know how to set up a local model and use it with OpenCode, I would recommend skipping to [Reasoning and things I learned along the way](#reasoning-and-things-i-learned-along-the-way), there might be something new you can pick up.
 
 ## Step 1: Build llama.cpp on your GPU machine
 
@@ -21,9 +27,12 @@ cmake --build llama.cpp/build --config Release -j4 \
     --target llama-cli llama-mtmd-cli llama-server llama-gguf-split
 ```
 
-Use `-j4` (or `-j2`, `-j8`) instead of `-j` to limit parallel jobs and avoid OOM errors during compilation.
+Use `-j4`/`-j2`/`-j8` instead of `-j` to limit parallel jobs and avoid OOM errors during compilation.
 
 ## Step 2: Install Tailscale on both machines
+
+> If you are running everything on the same machine, you can skip this and just use `127.0.0.1`.
+
 
 ### On the GPU machine (RTX 4090)
 
@@ -51,12 +60,12 @@ brew install --cask tailscale
 sudo tailscale up --ssh
 ```
 
-If everything worked, you should be able to ping your GPU machine from your MacBook using the Tailscale IP and see both devices connected:
+If everything worked, you should be able to ping your GPU machine from your MacBook using the Tailscale IP and see both devices connected to your tailscale VPN:
 
 ![](/static/img/blog-2026-03-28/tailscale-status.png){width=75%}
 
 
-## Step 3: Download the [Qwen3.5-27B](https://huggingface.co/unsloth/Qwen3.5-27B-GGUF) GGUF model
+## Step 3: Download the Qwen3.5-27B GGUF model
 
 ```bash
 mkdir -p ~/MODELS
@@ -68,7 +77,7 @@ uv run --with huggingface_hub[cli] hf download unsloth/Qwen3.5-27B-GGUF \
 cd -
 ```
 
-[`uv run`](https://docs.astral.sh/uv/) means you don't need to install `huggingface_hub[cli]` into your venv separately.
+[`uv run`](https://docs.astral.sh/uv/) ensures you don't need to install `huggingface_hub[cli]` into your venv separately.
 
 
 ## Step 4: Test the llama.cpp server locally
@@ -134,10 +143,10 @@ TEMPLATES_DIR=~/MODELS/templates
     --chat-template-kwargs '{"enable_thinking":true}'
 ```
 
-- Replace `<YOUR_GPU_SERVER_IP>` with your GPU server's IP (Tailscale IP if remote, or `127.0.0.1` if local). Check with `tailscale status`.
-- I'd recommend starting with a smaller `--ctx-size` (e.g. 16384) first to verify everything works. The server starts faster with less KV cache allocation, so you can catch misconfigurations quickly. Once confirmed, restart with your target context size.
+- Replace `<YOUR_GPU_SERVER_IP>` with your GPU server's IP (Tailscale IP if remote or `127.0.0.1` if local). Check with `tailscale status`.
+- I would recommend starting with a smaller `--ctx-size` (eg 16384) first to verify everything works. The server starts faster with less KV cache allocation so you can catch misconfigurations quickly. Once confirmed, restart with your target context size.
 - The sampling parameters (`--temp 0.6`, `--top-p 0.95`, `--top-k 20`) are the [recommended values from Qwen3.5](https://unsloth.ai/docs/models/qwen3.5#thinking-mode) for thinking mode with precise coding tasks.
-- I chose `--ctx-size 65536` because at this context length the total VRAM usage sits around 22 GB on a 24 GB card. I could probably go higher, but this leaves enough breathing room to avoid OOM on longer prompts or during prefill spikes.
+- I chose `--ctx-size 65536` because at this context length the total VRAM usage sits around 22 GB (includig model) on a 24 GB card. I could probably go higher by 10k but this leaves enough breathing room to avoid OOM on longer prompts or during prefill spikes.
 
 ### About the corrected chat template
 
@@ -186,11 +195,11 @@ You can use either the Tailscale hostname or IP.
 
 **Some flags worth understanding in more detail:**
 
-- **`--ctx-size`** must be set explicitly. If omitted, llama.cpp tries to allocate the full 262K context window from the model metadata. On a 24GB card, this will OOM immediately. The value determines KV cache VRAM allocation at startup, not on demand. Start with 16384, increase after checking VRAM with `nvidia-smi`.
+- **`--ctx-size`** must be set explicitly. If omitted, llama.cpp tries to allocate the full 262K context window from the model metadata. On a 24GB card, this will OOM immediately.
 - **`--parallel`** is more expensive than it looks. Each slot gets its own KV cache. `--parallel 4` with `--ctx-size 16384` allocates 4 separate 16K KV caches. For single-user OpenCode, `--parallel 1` is the right choice.
-- **`--batch-size` and `--ubatch-size`** only affect prompt ingestion, not generation. These matter when sending large system prompts or codebases as context. `--ubatch-size` controls peak VRAM during prefill. If you OOM only on large prompts (not during generation), reduce `--ubatch-size` first.
-- **`--cache-type-k bf16 --cache-type-v bf16`** is non-negotiable for Qwen3.5. The hybrid DeltaNet + Attention architecture has confirmed issues with quantized KV caches. FP8 silently produces corrupt output. bf16 is the only option with consistent quality. VRAM cost is manageable because Qwen3.5 only has attention KV cache on 25% of its layers (16 out of 64 for 27B).
-- **`--context-shift`** silently drops the oldest tokens when context fills up. For coding workflows this can be dangerous since the model might lose your original instructions. OpenCode manages its own context, so this acts as a safety net.
+- **`--batch-size` and `--ubatch-size`** only affect prompt ingestion not generation. These matter when sending large system prompts or codebases as context. `--ubatch-size` controls peak VRAM during prefill. If you OOM only on large prompts (not during generation), reduce `--ubatch-size` first.
+- **`--cache-type-k bf16 --cache-type-v bf16`** is the safe choice for Qwen3.5.
+- **`--context-shift`** silently drops the oldest tokens when context fills up. For coding workflows this can be dangerous since the model might lose your original instructions. OpenCode manages its own context so this acts as a safety net.
 
 - **`--chat-template-file`** overrides the embedded template completely. If the GGUF ships an updated template in a future release, you won't get those improvements unless you re-extract and re-patch.
 
@@ -233,12 +242,12 @@ I ran through a few prompts in OpenCode using the `Qwen3.5-27B` model to see how
 1. I ask it to write a Python script for Gemini image generation, pointing it at `context7` to fetch the latest docs
 2. The model initially uses Gemini 2.5, so I tell it to switch to the 3.1 image generation model and it updates the script
 3. I run the script with `uv run` to generate an image of a cat on a window sill
-4. I use `/explain-code` (a custom OpenCode skill) to have the model explain the generated script
+4. I use `/explain-code` (a custom skill) to have the model explain the generated script
 5. Finally, I ask it to save the explanation as a readme
 
 {{< video https://youtu.be/Hc98yck9AXU >}}
 
-The model handles all of this well. It picks up the tool calls, uses the skills correctly, follows up on corrections and produces working code. Honestly, for a 27B model running quantized on a single 4090, the quality is surprisingly good.
+**The model handles all of this well. It picks up the tool calls, uses the skills correctly, follows up on corrections and produces working code. Honestly, for a 27B model running quantized on a single 4090, the quality is surprisingly good.**
 
 For reference, here are the speeds I am getting across some of the sessions:
 
@@ -249,8 +258,44 @@ For reference, here are the speeds I am getting across some of the sessions:
 
 
 
-## References
+## Using it with Codex
 
-- [Unsloth Qwen3.5 docs](https://unsloth.ai/docs/models/qwen3.5)
-- [llama.cpp](https://github.com/ggml-org/llama.cpp)
-- [Tailscale](https://tailscale.com)
+This setup also works with [Codex](https://github.com/openai/codex). Add this to your `~/.codex/config.toml` (refer to this [thread](https://github.com/ggml-org/llama.cpp/issues/14702#issuecomment-3825824862) for more details):
+
+```toml
+[model_providers.llama_cpp]
+name = "llama_cpp API"
+base_url = "http://<YOUR_GPU_SERVER_IP>:8001/v1"
+wire_api = "responses"
+stream_idle_timeout_ms = 10000000
+
+[profiles.gpt-oss]
+model = "gpt-oss"
+model_provider = "llama_cpp"
+web_search = "disabled"
+```
+
+Then start Codex with:
+
+```bash
+codex -p gpt-oss
+```
+
+
+## Reasoning and things I learned along the way
+
+Some of the choices I made and what I picked up in the process.
+
+- **Run inference on a separate machine if you can.** You don't need two machines for this but if you have a personal GPU workstation or a Mac Mini, I would recommend running the model there instead of on your daily use machine. Running inference on your laptop eats into your available RAM, it drains your battery fast and the laptop starts heating up bad.
+- **Why llama.cpp?** I started with the [Unsloth guide](https://unsloth.ai/docs/models/qwen3.5) which uses llama.cpp with the GGUF format. Since I am setting this up locally for myself, llama.cpp felt like an easier choice than vLLM.
+- **Why Qwen3.5-27B over 35B-A3B?**  The MoE variant is 3-5x faster (~60-100 tok/s) because only 3B parameters are active per token but the 27B has all 27B parameters active and [consistently scores higher across benchmarks](https://www.reddit.com/r/LocalLLaMA/comments/1rivckt/visualizing_all_qwen_35_vs_qwen_3_benchmarks/). For coding tasks, I preferred quality.
+- **Why UD-Q4_K_XL quantization?** [Unsloth's Dynamic 2.0](https://unsloth.ai/blog/dynamic-v2) quantization selectively upcasts important layers to 8 or 16-bit precision, so you get better quality without paying the full VRAM cost of a higher quant. [Benjamin Marie's benchmarks](https://kaitchup.substack.com/p/summary-of-qwen35-gguf-evaluations) show UD-Q4_K_XL stays within a 1-point accuracy drop of the original while being ~8GB smaller than comparable quants.
+- **Hybrid architecture and KV cache.** Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all.
+![](/static/img/blog-2026-03-28/kv-cache-comparison.png){width=75%}
+- **KV cache type.** Qwen3.5 is trained in bfloat16, so bf16 is a better choice than llama.cpp's default f16 given it has a better dynamic range. This [r/LocalLLaMA discussion](https://www.reddit.com/r/LocalLLaMA/comments/1ryoab7/qwen_35_27b_quantize_kv_cache_or_not/) mentions that `q8_0` doesn't seem to hurt quality too much but I haven't tested it myself and decided to go with the safe option of `bf16`.
+- **Start with a small context size.** Begin with `--ctx-size 16384` to verify everything works (correct IP, template path, model loading) before committing more VRAM. The server starts faster with a smaller KV cache, so you can iterate quickly on configuration issues.
+- **Use `-j4` instead of `-j` when building llama.cpp.** The `-j` flag without a number spawns as many parallel compiler processes as it can. This can lead to an OOM kill (Error 137). Limiting to `-j4/2/8` depending on your available RAM avoids this.
+- **Use `uv run` for one-off CLI tools.** `uv run --with huggingface_hub[cli]` lets you run `hf download` without installing the package into your venv. It keeps your environment clean.
+- **The chat template fix is critical for OpenCode/Codex.** The default Qwen3.5 template throws a 500 error when OpenCode or Codex sends messages where the system message isn't strictly first. The [corrected template](https://gist.github.com/garg-aayush/c0211a5fdca3e237d248d52806ff8d96) removes this restriction. Without it, the server will reject most agentic tool-calling prompts.
+- **Use [Context7](https://github.com/upstash/context7) with local models.** Smaller models due to the size are more likely to hallucinate APIs or use outdated syntax. They also rely much more heavily on the context you give them. Using Context7 to inject up-to-date documentation into the prompt makes a noticeable difference in code quality.
+
