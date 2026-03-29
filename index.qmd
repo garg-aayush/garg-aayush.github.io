@@ -1,6 +1,6 @@
 ---
 title: "Aayush Garg"
-description: "LLM fundamentals, fine-tuning experiments, and building reliable AI systems."
+description: "ML engineer who ships production AI systems and rebuilds LLMs from first principles."
 sidebar: false
 toc: true
 listing:
@@ -26,21 +26,21 @@ format:
 
 ![](static/img/aayush_cropped.jpg){.profile-pic fig-alt="Aayush Garg"}
 
-I am a Senior ML Engineer who builds and ships production generative AI systems, from image enhancement pipelines to multi-agent systems. At Jiffy, I build the core image enhancement pipeline, architect multi-agent editing systems and deploy custom ML/LLM models at scale.
+I am a Senior ML Engineer specializing in computer vision and LLMs. At Jiffy, I build the AI image enhancement pipeline powering a $100M+ DTF printing business and Smart Redraw, a multi-agent image editing system. Outside work, I build the full LLM stack from first principles and write about it here.
 
 :::
 
 ## 💼 Current Work
 
-I work at the intersection of computer vision and LLMs, building production AI systems that drive business impact. My background in computational geophysics keeps me grounded in first principles and pragmatic experimentation.
+I work at the intersection of computer vision and LLMs, building production AI systems. On the side, I am building the full LLM stack from scratch: BPE tokenizers, GPT-2 pretraining, SFT and GRPO alignment. My background in research and computational geophysics keeps me drawn to understanding things from first principles.
 
-If you're interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) or [Twitter](https://twitter.com/Aayush_ander).
+If you are interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) or [Twitter](https://twitter.com/Aayush_ander).
 
 ---
 
 ## 📮 Blog
 
-I write about LLM fundamentals, fine-tuning experiments, and building reliable AI systems. Below are my recent posts.
+I write about LLMs, concepts deep-dives and practical AI engineering. Below are my recent posts.
 
 ::: {#blog-listings}
 :::

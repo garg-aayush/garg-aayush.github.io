@@ -1,6 +1,6 @@
 ---
 title: "Blogs"
-description: "All posts on ML engineering, LLMs, and AI products."
+description: "From-scratch LLM builds, deep-dives and practical AI engineering."
 sidebar: false
 toc: false
 listing:
