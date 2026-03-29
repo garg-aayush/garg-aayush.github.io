@@ -4,9 +4,9 @@ sidebar: false
 toc: true
 ---
 
-I am a Senior ML Engineer who builds and ships production generative AI systems, from AI workflows and image enhancement pipelines to multi-agent systems. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.
+I am a Senior ML Engineer specializing in computer vision and LLMs. I ship production generative AI systems and on the side rebuild them from scratch to understand how they really work. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.
 
-Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/), where I build and maintain the core image enhancement pipeline, architect multi-agent systems for AI-powered image editing, and develop end-to-end ML solutions spanning VLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation across verticals.
+Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/) where I build the AI image enhancement pipeline powering a $100M+ DTF printing business, architect Smart Redraw (a multi-agent AI editing system), and develop end-to-end ML solutions spanning LLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation.
 
 Previously at [Flixstock](https://www.flixstock.com/), I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.
 
@@ -31,7 +31,7 @@ Jan 2024 - Present
 Senior Machine Learning Engineer
 :::
 ::: {.card-description}
-Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system), and end-to-end ML solutions spanning VLM fine-tuning, custom model deployment and LLM-powered automation.
+Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system) and ML solutions spanning fine-tuning, model deployment and LLM-powered automation.
 :::
 :::
 
@@ -48,7 +48,7 @@ Aug 2022 - Dec 2023
 Software Development Engineer III
 :::
 ::: {.card-description}
-Built Stable Diffusion pipelines for background generation, identity transfer, and fashion video generation.
+Built Stable Diffusion pipelines for background generation, identity transfer and video generation.
 :::
 :::
 
