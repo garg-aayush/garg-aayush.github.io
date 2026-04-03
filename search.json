@@ -32,7 +32,7 @@
     "href": "posts/2026-04-03-self-hosted-gemma4-chat/index.html#my-setup",
     "title": "Self-Hosted Gemma 4 Chat with Web UI",
     "section": "My Setup",
-    "text": "My Setup\n\nRTX 4090 GPU server running Ubuntu with CUDA installed\nTailscale set up on the server and all my devices (phone, laptop)\nDownload gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf from the Unsloth HuggingFace repo to a folder on your server. If you also want vision/image support, download mmproj-BF16.gguf from the same repo. I keep mine in ~/MODELS/unsloth/gemma-4-26B-A4B-it-GGUF/\nThe Q4_K_XL quant fits on a 4090 even with full 256K context at approximately 20.5 GB VRAM"
+    "text": "My Setup\n\nRTX 4090 GPU server running Ubuntu with CUDA installed\nTailscale set up on the server and all my devices (phone, laptop)\ngemma-4-26B-A4B-it-UD-Q4_K_XL.gguf from the Unsloth HuggingFace repo. If you also want vision/image support, use mmproj-BF16.gguf from the same repo.\nThe Q4_K_XL quant fits on a 4090 even with full 256K context at approximately 20.5 GB VRAM"
   },
   {
     "objectID": "posts/2026-04-03-self-hosted-gemma4-chat/index.html#build-llama.cpp",

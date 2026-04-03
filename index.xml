@@ -37,8 +37,8 @@
 <h2 class="anchored" data-anchor-id="my-setup">My Setup</h2>
 <ul>
 <li>RTX 4090 GPU server running Ubuntu with CUDA installed</li>
-<li>Tailscale set up on the server and all my devices (phone, laptop)</li>
-<li>Download <code>gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf</code> from the <a href="https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF">Unsloth HuggingFace repo</a> to a folder on your server. If you also want vision/image support, download <code>mmproj-BF16.gguf</code> from the same repo. I keep mine in <code>~/MODELS/unsloth/gemma-4-26B-A4B-it-GGUF/</code></li>
+<li><a href="https://tailscale.com/">Tailscale</a> set up on the server and all my devices (phone, laptop)</li>
+<li><a href="https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF">gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf</a> from the Unsloth HuggingFace repo. If you also want vision/image support, use <code>mmproj-BF16.gguf</code> from the same repo.</li>
 <li>The Q4_K_XL quant fits on a 4090 even with full 256K context at approximately 20.5 GB VRAM</li>
 </ul>
 </section>
