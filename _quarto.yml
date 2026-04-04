@@ -46,6 +46,8 @@ website:
         href: "https://www.linkedin.com/in/aayush-garg-8b26a734"
       - icon: twitter
         href: "https://twitter.com/Aayush_ander"
+      - icon: rss
+        href: "https://garg-aayush.github.io/blog/index.xml"
   page-footer:
     center:
       - icon: github
