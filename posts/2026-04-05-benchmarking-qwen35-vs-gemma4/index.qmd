@@ -160,8 +160,6 @@ The idea is to see how well the model handles and executes the mult-step workflo
 
 > **API calls** is the number of api calls opencode makes to the llm model.
 
-**Observations:**
-
 - It is fast with 135 tok/s generation and 4.3K+ prefill is the fastest of the four by a wide margin.
 - It is also the most concise model by far with only 1,623 tokens generated on Prompt 1 and 3,435 on Prompt 2.
 - **Needed 3 attempts on Prompt 2.** Despite being the fastest and most concise, it struggled with the multi-step instructions. 
@@ -185,9 +183,6 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Tool calls | 8 | 14 |
 | Correct on turn | 1st | 1st |
 
-
-**Observations:**
-
 - **Got Prompt 2 correct on the first turn.** This is the key result. The dense model reliability on the complex task was noticeably better.
 - The prrefill at 1,466 tok/s is 3x slower than Gemma4-26B-A4B. Generation at 37.7 tok/s is 3.6x slower. You can feel the difference.
 - The generated nearly twice the tokens as the MoE variant (2,903 vs 1,623 on Prompt 1), including 1,548 reasoning tokens. Heavy thinker
@@ -209,9 +204,6 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | API calls | 13 | 30 |
 | Tool calls | 11 | 28 |
 | Correct on turn | 1st | 2nd |
-
-
-**Observations:**
 
 - Generation speed is excellent at 136.7 tok/s, essentially identical to Gemma4-26B-A4B. 
 - But this model is **extremely verbose**. 7,564 tokens on Prompt 1 and 32,904 tokens on Prompt 2.
@@ -235,18 +227,17 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Tool calls | 7 | 14 |
 | Correct on turn | 1st | 1st |
 
-
-**Observations:**
-
 - **Got Prompt 2 correct on the first turn.** Same as Gemma4-31B. 
 - Most efficient session on Prompt 1: fewest API calls (9), fewest tool calls. It is clean and focused.
 - Generation at 44.9 tok/s is slower than MoE but faster than Gemma4-31B (37.7). Noticeable but workable for interactive use.
 - 130K context fits comfortably in VRAM. This is a practical sweet spot: enough context for long agentic sessions without maxing out the card.
 
 
-## Summary Tables
+## Comparing the Performance
 
-### Speed Comparison
+### Summary Tables
+
+#### Speed Comparison
 
 | Model | Arch | Prefill tok/s (P1) | Prefill tok/s (P2) | Gen tok/s (P1) | Gen tok/s (P2) |
 |---|---|---|---|---|---|
@@ -255,7 +246,7 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Qwen3.5-27B | Dense | 2,474 | 2,188 | 44.9 | 44.6 |
 | Gemma4-31B | Dense | 1,466 | 1,357 | 37.7 | 35.2 |
 
-### Token Efficiency
+#### Token Efficiency
 
 | Model | Arch | Tokens Gen (P1) | Tokens Gen (P2) | API Calls (P1) | API Calls (P2) |
 |---|---|---|---|---|---|
@@ -264,7 +255,7 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Qwen3.5-27B | Dense | 2,867 | 11,824 | **9** | 18 |
 | Qwen3.5-35B-A3B | MoE | 7,564 | 32,904 | 13 | 30 |
 
-### Task Completion (Prompt 2)
+#### Task Completion (Prompt 2)
 
 | Model | Arch | Correct on Turn | Tool Calls | Estimated Cost |
 |---|---|---|---|---|
@@ -273,7 +264,7 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Qwen3.5-35B-A3B | MoE | 2nd | 28 | $0.070 |
 | Gemma4-26B-A4B | MoE | 3rd | 11 | $0.027 |
 
-### Hardware Fit (RTX 4090 24 GB)
+#### Hardware Fit (RTX 4090 24 GB)
 
 | Model | Arch | VRAM Usage | Max Context |
 |---|---|---|---|
@@ -283,32 +274,50 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Gemma4-31B | Dense | ~24 GB | 65,336 |
 
 
-## General Impressions
+### Code Quality
 
-A few things stood out to me from this exercise.
+I looked at the working code each model produced for Prompt 2 (the Nano Banana image generation task) and used Opus to compare them on structure, error handling, TDD compliance, API correctness and overall cleanliness.
 
-**Dense models were more reliable on the complex task.** Both Qwen3.5-27B and Gemma4-31B got Prompt 2 right on the first turn. Both MoE models needed retries. Two data points is not a conclusion, but it is a pattern worth noting.
-
-**MoE speed advantage is real but verbosity can eat it up.** Both MoE models hit ~135 tok/s generation vs ~40-45 tok/s for dense. But Qwen3.5-35B-A3B generated 32,904 tokens on Prompt 2, which means 248 seconds of generation even at MoE speeds. Gemma4-26B-A4B was the only model that was both fast and concise.
-
-**Qwen3.5-27B feels like the best overall pick for agentic coding on a 4090.** Here is my reasoning:
-
-- Reliable: got the complex task right on the first try
-- 130K context is a practical sweet spot: enough for long agentic sessions, does not max out the card
-- 44.9 tok/s is slower than MoE but fast enough for interactive use
-- Most efficient on the simple task (fewest API calls, fewest billing tokens)
-- Only uses ~21 GB VRAM, leaving headroom
-- In my initial pass analyzing the generated code quality, it seems noticeably better than the other models. I am still working through this analysis and will update this section with more detail.
-
-Gemma4-26B-A4B is the speed king and if you are doing high-volume, simpler tasks where first-try reliability matters less, it is hard to beat. But for the kind of agentic coding I do day-to-day, where I want to fire off a prompt and trust the model to get it right, Qwen3.5-27B is still my go-to.
-
-**Caveat:** These are notes from a single benchmarking session with two prompts. I am not claiming any of this is statistically rigorous. Different prompts, different tasks, different days could give different results. Take it as one data point.
+| Aspect | Gemma4-26B-A4B | Gemma4-31B | Qwen3.5-35B-A3B | Qwen3.5-27B |
+|---|---|---|---|---|
+| **Structure** | 2 files, basic separation | 3 files, clean separation | Class-based with helpers, cleanest design | 3 files + dead `main.py` stub |
+| **Error handling** | Minimal, no API error handling | Poor, no try/except around API | Adequate but no batch error recovery | Weak, silent failures |
+| **TDD** | Placeholder test, no real TDD | One integration test, superficial | Integration tests only, claimed but not real | Integration tests only, claimed but not real |
+| **Cleanliness** | Acceptable, concise | Good, readable, concise | Good structure but unused `base64` import | Good docstrings, type hints, pathlib usage |
+| **Critical issues** | Broken summary, no `uv run` setup | New client per API call | **Hardcoded API key in tests**, wrong model | Dead `main.py`, new client per call |
 
 
-## Code Quality (WIP)
+- **None of the models truly followed TDD.** All of them claimed red-green methodology in their summaries but wrote integration tests that hit the real API. No model used mocks or wrote genuinely failing tests first.
+- **Qwen3.5-27B produced the most correct code.** It got the model name right, used type hints and docstrings, used pathlib properly and had the cleanest overall implementation. Its issues (dead `main.py` stub, client created per call) are minor compared to the others.
+- **Qwen3.5-35B-A3B had the best code structure** with a proper class-based design, but committed a security sin by hardcoding an API key in the test file and used the wrong model name entirely. For a task that specifically asked for `gemini-3.1-flash-preview` using `gemini-2.5-flash-image` is a correctness failure.
+- **Gemma4-31B was clean and concise** but shallow. Minimal code, readable but no error handling and superficial testing.
+- **Gemma4-26B-A4B was the weakest.** Missing a critical API parameter and broken summary file and no `uv run` integration despite being asked for it. This lines up with it needing 3 attempts to get working code.
 
-I am still analyzing the quality of the generated code across all four models. My initial impression is that Qwen3.5-27B produces noticeably cleaner and more correct code compared to the other three. I will update this section with specifics once I have finished the analysis.
+### Takeaways
 
+#### Speed and Efficiency
+
+- **Dense models were more reliable on the complex task.** Both Qwen3.5-27B and Gemma4-31B got Prompt 2 right on the first turn. Both MoE models needed retries. Two data points is not a conclusion, but it is a pattern worth noting.
+- **MoE speed advantage is real but verbosity can eat it up.** Both MoE models hit ~135 tok/s generation vs ~40-45 tok/s for dense. But Qwen3.5-35B-A3B generated 32,904 tokens on Prompt 2, which means 248 seconds of generation even at MoE speeds. Gemma4-26B-A4B was the only model that was both fast and concise.
+- **Gemma4-26B-A4B is the speed king.** If you are doing high-volume, simpler tasks where first-try reliability matters less, it is hard to beat.
+
+#### Code Quality
+
+- **Qwen3.5-27B produced the most correct and cleanest code overall.** Right model name, type hints, docstrings, pathlib usage. Its issues are minor compared to every other model.
+- **None of the models truly followed TDD.** All claimed red-green methodology but wrote integration tests hitting the real API. No mocks, no genuinely failing tests first.
+- **Better structure does not mean better code.** Qwen3.5-35B-A3B had the cleanest design (class-based) but hardcoded an API key and used the wrong model name. Structure alone is not enough.
+
+#### Bottom Line
+
+- **Qwen3.5-27B feels like the best overall pick for agentic coding on a 4090.**
+    - Reliable: got the complex task right on the first try
+    - 130K context is a practical sweet spot for long agentic sessions without maxing out the card
+    - 44.9 tok/s is slower than MoE but fast enough for interactive use
+    - Most efficient on the simple task (fewest API calls)
+    - Only uses ~21 GB VRAM, leaving headroom
+    - Produced the most correct and cleanest code of all four models
+
+> These are notes from a single benchmarking session with two prompts and my experience over the last 2 days. I am not claiming any of this is statistically rigorous. 
 
 ## Appendix A: Hardware Fit and Server Config {#appendix-a-hardware-fit-and-server-config}
 
