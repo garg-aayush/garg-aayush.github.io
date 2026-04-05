@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-04-05">
+<meta name="description" content="Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.">
+
+<title>Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding – Aayush Garg</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-e95ea2a7672d0b5b1aa5660665f424ac.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding – Aayush Garg">
+<meta property="og:description" content="Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.">
+<meta property="og:site_name" content="Aayush Garg">
+<meta name="twitter:title" content="Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding – Aayush Garg">
+<meta name="twitter:description" content="Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+          <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../blog/"> 
+<span class="menu-text">Blogs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../projects.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../tools/"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://garg-aayush.github.io/blog/index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#models" id="toc-models" class="nav-link active" data-scroll-target="#models">Models</a></li>
+  <li><a href="#standard-benchmarks-with-llama-bench" id="toc-standard-benchmarks-with-llama-bench" class="nav-link" data-scroll-target="#standard-benchmarks-with-llama-bench">Standard Benchmarks with llama-bench</a>
+  <ul class="collapse">
+  <li><a href="#prefill-speed" id="toc-prefill-speed" class="nav-link" data-scroll-target="#prefill-speed">Prefill Speed</a></li>
+  <li><a href="#generation-speed-tg128" id="toc-generation-speed-tg128" class="nav-link" data-scroll-target="#generation-speed-tg128">Generation Speed (tg128)</a></li>
+  <li><a href="#notes-on-llama-bench-results" id="toc-notes-on-llama-bench-results" class="nav-link" data-scroll-target="#notes-on-llama-bench-results">Notes on llama-bench Results</a></li>
+  </ul></li>
+  <li><a href="#agentic-coding-one-prompt-test" id="toc-agentic-coding-one-prompt-test" class="nav-link" data-scroll-target="#agentic-coding-one-prompt-test">Agentic Coding: One-Prompt Test</a>
+  <ul class="collapse">
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#prompt-1-simple-httpx-pytest" id="toc-prompt-1-simple-httpx-pytest" class="nav-link" data-scroll-target="#prompt-1-simple-httpx-pytest">Prompt 1: Simple (httpx + pytest)</a></li>
+  <li><a href="#prompt-2-comprehensive-image-gen-api-calls-tdd" id="toc-prompt-2-comprehensive-image-gen-api-calls-tdd" class="nav-link" data-scroll-target="#prompt-2-comprehensive-image-gen-api-calls-tdd">Prompt 2: Comprehensive (Image Gen API calls + TDD)</a></li>
+  <li><a href="#results-gemma4-26b-a4b" id="toc-results-gemma4-26b-a4b" class="nav-link" data-scroll-target="#results-gemma4-26b-a4b">Results: Gemma4-26B-A4B</a></li>
+  <li><a href="#results-gemma4-31b" id="toc-results-gemma4-31b" class="nav-link" data-scroll-target="#results-gemma4-31b">Results: Gemma4-31B</a></li>
+  <li><a href="#results-qwen3.5-35b-a3b" id="toc-results-qwen3.5-35b-a3b" class="nav-link" data-scroll-target="#results-qwen3.5-35b-a3b">Results: Qwen3.5-35B-A3B</a></li>
+  <li><a href="#results-qwen3.5-27b" id="toc-results-qwen3.5-27b" class="nav-link" data-scroll-target="#results-qwen3.5-27b">Results: Qwen3.5-27B</a></li>
+  </ul></li>
+  <li><a href="#comparing-the-performance" id="toc-comparing-the-performance" class="nav-link" data-scroll-target="#comparing-the-performance">Comparing the Performance</a>
+  <ul class="collapse">
+  <li><a href="#summary-tables" id="toc-summary-tables" class="nav-link" data-scroll-target="#summary-tables">Summary Tables</a></li>
+  <li><a href="#code-quality" id="toc-code-quality" class="nav-link" data-scroll-target="#code-quality">Code Quality</a></li>
+  <li><a href="#takeaways" id="toc-takeaways" class="nav-link" data-scroll-target="#takeaways">Takeaways</a></li>
+  </ul></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
+  <ul class="collapse">
+  <li><a href="#appendix-a-hardware-fit-and-server-config" id="toc-appendix-a-hardware-fit-and-server-config" class="nav-link" data-scroll-target="#appendix-a-hardware-fit-and-server-config">A: Hardware Fit and Server Config</a></li>
+  <li><a href="#appendix-b-installation" id="toc-appendix-b-installation" class="nav-link" data-scroll-target="#appendix-b-installation">B: Installation</a></li>
+  <li><a href="#appendix-c-troubleshooting" id="toc-appendix-c-troubleshooting" class="nav-link" data-scroll-target="#appendix-c-troubleshooting">Troubleshooting</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</h1>
+</div>
+
+<div>
+  <div class="description">
+    Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 5, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="https://deepmind.google/models/gemma/gemma-4/">Gemma4</a> was relased by Google on April 2nd earlier this week and I wanted to see how it performs against Qwen3.5 for local agentic coding. This post is my notes on benchmarking the two model families. I ran two types of tests:</p>
+<ul>
+<li><strong>Standard llama-bench benchmarks</strong> for raw prefill and generation speed</li>
+<li><strong>Single-shot agentic coding tasks</strong> using <a href="https://opencode.ai">Open Code</a> to see how these models actually perform on real multi-step coding workflows</li>
+</ul>
+<p><strong>Quick Summary:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Gen tok/s</th>
+<th>Turn(correct)</th>
+<th>Code Quality</th>
+<th>VRAM</th>
+<th>Max Context</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gemma4-26B-A4B</td>
+<td>~135</td>
+<td>3rd</td>
+<td>Weakest</td>
+<td>~21 GB</td>
+<td>256K</td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-35B-A3B</td>
+<td>~136</td>
+<td>2nd</td>
+<td>Best structure, wrong API</td>
+<td>~23 GB</td>
+<td>200K</td>
+</tr>
+<tr class="odd">
+<td>Qwen3.5-27B</td>
+<td>~45</td>
+<td>1st</td>
+<td>Cleanest and best overall</td>
+<td>~21 GB</td>
+<td>130K</td>
+</tr>
+<tr class="even">
+<td>Gemma4-31B</td>
+<td>~38</td>
+<td>1st</td>
+<td>Clean but shallow</td>
+<td>~24 GB</td>
+<td>65K</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>Max Context</strong> is the largest context size that fits in VRAM with acceptable generation speed.</p>
+</blockquote>
+<ul>
+<li>MoE models are 3x faster but both dense models got the complex task right on the <strong>first try</strong>.</li>
+<li><strong>My pick is Qwen3.5-27B which is still the best model for local agentic coding</strong> on an 24GB card (RTX 3090/4090). It is reliable, efficient, produces the cleanest code and fits comfortably on a 4090.</li>
+</ul>
+<section id="models" class="level2">
+<h2 class="anchored" data-anchor-id="models">Models</h2>
+<p>Below are the models and their quantization that I used for benchmarking:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Architecture</th>
+<th>Quant</th>
+<th>Model size</th>
+<th>Total Params</th>
+<th>Active Params</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Qwen3.5-27B</td>
+<td>Dense</td>
+<td>Q4_K_XL</td>
+<td>16.40 GiB</td>
+<td>26.90 B</td>
+<td>26.90 B</td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-35B-A3B</td>
+<td>MoE</td>
+<td>Q4_K_XL</td>
+<td>20.70 GiB</td>
+<td>34.66 B</td>
+<td>~3 B</td>
+</tr>
+<tr class="odd">
+<td>Gemma4-26B-A4B</td>
+<td>MoE</td>
+<td>Q4_K_XL</td>
+<td>15.95 GiB</td>
+<td>25.23 B</td>
+<td>~4 B</td>
+</tr>
+<tr class="even">
+<td>Gemma4-31B</td>
+<td>Dense</td>
+<td>Q4_K_XL</td>
+<td>17.46 GiB</td>
+<td>30.70 B</td>
+<td>30.70 B</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>All four models were run with thinking mode enabled and on April 3rd, 2026</li>
+<li>I used <a href="https://unsloth.ai/">Unsloth</a> GGUFs model versions on <a href="https://github.com/ggml-org/llama.cpp">llama.cpp</a>.</li>
+</ul>
+</section>
+<section id="standard-benchmarks-with-llama-bench" class="level2">
+<h2 class="anchored" data-anchor-id="standard-benchmarks-with-llama-bench">Standard Benchmarks with llama-bench</h2>
+<p>llama.cpp has a <code>llama-bench</code> utility that runs standard prefill and generation (decode) benchmarks. It is a quick way to get raw throughput numbers..</p>
+<p>This is the command I used to run the benchmarks:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./llama.cpp/llama-bench</span> <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-m</span> <span class="va">$MODEL_PATH</span> <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-ctk</span> q8_0 <span class="at">-ctv</span> q8_0 <span class="at">-fa</span> 1 <span class="at">-b</span> 2048 <span class="at">-ub</span> 512 <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 512,2048,4096,8192,16384,32768,65336 <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-n</span> 128 <span class="at">-r</span> 3 <span class="at">-o</span> md</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled" title="llama-bench flags used">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>llama-bench flags used
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Flag</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>-ctk</code></td>
+<td><code>q8_0</code></td>
+<td>KV cache keys quantized to 8-bit</td>
+</tr>
+<tr class="even">
+<td><code>-ctv</code></td>
+<td><code>q8_0</code></td>
+<td>KV cache values quantized to 8-bit</td>
+</tr>
+<tr class="odd">
+<td><code>-fa</code></td>
+<td><code>1</code></td>
+<td>Flash Attention enabled</td>
+</tr>
+<tr class="even">
+<td><code>-b</code></td>
+<td><code>2048</code></td>
+<td>Batch size (max tokens processed per batch)</td>
+</tr>
+<tr class="odd">
+<td><code>-ub</code></td>
+<td><code>512</code></td>
+<td>Micro-batch size (tokens processed per CUDA kernel call)</td>
+</tr>
+<tr class="even">
+<td><code>-p</code></td>
+<td><code>512,2048,...,65336</code></td>
+<td>Prefill token counts to sweep</td>
+</tr>
+<tr class="odd">
+<td><code>-n</code></td>
+<td><code>128</code></td>
+<td>Decode (generation) tokens per run</td>
+</tr>
+<tr class="even">
+<td><code>-r</code></td>
+<td><code>3</code></td>
+<td>Repeat each test 3 times and report mean</td>
+</tr>
+<tr class="odd">
+<td><code>-o</code></td>
+<td><code>md</code></td>
+<td>Output as markdown table</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<section id="prefill-speed" class="level3">
+<h3 class="anchored" data-anchor-id="prefill-speed">Prefill Speed</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Context</th>
+<th>Qwen3.5-27B</th>
+<th>Qwen3.5-35B-A3B</th>
+<th>Gemma4-26B-A4B</th>
+<th>Gemma4-31B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>512</td>
+<td>3,037</td>
+<td>6,666</td>
+<td><strong>8,597</strong></td>
+<td>3,100</td>
+</tr>
+<tr class="even">
+<td>2K</td>
+<td>3,069</td>
+<td>6,674</td>
+<td><strong>8,710</strong></td>
+<td>2,992</td>
+</tr>
+<tr class="odd">
+<td>4K</td>
+<td>3,025</td>
+<td>6,633</td>
+<td><strong>8,733</strong></td>
+<td>2,925</td>
+</tr>
+<tr class="even">
+<td>8K</td>
+<td>2,957</td>
+<td>6,524</td>
+<td><strong>8,443</strong></td>
+<td>2,811</td>
+</tr>
+<tr class="odd">
+<td>16K</td>
+<td>2,841</td>
+<td>6,308</td>
+<td><strong>7,961</strong></td>
+<td>2,614</td>
+</tr>
+<tr class="even">
+<td>32K</td>
+<td>2,632</td>
+<td>5,920</td>
+<td><strong>7,097</strong></td>
+<td>2,304</td>
+</tr>
+<tr class="odd">
+<td>65K</td>
+<td>2,290</td>
+<td>5,273</td>
+<td><strong>5,917</strong></td>
+<td>1,869</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="generation-speed-tg128" class="level3">
+<h3 class="anchored" data-anchor-id="generation-speed-tg128">Generation Speed (tg128)</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Architecture</th>
+<th>Generation (tokens/s)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Qwen3.5-35B-A3B</td>
+<td>MoE</td>
+<td><strong>165.84</strong></td>
+</tr>
+<tr class="even">
+<td>Gemma4-26B-A4B</td>
+<td>MoE</td>
+<td>164.38</td>
+</tr>
+<tr class="odd">
+<td>Qwen3.5-27B</td>
+<td>Dense</td>
+<td>45.88</td>
+</tr>
+<tr class="even">
+<td>Gemma4-31B</td>
+<td>Dense</td>
+<td>44.42</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="notes-on-llama-bench-results" class="level3">
+<h3 class="anchored" data-anchor-id="notes-on-llama-bench-results">Notes on llama-bench Results</h3>
+<ul>
+<li>As expected, the MoE models dominate both prefill and generation speed.</li>
+<li>Generation speed for the two MoE models is nearly identical (~165 tok/s). The same story for the two dense models (~45 tok/s) (as memory-bandwidth bound).</li>
+</ul>
+</section>
+</section>
+<section id="agentic-coding-one-prompt-test" class="level2">
+<h2 class="anchored" data-anchor-id="agentic-coding-one-prompt-test">Agentic Coding: One-Prompt Test</h2>
+<blockquote class="blockquote">
+<p>The llama-bench numbers tell you how fast tokens move (sort of the max limit we can expect) but they say nothing about how a model actually performs in reasoning, tool calls, writing code and <strong>actual speed with coding assistants</strong>.</p>
+</blockquote>
+<p>To test it, I ran a simple practical test: give the model one prompt and see if it can figure out the rest on its own. There will be no hand-holding and multi-turn guidance. The idea is to see how the model performs in such a scenario.</p>
+<p><strong>This is not a formal test</strong>. It is two prompts at different complexity levels to see how well the model handles mult-step workflows. This is usually the case with most of us, we describe what we want in a single prompt and let the model do its thing.</p>
+<section id="setup" class="level3">
+<h3 class="anchored" data-anchor-id="setup">Setup</h3>
+<p>I used <a href="https://opencode.ai">Open Code</a> as the agentic coding frontend because I find it easier to set up with a local llama-server backend. I also configured <a href="https://context7.com">Context7</a> as an skills + MCP server to let models fetch up-to-date library documentation and API docs during its run.</p>
+<p>llama-server was configured with <strong>q8_0 KV cache (turboquant)</strong> and context size varied per model based on VRAM constraints to maximize generation speed (full config in <a href="#appendix-a-hardware-fit-and-server-config">Appendix A</a>).</p>
+<ul>
+<li>Speed metrics came from llama-server’s <code>/metrics</code> endpoint.</li>
+<li>Token usage breakdowns were estimated using the <a href="https://www.npmjs.com/package/@ramtinj95/opencode-tokenscope">opencode-tokenscope</a> plugin.</li>
+</ul>
+<p>I also made sure to restart llama-server between model runs so the counters would not carry over.</p>
+</section>
+<section id="prompt-1-simple-httpx-pytest" class="level3">
+<h3 class="anchored" data-anchor-id="prompt-1-simple-httpx-pytest">Prompt 1: Simple (httpx + pytest)</h3>
+<pre><code>use context7 to look up the httpx library docs. then write me a python script
+that fetches the post from https://jsonplaceholder.typicode.com/posts/1 and
+prints the title. also write a pytest test for it, no mocks, hit the real API.
+use uv run to run everything so we don't install anything in the current
+environment. run the test and make sure it passes.</code></pre>
+<p>This tests the basics such as can the model call Context7 to look up docs, write a simple script and real integration test (no mocks), use <code>uv run</code> for running and dep. management and actually execute everything to verify it works.</p>
+</section>
+<section id="prompt-2-comprehensive-image-gen-api-calls-tdd" class="level3">
+<h3 class="anchored" data-anchor-id="prompt-2-comprehensive-image-gen-api-calls-tdd">Prompt 2: Comprehensive (Image Gen API calls + TDD)</h3>
+<pre><code>use context7 to search for the latest google gemini image generation API docs.
+I want you to write a python script that uses the google-genai SDK to generate
+images using the gemini-3.1-flash-preview model (nano banana). use TDD
+red-green methodology, write failing tests first then make them pass. do not
+use any mock tests. use uv run to run everything so we don't install anything
+in the current environment. test the script and if it works fine and generates
+an image, then use this script to run image generation on the five prompts
+given in prompts.json. save the images to an images folder, make sure the
+folder exists, if it doesn't then create it.</code></pre>
+<p>This is a slightly heavier multi-step workflow. The model has to:</p>
+<ul>
+<li>Look up the Gemini image generation API docs via Context7</li>
+<li>Write a Python script using the google-genai SDK</li>
+<li>Follow TDD red-green methodology (write failing tests first, then make them pass)</li>
+<li>Use real API calls, no mocks</li>
+<li>Use <code>uv run</code> for dependencies</li>
+<li>Read <code>prompts.json</code>, generate images for all five prompts</li>
+<li>Handle file I/O (create output directory, save images)</li>
+</ul>
+<p>The idea is to see how well the model handles and executes the mult-step workflows correctly.</p>
+</section>
+<section id="results-gemma4-26b-a4b" class="level3">
+<h3 class="anchored" data-anchor-id="results-gemma4-26b-a4b">Results: Gemma4-26B-A4B</h3>
+<p><strong>VRAM:</strong> ~21 GB &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Context:</strong> 256K tokens</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Prompt 1</th>
+<th>Prompt 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Prefill tok/s</td>
+<td>4,338</td>
+<td>4,560</td>
+</tr>
+<tr class="even">
+<td>Generation tok/s</td>
+<td>135.5</td>
+<td>134.4</td>
+</tr>
+<tr class="odd">
+<td>Total prompt tokens processed</td>
+<td>17,847</td>
+<td>23,204</td>
+</tr>
+<tr class="even">
+<td>Total tokens generated</td>
+<td>1,623</td>
+<td>3,435</td>
+</tr>
+<tr class="odd">
+<td>Prompt processing time</td>
+<td>4.11s</td>
+<td>5.09s</td>
+</tr>
+<tr class="even">
+<td>Generation time</td>
+<td>11.98s</td>
+<td>125.56s</td>
+</tr>
+<tr class="odd">
+<td>API calls</td>
+<td>10</td>
+<td>13</td>
+</tr>
+<tr class="even">
+<td>Tool calls</td>
+<td>7</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td>Correct on turn</td>
+<td>1st</td>
+<td>3rd</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p><strong>API calls</strong> is the number of api calls opencode makes to the llm model.</p>
+</blockquote>
+<ul>
+<li>It is fast with 135 tok/s generation and 4.3K+ prefill is the fastest of all.</li>
+<li>It is also the most concise model by far with based on generated tokens.</li>
+<li><strong>Needed 3 attempts on Prompt 2.</strong> Despite being the fastest and most concise, it struggled with the multi-step instructions.</li>
+</ul>
+</section>
+<section id="results-gemma4-31b" class="level3">
+<h3 class="anchored" data-anchor-id="results-gemma4-31b">Results: Gemma4-31B</h3>
+<p><strong>VRAM:</strong> ~24 GB &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Context:</strong> 65K tokens</p>
+<blockquote class="blockquote">
+<p>Note: I had to drop the context size to 65K from 128K to maintain reasonable generation speed. At 128K, generation speed degrades to around ~10tok/s with best speed only achievable around 65K tokens.</p>
+</blockquote>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Prompt 1</th>
+<th>Prompt 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Prefill tok/s</td>
+<td>1,466</td>
+<td>1,357</td>
+</tr>
+<tr class="even">
+<td>Generation tok/s</td>
+<td>37.7</td>
+<td>35.2</td>
+</tr>
+<tr class="odd">
+<td>Total prompt tokens processed</td>
+<td>16,618</td>
+<td>25,070</td>
+</tr>
+<tr class="even">
+<td>Total tokens generated</td>
+<td>2,903</td>
+<td>5,968</td>
+</tr>
+<tr class="odd">
+<td>Prompt processing time</td>
+<td>11.34s</td>
+<td>18.48s</td>
+</tr>
+<tr class="even">
+<td>Generation time</td>
+<td>77.07s</td>
+<td>169.53s</td>
+</tr>
+<tr class="odd">
+<td>API calls</td>
+<td>10</td>
+<td>16</td>
+</tr>
+<tr class="even">
+<td>Tool calls</td>
+<td>8</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td>Correct on turn</td>
+<td>1st</td>
+<td>1st</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Got Prompt 2 correct on the first turn.</strong> The dense model reliability on the complex task was noticeably better.</li>
+<li>The model generated nearly twice the tokens as the MoE variant (2,903 vs 1,623 on Prompt 1) including 1,548 reasoning tokens.</li>
+<li>Context limited to 65K is a real practical limitation, not sure whether this degradation in speed at higher context will be solved in future.</li>
+</ul>
+</section>
+<section id="results-qwen3.5-35b-a3b" class="level3">
+<h3 class="anchored" data-anchor-id="results-qwen3.5-35b-a3b">Results: Qwen3.5-35B-A3B</h3>
+<p><strong>VRAM:</strong> ~23 GB &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Context:</strong> 200K tokens</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Prompt 1</th>
+<th>Prompt 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Prefill tok/s</td>
+<td>3,179</td>
+<td>3,056</td>
+</tr>
+<tr class="even">
+<td>Generation tok/s</td>
+<td>136.7</td>
+<td>132.3</td>
+</tr>
+<tr class="odd">
+<td>Total prompt tokens processed</td>
+<td>16,145</td>
+<td>92,375</td>
+</tr>
+<tr class="even">
+<td>Total tokens generated</td>
+<td>7,564</td>
+<td>32,904</td>
+</tr>
+<tr class="odd">
+<td>Prompt processing time</td>
+<td>5.08s</td>
+<td>30.23s</td>
+</tr>
+<tr class="even">
+<td>Generation time</td>
+<td>55.32s</td>
+<td>248.75s</td>
+</tr>
+<tr class="odd">
+<td>API calls</td>
+<td>13</td>
+<td>30</td>
+</tr>
+<tr class="even">
+<td>Tool calls</td>
+<td>11</td>
+<td>28</td>
+</tr>
+<tr class="odd">
+<td>Correct on turn</td>
+<td>1st</td>
+<td>2nd</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The generation speed is identical to Gemma4-26B-A4B.</li>
+<li>Though the model is <strong>extremely verbose</strong>. ~7.5K and ~32K tokens on Prompt 1/2.</li>
+<li>Prompt 2 was the most intensive run of the entire benchmark: 30 API calls with multiple tool calls.</li>
+<li><strong>Got Prompt 2 correct on the 2nd turn</strong> better than Gemma4-26B-A4B.</li>
+<li>The 248.7s generation time on Prompt 2 is a direct result of such large API and tool calls.</li>
+</ul>
+</section>
+<section id="results-qwen3.5-27b" class="level3">
+<h3 class="anchored" data-anchor-id="results-qwen3.5-27b">Results: Qwen3.5-27B</h3>
+<p><strong>VRAM:</strong> ~21 GB &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Context:</strong> 130K tokens</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Prompt 1</th>
+<th>Prompt 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Prefill tok/s</td>
+<td>2,474</td>
+<td>2,188</td>
+</tr>
+<tr class="even">
+<td>Generation tok/s</td>
+<td>44.9</td>
+<td>44.6</td>
+</tr>
+<tr class="odd">
+<td>Total prompt tokens processed</td>
+<td>15,043</td>
+<td>24,385</td>
+</tr>
+<tr class="even">
+<td>Total tokens generated</td>
+<td>2,867</td>
+<td>11,824</td>
+</tr>
+<tr class="odd">
+<td>Prompt processing time</td>
+<td>6.08s</td>
+<td>11.14s</td>
+</tr>
+<tr class="even">
+<td>Generation time</td>
+<td>63.91s</td>
+<td>265.00s</td>
+</tr>
+<tr class="odd">
+<td>API calls</td>
+<td>9</td>
+<td>18</td>
+</tr>
+<tr class="even">
+<td>Tool calls</td>
+<td>7</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td>Correct on turn</td>
+<td>1st</td>
+<td>1st</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Got Prompt 2 correct on the first turn.</strong> Same as Gemma4-31B.</li>
+<li>Most efficient session on Prompt 1 with fewest API calls (9) and tool calls.</li>
+<li>Generation at 44.9 tok/s is slower than MoE but faster than Gemma4-31B (37.7).</li>
+<li>130K context fits comfortably in VRAM. This is a practical sweet spot with decent enough context size.</li>
+</ul>
+</section>
+</section>
+<section id="comparing-the-performance" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-the-performance">Comparing the Performance</h2>
+<section id="summary-tables" class="level3">
+<h3 class="anchored" data-anchor-id="summary-tables">Summary Tables</h3>
+<section id="speed" class="level4">
+<h4 class="anchored" data-anchor-id="speed">Speed</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Prefill tok/s (P1)</th>
+<th>Prefill tok/s (P2)</th>
+<th>Gen tok/s (P1)</th>
+<th>Gen tok/s (P2)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gemma4-26B-A4B</td>
+<td><strong>4,338</strong></td>
+<td><strong>4,560</strong></td>
+<td>135.5</td>
+<td><strong>134.4</strong></td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-35B-A3B</td>
+<td>3,179</td>
+<td>3,056</td>
+<td><strong>136.7</strong></td>
+<td>132.3</td>
+</tr>
+<tr class="odd">
+<td>Gemma4-31B</td>
+<td>1,466</td>
+<td>1,357</td>
+<td>37.7</td>
+<td>35.2</td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-27B</td>
+<td>2,474</td>
+<td>2,188</td>
+<td>44.9</td>
+<td>44.6</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="efficiency-and-completion" class="level4">
+<h4 class="anchored" data-anchor-id="efficiency-and-completion">Efficiency and Completion</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Tokens Gen (P1)</th>
+<th>Tokens Gen (P2)</th>
+<th>API Calls (P1)</th>
+<th>API Calls (P2)</th>
+<th>Tool Calls (P2)</th>
+<th>Correct Turn (P2)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gemma4-26B-A4B</td>
+<td><strong>1,623</strong></td>
+<td><strong>3,435</strong></td>
+<td>10</td>
+<td><strong>13</strong></td>
+<td>11</td>
+<td>3rd</td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-35B-A3B</td>
+<td>7,564</td>
+<td>32,904</td>
+<td>13</td>
+<td>30</td>
+<td>28</td>
+<td>2nd</td>
+</tr>
+<tr class="odd">
+<td>Gemma4-31B</td>
+<td>2,903</td>
+<td>5,968</td>
+<td>10</td>
+<td>16</td>
+<td>14</td>
+<td>1st</td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-27B</td>
+<td>2,867</td>
+<td>11,824</td>
+<td><strong>9</strong></td>
+<td>18</td>
+<td>14</td>
+<td>1st</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="hardware-fit-rtx-4090-24-gb" class="level4">
+<h4 class="anchored" data-anchor-id="hardware-fit-rtx-4090-24-gb">Hardware Fit (RTX 4090 24 GB)</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>VRAM Usage</th>
+<th>Max Context</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gemma4-26B-A4B</td>
+<td>~21 GB</td>
+<td>256,000</td>
+</tr>
+<tr class="even">
+<td>Qwen3.5-35B-A3B</td>
+<td>~23 GB</td>
+<td>200,000</td>
+</tr>
+<tr class="odd">
+<td>Qwen3.5-27B</td>
+<td>~21 GB</td>
+<td>130,672</td>
+</tr>
+<tr class="even">
+<td>Gemma4-31B</td>
+<td>~24 GB</td>
+<td>65,336</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="code-quality" class="level3">
+<h3 class="anchored" data-anchor-id="code-quality">Code Quality</h3>
+<p>I looked at the working code each model produced for Prompt 2 (the Nano Banana image generation task) and used Opus to compare them on structure, error handling, TDD compliance, API correctness and overall cleanliness.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Gemma4-26B-A4B</th>
+<th>Gemma4-31B</th>
+<th>Qwen3.5-35B-A3B</th>
+<th>Qwen3.5-27B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Structure</strong></td>
+<td>2 files, basic separation</td>
+<td>3 files, clean separation</td>
+<td>Class-based with helpers, cleanest design</td>
+<td>3 files + dead <code>main.py</code> stub</td>
+</tr>
+<tr class="even">
+<td><strong>Error handling</strong></td>
+<td>Minimal, no API error handling</td>
+<td>Poor, no try/except around API</td>
+<td>Adequate but no batch error recovery</td>
+<td>Weak, silent failures</td>
+</tr>
+<tr class="odd">
+<td><strong>TDD</strong></td>
+<td>Placeholder test, no real TDD</td>
+<td>One integration test, superficial</td>
+<td>Integration tests only, claimed but not real</td>
+<td>Integration tests only, claimed but not real</td>
+</tr>
+<tr class="even">
+<td><strong>Cleanliness</strong></td>
+<td>Acceptable, concise</td>
+<td>Good, readable, concise</td>
+<td>Good structure but unused <code>base64</code> import</td>
+<td>Good docstrings, type hints, pathlib usage</td>
+</tr>
+<tr class="odd">
+<td><strong>Critical issues</strong></td>
+<td>Broken summary, no <code>uv run</code> setup</td>
+<td>New client per API call</td>
+<td><strong>Hardcoded API key in tests</strong>, wrong model</td>
+<td>Dead <code>main.py</code>, new client per call</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>None of the models truly followed TDD.</strong> All of them claimed red-green methodology in their summaries but wrote integration tests that hit the real API. No model used mocks or wrote genuinely failing tests first.</li>
+<li><strong>Qwen3.5-27B produced the most correct code.</strong> It got the model name right, used type hints and docstrings, used pathlib properly and had the cleanest overall implementation. Its issues (dead <code>main.py</code> stub, client created per call) are minor compared to the others.</li>
+<li><strong>Qwen3.5-35B-A3B had the best code structure</strong> with a proper class-based design, but committed a security sin by hardcoding an API key in the test file and used the wrong model name entirely. For a task that specifically asked for <code>gemini-3.1-flash-preview</code> using <code>gemini-2.5-flash-image</code> is a correctness failure.</li>
+<li><strong>Gemma4-31B was clean and concise</strong> but shallow. Minimal code, readable but no error handling and superficial testing.</li>
+<li><strong>Gemma4-26B-A4B was the weakest.</strong> Missing a critical API parameter and broken summary file and no <code>uv run</code> integration despite being asked for it. This lines up with it needing 3 attempts to get working code.</li>
+</ul>
+</section>
+<section id="takeaways" class="level3">
+<h3 class="anchored" data-anchor-id="takeaways">Takeaways</h3>
+<section id="speed-and-efficiency" class="level4">
+<h4 class="anchored" data-anchor-id="speed-and-efficiency">Speed and Efficiency</h4>
+<ul>
+<li><strong>Dense models were more reliable on the complex task.</strong> Both Qwen3.5-27B and Gemma4-31B got Prompt 2 right on the first turn. Both MoE models needed retries. Two data points is not a conclusion, but it is a pattern worth noting.</li>
+<li><strong>MoE speed advantage is real but verbosity can eat it up.</strong> Both MoE models hit ~135 tok/s generation vs ~40-45 tok/s for dense. But Qwen3.5-35B-A3B generated 32,904 tokens on Prompt 2 which means 248 seconds of generation even at MoE speeds. Gemma4-26B-A4B was the only model that was both fast and concise.</li>
+<li><strong>Gemma4-26B-A4B is the speed king.</strong> If you are doing high-volume simpler tasks where first-try reliability matters less, it is hard to beat.</li>
+</ul>
+</section>
+<section id="code-quality-1" class="level4">
+<h4 class="anchored" data-anchor-id="code-quality-1">Code Quality</h4>
+<ul>
+<li><strong>Qwen3.5-27B produced the most correct and cleanest code overall.</strong> Right model name, type hints, docstrings, pathlib usage. Its issues are minor compared to every other model.</li>
+<li><strong>None of the models truly followed TDD.</strong> All claimed red-green methodology but wrote integration tests hitting the real API. No mocks, no genuinely failing tests first.</li>
+<li><strong>Better structure does not mean better code.</strong> Qwen3.5-35B-A3B had the cleanest design (class-based) but hardcoded an API key and used the wrong model name. Structure alone is not enough.</li>
+</ul>
+</section>
+<section id="bottom-line" class="level4">
+<h4 class="anchored" data-anchor-id="bottom-line">Bottom Line</h4>
+<ul>
+<li><strong>Qwen3.5-27B feels like the best overall pick for agentic coding on a 4090.</strong>
+<ul>
+<li>Reliable: got the complex task right on the first try</li>
+<li>130K context is a practical sweet spot for long agentic sessions without maxing out the card</li>
+<li>44.9 tok/s is slower than MoE but fast enough for interactive use</li>
+<li>Most efficient on the simple task (fewest API calls)</li>
+<li>Only uses ~21 GB VRAM, leaving headroom</li>
+<li>Produced the most correct and cleanest code of all four models</li>
+</ul></li>
+</ul>
+<blockquote class="blockquote">
+<p>These are notes from a single benchmarking session with two prompts and my experience over the last 2 days. I am not claiming any of this is statistically rigorous.</p>
+</blockquote>
+</section>
+</section>
+</section>
+<section id="appendix" class="level2">
+<h2 class="anchored" data-anchor-id="appendix">Appendix</h2>
+<section id="appendix-a-hardware-fit-and-server-config" class="level3">
+<h3 class="anchored" data-anchor-id="appendix-a-hardware-fit-and-server-config">A: Hardware Fit and Server Config</h3>
+<section id="llama-server-launch-config" class="level4">
+<h4 class="anchored" data-anchor-id="llama-server-launch-config">llama-server Launch Config</h4>
+<p>Base config used for all models:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">llama-server</span> <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">--model</span> <span class="va">$MODEL_PATH</span> <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--jinja</span> <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--host</span> 100.80.101.103 <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--port</span> 8001 <span class="dt">\</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">--parallel</span> 1 <span class="dt">\</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">--batch-size</span> 2048 <span class="dt">\</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">--ubatch-size</span> 512 <span class="dt">\</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">--cache-type-k</span> q8_0 <span class="at">--cache-type-v</span> q8_0 <span class="dt">\</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">--flash-attn</span> on <span class="dt">\</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">--context-shift</span> <span class="dt">\</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">--metrics</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="per-model-overrides" class="level4">
+<h4 class="anchored" data-anchor-id="per-model-overrides">Per-Model Overrides</h4>
+<p><strong>Gemma4 models:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">--ctx-size</span> 256000     <span class="co"># MoE (26B-A4B)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">--ctx-size</span> 65336      <span class="co"># Dense (31B) - reduced due to VRAM constraints</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">--temp</span> 1.0</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">--top-p</span> 0.95</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">--top-k</span> 64</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">--min-p</span> 0.00</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Qwen 3.5 models:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">--ctx-size</span> 200000     <span class="co"># MoE (35B-A3B)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">--ctx-size</span> 130672     <span class="co"># Dense (27B)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">--temp</span> 0.6</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">--top-k</span> 20</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">--chat-template-file</span> <span class="va">$TEMPLATES_DIR</span>/qwen35-chat-template-corrected.jinja</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">--chat-template-kwargs</span> <span class="st">'{"enable_thinking":true}'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="appendix-b-installation" class="level3">
+<h3 class="anchored" data-anchor-id="appendix-b-installation">B: Installation</h3>
+<ol type="1">
+<li><strong>llama.cpp Installation</strong></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get install pciutils build-essential cmake curl libcurl4-openssl-dev libssl-dev <span class="at">-y</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ggml-org/llama.cpp</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> llama.cpp <span class="kw">&amp;&amp;</span> <span class="fu">git</span> pull origin master <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ..</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> llama.cpp <span class="at">-B</span> llama.cpp/build <span class="dt">\</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">-DBUILD_SHARED_LIBS</span><span class="op">=</span>OFF <span class="dt">\</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">-DGGML_CUDA</span><span class="op">=</span>ON <span class="dt">\</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">-DLLAMA_CURL</span><span class="op">=</span>ON</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">--build</span> llama.cpp/build <span class="at">--config</span> Release <span class="at">-j24</span> <span class="at">--clean-first</span> <span class="dt">\</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">--target</span> llama-cli llama-mtmd-cli llama-server llama-gguf-split llama-bench</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> llama.cpp/build/bin/llama-<span class="pp">*</span> llama.cpp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
+<li><p><strong>Tokenscope</strong>: I used the <a href="https://www.npmjs.com/package/@ramtinj95/opencode-tokenscope">opencode-tokenscope</a> plugin to get per-session token breakdowns. You need to add <code>"plugin": ["@ramtinj95/opencode-tokenscope"]</code> to your <code>opencode.json</code> then create a <code>/tokenscope</code> slash command in <code>~/.config/opencode/command/tokenscope.md</code>.</p></li>
+<li><p><strong>llama-server /metrics</strong>: llama-server exposes a <code>/metrics</code> endpoint (enabled with the <code>--metrics</code> flag) that returns Prometheus-format counters.</p></li>
+</ol>
+</section>
+<section id="appendix-c-troubleshooting" class="level3">
+<h3 class="anchored" data-anchor-id="appendix-c-troubleshooting">Troubleshooting</h3>
+<ol type="1">
+<li><strong>Qwen3.5-35B-A3B todowrite Parse Error</strong>: Qwen3.5-35B-A3B sometimes returned tool call arguments as a raw JSON string instead of a parsed object. This caused the <code>todowrite</code> tool to fail because Open Code expected <code>todos</code> to be an array, not a string containing an array. You can fix this using a small plugin at <code>~/.opencode/plugins/todo-fix-plugins.ts</code>:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode typescript code-with-copy"><code class="sourceCode typescript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> TodoFixPlugin <span class="op">=</span> <span class="kw">async</span> (ctx) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"tool.execute.before"</span><span class="op">:</span> <span class="kw">async</span> (input<span class="op">,</span> output) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (input<span class="op">.</span><span class="at">tool</span> <span class="op">===</span> <span class="st">"todowrite"</span> <span class="op">&amp;&amp;</span> <span class="kw">typeof</span> output<span class="op">.</span><span class="at">args</span><span class="op">.</span><span class="at">todos</span> <span class="op">===</span> <span class="st">"string"</span>) {</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        output<span class="op">.</span><span class="at">args</span><span class="op">.</span><span class="at">todos</span> <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(output<span class="op">.</span><span class="at">args</span><span class="op">.</span><span class="at">todos</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
+<li><p><strong>Gemma4-31B Context Size</strong>: I had to reduce to 65,336 tokens to maintain ~40 tok/s generation. You can push it higher but generation speed degrades as context grows.</p></li>
+<li><p>**Qwen3.5 models needed a corrected Jinja chat template <a href="">qwen35-chat-template-corrected.jinja</a>https://gist.github.com/garg-aayush/c0211a5fdca3e237d248d52806ff8d96 to work properly with llama-server. The default template had issues with thinking mode.</p></li>
+</ol>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/garg-aayush">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
+      <i class="bi bi-linkedin" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander">
+      <i class="bi bi-twitter" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
