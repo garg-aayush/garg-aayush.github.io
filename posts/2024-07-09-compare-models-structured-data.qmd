@@ -1,7 +1,7 @@
 ---
 title:  "Part II: Comparison of Model Performances on Structured Functional Representation Extraction"
 tags: ["LLMs", "GPT", "Evaluation", "ViGGO", "Claude", "Llama", "Gemini", "Mistral"]
-categories: [Fine-tuning]
+categories: [LLM Evaluation]
 mathjax: true
 description: This blog post compares the performance of various models in extracting structured functional representations from text.
 date: 2024-07-09

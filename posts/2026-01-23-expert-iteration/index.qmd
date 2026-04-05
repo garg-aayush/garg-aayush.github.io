@@ -1,7 +1,7 @@
 ---
 title: "Expert Iteration for Math Reasoning"
 tags: ["Expert Iteration", "LLMs", "Reasoning", "Reinforcement Learning"]
-categories: [RL & Alignment]
+categories: [RL & Alignment, LLM Training]
 mathjax: true
 description: Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.
 date: 2026-01-23

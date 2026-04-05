@@ -1,7 +1,7 @@
 ---
 title:  "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction"
 tags: ["LLMs", "Finetuning", "Predibase", "ViGGO", "Llama", "LORA"]
-categories: [Fine-tuning]
+categories: [LLM Training]
 mathjax: true
 description: Blog on fine-tuning a Llama-3-8B model on the Predibase platform for structured functional representation extraction, and compare its performance with GPT-4 and Claude 3.5 Sonnet.
 date: 2024-07-15

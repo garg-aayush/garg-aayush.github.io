@@ -1,7 +1,7 @@
 ---
 title:  "A Guide to Building Custom Nodes in ComfyUI"
 tags: ["ComfyUI", "SVG", "Image Processing"]
-categories: [Tools & Dev]
+categories: [Tools & Infra]
 mathjax: false
 description: A practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.
 date: 2025-09-10

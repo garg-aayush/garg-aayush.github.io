@@ -1,7 +1,7 @@
 ---
 title: "Deriving the DPO Loss from First Principles"
 tags: ["Reinforcement Learning", "DPO", "RLHF", "LLMs"]
-categories: [RL & Alignment, From Scratch]
+categories: [RL & Alignment]
 mathjax: true
 description: A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.
 date: 2025-12-30

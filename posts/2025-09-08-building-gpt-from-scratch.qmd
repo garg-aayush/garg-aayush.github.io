@@ -1,7 +1,7 @@
 ---
 title: "Building GPT from Scratch: Following Karpathy's Tutorial"
 tags: ["GPT", "Transformers", "PyTorch", "Deep Learning"]
-categories: [From Scratch]
+categories: [Transformers]
 mathjax: false
 description: This blog summarizes building the GPT architecture by following Andrej Karpathy's 'Let's Build GPT' tutorial.
 date: 2025-09-08
