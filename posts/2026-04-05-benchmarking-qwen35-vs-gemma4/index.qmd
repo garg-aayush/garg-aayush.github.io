@@ -1,12 +1,12 @@
 ---
-title: "Notes on Qwen 3.5 vs Gemma 4 for Local Agentic Coding on an RTX 4090"
+title: "Notes on Qwen 3.5 vs Gemma4 for Local Agentic Coding on an RTX 4090"
 tags: ["LLMs", "Benchmarking", "Local LLMs", "Agentic Coding", "llama.cpp", "MoE"]
-description: Benchmarking notes comparing Qwen 3.5 and Gemma 4 model families (both dense and MoE variants) for local agentic coding tasks on an RTX 4090, using llama-bench and single-shot prompting with Open Code.
+description: Benchmarking notes comparing Qwen 3.5 and Gemma4 model families (both dense and MoE variants) for local agentic coding tasks on an RTX 4090, using llama-bench and single-shot prompting with Open Code.
 date: 2026-04-05
 permalink: /2026-04-05-benchmarking-qwen35-vs-gemma4/
 ---
 
-[Gemma 4](https://deepmind.google/models/gemma/gemma-4/) was relased by google on April 2nd earlier this and I wanted to see how it performs against Qwen 3.5 for local agentic coding. This post is my notes on benchmarking the two model families. I ran two types of tests:
+[Gemma4](https://deepmind.google/models/gemma/gemma-4/) was relased by google on April 2nd earlier this and I wanted to see how it performs against Qwen 3.5 for local agentic coding. This post is my notes on benchmarking the two model families. I ran two types of tests:
 
 1. **Standard llama-bench benchmarks** for raw prefill and generation speed
 2. **Single-shot agentic coding tasks** using [Open Code](https://opencode.ai) to see how these models actually perform on real multi-step coding workflows
@@ -15,10 +15,10 @@ permalink: /2026-04-05-benchmarking-qwen35-vs-gemma4/
 
 | Model | Architecture | Quant | Size on Disk | Total Params | Active Params |
 |---|---|---|---|---|---|
-| Qwen 3.5 27B | Dense | Q4_K_XL | 16.40 GiB | 26.90 B | 26.90 B |
-| Qwen 3.5 35B-A3B | MoE | Q4_K_XL | 20.70 GiB | 34.66 B | ~3 B |
-| Gemma 4 26B-A4B | MoE | Q4_K_XL | 15.95 GiB | 25.23 B | ~4 B |
-| Gemma 4 31B | Dense | Q4_K_XL | 17.46 GiB | 30.70 B | 30.70 B |
+| Qwen3.5-27B | Dense | Q4_K_XL | 16.40 GiB | 26.90 B | 26.90 B |
+| Qwen3.5-35B-A3B | MoE | Q4_K_XL | 20.70 GiB | 34.66 B | ~3 B |
+| Gemma4-26B-A4B | MoE | Q4_K_XL | 15.95 GiB | 25.23 B | ~4 B |
+| Gemma4-31B | Dense | Q4_K_XL | 17.46 GiB | 30.70 B | 30.70 B |
 
 - **The size on disk is without kv-cache**
 - All four models were run with thinking mode enabled and quantized to **Q4_K_XL** using [Unsloth](https://unsloth.ai/) GGUFs on [llama.cpp](https://github.com/ggml-org/llama.cpp).
@@ -58,7 +58,7 @@ This is the command I used to run the benchmarks:
 
 ### Prefill Speed
 
-| Context | Qwen 3.5 27B | Qwen 3.5 35B-A3B | Gemma 4 26B-A4B | Gemma 4 31B |
+| Context | Qwen3.5-27B | Qwen3.5-35B-A3B | Gemma4-26B-A4B | Gemma4-31B |
 |---|---|---|---|---|
 | 512 | 3,037 | 6,666 | **8,597** | 3,100 |
 | 2K | 3,069 | 6,674 | **8,710** | 2,992 |
@@ -72,10 +72,10 @@ This is the command I used to run the benchmarks:
 
 | Model | Architecture | Generation (tokens/s) |
 |---|---|---|
-| Qwen 3.5 35B-A3B | MoE | **165.84** |
-| Gemma 4 26B-A4B | MoE | 164.38 |
-| Qwen 3.5 27B | Dense | 45.88 |
-| Gemma 4 31B | Dense | 44.42 |
+| Qwen3.5-35B-A3B | MoE | **165.84** |
+| Gemma4-26B-A4B | MoE | 164.38 |
+| Qwen3.5-27B | Dense | 45.88 |
+| Gemma4-31B | Dense | 44.42 |
 
 
 ### Notes on llama-bench Results
@@ -100,8 +100,6 @@ llama-server was configured with q8_0 KV cache and context size varied per model
   - Token usage breakdowns were estimated using the [opencode-tokenscope](https://www.npmjs.com/package/@ramtinj95/opencode-tokenscope) plugin. 
 
 I also makde sure to restart llama-server between model runs so the counters would not carry over.
-
-One metric worth clarifying since it shows up in every results table below: **API calls** is the number of roundtrips between Open Code and llama-server. Each time the model generates a response, makes a tool call, gets the result, and generates again counts as another API call. More API calls means more back-and-forth to complete the task.
 
 
 ### Prompt 1: Simple (httpx + pytest)
@@ -144,7 +142,7 @@ This is a slightly heavier multi-step workflow. The model has to:
 The idea is to see how well the model handles and executes the mult-step workflows correctly.
 
 
-### Results: Gemma 4 26B-A4B (MoE)
+### Results: Gemma4-26B-A4B
 
 **VRAM:** ~21 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 256K tokens
 
@@ -155,25 +153,25 @@ The idea is to see how well the model handles and executes the mult-step workflo
 | Total prompt tokens processed | 17,847 | 23,204 |
 | Total tokens generated | 1,623 | 3,435 |
 | Prompt processing time | 4.11s | 5.09s |
-| Generation time | 11.98s | 25.56s |
+| Generation time | 11.98s | 125.56s |
 | API calls | 10 | 13 |
+| Tool calls | 7 | 11 |
+| Correct on turn | 1st | 3rd |
 
+> **API calls** is the number of api calls opencode makes to the llm model.
 
 **Observations:**
 
-- Blazing fast. 135 tok/s generation and 4.3K+ prefill is the fastest of the four by a wide margin.
-- Most concise model by far: only 1,623 tokens generated on Prompt 1, 3,435 on Prompt 2. No wasted output.
-- Zero reasoning tokens on Prompt 2 (100% assistant output), which is interesting since all other models used thinking heavily.
-- On Prompt 2, it used bash exclusively for file creation (cat/heredoc instead of the write tool) and made no `write` tool calls at all. Not ideal but it worked.
-- **Needed 3 attempts on Prompt 2.** Despite being the fastest and most concise, it struggled with the multi-step instructions. This is the tradeoff: raw speed is great, but instruction-following quality took a hit.
-- 25.6s total generation time on Prompt 2 is remarkable though. Even with retries, the wall-clock experience was still fast.
+- It is fast with 135 tok/s generation and 4.3K+ prefill is the fastest of the four by a wide margin.
+- It is also the most concise model by far with only 1,623 tokens generated on Prompt 1 and 3,435 on Prompt 2.
+- **Needed 3 attempts on Prompt 2.** Despite being the fastest and most concise, it struggled with the multi-step instructions. 
 
 
-### Results: Gemma 4 31B Dense
+### Results: Gemma4-31B
 
 **VRAM:** ~24 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 65K tokens
 
-Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the context size to 65K to maintain reasonable generation speed. At 256K, generation speed degrades progressively because the dense model must use all 31B parameters on every forward pass and the KV-cache eats into remaining VRAM headroom.
+> Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the context size to 65K to maintain reasonable generation speed. At 256K, generation speed degrades progressively with best speed only achievable around 65K tokens.
 
 | Metric | Prompt 1 | Prompt 2 |
 |---|---|---|
@@ -184,20 +182,19 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 | Prompt processing time | 11.34s | 18.48s |
 | Generation time | 77.07s | 169.53s |
 | API calls | 10 | 16 |
+| Tool calls | 8 | 14 |
+| Correct on turn | 1st | 1st |
 
 
 **Observations:**
 
-- **Got Prompt 2 correct on the first turn.** This is the key result. The dense model's reliability on the complex task was noticeably better.
-- Prefill at 1,466 tok/s is 3x slower than the Gemma MoE. Generation at 37.7 tok/s is 3.6x slower. You feel it.
-- Generated nearly twice the tokens as the MoE variant (2,903 vs 1,623 on Prompt 1), including 1,548 reasoning tokens. Heavy thinker.
-- On Prompt 2, 97.5% of output tokens were reasoning tokens. The model was thinking hard throughout.
-- 169.5s of generation time on Prompt 2 means nearly 3 minutes just for token generation. For interactive agentic work, this drags.
-- Loaded the `find-docs` skill during Prompt 2, actively seeking documentation. Also used an `edit` tool call on Prompt 1 to correct its own output, which no other model needed.
-- Context limited to 65K is a real practical limitation. You cannot fit long agentic sessions on this model with a single 4090.
+- **Got Prompt 2 correct on the first turn.** This is the key result. The dense model reliability on the complex task was noticeably better.
+- The prrefill at 1,466 tok/s is 3x slower than Gemma4-26B-A4B. Generation at 37.7 tok/s is 3.6x slower. You can feel the difference.
+- The generated nearly twice the tokens as the MoE variant (2,903 vs 1,623 on Prompt 1), including 1,548 reasoning tokens. Heavy thinker
+- Context limited to 65K is a real practical limitation, not sure whether this degradation in speed at higher context will be solved in future.
 
 
-### Results: Qwen 3.5 35B-A3B (MoE)
+### Results: Qwen3.5-35B-A3B
 
 **VRAM:** ~23 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 200K tokens
 
@@ -210,20 +207,19 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 | Prompt processing time | 5.08s | 30.23s |
 | Generation time | 55.32s | 248.75s |
 | API calls | 13 | 30 |
+| Tool calls | 11 | 28 |
+| Correct on turn | 1st | 2nd |
 
 
 **Observations:**
 
-- Generation speed is excellent at 136.7 tok/s, essentially identical to Gemma 4 MoE. Both MoE models hit the same bandwidth ceiling.
-- But this model is **extremely verbose**. 7,564 tokens on Prompt 1 (the simple httpx task!) and 32,904 tokens on Prompt 2. That is 5.5x more than Gemma 4 MoE on the same complex task.
-- 86% reasoning tokens on Prompt 1. The model thinks a lot before acting.
-- Used a `todowrite` tool (5 calls) on Prompt 1 which no other model invoked. This is a structured planning tool -- the model was explicitly planning before executing, which is methodical but adds overhead.
-- Prompt 2 was the most intensive run of the entire benchmark: 30 API calls, 28 tool calls. Used 4 `edit` calls alongside 6 `write` calls, suggesting it revised its own code multiple times.
-- **Got Prompt 2 correct on the 2nd turn**, better than Gemma 4 MoE (3rd turn) but still not first-try.
-- 248.7s generation time on Prompt 2. At MoE speeds this would have taken ~12 minutes at dense 27B speeds. The MoE architecture saves it from being unusable, but the verbosity still costs wall-clock time.
+- Generation speed is excellent at 136.7 tok/s, essentially identical to Gemma4-26B-A4B. 
+- But this model is **extremely verbose**. 7,564 tokens on Prompt 1 and 32,904 tokens on Prompt 2.
+- Prompt 2 was the most intensive run of the entire benchmark: 30 API calls with multiple tool calls too
+- **Got Prompt 2 correct on the 2nd turn**, better than Gemma4-26B-A4B (3rd turn) but still not first-try.
+- The 248.7s generation time on Prompt 2. This is a direct result of such large API and tool calls.
 
-
-### Results: Qwen 3.5 27B Dense
+### Results: Qwen3.5-27B
 
 **VRAM:** ~21 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 130K tokens
 
@@ -236,16 +232,16 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 | Prompt processing time | 6.08s | 11.14s |
 | Generation time | 63.91s | 265.00s |
 | API calls | 9 | 18 |
+| Tool calls | 7 | 14 |
+| Correct on turn | 1st | 1st |
 
 
 **Observations:**
 
-- **Got Prompt 2 correct on the first turn.** Same as Gemma 4 31B Dense. Both dense models nailed the complex task first try, while both MoE models needed retries. Interesting pattern.
-- Most efficient session on Prompt 1: fewest API calls (9), fewest tool calls (7 total: 4 bash + 3 write). Clean and focused.
-- Generation at 44.9 tok/s is slower than MoE (~135 tok/s) but faster than Gemma 4 Dense (37.7). Noticeable but workable for interactive use.
-- 130K context fits comfortably in VRAM. This is a practical sweet spot: enough context for long agentic sessions without maxing out the card. Compare this to Gemma 4 Dense which could only manage 65K.
-- On Prompt 2, it generated 11,824 tokens (second highest after Qwen MoE's 32,904), with 72.9% being reasoning tokens. It thinks, but not as obsessively as the Gemma 4 Dense (97.5%).
-
+- **Got Prompt 2 correct on the first turn.** Same as Gemma4-31B. 
+- Most efficient session on Prompt 1: fewest API calls (9), fewest tool calls. It is clean and focused.
+- Generation at 44.9 tok/s is slower than MoE but faster than Gemma4-31B (37.7). Noticeable but workable for interactive use.
+- 130K context fits comfortably in VRAM. This is a practical sweet spot: enough context for long agentic sessions without maxing out the card.
 
 
 ## Summary Tables
@@ -254,48 +250,48 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 
 | Model | Arch | Prefill tok/s (P1) | Prefill tok/s (P2) | Gen tok/s (P1) | Gen tok/s (P2) |
 |---|---|---|---|---|---|
-| Gemma 4 26B-A4B | MoE | **4,338** | **4,560** | 135.5 | **134.4** |
-| Qwen 3.5 35B-A3B | MoE | 3,179 | 3,056 | **136.7** | 132.3 |
-| Qwen 3.5 27B | Dense | 2,474 | 2,188 | 44.9 | 44.6 |
-| Gemma 4 31B | Dense | 1,466 | 1,357 | 37.7 | 35.2 |
+| Gemma4-26B-A4B | MoE | **4,338** | **4,560** | 135.5 | **134.4** |
+| Qwen3.5-35B-A3B | MoE | 3,179 | 3,056 | **136.7** | 132.3 |
+| Qwen3.5-27B | Dense | 2,474 | 2,188 | 44.9 | 44.6 |
+| Gemma4-31B | Dense | 1,466 | 1,357 | 37.7 | 35.2 |
 
 ### Token Efficiency
 
 | Model | Arch | Tokens Gen (P1) | Tokens Gen (P2) | API Calls (P1) | API Calls (P2) |
 |---|---|---|---|---|---|
-| Gemma 4 26B-A4B | MoE | **1,623** | **3,435** | 10 | **13** |
-| Gemma 4 31B | Dense | 2,903 | 5,968 | 10 | 16 |
-| Qwen 3.5 27B | Dense | 2,867 | 11,824 | **9** | 18 |
-| Qwen 3.5 35B-A3B | MoE | 7,564 | 32,904 | 13 | 30 |
+| Gemma4-26B-A4B | MoE | **1,623** | **3,435** | 10 | **13** |
+| Gemma4-31B | Dense | 2,903 | 5,968 | 10 | 16 |
+| Qwen3.5-27B | Dense | 2,867 | 11,824 | **9** | 18 |
+| Qwen3.5-35B-A3B | MoE | 7,564 | 32,904 | 13 | 30 |
 
 ### Task Completion (Prompt 2)
 
 | Model | Arch | Correct on Turn | Tool Calls | Estimated Cost |
 |---|---|---|---|---|
-| Gemma 4 31B | Dense | 1st | 14 | $0.041 |
-| Qwen 3.5 27B | Dense | 1st | 14 | $0.023 |
-| Qwen 3.5 35B-A3B | MoE | 2nd | 28 | $0.070 |
-| Gemma 4 26B-A4B | MoE | 3rd | 11 | $0.027 |
+| Gemma4-31B | Dense | 1st | 14 | $0.041 |
+| Qwen3.5-27B | Dense | 1st | 14 | $0.023 |
+| Qwen3.5-35B-A3B | MoE | 2nd | 28 | $0.070 |
+| Gemma4-26B-A4B | MoE | 3rd | 11 | $0.027 |
 
 ### Hardware Fit (RTX 4090 24 GB)
 
 | Model | Arch | VRAM Usage | Max Context |
 |---|---|---|---|
-| Gemma 4 26B-A4B | MoE | ~21 GB | 256,000 |
-| Qwen 3.5 27B | Dense | ~21 GB | 130,672 |
-| Qwen 3.5 35B-A3B | MoE | ~23 GB | 200,000 |
-| Gemma 4 31B | Dense | ~24 GB | 65,336 |
+| Gemma4-26B-A4B | MoE | ~21 GB | 256,000 |
+| Qwen3.5-27B | Dense | ~21 GB | 130,672 |
+| Qwen3.5-35B-A3B | MoE | ~23 GB | 200,000 |
+| Gemma4-31B | Dense | ~24 GB | 65,336 |
 
 
 ## General Impressions
 
 A few things stood out to me from this exercise.
 
-**Dense models were more reliable on the complex task.** Both Qwen 3.5 27B and Gemma 4 31B got Prompt 2 right on the first turn. Both MoE models needed retries. Two data points is not a conclusion, but it is a pattern worth noting.
+**Dense models were more reliable on the complex task.** Both Qwen3.5-27B and Gemma4-31B got Prompt 2 right on the first turn. Both MoE models needed retries. Two data points is not a conclusion, but it is a pattern worth noting.
 
-**MoE speed advantage is real but verbosity can eat it up.** Both MoE models hit ~135 tok/s generation vs ~40-45 tok/s for dense. But the Qwen 3.5 MoE generated 32,904 tokens on Prompt 2, which means 248 seconds of generation even at MoE speeds. The Gemma 4 MoE was the only model that was both fast and concise.
+**MoE speed advantage is real but verbosity can eat it up.** Both MoE models hit ~135 tok/s generation vs ~40-45 tok/s for dense. But Qwen3.5-35B-A3B generated 32,904 tokens on Prompt 2, which means 248 seconds of generation even at MoE speeds. Gemma4-26B-A4B was the only model that was both fast and concise.
 
-**Qwen 3.5 27B Dense feels like the best overall pick for agentic coding on a 4090.** Here is my reasoning:
+**Qwen3.5-27B feels like the best overall pick for agentic coding on a 4090.** Here is my reasoning:
 
 - Reliable: got the complex task right on the first try
 - 130K context is a practical sweet spot: enough for long agentic sessions, does not max out the card
@@ -304,14 +300,14 @@ A few things stood out to me from this exercise.
 - Only uses ~21 GB VRAM, leaving headroom
 - In my initial pass analyzing the generated code quality, it seems noticeably better than the other models. I am still working through this analysis and will update this section with more detail.
 
-The Gemma 4 MoE is the speed king and if you are doing high-volume, simpler tasks where first-try reliability matters less, it is hard to beat. But for the kind of agentic coding I do day-to-day, where I want to fire off a prompt and trust the model to get it right, Qwen 3.5 27B Dense is still my go-to.
+Gemma4-26B-A4B is the speed king and if you are doing high-volume, simpler tasks where first-try reliability matters less, it is hard to beat. But for the kind of agentic coding I do day-to-day, where I want to fire off a prompt and trust the model to get it right, Qwen3.5-27B is still my go-to.
 
 **Caveat:** These are notes from a single benchmarking session with two prompts. I am not claiming any of this is statistically rigorous. Different prompts, different tasks, different days could give different results. Take it as one data point.
 
 
 ## Code Quality (WIP)
 
-I am still analyzing the quality of the generated code across all four models. My initial impression is that Qwen 3.5 27B Dense produces noticeably cleaner and more correct code compared to the other three. I will update this section with specifics once I have finished the analysis.
+I am still analyzing the quality of the generated code across all four models. My initial impression is that Qwen3.5-27B produces noticeably cleaner and more correct code compared to the other three. I will update this section with specifics once I have finished the analysis.
 
 
 ## Appendix A: Hardware Fit and Server Config {#appendix-a-hardware-fit-and-server-config}
@@ -337,7 +333,7 @@ llama-server \
 
 ### Per-Model Overrides
 
-**Gemma 4 models:**
+**Gemma4 models:**
 
 ```bash
 --ctx-size 256000     # MoE (26B-A4B)
@@ -359,7 +355,7 @@ llama-server \
 --chat-template-kwargs '{"enable_thinking":true}'
 ```
 
-Note: Qwen 3.5 models used a corrected Jinja chat template and different sampling parameters than Gemma 4. Thinking mode was enabled explicitly for Qwen via the chat template kwargs. For Gemma 4, thinking is enabled by default.
+Note: Qwen 3.5 models used a corrected Jinja chat template and different sampling parameters than Gemma4. Thinking mode was enabled explicitly for Qwen via the chat template kwargs. For Gemma4, thinking is enabled by default.
 
 
 ## Appendix C: Instrumentation {#appendix-c-instrumentation}
@@ -396,9 +392,9 @@ cp llama.cpp/build/bin/llama-* llama.cpp
 
 ## Appendix D: Gotchas {#appendix-d-gotchas}
 
-### Qwen 3.5 MoE todowrite Parse Error
+### Qwen3.5-35B-A3B todowrite Parse Error
 
-The Qwen 3.5 35B-A3B MoE model sometimes returned tool call arguments as a raw JSON string instead of a parsed object. This caused the `todowrite` tool to fail because Open Code expected `todos` to be an array, not a string containing an array.
+Qwen3.5-35B-A3B sometimes returned tool call arguments as a raw JSON string instead of a parsed object. This caused the `todowrite` tool to fail because Open Code expected `todos` to be an array, not a string containing an array.
 
 Fix: a small plugin at `~/.opencode/plugins/todo-fix-plugins.ts`:
 
@@ -416,14 +412,14 @@ export const TodoFixPlugin = async (ctx) => {
 
 This is a common issue with local models that do not always serialize tool arguments correctly. Worth keeping around for any GGUF model that struggles with structured tool outputs.
 
-### Gemma 4 31B Dense Context Size
+### Gemma4-31B Context Size
 
 The 31B dense model does not fit a 256K context on a single 4090. I had to reduce to 65,336 tokens to maintain ~40 tok/s generation. You can push it higher but generation speed degrades as context grows because the dense model activates all 31B params on every forward pass and the KV-cache eats into VRAM.
 
 ### Sampling Parameter Differences
 
-The two model families use different recommended sampling parameters. Gemma 4 uses temp 1.0 with top-k 64, while Qwen 3.5 uses temp 0.6 with top-k 20. I kept each family at its recommended settings rather than forcing the same params across all four, since the goal was to see how each model performs under its intended conditions.
+The two model families use different recommended sampling parameters. Gemma4 uses temp 1.0 with top-k 64, while Qwen 3.5 uses temp 0.6 with top-k 20. I kept each family at its recommended settings rather than forcing the same params across all four, since the goal was to see how each model performs under its intended conditions.
 
-### Qwen 3.5 Corrected Jinja Template
+### Qwen3.5 Corrected Jinja Template
 
-Qwen 3.5 models needed a corrected Jinja chat template (`qwen35-chat-template-corrected.jinja`) to work properly with llama-server. The default template had issues with thinking mode. If you are running these models, check whether your template handles the thinking tags correctly.
+Qwen3.5 models needed a corrected Jinja chat template (`qwen35-chat-template-corrected.jinja`) to work properly with llama-server. The default template had issues with thinking mode. If you are running these models, check whether your template handles the thinking tags correctly.
