@@ -1,5 +1,5 @@
 ---
-title: "Notes on Benchmarking Qwen 3.5 vs Gemma 4: Local Agentic Coding on an RTX 4090"
+title: "Notes on Qwen 3.5 vs Gemma 4 for Local Agentic Coding on an RTX 4090"
 tags: ["LLMs", "Benchmarking", "Local LLMs", "Agentic Coding", "llama.cpp", "MoE"]
 description: Benchmarking notes comparing Qwen 3.5 and Gemma 4 model families (both dense and MoE variants) for local agentic coding tasks on an RTX 4090, using llama-bench and single-shot prompting with Open Code.
 date: 2026-04-05
@@ -83,31 +83,25 @@ This is the command I used to run the benchmarks:
 - As expected, the MoE models dominate both prefill and generation speed.
 - Generation speed for the two MoE models is nearly identical (~165 tok/s). Same story for the two dense models (~45 tok/s). This emphasises the fact that generation is memory bandwidth bound not compute bound.
 
-> These numbers are useful but they only tell you about raw throughput. They say nothing about how a model actually performs when it has to reason, make tool calls, write code, and iterate on errors.
 
-## Part 2: Agentic Coding Benchmarks
+## Agentic Coding: One-Prompt Test
 
-### Why Single-Shot Prompting
+>The llama-bench numbers tell you how fast tokens move but they say nothing about how a model actually performs when it has to reason, make tool calls, write code and iterate on errors.
 
-Standard benchmarks measure how fast tokens move. But for agentic coding, what matters is: can the model take a complex instruction, break it down, use tools, write code, run it, debug failures, and deliver working output?
-
-I used single-shot prompting for this. One prompt, fired once, and the model has to figure out the rest on its own through tool calls. No hand-holding, no multi-turn guidance. This is closer to how I actually use these models day-to-day: I describe what I want, hit enter, and let the model do its thing.
-
-I picked two prompts at different complexity levels to see how each model handles simple vs multi-step workflows.
+To test that, I ran a simple practical test: give the model one prompt and see if it can figure out the rest on its own. There will be no hand-holding and multi-turn guidance. The idea is to see how the model performs in such a scenario. This is not a formal benchmark. It is two prompts at different complexity levels to see how well the model handles mult-step workflows. As usually the case with most of us, I describe what I want in a single prompt and let the model do its thing. 
 
 ### Setup
 
-I used [Open Code](https://opencode.ai) as the agentic coding frontend because it is easy to set up with a local llama-server backend. [Context7](https://context7.com) was configured as an MCP server, which lets the model fetch up-to-date library documentation and API docs during its run.
+I used [Open Code](https://opencode.ai) as the agentic coding frontend because I find it easier to set up with a local llama-server backend. I also configured [Context7](https://context7.com) as an skills + MCP server to let models fetch up-to-date library documentation and API docs during its run.
 
-The llama-server was launched with:
+llama-server was configured with q8_0 KV cache and context size varied per model based on VRAM constraints to maximize generation speed (full config in [Appendix A](#appendix-a-hardware-fit-and-server-config)).
 
-- Flash attention enabled
-- q8_0 KV cache (turboquant)
-- Batch size 2048, micro-batch 512
-- Thinking mode enabled for all four models
-- Context size varied per model based on VRAM constraints (details in [Appendix A](#appendix-a-hardware-fit-and-server-config))
+  - Speed metrics came from llama-server's `/metrics` endpoint (Prometheus counters).
+  - Token usage breakdowns were estimated using the [opencode-tokenscope](https://www.npmjs.com/package/@ramtinj95/opencode-tokenscope) plugin. 
 
-Speed metrics came from llama-server's `/metrics` endpoint (Prometheus counters). Token usage breakdowns came from the [opencode-tokenscope](https://www.npmjs.com/package/@ramtinj95/opencode-tokenscope) plugin. I restarted llama-server between model runs so the counters would not carry over.
+I also makde sure to restart llama-server between model runs so the counters would not carry over.
+
+One metric worth clarifying since it shows up in every results table below: **API calls** is the number of roundtrips between Open Code and llama-server. Each time the model generates a response, makes a tool call, gets the result, and generates again counts as another API call. More API calls means more back-and-forth to complete the task.
 
 
 ### Prompt 1: Simple (httpx + pytest)
@@ -120,7 +114,7 @@ use uv run to run everything so we don't install anything in the current
 environment. run the test and make sure it passes.
 ```
 
-This tests the basics: can the model call Context7 to look up docs, write a simple script, write a real integration test (no mocks), use `uv run` for dependency management, and actually execute everything to verify it works.
+This tests the basics such as can the model call Context7 to look up docs, write a simple script and real integration test (no mocks), use `uv run` for running and deps. management and actually execute everything to verify it works.
 
 
 ### Prompt 2: Comprehensive (Nano Banana Image Generation + TDD)
@@ -137,7 +131,7 @@ given in prompts.json. save the images to an images folder, make sure the
 folder exists, if it doesn't then create it.
 ```
 
-This is a much heavier multi-step workflow. The model has to:
+This is a slightly heavier multi-step workflow. The model has to:
 
 - Look up the Gemini image generation API docs via Context7
 - Write a Python script using the google-genai SDK
@@ -147,14 +141,12 @@ This is a much heavier multi-step workflow. The model has to:
 - Read `prompts.json`, generate images for all five prompts
 - Handle file I/O (create output directory, save images)
 
-The idea was to push beyond "can it write a script" into "can it manage a real multi-step development workflow end to end."
+The idea is to see how well the model handles and executes the mult-step workflows correctly.
 
 
 ### Results: Gemma 4 26B-A4B (MoE)
 
-**VRAM:** ~21 GB / 24 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 256,000 tokens
-
-**Speed and Token Metrics (llama-server /metrics)**
+**VRAM:** ~21 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 256K tokens
 
 | Metric | Prompt 1 | Prompt 2 |
 |---|---|---|
@@ -164,41 +156,24 @@ The idea was to push beyond "can it write a script" into "can it manage a real m
 | Total tokens generated | 1,623 | 3,435 |
 | Prompt processing time | 4.11s | 5.09s |
 | Generation time | 11.98s | 25.56s |
-
-**Session Metrics (tokenscope)**
-
-| Metric | Prompt 1 | Prompt 2 |
-|---|---|---|
 | API calls | 10 | 13 |
-| Total session tokens (for billing) | 126,833 | 206,185 |
-| Cache hit rate | 87.8% | 89.9% |
-| Estimated cost (API pricing) | $0.018 | $0.027 |
 
-**Tool Usage**
-
-| Tool | Prompt 1 Calls | Prompt 1 Tokens | Prompt 2 Calls | Prompt 2 Tokens |
-|---|---|---|---|---|
-| bash | 4 | 1,537 | 10 | 4,949 |
-| write | 3 | 19 | 0 | 0 |
-| read | 0 | 0 | 1 | 144 |
 
 **Observations:**
 
 - Blazing fast. 135 tok/s generation and 4.3K+ prefill is the fastest of the four by a wide margin.
 - Most concise model by far: only 1,623 tokens generated on Prompt 1, 3,435 on Prompt 2. No wasted output.
 - Zero reasoning tokens on Prompt 2 (100% assistant output), which is interesting since all other models used thinking heavily.
-- On Prompt 2, it used bash exclusively for file creation (cat/heredoc instead of the write tool). Not ideal but it worked.
+- On Prompt 2, it used bash exclusively for file creation (cat/heredoc instead of the write tool) and made no `write` tool calls at all. Not ideal but it worked.
 - **Needed 3 attempts on Prompt 2.** Despite being the fastest and most concise, it struggled with the multi-step instructions. This is the tradeoff: raw speed is great, but instruction-following quality took a hit.
 - 25.6s total generation time on Prompt 2 is remarkable though. Even with retries, the wall-clock experience was still fast.
 
 
 ### Results: Gemma 4 31B Dense
 
-**VRAM:** ~24 GB / 24 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 65,336 tokens
+**VRAM:** ~24 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 65K tokens
 
 Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the context size to 65K to maintain reasonable generation speed. At 256K, generation speed degrades progressively because the dense model must use all 31B parameters on every forward pass and the KV-cache eats into remaining VRAM headroom.
-
-**Speed and Token Metrics (llama-server /metrics)**
 
 | Metric | Prompt 1 | Prompt 2 |
 |---|---|---|
@@ -208,25 +183,8 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 | Total tokens generated | 2,903 | 5,968 |
 | Prompt processing time | 11.34s | 18.48s |
 | Generation time | 77.07s | 169.53s |
-
-**Session Metrics (tokenscope)**
-
-| Metric | Prompt 1 | Prompt 2 |
-|---|---|---|
 | API calls | 10 | 16 |
-| Total session tokens (for billing) | 135,625 | 316,463 |
-| Cache hit rate | 88.0% | 92.2% |
-| Estimated cost (API pricing) | $0.023 | $0.041 |
 
-**Tool Usage**
-
-| Tool | Prompt 1 Calls | Prompt 1 Tokens | Prompt 2 Calls | Prompt 2 Tokens |
-|---|---|---|---|---|
-| bash | 4 | 2,193 | 8 | 7,002 |
-| write | 3 | 19 | 4 | 257 |
-| edit | 1 | 7 | 0 | 0 |
-| read | 0 | 0 | 1 | 144 |
-| skill (find-docs) | 0 | 0 | 1 | 1,416 |
 
 **Observations:**
 
@@ -235,15 +193,13 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 - Generated nearly twice the tokens as the MoE variant (2,903 vs 1,623 on Prompt 1), including 1,548 reasoning tokens. Heavy thinker.
 - On Prompt 2, 97.5% of output tokens were reasoning tokens. The model was thinking hard throughout.
 - 169.5s of generation time on Prompt 2 means nearly 3 minutes just for token generation. For interactive agentic work, this drags.
-- Loaded the `find-docs` skill during Prompt 2 (1,416 tokens), showing it actively sought documentation.
+- Loaded the `find-docs` skill during Prompt 2, actively seeking documentation. Also used an `edit` tool call on Prompt 1 to correct its own output, which no other model needed.
 - Context limited to 65K is a real practical limitation. You cannot fit long agentic sessions on this model with a single 4090.
 
 
 ### Results: Qwen 3.5 35B-A3B (MoE)
 
-**VRAM:** ~23 GB / 24 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 200,000 tokens
-
-**Speed and Token Metrics (llama-server /metrics)**
+**VRAM:** ~23 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 200K tokens
 
 | Metric | Prompt 1 | Prompt 2 |
 |---|---|---|
@@ -253,43 +209,23 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 | Total tokens generated | 7,564 | 32,904 |
 | Prompt processing time | 5.08s | 30.23s |
 | Generation time | 55.32s | 248.75s |
-
-**Session Metrics (tokenscope)**
-
-| Metric | Prompt 1 | Prompt 2 |
-|---|---|---|
 | API calls | 13 | 30 |
-| Total session tokens (for billing) | 186,817 | 809,989 |
-| Cache hit rate | 91.6% | 94.3% |
-| Estimated cost (API pricing) | $0.021 | $0.070 |
 
-**Tool Usage**
-
-| Tool | Prompt 1 Calls | Prompt 1 Tokens | Prompt 2 Calls | Prompt 2 Tokens |
-|---|---|---|---|---|
-| bash | 3 | 1,502 | 17 | 21,657 |
-| write | 3 | 19 | 6 | 529 |
-| todowrite | 5 | 606 | 0 | 0 |
-| edit | 0 | 0 | 4 | 180 |
-| read | 0 | 0 | 1 | 144 |
 
 **Observations:**
 
 - Generation speed is excellent at 136.7 tok/s, essentially identical to Gemma 4 MoE. Both MoE models hit the same bandwidth ceiling.
 - But this model is **extremely verbose**. 7,564 tokens on Prompt 1 (the simple httpx task!) and 32,904 tokens on Prompt 2. That is 5.5x more than Gemma 4 MoE on the same complex task.
 - 86% reasoning tokens on Prompt 1. The model thinks a lot before acting.
-- Used a `todowrite` tool (5 calls, 606 tokens) on Prompt 1 which no other model invoked. This is a structured planning tool. The model was explicitly planning before executing, which is methodical but adds overhead.
-- Prompt 2 was the most intensive run of the entire benchmark: 30 API calls, 28 tool calls, 810K billing tokens. 21,657 tokens consumed by bash alone.
+- Used a `todowrite` tool (5 calls) on Prompt 1 which no other model invoked. This is a structured planning tool -- the model was explicitly planning before executing, which is methodical but adds overhead.
+- Prompt 2 was the most intensive run of the entire benchmark: 30 API calls, 28 tool calls. Used 4 `edit` calls alongside 6 `write` calls, suggesting it revised its own code multiple times.
 - **Got Prompt 2 correct on the 2nd turn**, better than Gemma 4 MoE (3rd turn) but still not first-try.
 - 248.7s generation time on Prompt 2. At MoE speeds this would have taken ~12 minutes at dense 27B speeds. The MoE architecture saves it from being unusable, but the verbosity still costs wall-clock time.
-- At $0.070 estimated cost on Prompt 2, this is 3.4x more expensive than the next most expensive run, purely driven by token volume.
 
 
 ### Results: Qwen 3.5 27B Dense
 
-**VRAM:** ~21 GB / 24 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 130,672 tokens
-
-**Speed and Token Metrics (llama-server /metrics)**
+**VRAM:** ~21 GB &nbsp;&nbsp;|&nbsp;&nbsp; **Context:** 130K tokens
 
 | Metric | Prompt 1 | Prompt 2 |
 |---|---|---|
@@ -299,33 +235,17 @@ Note: The 31B dense model maxes out VRAM on a single 4090. I had to drop the con
 | Total tokens generated | 2,867 | 11,824 |
 | Prompt processing time | 6.08s | 11.14s |
 | Generation time | 63.91s | 265.00s |
-
-**Session Metrics (tokenscope)**
-
-| Metric | Prompt 1 | Prompt 2 |
-|---|---|---|
 | API calls | 9 | 18 |
-| Total session tokens (for billing) | 116,759 | 315,568 |
-| Cache hit rate | 87.5% | 95.5% |
-| Estimated cost (API pricing) | $0.017 | $0.023 |
 
-**Tool Usage**
-
-| Tool | Prompt 1 Calls | Prompt 1 Tokens | Prompt 2 Calls | Prompt 2 Tokens |
-|---|---|---|---|---|
-| bash | 4 | 1,226 | 10 | 4,322 |
-| write | 3 | 19 | 3 | 131 |
-| read | 0 | 0 | 1 | 144 |
 
 **Observations:**
 
 - **Got Prompt 2 correct on the first turn.** Same as Gemma 4 31B Dense. Both dense models nailed the complex task first try, while both MoE models needed retries. Interesting pattern.
-- Most efficient session on Prompt 1: fewest API calls (9), fewest billing tokens (116K), fewest tool calls. Clean and focused.
+- Most efficient session on Prompt 1: fewest API calls (9), fewest tool calls (7 total: 4 bash + 3 write). Clean and focused.
 - Generation at 44.9 tok/s is slower than MoE (~135 tok/s) but faster than Gemma 4 Dense (37.7). Noticeable but workable for interactive use.
 - 130K context fits comfortably in VRAM. This is a practical sweet spot: enough context for long agentic sessions without maxing out the card. Compare this to Gemma 4 Dense which could only manage 65K.
 - On Prompt 2, it generated 11,824 tokens (second highest after Qwen MoE's 32,904), with 72.9% being reasoning tokens. It thinks, but not as obsessively as the Gemma 4 Dense (97.5%).
-- 95.5% cache hit rate on Prompt 2, the highest observed. 18 API roundtrips with heavy context reuse.
-- Despite the longer generation time (265s on Prompt 2), the cost stays low at $0.023 thanks to aggressive caching.
+
 
 
 ## Summary Tables
