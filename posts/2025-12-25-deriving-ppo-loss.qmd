@@ -1,6 +1,7 @@
 ---
 title: "Deriving the PPO Loss from First Principles"
 tags: ["Reinforcement Learning", "PPO", "RLHF", "LLMs"]
+categories: [RL & Alignment, From Scratch]
 mathjax: true
 description: A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.
 date: 2025-12-25

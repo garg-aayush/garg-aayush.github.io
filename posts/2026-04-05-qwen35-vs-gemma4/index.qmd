@@ -1,6 +1,7 @@
 ---
 title: "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding"
 tags: ["LLMs", "Benchmarking", "Agentic Coding", "llama.cpp", "MoE", "OpenCode", "Qwen", "Gemma"]
+categories: [Local LLMs]
 description: Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.
 date: 2026-04-05
 permalink: /2026-04-05-qwen35-vs-gemma4/

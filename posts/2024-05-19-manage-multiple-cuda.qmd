@@ -1,6 +1,7 @@
 ---
 title:  Managing multiple CUDA versions using environment modules in Ubuntu
 tags: ["gpu", "cuda", "nvidia", 'module']
+categories: [Tools & Dev]
 mathjax: true
 description: Guide to install CUDA locally and manage multiple cuda environments on Ubuntu GPU server.
 date: 2024-05-19

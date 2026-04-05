@@ -10,7 +10,7 @@ listing:
   type: table
   sort-ui: false
   sort: "date desc"
-  categories: false
+  categories: true
   fields: [date, title]
   id: blog-listings
   contents: 

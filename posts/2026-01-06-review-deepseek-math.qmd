@@ -1,6 +1,7 @@
 ---
 title: "Key Insights from DeepSeekMath paper"
 tags: ["Reinforcement Learning", "GRPO", "RLHF", "LLMs", "Math"]
+categories: [RL & Alignment, Paper Notes]
 mathjax: false
 description: Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline
 date: 2026-01-06

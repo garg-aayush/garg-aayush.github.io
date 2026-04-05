@@ -1,6 +1,7 @@
 ---
 title: "A Brief Introduction to Claude Agent Skills"
 tags: ["Claude", "Agent Skills", "AI Agents", "LLMs"]
+categories: [Tools & Dev]
 mathjax: false
 description: A practical guide to Claude Skills, what they are, why they matter and how to build your own using a basic image editing skill as an example.
 date: 2026-01-13

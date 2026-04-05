@@ -1,6 +1,7 @@
 ---
 title: "GRPO: Building Intuition Through Ablation Studies"
 tags: ["GRPO", "LLMs", "Reinforcement Learning", "Ablation Studies", "Modal"]
+categories: [RL & Alignment]
 mathjax: false
 description: My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.
 date: 2026-02-26

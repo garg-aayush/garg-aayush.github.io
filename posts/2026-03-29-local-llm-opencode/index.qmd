@@ -1,6 +1,7 @@
 ---
 title: "Using a local LLM in OpenCode with llama.cpp"
 tags: ["llama.cpp", "OpenCode", "Tailscale", "Qwen3.5", "local LLM", "GGUF"]
+categories: [Local LLMs]
 description: "Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex)."
 date: 2026-03-29
 permalink: /2026-03-29-local-llm-opencode/
