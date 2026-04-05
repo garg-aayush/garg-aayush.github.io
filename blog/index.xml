@@ -1263,6 +1263,7 @@ font-style: inherit;">todos</span>)</span>
 </section>
 
  ]]></description>
+  <category>Local LLMs</category>
   <guid>https://garg-aayush.github.io/posts/2026-04-05-qwen35-vs-gemma4/</guid>
   <pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate>
 </item>
@@ -1817,6 +1818,7 @@ font-style: inherit;">bash</span> ~/start-server.sh</span></code></pre></div></d
 </section>
 
  ]]></description>
+  <category>Local LLMs</category>
   <guid>https://garg-aayush.github.io/posts/2026-04-03-self-hosted-gemma4-chat/</guid>
   <pubDate>Fri, 03 Apr 2026 00:00:00 GMT</pubDate>
 </item>
@@ -2619,6 +2621,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Local LLMs</category>
   <guid>https://garg-aayush.github.io/posts/2026-03-29-local-llm-opencode/</guid>
   <pubDate>Sun, 29 Mar 2026 00:00:00 GMT</pubDate>
 </item>
@@ -2836,6 +2839,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Paper Notes</category>
   <guid>https://garg-aayush.github.io/posts/2026-03-27-flash-attention/</guid>
   <pubDate>Fri, 27 Mar 2026 00:00:00 GMT</pubDate>
 </item>
@@ -2917,6 +2921,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Tools &amp; Dev</category>
   <guid>https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</guid>
   <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
 </item>
@@ -3199,6 +3204,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>RL &amp; Alignment</category>
   <guid>https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</guid>
   <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
 </item>
@@ -3465,6 +3471,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Tools &amp; Dev</category>
   <guid>https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</guid>
   <pubDate>Thu, 12 Feb 2026 00:00:00 GMT</pubDate>
 </item>
@@ -3727,6 +3734,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>RL &amp; Alignment</category>
   <guid>https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</guid>
   <pubDate>Fri, 23 Jan 2026 00:00:00 GMT</pubDate>
 </item>
@@ -3945,6 +3953,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Tools &amp; Dev</category>
   <guid>https://garg-aayush.github.io/posts/2026-01-13-claude-skills/</guid>
   <pubDate>Tue, 13 Jan 2026 00:00:00 GMT</pubDate>
 </item>
@@ -4077,6 +4086,8 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>RL &amp; Alignment</category>
+  <category>Paper Notes</category>
   <guid>https://garg-aayush.github.io/posts/2026-01-06-review-deepseek-math.html</guid>
   <pubDate>Tue, 06 Jan 2026 00:00:00 GMT</pubDate>
 </item>
@@ -4283,6 +4294,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>RL &amp; Alignment</category>
   <guid>https://garg-aayush.github.io/posts/2026-01-01-understanding-grpo.html</guid>
   <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
 </item>
@@ -4508,6 +4520,8 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>RL &amp; Alignment</category>
+  <category>From Scratch</category>
   <guid>https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</guid>
   <pubDate>Tue, 30 Dec 2025 00:00:00 GMT</pubDate>
 </item>
@@ -4938,6 +4952,8 @@ In the LLM context consider a state where the prompt is “Where is Shanghai?”
 </section>
 
  ]]></description>
+  <category>RL &amp; Alignment</category>
+  <category>From Scratch</category>
   <guid>https://garg-aayush.github.io/posts/2025-12-25-deriving-ppo-loss.html</guid>
   <pubDate>Thu, 25 Dec 2025 00:00:00 GMT</pubDate>
 </item>
@@ -5230,6 +5246,8 @@ font-style: inherit;">100</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Fine-tuning</category>
+  <category>From Scratch</category>
   <guid>https://garg-aayush.github.io/posts/2025-12-28-sft-from-scratch.html</guid>
   <pubDate>Wed, 03 Dec 2025 00:00:00 GMT</pubDate>
 </item>
@@ -5692,6 +5710,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 </section>
 
  ]]></description>
+  <category>Tools &amp; Dev</category>
   <guid>https://garg-aayush.github.io/posts/2025-09-10-build-custom-comfyui-node.html</guid>
   <pubDate>Wed, 10 Sep 2025 00:00:00 GMT</pubDate>
 </item>
@@ -5917,6 +5936,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 </section>
 
  ]]></description>
+  <category>From Scratch</category>
   <guid>https://garg-aayush.github.io/posts/2025-09-08-building-gpt-from-scratch.html</guid>
   <pubDate>Mon, 08 Sep 2025 00:00:00 GMT</pubDate>
 </item>
@@ -6039,6 +6059,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 </section>
 
  ]]></description>
+  <category>Paper Notes</category>
   <guid>https://garg-aayush.github.io/posts/2025-09-02-llm-evaluation-lifecycle.html</guid>
   <pubDate>Tue, 02 Sep 2025 00:00:00 GMT</pubDate>
 </item>
@@ -6397,6 +6418,7 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Fine-tuning</category>
   <guid>https://garg-aayush.github.io/posts/2024-07-15-finetune-llama3-8B-predibase.html</guid>
   <pubDate>Mon, 15 Jul 2024 00:00:00 GMT</pubDate>
 </item>
@@ -6651,6 +6673,7 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Fine-tuning</category>
   <guid>https://garg-aayush.github.io/posts/2024-07-09-compare-models-structured-data.html</guid>
   <pubDate>Tue, 09 Jul 2024 00:00:00 GMT</pubDate>
 </item>
@@ -7030,6 +7053,7 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 </section>
 
  ]]></description>
+  <category>Fine-tuning</category>
   <guid>https://garg-aayush.github.io/posts/2024-07-03-baseline-gpt4o-structured-data.html</guid>
   <pubDate>Wed, 03 Jul 2024 00:00:00 GMT</pubDate>
 </item>
