@@ -319,9 +319,11 @@ I looked at the working code each model produced for Prompt 2 (the Nano Banana i
 
 > These are notes from a single benchmarking session with two prompts and my experience over the last 2 days. I am not claiming any of this is statistically rigorous. 
 
-## Appendix A: Hardware Fit and Server Config {#appendix-a-hardware-fit-and-server-config}
+## Appendix
 
-### llama-server Launch Config
+### A: Hardware Fit and Server Config {#appendix-a-hardware-fit-and-server-config}
+
+#### llama-server Launch Config
 
 Base config used for all models:
 
@@ -340,7 +342,7 @@ llama-server \
     --metrics
 ```
 
-### Per-Model Overrides
+#### Per-Model Overrides
 
 **Gemma4 models:**
 
@@ -367,13 +369,13 @@ llama-server \
 Note: Qwen 3.5 models used a corrected Jinja chat template and different sampling parameters than Gemma4. Thinking mode was enabled explicitly for Qwen via the chat template kwargs. For Gemma4, thinking is enabled by default.
 
 
-## Appendix C: Instrumentation {#appendix-c-instrumentation}
+### B: Instrumentation {#appendix-b-instrumentation}
 
-### Tokenscope
+#### Tokenscope
 
 I used the [opencode-tokenscope](https://www.npmjs.com/package/@ramtinj95/opencode-tokenscope) plugin to get per-session token breakdowns. Add `"plugin": ["@ramtinj95/opencode-tokenscope"]` to your `opencode.json`, then create a `/tokenscope` slash command in `~/.config/opencode/command/tokenscope.md`. After each run, typing `/tokenscope` dumps a full report.
 
-### llama-server /metrics
+#### llama-server /metrics
 
 llama-server exposes a `/metrics` endpoint (enabled with the `--metrics` flag) that returns Prometheus-format counters. The two key gauges are:
 
@@ -382,7 +384,7 @@ llama-server exposes a `/metrics` endpoint (enabled with the `--metrics` flag) t
 
 These are cumulative across the session, so I restarted llama-server between model runs to get clean numbers.
 
-### llama.cpp Installation
+#### llama.cpp Installation
 
 ```bash
 sudo apt-get update
@@ -399,9 +401,9 @@ cp llama.cpp/build/bin/llama-* llama.cpp
 ```
 
 
-## Appendix D: Gotchas {#appendix-d-gotchas}
+### Troubleshooting {#appendix-c-troubleshooting}
 
-### Qwen3.5-35B-A3B todowrite Parse Error
+#### Qwen3.5-35B-A3B todowrite Parse Error
 
 Qwen3.5-35B-A3B sometimes returned tool call arguments as a raw JSON string instead of a parsed object. This caused the `todowrite` tool to fail because Open Code expected `todos` to be an array, not a string containing an array.
 
@@ -421,14 +423,14 @@ export const TodoFixPlugin = async (ctx) => {
 
 This is a common issue with local models that do not always serialize tool arguments correctly. Worth keeping around for any GGUF model that struggles with structured tool outputs.
 
-### Gemma4-31B Context Size
+#### Gemma4-31B Context Size
 
 The 31B dense model does not fit a 256K context on a single 4090. I had to reduce to 65,336 tokens to maintain ~40 tok/s generation. You can push it higher but generation speed degrades as context grows because the dense model activates all 31B params on every forward pass and the KV-cache eats into VRAM.
 
-### Sampling Parameter Differences
+#### Sampling Parameter Differences
 
 The two model families use different recommended sampling parameters. Gemma4 uses temp 1.0 with top-k 64, while Qwen 3.5 uses temp 0.6 with top-k 20. I kept each family at its recommended settings rather than forcing the same params across all four, since the goal was to see how each model performs under its intended conditions.
 
-### Qwen3.5 Corrected Jinja Template
+#### Qwen3.5 Corrected Jinja Template
 
 Qwen3.5 models needed a corrected Jinja chat template (`qwen35-chat-template-corrected.jinja`) to work properly with llama-server. The default template had issues with thinking mode. If you are running these models, check whether your template handles the thinking tags correctly.
