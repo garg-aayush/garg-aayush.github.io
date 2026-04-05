@@ -1,7 +1,7 @@
 ---
 title: "Tools for Better Claude Code and Terminal Experience"
 tags: ["CLI Tools", "Claude Code", "LLMs", "Developer Tools"]
-categories: [Tools & Dev]
+categories: [Tools & Infra]
 mathjax: false
 description: A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.
 date: 2026-02-12
