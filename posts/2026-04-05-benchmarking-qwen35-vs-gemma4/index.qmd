@@ -20,16 +20,17 @@ permalink: /2026-04-05-benchmarking-qwen35-vs-gemma4/
 | Gemma 4 26B-A4B | MoE | Q4_K_XL | 15.95 GiB | 25.23 B | ~4 B |
 | Gemma 4 31B | Dense | Q4_K_XL | 17.46 GiB | 30.70 B | 30.70 B |
 
-- **Hardware**: NVIDIA RTX 4090 (24 GB VRAM). 
+- **The size on disk is without kv-cache**
 - All four models were run with thinking mode enabled and quantized to **Q4_K_XL** using [Unsloth](https://unsloth.ai/) GGUFs on [llama.cpp](https://github.com/ggml-org/llama.cpp).
 - All benchmarks were run on April 3rd, 2026.
+- **Hardware**: NVIDIA RTX 4090 (24 GB VRAM). 
 
 
 ## Standard Benchmarks with llama-bench
 
-llama.cpp ships a `llama-bench` utility that runs standard prefill and decode benchmarks. This is the quick way to get raw throughput numbers before doing anything more involved.
+llama.cpp has a `llama-bench` utility that runs standard prefill and decode benchmarks. It is a quick way to get raw throughput numbers before doing anything more involved.
 
-I swept prefill across context lengths from 512 to 65K tokens and measured decode speed at 128 tokens (tg128). All runs used flash attention, q8_0 KV cache quantization, batch size 2048, and micro-batch size 512. Each test was repeated 3 times.
+This is the command I used to run the benchmarks:
 
 ```bash
 ./llama.cpp/llama-bench \
@@ -39,7 +40,23 @@ I swept prefill across context lengths from 512 to 65K tokens and measured decod
   -n 128 -r 3 -o md
 ```
 
-### Prefill Speed (tokens/s)
+::: {.callout-note collapse="true" title="llama-bench flags used"}
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `-ctk` | `q8_0` | KV cache keys quantized to 8-bit |
+| `-ctv` | `q8_0` | KV cache values quantized to 8-bit |
+| `-fa` | `1` | Flash Attention enabled |
+| `-b` | `2048` | Batch size (max tokens processed per batch) |
+| `-ub` | `512` | Micro-batch size (tokens processed per CUDA kernel call) |
+| `-p` | `512,2048,...,65336` | Prefill token counts to sweep |
+| `-n` | `128` | Decode (generation) tokens per run |
+| `-r` | `3` | Repeat each test 3 times and report mean |
+| `-o` | `md` | Output as markdown table |
+
+:::
+
+### Prefill Speed
 
 | Context | Qwen 3.5 27B | Qwen 3.5 35B-A3B | Gemma 4 26B-A4B | Gemma 4 31B |
 |---|---|---|---|---|
@@ -60,15 +77,13 @@ I swept prefill across context lengths from 512 to 65K tokens and measured decod
 | Qwen 3.5 27B | Dense | 45.88 |
 | Gemma 4 31B | Dense | 44.42 |
 
+
 ### Notes on llama-bench Results
 
-- The MoE models dominate both prefill and generation, as expected. With only ~3-4B active parameters, they move through tokens much faster than the dense models that activate all 27-31B params on every forward pass.
-- Gemma 4 MoE leads prefill across all context lengths, peaking at 8,733 tok/s at 4K context. But the Qwen 3.5 MoE is not far behind.
-- Generation speed for the two MoE models is nearly identical (~165 tok/s). Same story for the two dense models (~45 tok/s). This tells us generation is memory bandwidth bound, not compute bound. The bottleneck is shuffling weights from VRAM, and since all four models have similar disk sizes and quantization, the bandwidth cost is about the same within each architecture class.
-- Prefill degrades at longer contexts for all models, but the MoE models hold up better. At 65K, Gemma 4 MoE still pushes 5,917 tok/s while Gemma 4 Dense drops to 1,869.
+- As expected, the MoE models dominate both prefill and generation speed.
+- Generation speed for the two MoE models is nearly identical (~165 tok/s). Same story for the two dense models (~45 tok/s). This emphasises the fact that generation is memory bandwidth bound not compute bound.
 
-These numbers are useful but they only tell you about raw throughput. They say nothing about how a model actually performs when it has to reason, make tool calls, write code, and iterate on errors. That is what the next section is about.
-
+> These numbers are useful but they only tell you about raw throughput. They say nothing about how a model actually performs when it has to reason, make tool calls, write code, and iterate on errors.
 
 ## Part 2: Agentic Coding Benchmarks
 
@@ -425,21 +440,6 @@ llama-server \
 ```
 
 Note: Qwen 3.5 models used a corrected Jinja chat template and different sampling parameters than Gemma 4. Thinking mode was enabled explicitly for Qwen via the chat template kwargs. For Gemma 4, thinking is enabled by default.
-
-
-## Appendix B: llama-bench Flags {#appendix-b-llama-bench-flags}
-
-| Flag | Value | Meaning |
-|---|---|---|
-| `-ctk` | `q8_0` | KV cache keys quantized to 8-bit |
-| `-ctv` | `q8_0` | KV cache values quantized to 8-bit |
-| `-fa` | `1` | Flash Attention enabled |
-| `-b` | `2048` | Batch size (max tokens processed per batch) |
-| `-ub` | `512` | Micro-batch size (tokens processed per CUDA kernel call) |
-| `-p` | `512,2048,...,65336` | Prefill token counts to sweep |
-| `-n` | `128` | Decode (generation) tokens per run |
-| `-r` | `3` | Repeat each test 3 times and report mean |
-| `-o` | `md` | Output as markdown table |
 
 
 ## Appendix C: Instrumentation {#appendix-c-instrumentation}
