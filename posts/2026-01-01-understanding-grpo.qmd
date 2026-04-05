@@ -1,6 +1,7 @@
 ---
 title: "Understanding GRPO: PPO without the Critic"
 tags: ["Reinforcement Learning", "GRPO", "RLHF", "LLMs"]
+categories: [RL & Alignment]
 mathjax: true
 description: A blog post explaining the Group Relative Policy Optimization (GRPO) objective, showing how it simplifies PPO by replacing the learned critic with group sampling.
 date: 2026-01-01

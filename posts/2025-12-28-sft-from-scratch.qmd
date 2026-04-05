@@ -1,6 +1,7 @@
 ---
 title: "What I Learned Building SFT from the Ground Up"
 tags: ["LLMs", "Fine-tuning", "SFT", "Qwen", "Llama"]
+categories: [Fine-tuning, From Scratch]
 mathjax: false
 description: A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.
 date: 2025-12-03

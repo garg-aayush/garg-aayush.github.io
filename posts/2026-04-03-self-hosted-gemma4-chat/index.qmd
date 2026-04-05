@@ -1,6 +1,7 @@
 ---
 title: "Self-Hosted Gemma 4 Chat with Web UI"
 tags: [llm, gemma, llama.cpp, self-hosting, mcp, tailscale]
+categories: [Local LLMs]
 date: 2026-04-03
 permalink: /blog/self-hosted-gemma4-chat
 description: "Steps to set up a self-hosted Gemma 4 chat with llama.cpp's built-in web UI, web search via MCP, and access from any device over Tailscale."

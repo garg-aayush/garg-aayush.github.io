@@ -1,6 +1,7 @@
 ---
 title: "FlashAttention: Making Attention I/O-Aware"
 tags: ["FlashAttention", "LLMs", "Transformers", "GPU", "Attention"]
+categories: [Paper Notes]
 mathjax: true
 description: "Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware"
 date: 2026-03-27

@@ -1,6 +1,7 @@
 ---
 title: "Building Browser Tools with Claude Code"
 tags: ["Tools", "AI-Assisted Development", "Claude Code", "Web Development"]
+categories: [Tools & Dev]
 mathjax: false
 description: "Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code."
 date: 2026-03-20
