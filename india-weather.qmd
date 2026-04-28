@@ -28,14 +28,14 @@ include-after-body:
       <div id="iw-status" class="iw-status">Loading map...</div>
     </div>
 
-    <aside class="iw-leaderboard" aria-label="City rankings">
+    <div class="iw-leaderboard" role="complementary" aria-label="City rankings">
       <div class="iw-tabs" role="tablist">
         <button class="iw-tab iw-active" type="button" data-tab="hottest" role="tab">Hottest</button>
         <button class="iw-tab" type="button" data-tab="worst-air" role="tab">Worst air</button>
         <button class="iw-tab" type="button" data-tab="humid" role="tab">Most humid</button>
       </div>
       <ul id="iw-leaderboard-list" class="iw-list"></ul>
-    </aside>
+    </div>
   </div>
 
   <section class="iw-history" aria-label="History charts">
