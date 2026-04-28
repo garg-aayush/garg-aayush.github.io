@@ -674,18 +674,26 @@
     return [xs, mins, maxs, means];
   }
 
-  // Day-level x-axis formatter for 7d / 30d charts. Lets uPlot pick a
-  // sensible tick density (1, 2, 5 days...) and labels them "M/D".
-  function dayAxisConfig(t) {
+  // Day-level x-axis for 7d / 30d charts. Bars are centered at noon IST
+  // (= 06:30 UTC) for each IST day; uPlot's default tick generator places
+  // splits at midnight UTC, which sits ~6.5h to the left of every bar and
+  // produces the visible misalignment. Override `splits` to return our
+  // actual per-bar timestamps instead, and stride them down for 30d so the
+  // labels don't run into each other.
+  function dayAxisConfig(t, days) {
+    const dayTs = (days || [])
+      .map(d => istDateToTs(d.date))
+      .filter(ts => ts != null);
+    // Aim for ~6 labels regardless of range. 7d -> stride 1, 30d -> stride 5.
+    const stride = dayTs.length > 14 ? 5 : 1;
+    const ticks = dayTs.filter((_, i) => i % stride === 0);
     return {
       stroke: t.text,
       grid: { stroke: t.grid, width: 0.5 },
       ticks: { stroke: t.grid, width: 0.5 },
-      space: 55,
-      // Allowed increments in seconds: 1d, 2d, 5d, 7d. uPlot picks the
-      // smallest increment that satisfies `space`.
-      incrs: [86400, 86400 * 2, 86400 * 5, 86400 * 7],
-      values: (u, splits) => splits.map(s => {
+      space: 50,
+      splits: () => ticks,
+      values: (u, sp) => sp.map(s => {
         const d = new Date(s * 1000);
         return (d.getUTCMonth() + 1) + '/' + d.getUTCDate();
       }),
@@ -699,7 +707,7 @@
     return (u, dataMin, dataMax) => [dataMin - X_PAD, dataMax + X_PAD];
   }
 
-  function buildBandOpts(title, color, bandColor, valueFmt, size) {
+  function buildBandOpts(title, color, bandColor, valueFmt, size, days) {
     const t = themeColors();
     const tip = tooltipPlugin((u, idx) => {
       const x = u.data[0][idx];
@@ -724,7 +732,7 @@
       legend: { show: false },
       scales: { x: { time: true, range: paddedXRange() } },
       axes: [
-        dayAxisConfig(t),
+        dayAxisConfig(t, days),
         {
           stroke: t.text,
           grid: { stroke: t.grid, width: 0.5 },
@@ -755,7 +763,7 @@
     const el = chartContainer(containerId);
     if (!el) return;
     destroyChart(slot);
-    const opts = buildBandOpts(title, color, bandColor, valueFmt, chartSize(el));
+    const opts = buildBandOpts(title, color, bandColor, valueFmt, chartSize(el), days);
     charts[slot] = new uPlot(opts, daysToBandData(days, keyMin, keyMax, keyMean), el);
   }
 
@@ -806,7 +814,7 @@
         y: { range: (u, lo, hi) => [0, Math.max(50, hi)] },
       },
       axes: [
-        dayAxisConfig(t),
+        dayAxisConfig(t, days),
         {
           stroke: t.text,
           grid: { stroke: t.grid, width: 0.5 },
@@ -925,6 +933,10 @@
         + '<circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.4" fill="none"/>'
         + '</svg>';
       btn.addEventListener('click', () => {
+        // Close any open marker popups so the overview isn't obscured.
+        cityState.forEach(entry => {
+          if (entry.popup && entry.popup.isOpen()) entry.popup.remove();
+        });
         map.flyTo({ center: this._view.center, zoom: this._view.zoom, speed: 1.4 });
       });
       this._container.appendChild(btn);
