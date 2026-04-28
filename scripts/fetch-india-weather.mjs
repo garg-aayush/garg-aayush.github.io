@@ -11,11 +11,11 @@
 // when its own inputs are malformed.
 //
 // History maintenance: when --history-in <dir> and --history-out <dir> are
-// provided, the script reads the existing per-city history-<id>.json files,
-// appends a new point to points_24h, and (on hourly / 6-hourly boundaries)
-// extends points_7d / points_30d. The chart-friendly AQI value is pulled from
-// Open-Meteo Air Quality so the historical series has a single, backfillable
-// source. WAQI continues to feed the live tile only.
+// provided, the script reads the existing per-city history-<id>.json files and
+// appends a new point to points_24h (used for the 24h chart view). The 7d / 30d
+// chart views are owned by scripts/fetch-india-weather-daily.mjs and are not
+// touched here. The chart-friendly AQI value is pulled from Open-Meteo Air
+// Quality so the historical series has a single, backfillable source.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -33,8 +33,6 @@ const HISTORY_OUT = flags['history-out'] ? pathResolve(process.cwd(), flags['his
 const WAQI_TOKEN = process.env.WAQI_TOKEN || '';
 
 const HOURS_24 = 24;
-const HOURS_7D = 7 * 24;
-const HOURS_30D = 30 * 24;
 
 function parseFlags(argv) {
   const out = {};
@@ -109,7 +107,7 @@ async function fetchOpenMeteo(cities) {
 }
 
 // Single Open-Meteo Air Quality call (multi-coord) returning the most recent
-// hourly US AQI value per city. Used only for the chart history series.
+// hourly US AQI value per city. Used only for the 24h chart history series.
 async function fetchOpenMeteoAqi(cities) {
   const lats = cities.map(c => c.lat).join(',');
   const lons = cities.map(c => c.lon).join(',');
@@ -197,8 +195,6 @@ function emptyHistory(city) {
     generated_at: new Date().toISOString(),
     source: { weather: 'open-meteo', aqi: 'open-meteo-air-quality' },
     points_24h: [],
-    points_7d: [],
-    points_30d: [],
   };
 }
 
@@ -214,8 +210,6 @@ function readHistory(dir, city) {
       generated_at: parsed.generated_at || new Date().toISOString(),
       source: parsed.source || { weather: 'open-meteo', aqi: 'open-meteo-air-quality' },
       points_24h: Array.isArray(parsed.points_24h) ? parsed.points_24h : [],
-      points_7d:  Array.isArray(parsed.points_7d)  ? parsed.points_7d  : [],
-      points_30d: Array.isArray(parsed.points_30d) ? parsed.points_30d : [],
     };
   } catch (err) {
     console.warn('Failed to read existing history for', city.id, ':', err.message, '— starting empty.');
@@ -230,56 +224,13 @@ function trimByCutoff(points, cutoffMs) {
   });
 }
 
-function avg(arr) {
-  const xs = arr.filter(v => v != null && Number.isFinite(v));
-  if (xs.length === 0) return null;
-  return Math.round((xs.reduce((s, v) => s + v, 0) / xs.length) * 10) / 10;
-}
-
-// Append a new point to the rolling 24h list, then maybe extend the 7d / 30d
-// series if enough wall-clock time has elapsed since their last entry.
 function updateHistory(history, point, nowMs) {
-  const cutoff24 = nowMs - HOURS_24  * 3600 * 1000;
-  const cutoff7  = nowMs - HOURS_7D  * 3600 * 1000;
-  const cutoff30 = nowMs - HOURS_30D * 3600 * 1000;
-
+  const cutoff24 = nowMs - HOURS_24 * 3600 * 1000;
   const points_24h = trimByCutoff(history.points_24h, cutoff24).concat([point]);
-
-  let points_7d = trimByCutoff(history.points_7d, cutoff7);
-  const last7 = points_7d[points_7d.length - 1];
-  const last7Ms = last7 ? new Date(last7.t).getTime() : -Infinity;
-  if (nowMs - last7Ms >= 60 * 60 * 1000 - 60 * 1000) { // ~1h elapsed (60s slack)
-    // Average over the most recent hour of 24h points (post-append).
-    const hourCutoff = nowMs - 60 * 60 * 1000;
-    const recentHour = points_24h.filter(p => new Date(p.t).getTime() >= hourCutoff);
-    points_7d = points_7d.concat([{
-      t: new Date(nowMs).toISOString(),
-      temp:     avg(recentHour.map(p => p.temp)),
-      humidity: avg(recentHour.map(p => p.humidity)),
-      aqi:      avg(recentHour.map(p => p.aqi)),
-    }]);
-  }
-
-  let points_30d = trimByCutoff(history.points_30d, cutoff30);
-  const last30 = points_30d[points_30d.length - 1];
-  const last30Ms = last30 ? new Date(last30.t).getTime() : -Infinity;
-  if (nowMs - last30Ms >= 6 * 60 * 60 * 1000 - 60 * 1000) { // ~6h elapsed
-    const sixHourCutoff = nowMs - 6 * 60 * 60 * 1000;
-    const recent6h = points_24h.filter(p => new Date(p.t).getTime() >= sixHourCutoff);
-    points_30d = points_30d.concat([{
-      t: new Date(nowMs).toISOString(),
-      temp:     avg(recent6h.map(p => p.temp)),
-      humidity: avg(recent6h.map(p => p.humidity)),
-      aqi:      avg(recent6h.map(p => p.aqi)),
-    }]);
-  }
-
   return {
     ...history,
     generated_at: new Date(nowMs).toISOString(),
     points_24h,
-    points_7d,
-    points_30d,
   };
 }
 

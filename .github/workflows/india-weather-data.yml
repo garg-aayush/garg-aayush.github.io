@@ -9,7 +9,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: india-weather-data
+  # Shared with india-weather-daily.yml so the 15-min and daily crons cannot
+  # race-clobber each other when force-pushing the orphan `data` branch.
+  group: india-weather-data-publish
   cancel-in-progress: false
 
 jobs:
@@ -61,13 +63,19 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Use a worktree-free orphan branch so the data branch always
-          # contains exactly one commit with weather.json + history-*.json.
+          # contains exactly one commit. Carry forward daily-*.json from the
+          # prior data branch state so we don't blow away the daily cron's
+          # outputs (owned by india-weather-daily.yml).
           git checkout --orphan data-tmp
           git rm -rf --cached . >/dev/null 2>&1 || true
           git add -f weather.json
           if compgen -G "history-out/history-*.json" > /dev/null; then
             cp history-out/history-*.json .
             git add -f history-*.json
+          fi
+          if compgen -G "../data-existing/daily-*.json" > /dev/null; then
+            cp ../data-existing/daily-*.json .
+            git add -f daily-*.json
           fi
           git -c commit.gpgsign=false commit -m "chore(data): update weather.json $(date -u +%FT%TZ)"
           git push --force origin HEAD:data

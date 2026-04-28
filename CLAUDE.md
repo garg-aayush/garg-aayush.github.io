@@ -14,7 +14,10 @@ quarto render posts/    # Render only blog posts
 ## CI/CD
 - Pushes to `master` trigger `.github/workflows/quarto-publish.yml`
 - Workflow runs `quarto render`, then a `sed` step substitutes any `__MAPBOX_TOKEN__` placeholder in `_site/` from the `MAPBOX_TOKEN` repo secret, then publishes `_site/` to `gh-pages` via `quarto-dev/quarto-actions/publish@v2` with `render: false`
-- A separate cron workflow `.github/workflows/india-weather-data.yml` runs every 15 minutes, fetches Open-Meteo + WAQI, and force-pushes a one-commit `weather.json` to an orphan `data` branch. See "Live Data Pages" below.
+- Two cron workflows feed the orphan `data` branch (force-push, single-commit):
+  - `.github/workflows/india-weather-data.yml` runs every 15 minutes (Open-Meteo + WAQI live snapshot + 24h trailing window).
+  - `.github/workflows/india-weather-daily.yml` runs once per day at 02:00 IST and rewrites 30-day per-city daily aggregates from Open-Meteo (forecast API + air-quality API).
+  - Both workflows share the concurrency group `india-weather-data-publish` and each carries forward the other's files when force-pushing, so they cannot race-clobber each other. See "Live Data Pages" below.
 
 ## Architecture
 
@@ -79,26 +82,30 @@ Pages that fetch data refreshed by a cron workflow rather than at build time. Cu
 
 ### Files (India Weather)
 - `india-weather.qmd` — top-level Quarto page; embeds the Mapbox + uPlot CDNs and the page skeleton via raw HTML
-- `static/india-weather/india-weather.js` — client renderer (Mapbox markers, popups, leaderboard, fitBounds, fixture-fallback fetch, uPlot history charts)
+- `static/india-weather/india-weather.js` — client renderer (Mapbox markers, popups, leaderboard, fitBounds, fixture-fallback fetch, uPlot history charts; 24h = line charts, 7d/30d = min/max bands + mean line for temp & humidity, US-AQI category bars for AQI)
 - `static/india-weather/india-weather.css` — page-specific styles, reuses the global CSS variables from `styles.css`
-- `static/india-weather/cities.json` — city config (id, name, lat, lon, bbox); read by both the fetcher and the client
+- `static/india-weather/cities.json` — city config (id, name, lat, lon, bbox); read by both fetchers and the client
 - `static/india-weather/weather.sample.json` — hand-authored fixture used as a fallback when the remote data branch is unreachable
-- `static/india-weather/history-<id>.sample.json` — per-city history fallbacks for ?local dev / data-branch outages
-- `scripts/fetch-india-weather.mjs` — pure-Node ESM fetcher (no deps, uses built-in `fetch` and `AbortController`); also maintains rolling history files when given `--history-in` / `--history-out`
-- `scripts/bootstrap-india-weather-history.mjs` — one-shot 30-day backfill from Open-Meteo + Open-Meteo Air Quality
-- `.github/workflows/india-weather-data.yml` — `*/15` cron + `workflow_dispatch`
-- `.github/workflows/india-weather-bootstrap.yml` — `workflow_dispatch`-only one-shot history bootstrap (gated behind a "yes" confirm input; re-running overwrites cron-built 15-min ticks with hourly archive points)
+- `static/india-weather/history-<id>.sample.json` — per-city 24h fallbacks for ?local dev / data-branch outages
+- `static/india-weather/daily-<id>.sample.json` — per-city 30-day daily-aggregate fallbacks
+- `scripts/fetch-india-weather.mjs` — pure-Node ESM fetcher (no deps, uses built-in `fetch` and `AbortController`); writes the live `weather.json` and a 24h-only rolling `history-<id>.json` per city when given `--history-in` / `--history-out`
+- `scripts/fetch-india-weather-daily.mjs` — pure-Node ESM daily-aggregate fetcher; rewrites the 30-day window from Open-Meteo each run (no incremental append, missed runs self-heal)
+- `.github/workflows/india-weather-data.yml` — `*/15` cron + `workflow_dispatch`; owns `weather.json` and `history-*.json`
+- `.github/workflows/india-weather-daily.yml` — `30 20 * * *` cron (= 02:00 IST) + `workflow_dispatch`; owns `daily-*.json`
 
 ### Architecture
-- The cron checks out `master`, runs the fetcher (which calls Open-Meteo for weather and WAQI for AQI), then publishes the resulting `weather.json` as a single-commit force-push to an orphan `data` branch.
-- The cron also reads the existing `history-<id>.json` files from the `data` branch, appends the latest 15-min tick to `points_24h`, extends `points_7d` (hourly) and `points_30d` (6-hourly) when enough wall-clock time has elapsed, and force-pushes the updated set in the same commit.
-- The published page reads `weather.json` from `https://raw.githubusercontent.com/garg-aayush/garg-aayush.github.io/data/weather.json`. If that fetch fails (404, offline), the JS falls back to the bundled `weather.sample.json` so the page never shows a broken state. Per-city `history-<id>.json` files are loaded the same way (lazy, on city selection).
+- The 15-min cron checks out `master`, runs the fetcher (which calls Open-Meteo for weather and WAQI for AQI), updates the rolling 24h history, then publishes the resulting `weather.json` + `history-*.json` as a single-commit force-push to the orphan `data` branch — preserving the daily cron's `daily-*.json` files when it does so.
+- The daily cron checks out `master`, runs the daily-aggregate fetcher (Open-Meteo Forecast API + Air Quality API with `past_days=30`, `timezone=Asia/Kolkata`), aggregates hourly data into per-IST-day min/max/mean for temp, humidity, and US AQI, and force-pushes the resulting `daily-*.json` files alongside the preserved `weather.json` + `history-*.json`.
+- Both workflows share concurrency group `india-weather-data-publish` so they serialize and never race-clobber the orphan force-push.
+- The published page reads `weather.json`, `history-<id>.json`, and `daily-<id>.json` from `https://raw.githubusercontent.com/garg-aayush/garg-aayush.github.io/data/`. If a fetch fails, the JS falls back to the bundled `*.sample.json` files. Per-city history files are loaded lazily on city/range selection.
 - Visitor count never affects API call volume because all fetching happens server-side on the cron schedule.
 
 ### History data model
-- Each `history-<id>.json` holds three pre-downsampled views: `points_24h` (15-min, last 24h), `points_7d` (hourly, last 7d), `points_30d` (6-hourly, last 30d). Point shape: `{ t: ISO-UTC, temp: °C, humidity: %, aqi: US-AQI }`.
+- `history-<id>.json` holds the 24h trailing window only: `points_24h` at 15-min cadence. Point shape: `{ t: ISO-UTC, temp: °C, humidity: %, aqi: US-AQI }`.
+- `daily-<id>.json` holds the last 30 complete IST days as `days: [...]`. Each entry: `{ date: "YYYY-MM-DD", temp_min, temp_max, temp_mean, humidity_min, humidity_max, humidity_mean, aqi_min, aqi_max, aqi_mean }`. The 7d view slices the last 7 days; 30d uses all 30. The in-progress IST day is excluded.
 - The chart's AQI series uses Open-Meteo Air Quality (US AQI scale) because WAQI's historical endpoint is paywalled even with a token. The live tile / leaderboard still shows WAQI's CPCB-station reading. The two AQI numbers are on different scales and will not match exactly; this is documented inline on the page.
-- Bootstrap is a one-time-after-merge step: trigger `India Weather History Bootstrap` from the Actions tab with input `confirm: yes`. It backfills 30 days of hourly weather + US AQI from Open-Meteo into the `data` branch alongside `weather.json`. Re-running it discards any 15-min cadence ticks that the cron has accumulated since.
+- 7d / 30d AQI bars are colored by the day's mean US AQI on the standard EPA category scale (Good / Moderate / USG / Unhealthy / Very Unhealthy / Hazardous). Temp and humidity for those views render as a min/max band with a daily-mean line on top.
+- No bootstrap workflow is required: each daily cron run rebuilds the entire 30-day window from Open-Meteo, so missed runs self-heal automatically.
 
 ### Token handling
 - **No tokens in source, ever.** Both `MAPBOX_TOKEN` and `WAQI_TOKEN` live as GitHub repo Secrets.
