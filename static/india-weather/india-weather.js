@@ -10,7 +10,9 @@
   const useLocal = params.has('local');
   const DATA_URLS = useLocal ? [SAMPLE_URL] : [REMOTE_URL, SAMPLE_URL];
 
-  const TOKEN_PLACEHOLDER = '__MAPBOX_TOKEN__';
+  // Build the placeholder string by concatenation so the publish-time sed
+  // (which targets the literal __MAPBOX_TOKEN__) only rewrites RAW_TOKEN below.
+  const TOKEN_PLACEHOLDER = '__' + 'MAPBOX_TOKEN' + '__';
   const RAW_TOKEN = '__MAPBOX_TOKEN__';
   const MAPBOX_TOKEN = (() => {
     try {
