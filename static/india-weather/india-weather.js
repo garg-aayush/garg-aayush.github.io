@@ -280,9 +280,10 @@
   async function fetchCityHistory(cityId, forceFresh) {
     if (inflightHistory.has(cityId) && !forceFresh) return inflightHistory.get(cityId);
     const file = 'history-' + cityId + '.json';
+    const sampleFile = 'history-' + cityId + '.sample.json';
     const candidates = useLocal
-      ? ['/static/india-weather/' + file]
-      : [HISTORY_REMOTE_BASE + file, '/static/india-weather/' + file];
+      ? ['/static/india-weather/' + sampleFile]
+      : [HISTORY_REMOTE_BASE + file, '/static/india-weather/' + sampleFile];
     const promise = (async () => {
       let lastErr = null;
       for (const base of candidates) {
@@ -330,7 +331,7 @@
 
   function chartSize(el) {
     const rect = el.getBoundingClientRect();
-    return { width: Math.max(280, Math.floor(rect.width)), height: 180 };
+    return { width: Math.max(280, Math.floor(rect.width)), height: 200 };
   }
 
   function buildChartOptions(title, color, valueFmt, size) {
