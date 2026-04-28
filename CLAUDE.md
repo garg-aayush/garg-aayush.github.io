@@ -48,7 +48,7 @@ Custom dark theme inspired by Lil'Log. Key colors: background `#1d1e20`, accent 
 - Blog posts use the `blog-posts` branch (see `.claude/rules/blog-workflow.md`)
 - Tools use the `tools` branch (see `.claude/rules/tools-workflow.md`)
 - Other site updates (about page, homepage, config, styles) use descriptive feature branches (e.g., `update-about-intro`)
-- Commit at regular intervals as logical units of work complete -- don't bundle the entire change into one giant commit at the end
+- **Commit each logical change separately.** When a task involves multiple distinct changes (e.g., a navbar rename + new cities + a tooltip plugin + a layout refactor), make a focused commit for each one as it completes -- not one giant commit at the end. Granular commits make progress visible during review and let individual changes be reverted independently if something goes wrong. This applies *within* a single branch/PR too: a single PR can and should contain multiple commits when the change has multiple logical pieces (in that case, use a regular merge, not squash, so the history is preserved -- see "Merge strategy" below)
 - After merging a PR, switch back to `master` and pull
 - **Comparing approaches**: When evaluating multiple design options (e.g., table vs card layout), implement each in a parallel worktree branch, preview all simultaneously on different ports, then ship the chosen one and discard the rest
 
