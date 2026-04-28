@@ -11,6 +11,7 @@ project:
     - posts/*/index.qmd
     - projects.qmd
     - tools/index.qmd
+    - india-weather.qmd
 
 website:
   title: "Aayush Garg"
@@ -35,6 +36,8 @@ website:
         href: projects.qmd
       - text: Tools
         href: tools/
+      - text: India Weather
+        href: india-weather.qmd
       - text: Publications
         href: publications.qmd
       - text: About

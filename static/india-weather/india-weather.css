@@ -1,0 +1,331 @@
+/* India Weather page styles. Reuses CSS vars from styles.css. */
+
+.iw-root {
+  margin-top: 1rem;
+}
+
+.iw-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.iw-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.iw-header .iw-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.iw-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iw-updated {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.iw-refresh {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 120ms, color 120ms;
+}
+
+.iw-refresh:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.iw-refresh:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.iw-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.iw-map-wrap {
+  position: relative;
+  height: 70vh;
+  min-height: 480px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+#iw-map {
+  width: 100%;
+  height: 100%;
+}
+
+.iw-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 1rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.iw-status.iw-hidden {
+  display: none;
+}
+
+.iw-status.iw-error {
+  color: #ff8b8b;
+}
+
+/* Leaderboard */
+.iw-leaderboard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+}
+
+.iw-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+.iw-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.5rem 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.iw-tab:hover {
+  color: var(--text-primary);
+}
+
+.iw-tab.iw-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.iw-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.iw-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 120ms;
+}
+
+.iw-list li:hover {
+  background: var(--bg-tertiary);
+}
+
+.iw-list li:last-child {
+  border-bottom: none;
+}
+
+.iw-list .iw-row-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.iw-list .iw-row-sub {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.iw-list .iw-row-value {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.iw-list .iw-row-value-sub {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Mapbox markers */
+.iw-marker {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  padding: 3px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: transform 120ms, border-color 120ms;
+}
+
+.iw-marker:hover {
+  transform: translateY(-1px);
+  border-color: var(--text-primary);
+}
+
+.iw-marker .iw-marker-temp {
+  color: var(--accent);
+  margin-left: 4px;
+}
+
+/* Mapbox popup overrides for dark theme */
+.mapboxgl-popup-content {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 0.9rem !important;
+  font-family: inherit;
+  min-width: 220px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5) !important;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: var(--border-color) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+  border-bottom-color: var(--bg-secondary) !important;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+  border-top-color: var(--bg-secondary) !important;
+}
+
+.mapboxgl-popup-close-button {
+  color: var(--text-muted) !important;
+  font-size: 1.25rem !important;
+  padding: 0 6px !important;
+}
+
+.mapboxgl-popup-close-button:hover {
+  color: var(--text-primary) !important;
+  background: transparent !important;
+}
+
+.mapboxgl-ctrl-attrib,
+.mapboxgl-ctrl-attrib a {
+  background: rgba(46, 46, 51, 0.7) !important;
+  color: var(--text-muted) !important;
+}
+
+/* Popup card content */
+.iw-popup-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.iw-popup-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: 0.85rem;
+}
+
+.iw-popup-grid dt {
+  color: var(--text-muted);
+}
+
+.iw-popup-grid dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.iw-popup-aqi {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: #111;
+}
+
+.iw-popup-aqi-label {
+  margin-left: 6px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+/* CPCB AQI band colors */
+.iw-aqi-good        { background: #9CC93C; }
+.iw-aqi-satisfactory{ background: #A3C853; color: #111; }
+.iw-aqi-moderate    { background: #FFD500; color: #111; }
+.iw-aqi-poor        { background: #FF9933; color: #111; }
+.iw-aqi-very-poor   { background: #FF3333; color: #fff; }
+.iw-aqi-severe      { background: #800026; color: #fff; }
+.iw-aqi-unknown     { background: var(--bg-tertiary); color: var(--text-muted); }
+
+/* Mobile */
+@media (max-width: 900px) {
+  .iw-grid {
+    grid-template-columns: 1fr;
+  }
+  .iw-map-wrap {
+    height: 55vh;
+    min-height: 360px;
+  }
+  .iw-leaderboard {
+    min-height: 0;
+  }
+}
