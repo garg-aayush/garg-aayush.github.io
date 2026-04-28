@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.">
+<meta name="description" content="Live temperature, humidity, and air quality across India’s major metropolitan cities. Refreshed every ~15 minutes.">
 
-<title>India Weather – Aayush Garg</title>
+<title>How’s the weather across India right now? – Aayush Garg</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -43,7 +43,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-27f44f2d0b0bec8f5a72a112d3ce600e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-6236982f4696cae5d8d0163236aebb5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,11 +87,11 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="India Weather – Aayush Garg">
-<meta property="og:description" content="Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.">
+<meta property="og:title" content="How’s the weather across India right now? – Aayush Garg">
+<meta property="og:description" content="Live temperature, humidity, and air quality across India’s major metropolitan cities. Refreshed every ~15 minutes.">
 <meta property="og:site_name" content="Aayush Garg">
-<meta name="twitter:title" content="India Weather – Aayush Garg">
-<meta name="twitter:description" content="Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.">
+<meta name="twitter:title" content="How’s the weather across India right now? – Aayush Garg">
+<meta name="twitter:description" content="Live temperature, humidity, and air quality across India’s major metropolitan cities. Refreshed every ~15 minutes.">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -120,7 +120,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./india-weather.html" aria-current="page"> 
-<span class="menu-text">India Weather</span></a>
+<span class="menu-text">Weather</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./publications.html"> 
@@ -169,12 +169,12 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">India Weather</h1>
+<h1 class="title">How’s the weather across India right now?</h1>
 </div>
 
 <div>
   <div class="description">
-    Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.
+    Live temperature, humidity, and air quality across India’s major metropolitan cities. Refreshed every ~15 minutes.
   </div>
 </div>
 
@@ -192,15 +192,8 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 
 
 <div class="iw-root page-columns page-full">
-  <div class="iw-header">
-    <div>
-      <h2 class="anchored">India · Live Weather &amp; Air Quality</h2>
-      <div class="iw-subtitle">Temperature, humidity, UV, and CPCB-station AQI for 8 metros. Refreshed every 15 min.</div>
-    </div>
-    <div class="iw-controls">
-      <span id="iw-updated" class="iw-updated"></span>
-      <button id="iw-refresh" class="iw-refresh" type="button" aria-label="Refresh">↻ Refresh</button>
-    </div>
+  <div class="iw-meta">
+    <span id="iw-updated" class="iw-updated"></span>
   </div>
 
   <div class="iw-grid page-columns page-full">
@@ -255,7 +248,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
     <div id="iw-history-status" class="iw-history-status"></div>
   </section>
 
-  <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+  <p class="iw-footnote">
     Live tile: weather from <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>,
     AQI from <a href="https://aqicn.org/" rel="noopener">WAQI</a> (CPCB-station average) on the
     <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> band scale.
