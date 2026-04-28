@@ -43,17 +43,22 @@ Posts use YAML frontmatter with: `title`, `tags`, `categories`, `date`, `permali
 ### Theme
 Custom dark theme inspired by Lil'Log. Key colors: background `#1d1e20`, accent `#75A8D9` (cyan). Theme is layered as `[cosmo, theme-dark.scss]` with `styles.css` on top.
 
-## Pull Requests
-- Do **not** include a "Test plan" section in PR descriptions unless explicitly asked
-- PR body should have a `## Summary` with bullet points and the Claude Code footer
-
 ## Branching
-- **Never commit directly to `master`** -- always use a feature branch, create a PR, and merge
+- **Never commit directly to `master`** -- every change to the codebase (new feature, update, fix, refactor, content) goes on a separate branch with a descriptive name, then is merged via PR
 - Blog posts use the `blog-posts` branch (see `.claude/rules/blog-workflow.md`)
 - Tools use the `tools` branch (see `.claude/rules/tools-workflow.md`)
 - Other site updates (about page, homepage, config, styles) use descriptive feature branches (e.g., `update-about-intro`)
+- Commit at regular intervals as logical units of work complete -- don't bundle the entire change into one giant commit at the end
 - After merging a PR, switch back to `master` and pull
 - **Comparing approaches**: When evaluating multiple design options (e.g., table vs card layout), implement each in a parallel worktree branch, preview all simultaneously on different ports, then ship the chosen one and discard the rest
+
+## Pull Requests
+- After all changes are committed and pushed, raise a PR and merge it to `master`
+- Do **not** include a "Test plan" section in PR descriptions unless explicitly asked
+- PR body should have a `## Summary` with bullet points and the Claude Code footer
+- **Merge strategy**:
+  - **Squash merge** (`gh pr merge --squash`) when the change is small / single-purpose -- a typo fix, a one-file tweak, or a few commits that all describe the same logical change
+  - **Regular merge** (preserve commit history) when the PR contains multiple distinct logical changes or a long, meaningful commit history that future readers should be able to navigate. Squashing in that case destroys useful structure.
 
 ## Conventions
 - Blog post dates use `YYYY-MM-DD` prefix format
