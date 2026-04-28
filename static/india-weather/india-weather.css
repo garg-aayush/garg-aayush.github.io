@@ -21,7 +21,7 @@
 
 .iw-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-columns: minmax(0, 1fr) clamp(380px, 30%, 460px);
   gap: 1rem;
   align-items: stretch;
 }
