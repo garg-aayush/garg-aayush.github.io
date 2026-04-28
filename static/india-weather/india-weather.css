@@ -1,78 +1,38 @@
 /* India Weather page styles. Reuses CSS vars from styles.css. */
 
 .iw-root {
-  margin-top: 1rem;
+  margin-top: 0.25rem;
 }
 
-.iw-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.iw-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: var(--text-primary);
-}
-
-.iw-header .iw-subtitle {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.iw-controls {
+.iw-meta {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: flex-end;
+  margin: 0 0 0.75rem;
+  min-height: 1.25rem;
 }
 
 .iw-updated {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
-}
-
-.iw-refresh {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: border-color 120ms, color 120ms;
-}
-
-.iw-refresh:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.iw-refresh:disabled {
-  opacity: 0.6;
-  cursor: progress;
+  letter-spacing: 0.01em;
 }
 
 .iw-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 1rem;
   align-items: stretch;
 }
 
 .iw-map-wrap {
   position: relative;
-  height: calc(100vh - 320px);
-  min-height: 380px;
+  height: calc(100vh - 260px);
+  min-height: 460px;
   max-height: 760px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--bg-secondary);
 }
@@ -109,18 +69,19 @@
 .iw-leaderboard {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 320px);
-  min-height: 380px;
+  height: calc(100vh - 260px);
+  min-height: 460px;
   max-height: 760px;
 }
 
 .iw-tabs {
-  display: flex;
-  gap: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 0.5rem;
 }
@@ -129,11 +90,13 @@
   background: transparent;
   border: none;
   color: var(--text-muted);
-  padding: 0.5rem 0.5rem;
-  font-size: 0.85rem;
+  padding: 0.5rem 0.25rem;
+  font-size: 0.82rem;
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .iw-tab:hover {
@@ -158,7 +121,7 @@
   grid-template-columns: 1fr auto;
   gap: 0.5rem;
   align-items: center;
-  padding: 0.55rem 0.4rem;
+  padding: 0.5rem 0.4rem;
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;
   transition: background 120ms;
@@ -175,25 +138,26 @@
 .iw-list .iw-row-name {
   color: var(--text-primary);
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .iw-list .iw-row-sub {
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   margin-top: 2px;
 }
 
 .iw-list .iw-row-value {
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   text-align: right;
 }
 
 .iw-list .iw-row-value-sub {
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-align: right;
   margin-top: 2px;
 }
@@ -321,7 +285,7 @@
 
 /* History section */
 .iw-history {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border-color);
 }
@@ -338,7 +302,7 @@
 .iw-history-header h3 {
   margin: 0;
   color: var(--text-primary);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
 }
 
 .iw-history-sub {
@@ -425,7 +389,7 @@
   margin: 0;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.75rem;
 }
 
@@ -448,6 +412,7 @@
 .iw-chart {
   width: 100%;
   min-height: 180px;
+  position: relative;
 }
 
 .iw-history-status {
@@ -459,6 +424,85 @@
 
 .iw-history-status.iw-error {
   color: #ff8b8b;
+}
+
+.iw-footnote {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 1.25rem;
+  line-height: 1.55;
+}
+
+/* Floating tooltip on charts */
+.iw-chart-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: var(--bg-tertiary, #2a2b2f);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  z-index: 5;
+  transition: opacity 80ms;
+}
+
+.iw-chart-tooltip.iw-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.iw-chart-tooltip .iw-tt-time {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  margin-bottom: 4px;
+}
+
+.iw-chart-tooltip .iw-tt-row {
+  display: grid;
+  grid-template-columns: 10px auto 1fr;
+  gap: 6px;
+  align-items: center;
+}
+
+.iw-chart-tooltip .iw-tt-row.iw-tt-sub {
+  grid-template-columns: 10px auto 1fr;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}
+
+.iw-chart-tooltip .iw-tt-row.iw-tt-sub .iw-tt-label {
+  grid-column: 2;
+}
+
+.iw-chart-tooltip .iw-tt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.iw-chart-tooltip .iw-tt-label {
+  color: var(--text-secondary);
+}
+
+.iw-chart-tooltip .iw-tt-val {
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-left: 8px;
+}
+
+.iw-chart-tooltip .iw-tt-cat {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 
 /* uPlot dark-theme tweaks */
@@ -486,11 +530,13 @@
     grid-template-columns: 1fr;
   }
   .iw-map-wrap {
-    height: 55vh;
+    height: 60vh;
     min-height: 360px;
   }
   .iw-leaderboard {
+    height: auto;
     min-height: 0;
+    max-height: 420px;
   }
   .iw-charts {
     grid-template-columns: 1fr;

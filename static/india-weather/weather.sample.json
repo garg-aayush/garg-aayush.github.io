@@ -12,12 +12,132 @@
       "aqi": { "value": 187, "band": "Moderate", "dominant_pollutant": "pm25", "station_count": 12 }
     },
     {
+      "id": "gurugram",
+      "name": "Gurugram",
+      "lat": 28.4595,
+      "lon": 77.0266,
+      "weather": { "temperature_c": 40.8, "apparent_c": 43.5, "humidity_pct": 30, "uv_index": 9.0 },
+      "aqi": { "value": 201, "band": "Poor", "dominant_pollutant": "pm25", "station_count": 6 }
+    },
+    {
+      "id": "ghaziabad",
+      "name": "Ghaziabad",
+      "lat": 28.6692,
+      "lon": 77.4538,
+      "weather": { "temperature_c": 41.0, "apparent_c": 43.8, "humidity_pct": 29, "uv_index": 9.0 },
+      "aqi": { "value": 215, "band": "Poor", "dominant_pollutant": "pm25", "station_count": 5 }
+    },
+    {
+      "id": "jaipur",
+      "name": "Jaipur",
+      "lat": 26.9124,
+      "lon": 75.7873,
+      "weather": { "temperature_c": 39.6, "apparent_c": 41.2, "humidity_pct": 24, "uv_index": 9.4 },
+      "aqi": { "value": 142, "band": "Moderate", "dominant_pollutant": "pm10", "station_count": 4 }
+    },
+    {
+      "id": "chandigarh",
+      "name": "Chandigarh",
+      "lat": 30.7333,
+      "lon": 76.7794,
+      "weather": { "temperature_c": 36.4, "apparent_c": 38.0, "humidity_pct": 35, "uv_index": 8.6 },
+      "aqi": { "value": 98, "band": "Satisfactory", "dominant_pollutant": "pm25", "station_count": 3 }
+    },
+    {
+      "id": "lucknow",
+      "name": "Lucknow",
+      "lat": 26.8467,
+      "lon": 80.9462,
+      "weather": { "temperature_c": 39.1, "apparent_c": 42.0, "humidity_pct": 38, "uv_index": 8.9 },
+      "aqi": { "value": 168, "band": "Moderate", "dominant_pollutant": "pm25", "station_count": 5 }
+    },
+    {
+      "id": "kanpur",
+      "name": "Kanpur",
+      "lat": 26.4499,
+      "lon": 80.3319,
+      "weather": { "temperature_c": 39.4, "apparent_c": 42.3, "humidity_pct": 36, "uv_index": 9.0 },
+      "aqi": { "value": 178, "band": "Moderate", "dominant_pollutant": "pm25", "station_count": 4 }
+    },
+    {
+      "id": "patna",
+      "name": "Patna",
+      "lat": 25.5941,
+      "lon": 85.1376,
+      "weather": { "temperature_c": 38.2, "apparent_c": 41.5, "humidity_pct": 47, "uv_index": 8.7 },
+      "aqi": { "value": 152, "band": "Moderate", "dominant_pollutant": "pm25", "station_count": 4 }
+    },
+    {
+      "id": "kolkata",
+      "name": "Kolkata",
+      "lat": 22.5726,
+      "lon": 88.3639,
+      "weather": { "temperature_c": 37.8, "apparent_c": 43.5, "humidity_pct": 64, "uv_index": 8.7 },
+      "aqi": { "value": 158, "band": "Moderate", "dominant_pollutant": "pm25", "station_count": 8 }
+    },
+    {
+      "id": "bhopal",
+      "name": "Bhopal",
+      "lat": 23.2599,
+      "lon": 77.4126,
+      "weather": { "temperature_c": 36.5, "apparent_c": 38.4, "humidity_pct": 32, "uv_index": 9.1 },
+      "aqi": { "value": 84, "band": "Satisfactory", "dominant_pollutant": "pm10", "station_count": 4 }
+    },
+    {
+      "id": "indore",
+      "name": "Indore",
+      "lat": 22.7196,
+      "lon": 75.8577,
+      "weather": { "temperature_c": 35.8, "apparent_c": 37.6, "humidity_pct": 33, "uv_index": 9.2 },
+      "aqi": { "value": 91, "band": "Satisfactory", "dominant_pollutant": "pm10", "station_count": 5 }
+    },
+    {
+      "id": "ahmedabad",
+      "name": "Ahmedabad",
+      "lat": 23.0225,
+      "lon": 72.5714,
+      "weather": { "temperature_c": 42.6, "apparent_c": 44.9, "humidity_pct": 22, "uv_index": 9.6 },
+      "aqi": { "value": 213, "band": "Poor", "dominant_pollutant": "pm10", "station_count": 6 }
+    },
+    {
+      "id": "surat",
+      "name": "Surat",
+      "lat": 21.1702,
+      "lon": 72.8311,
+      "weather": { "temperature_c": 35.2, "apparent_c": 40.8, "humidity_pct": 67, "uv_index": 9.0 },
+      "aqi": { "value": 105, "band": "Moderate", "dominant_pollutant": "pm10", "station_count": 4 }
+    },
+    {
+      "id": "nagpur",
+      "name": "Nagpur",
+      "lat": 21.1458,
+      "lon": 79.0882,
+      "weather": { "temperature_c": 40.5, "apparent_c": 42.8, "humidity_pct": 28, "uv_index": 9.5 },
+      "aqi": { "value": 117, "band": "Moderate", "dominant_pollutant": "pm10", "station_count": 4 }
+    },
+    {
       "id": "mumbai",
       "name": "Mumbai",
       "lat": 19.0760,
       "lon": 72.8777,
       "weather": { "temperature_c": 33.4, "apparent_c": 38.6, "humidity_pct": 78, "uv_index": 8.4 },
       "aqi": { "value": 112, "band": "Moderate", "dominant_pollutant": "pm10", "station_count": 9 }
+    },
+    {
+      "id": "pune",
+      "name": "Pune",
+      "lat": 18.5204,
+      "lon": 73.8567,
+      "weather": { "temperature_c": 36.1, "apparent_c": 38.7, "humidity_pct": 41, "uv_index": 9.2 },
+      "aqi": { "value": 89, "band": "Satisfactory", "dominant_pollutant": "pm25", "station_count": 4 }
+    },
+    {
+      "id": "hyderabad",
+      "name": "Hyderabad",
+      "lat": 17.3850,
+      "lon": 78.4867,
+      "weather": { "temperature_c": 38.5, "apparent_c": 41.0, "humidity_pct": 36, "uv_index": 9.3 },
+      "aqi": { "value": 124, "band": "Moderate", "dominant_pollutant": "pm10", "station_count": 5 }
     },
     {
       "id": "bengaluru",
@@ -36,36 +156,12 @@
       "aqi": { "value": 96, "band": "Satisfactory", "dominant_pollutant": "pm25", "station_count": 6 }
     },
     {
-      "id": "kolkata",
-      "name": "Kolkata",
-      "lat": 22.5726,
-      "lon": 88.3639,
-      "weather": { "temperature_c": 37.8, "apparent_c": 43.5, "humidity_pct": 64, "uv_index": 8.7 },
-      "aqi": { "value": 158, "band": "Moderate", "dominant_pollutant": "pm25", "station_count": 8 }
-    },
-    {
-      "id": "hyderabad",
-      "name": "Hyderabad",
-      "lat": 17.3850,
-      "lon": 78.4867,
-      "weather": { "temperature_c": 38.5, "apparent_c": 41.0, "humidity_pct": 36, "uv_index": 9.3 },
-      "aqi": { "value": 124, "band": "Moderate", "dominant_pollutant": "pm10", "station_count": 5 }
-    },
-    {
-      "id": "pune",
-      "name": "Pune",
-      "lat": 18.5204,
-      "lon": 73.8567,
-      "weather": { "temperature_c": 36.1, "apparent_c": 38.7, "humidity_pct": 41, "uv_index": 9.2 },
-      "aqi": { "value": 89, "band": "Satisfactory", "dominant_pollutant": "pm25", "station_count": 4 }
-    },
-    {
-      "id": "ahmedabad",
-      "name": "Ahmedabad",
-      "lat": 23.0225,
-      "lon": 72.5714,
-      "weather": { "temperature_c": 42.6, "apparent_c": 44.9, "humidity_pct": 22, "uv_index": 9.6 },
-      "aqi": { "value": 213, "band": "Poor", "dominant_pollutant": "pm10", "station_count": 6 }
+      "id": "coimbatore",
+      "name": "Coimbatore",
+      "lat": 11.0168,
+      "lon": 76.9558,
+      "weather": { "temperature_c": 32.4, "apparent_c": 34.9, "humidity_pct": 58, "uv_index": 9.4 },
+      "aqi": { "value": 73, "band": "Satisfactory", "dominant_pollutant": "pm25", "station_count": 3 }
     }
   ]
 }
