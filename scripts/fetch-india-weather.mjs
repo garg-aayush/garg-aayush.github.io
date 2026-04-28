@@ -9,16 +9,45 @@
 // Per-source failures degrade gracefully: a city missing AQI keeps its weather,
 // a global Open-Meteo failure leaves AQI intact. The script exits non-zero only
 // when its own inputs are malformed.
+//
+// History maintenance: when --history-in <dir> and --history-out <dir> are
+// provided, the script reads the existing per-city history-<id>.json files,
+// appends a new point to points_24h, and (on hourly / 6-hourly boundaries)
+// extends points_7d / points_30d. The chart-friendly AQI value is pulled from
+// Open-Meteo Air Quality so the historical series has a single, backfillable
+// source. WAQI continues to feed the live tile only.
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve as pathResolve } from 'node:path';
+import { dirname, resolve as pathResolve, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CITIES_PATH = pathResolve(__dirname, '..', 'static', 'india-weather', 'cities.json');
-const OUT_PATH = pathResolve(process.cwd(), process.argv[2] || './weather.json');
+
+const positional = process.argv.slice(2).filter(a => !a.startsWith('--'));
+const flags = parseFlags(process.argv.slice(2));
+const OUT_PATH = pathResolve(process.cwd(), positional[0] || './weather.json');
+const HISTORY_IN = flags['history-in'] ? pathResolve(process.cwd(), flags['history-in']) : null;
+const HISTORY_OUT = flags['history-out'] ? pathResolve(process.cwd(), flags['history-out']) : null;
 
 const WAQI_TOKEN = process.env.WAQI_TOKEN || '';
+
+const HOURS_24 = 24;
+const HOURS_7D = 7 * 24;
+const HOURS_30D = 30 * 24;
+
+function parseFlags(argv) {
+  const out = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a.startsWith('--')) {
+      const key = a.slice(2);
+      const val = argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[++i] : 'true';
+      out[key] = val;
+    }
+  }
+  return out;
+}
 
 async function safeFetch(url, { retries = 2, timeoutMs = 8000 } = {}) {
   let lastErr;
@@ -61,7 +90,6 @@ async function fetchOpenMeteo(cities) {
     + '&timezone=Asia%2FKolkata';
   try {
     const data = await safeFetch(url);
-    // Multi-coord requests return an array; single returns an object.
     const arr = Array.isArray(data) ? data : [data];
     return cities.map((_, i) => {
       const d = arr[i];
@@ -76,6 +104,38 @@ async function fetchOpenMeteo(cities) {
     });
   } catch (err) {
     console.error('Open-Meteo failed:', err.message);
+    return cities.map(() => null);
+  }
+}
+
+// Single Open-Meteo Air Quality call (multi-coord) returning the most recent
+// hourly US AQI value per city. Used only for the chart history series.
+async function fetchOpenMeteoAqi(cities) {
+  const lats = cities.map(c => c.lat).join(',');
+  const lons = cities.map(c => c.lon).join(',');
+  const url = 'https://air-quality-api.open-meteo.com/v1/air-quality'
+    + '?latitude=' + lats
+    + '&longitude=' + lons
+    + '&hourly=us_aqi'
+    + '&past_hours=2'
+    + '&forecast_hours=0'
+    + '&timezone=GMT';
+  try {
+    const data = await safeFetch(url);
+    const arr = Array.isArray(data) ? data : [data];
+    return cities.map((_, i) => {
+      const d = arr[i];
+      const h = d && d.hourly;
+      if (!h || !Array.isArray(h.us_aqi)) return null;
+      // Last non-null value in the window
+      for (let k = h.us_aqi.length - 1; k >= 0; k--) {
+        const v = h.us_aqi[k];
+        if (v != null && Number.isFinite(v)) return v;
+      }
+      return null;
+    });
+  } catch (err) {
+    console.error('Open-Meteo Air Quality failed:', err.message);
     return cities.map(() => null);
   }
 }
@@ -114,7 +174,6 @@ async function fetchWaqiCity(city) {
       + '?token=' + encodeURIComponent(WAQI_TOKEN);
     const feed = await safeFetch(feedUrl);
     if (feed && feed.status === 'ok' && feed.data) {
-      // WAQI's spelling is "dominentpol".
       dominant = feed.data.dominentpol || null;
     }
   } catch (err) {
@@ -128,6 +187,103 @@ async function fetchWaqiCity(city) {
     station_count: stations.length,
   };
 }
+
+// History helpers ------------------------------------------------------------
+
+function emptyHistory(city) {
+  return {
+    city: city.id,
+    name: city.name,
+    generated_at: new Date().toISOString(),
+    source: { weather: 'open-meteo', aqi: 'open-meteo-air-quality' },
+    points_24h: [],
+    points_7d: [],
+    points_30d: [],
+  };
+}
+
+function readHistory(dir, city) {
+  if (!dir) return emptyHistory(city);
+  const path = join(dir, 'history-' + city.id + '.json');
+  if (!existsSync(path)) return emptyHistory(city);
+  try {
+    const parsed = JSON.parse(readFileSync(path, 'utf8'));
+    return {
+      city: city.id,
+      name: city.name,
+      generated_at: parsed.generated_at || new Date().toISOString(),
+      source: parsed.source || { weather: 'open-meteo', aqi: 'open-meteo-air-quality' },
+      points_24h: Array.isArray(parsed.points_24h) ? parsed.points_24h : [],
+      points_7d:  Array.isArray(parsed.points_7d)  ? parsed.points_7d  : [],
+      points_30d: Array.isArray(parsed.points_30d) ? parsed.points_30d : [],
+    };
+  } catch (err) {
+    console.warn('Failed to read existing history for', city.id, ':', err.message, '— starting empty.');
+    return emptyHistory(city);
+  }
+}
+
+function trimByCutoff(points, cutoffMs) {
+  return points.filter(p => {
+    const ms = new Date(p.t).getTime();
+    return Number.isFinite(ms) && ms >= cutoffMs;
+  });
+}
+
+function avg(arr) {
+  const xs = arr.filter(v => v != null && Number.isFinite(v));
+  if (xs.length === 0) return null;
+  return Math.round((xs.reduce((s, v) => s + v, 0) / xs.length) * 10) / 10;
+}
+
+// Append a new point to the rolling 24h list, then maybe extend the 7d / 30d
+// series if enough wall-clock time has elapsed since their last entry.
+function updateHistory(history, point, nowMs) {
+  const cutoff24 = nowMs - HOURS_24  * 3600 * 1000;
+  const cutoff7  = nowMs - HOURS_7D  * 3600 * 1000;
+  const cutoff30 = nowMs - HOURS_30D * 3600 * 1000;
+
+  const points_24h = trimByCutoff(history.points_24h, cutoff24).concat([point]);
+
+  let points_7d = trimByCutoff(history.points_7d, cutoff7);
+  const last7 = points_7d[points_7d.length - 1];
+  const last7Ms = last7 ? new Date(last7.t).getTime() : -Infinity;
+  if (nowMs - last7Ms >= 60 * 60 * 1000 - 60 * 1000) { // ~1h elapsed (60s slack)
+    // Average over the most recent hour of 24h points (post-append).
+    const hourCutoff = nowMs - 60 * 60 * 1000;
+    const recentHour = points_24h.filter(p => new Date(p.t).getTime() >= hourCutoff);
+    points_7d = points_7d.concat([{
+      t: new Date(nowMs).toISOString(),
+      temp:     avg(recentHour.map(p => p.temp)),
+      humidity: avg(recentHour.map(p => p.humidity)),
+      aqi:      avg(recentHour.map(p => p.aqi)),
+    }]);
+  }
+
+  let points_30d = trimByCutoff(history.points_30d, cutoff30);
+  const last30 = points_30d[points_30d.length - 1];
+  const last30Ms = last30 ? new Date(last30.t).getTime() : -Infinity;
+  if (nowMs - last30Ms >= 6 * 60 * 60 * 1000 - 60 * 1000) { // ~6h elapsed
+    const sixHourCutoff = nowMs - 6 * 60 * 60 * 1000;
+    const recent6h = points_24h.filter(p => new Date(p.t).getTime() >= sixHourCutoff);
+    points_30d = points_30d.concat([{
+      t: new Date(nowMs).toISOString(),
+      temp:     avg(recent6h.map(p => p.temp)),
+      humidity: avg(recent6h.map(p => p.humidity)),
+      aqi:      avg(recent6h.map(p => p.aqi)),
+    }]);
+  }
+
+  return {
+    ...history,
+    generated_at: new Date(nowMs).toISOString(),
+    points_24h,
+    points_7d,
+    points_30d,
+  };
+}
+
+// --------------------------------------------------------------------------
 
 async function main() {
   let cities;
@@ -147,6 +303,7 @@ async function main() {
   }
 
   const weatherList = await fetchOpenMeteo(cities);
+  const omAqiList = HISTORY_OUT ? await fetchOpenMeteoAqi(cities) : cities.map(() => null);
 
   const results = [];
   for (let i = 0; i < cities.length; i++) {
@@ -171,6 +328,27 @@ async function main() {
 
   writeFileSync(OUT_PATH, JSON.stringify(out, null, 2) + '\n');
   console.log('Wrote', OUT_PATH);
+
+  if (HISTORY_OUT) {
+    mkdirSync(HISTORY_OUT, { recursive: true });
+    const nowMs = Date.now();
+    for (let i = 0; i < cities.length; i++) {
+      const city = cities[i];
+      const w = weatherList[i];
+      const point = {
+        t: new Date(nowMs).toISOString(),
+        temp: w && w.temperature_c != null ? w.temperature_c : null,
+        humidity: w && w.humidity_pct != null ? w.humidity_pct : null,
+        aqi: omAqiList[i],
+      };
+      const prior = readHistory(HISTORY_IN, city);
+      const next = updateHistory(prior, point, nowMs);
+      const path = join(HISTORY_OUT, 'history-' + city.id + '.json');
+      writeFileSync(path, JSON.stringify(next) + '\n');
+    }
+    console.log('Updated history files in', HISTORY_OUT);
+  }
+
   const summary = results.map(c => {
     const t = c.weather && c.weather.temperature_c != null ? c.weather.temperature_c.toFixed(1) + '°' : 'n/a';
     const a = c.aqi && c.aqi.value != null ? c.aqi.value : 'n/a';

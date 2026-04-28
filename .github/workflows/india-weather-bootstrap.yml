@@ -1,0 +1,83 @@
+name: India Weather History Bootstrap
+
+# One-shot workflow that backfills 30 days of per-city history files
+# (history-<id>.json) onto the `data` branch, alongside the existing
+# weather.json maintained by india-weather-data.yml.
+#
+# Re-running this is destructive: the existing 15-min cadence ticks for the
+# last 24h get replaced with hourly Open-Meteo archive points. Hence the
+# explicit "yes" confirmation input below.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "yes" to confirm. Re-running overwrites cron-built 15-min ticks with hourly archive points.'
+        required: true
+        default: 'no'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: india-weather-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Guard confirmation input
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "yes" ]; then
+            echo "::error::confirm input must be 'yes' (got '${{ github.event.inputs.confirm }}')"
+            exit 1
+          fi
+
+      - name: Checkout master sources
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          path: src
+
+      - name: Checkout existing data branch (if any)
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: data
+          path: data-existing
+
+      - name: Build per-city history files
+        working-directory: src
+        run: node scripts/bootstrap-india-weather-history.mjs ./history
+
+      - name: Stage history alongside existing weather.json
+        run: |
+          set -euo pipefail
+          mkdir -p stage
+          cp src/history/history-*.json stage/
+          if [ -f data-existing/weather.json ]; then
+            cp data-existing/weather.json stage/weather.json
+            echo "Preserved existing weather.json from data branch."
+          else
+            echo "No existing weather.json on data branch; bootstrap will publish history only."
+          fi
+          ls -la stage/
+
+      - name: Force-push to data branch
+        working-directory: src
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout --orphan data-tmp
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          cp ../stage/* .
+          git add -f history-*.json
+          if [ -f weather.json ]; then
+            git add -f weather.json
+          fi
+          git -c commit.gpgsign=false commit -m "chore(data): bootstrap 30d history $(date -u +%FT%TZ)"
+          git push --force origin HEAD:data

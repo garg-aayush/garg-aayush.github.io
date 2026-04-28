@@ -5,6 +5,7 @@
 
   const SAMPLE_URL = '/static/india-weather/weather.sample.json';
   const REMOTE_URL = 'https://raw.githubusercontent.com/garg-aayush/garg-aayush.github.io/data/weather.json';
+  const HISTORY_REMOTE_BASE = 'https://raw.githubusercontent.com/garg-aayush/garg-aayush.github.io/data/';
 
   const params = new URLSearchParams(location.search);
   const useLocal = params.has('local');
@@ -27,11 +28,20 @@
   const elRefresh = document.getElementById('iw-refresh');
   const elList = document.getElementById('iw-leaderboard-list');
   const elTabs = document.querySelectorAll('.iw-tab');
+  const elHistoryCity = document.getElementById('iw-history-city');
+  const elHistoryStatus = document.getElementById('iw-history-status');
+  const elRangeBtns = document.querySelectorAll('.iw-range-btn');
 
   let map = null;
   let lastData = null;
   const cityState = new Map();
   let activeTab = 'hottest';
+
+  let activeRange = '24h';
+  let activeHistoryCity = null;
+  const historyCache = new Map(); // cityId -> { points_24h, points_7d, points_30d, generated_at }
+  const inflightHistory = new Map(); // cityId -> Promise
+  const charts = { aqi: null, temp: null, humidity: null };
 
   function setStatus(msg, isError) {
     if (!elStatus) return;
@@ -164,6 +174,7 @@
     if (entry.popup && !entry.popup.isOpen()) {
       entry.marker.togglePopup();
     }
+    selectHistoryCity(id);
   }
 
   function ensureMarkers(data) {
@@ -211,6 +222,193 @@
     if (map) ensureMarkers(data);
     renderLeaderboard(data.cities);
     renderUpdated(data);
+    populateHistoryCityPicker(data.cities);
+  }
+
+  // History ------------------------------------------------------------------
+
+  function setHistoryStatus(msg, isError) {
+    if (!elHistoryStatus) return;
+    elHistoryStatus.textContent = msg || '';
+    elHistoryStatus.classList.toggle('iw-error', !!isError);
+  }
+
+  function populateHistoryCityPicker(cities) {
+    if (!elHistoryCity) return;
+    if (elHistoryCity.options.length === cities.length) return; // built once
+    const sorted = cities.slice().sort((a, b) => a.name.localeCompare(b.name));
+    elHistoryCity.innerHTML = sorted
+      .map(c => '<option value="' + c.id + '">' + c.name + '</option>')
+      .join('');
+    if (!activeHistoryCity) {
+      activeHistoryCity = sorted[0].id;
+      elHistoryCity.value = activeHistoryCity;
+      loadAndRenderHistory(activeHistoryCity);
+    }
+  }
+
+  function selectHistoryCity(id) {
+    if (!id || id === activeHistoryCity) return;
+    activeHistoryCity = id;
+    if (elHistoryCity) elHistoryCity.value = id;
+    loadAndRenderHistory(id);
+  }
+
+  async function loadAndRenderHistory(cityId, forceFresh) {
+    if (!cityId) return;
+    if (!forceFresh && historyCache.has(cityId)) {
+      renderCharts(historyCache.get(cityId));
+      return;
+    }
+    setHistoryStatus('Loading history…');
+    try {
+      const data = await fetchCityHistory(cityId, forceFresh);
+      historyCache.set(cityId, data);
+      if (cityId === activeHistoryCity) {
+        renderCharts(data);
+        setHistoryStatus('');
+      }
+    } catch (err) {
+      console.warn('History load failed for', cityId, err);
+      if (cityId === activeHistoryCity) {
+        setHistoryStatus('Could not load history for this city.', true);
+        clearCharts();
+      }
+    }
+  }
+
+  async function fetchCityHistory(cityId, forceFresh) {
+    if (inflightHistory.has(cityId) && !forceFresh) return inflightHistory.get(cityId);
+    const file = 'history-' + cityId + '.json';
+    const sampleFile = 'history-' + cityId + '.sample.json';
+    const candidates = useLocal
+      ? ['/static/india-weather/' + sampleFile]
+      : [HISTORY_REMOTE_BASE + file, '/static/india-weather/' + sampleFile];
+    const promise = (async () => {
+      let lastErr = null;
+      for (const base of candidates) {
+        const url = forceFresh ? base + '?t=' + Date.now() : base;
+        try {
+          const r = await fetch(url, forceFresh ? { cache: 'no-store' } : {});
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return await r.json();
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error('no sources');
+    })();
+    inflightHistory.set(cityId, promise);
+    try {
+      return await promise;
+    } finally {
+      inflightHistory.delete(cityId);
+    }
+  }
+
+  function pickSeries(history, range) {
+    if (range === '7d')  return history.points_7d  || [];
+    if (range === '30d') return history.points_30d || [];
+    return history.points_24h || [];
+  }
+
+  function toUplotData(points, key) {
+    const xs = [];
+    const ys = [];
+    for (const p of points) {
+      const ms = new Date(p.t).getTime();
+      if (!Number.isFinite(ms)) continue;
+      const v = p[key];
+      xs.push(Math.floor(ms / 1000));
+      ys.push(v == null || !Number.isFinite(v) ? null : v);
+    }
+    return [xs, ys];
+  }
+
+  function chartContainer(id) {
+    return document.getElementById(id);
+  }
+
+  function chartSize(el) {
+    const rect = el.getBoundingClientRect();
+    return { width: Math.max(280, Math.floor(rect.width)), height: 200 };
+  }
+
+  function buildChartOptions(title, color, valueFmt, size) {
+    const css = getComputedStyle(document.documentElement);
+    const text = (css.getPropertyValue('--text-muted') || '#9aa0a6').trim();
+    const grid = (css.getPropertyValue('--border-color') || '#2e2e33').trim();
+    return {
+      width: size.width,
+      height: size.height,
+      cursor: { drag: { x: false, y: false } },
+      legend: { show: false },
+      scales: { x: { time: true } },
+      axes: [
+        {
+          stroke: text,
+          grid: { stroke: grid, width: 0.5 },
+          ticks: { stroke: grid, width: 0.5 },
+        },
+        {
+          stroke: text,
+          grid: { stroke: grid, width: 0.5 },
+          ticks: { stroke: grid, width: 0.5 },
+          values: (u, splits) => splits.map(v => valueFmt(v)),
+        },
+      ],
+      series: [
+        {},
+        {
+          label: title,
+          stroke: color,
+          width: 1.6,
+          points: { show: false },
+          spanGaps: false,
+          value: (u, v) => (v == null ? '—' : valueFmt(v)),
+        },
+      ],
+    };
+  }
+
+  function ensureChart(slot, containerId, title, color, valueFmt) {
+    const el = chartContainer(containerId);
+    if (!el) return null;
+    const size = chartSize(el);
+    if (charts[slot]) {
+      charts[slot].setSize(size);
+      return charts[slot];
+    }
+    const opts = buildChartOptions(title, color, valueFmt, size);
+    charts[slot] = new uPlot(opts, [[], []], el);
+    return charts[slot];
+  }
+
+  function clearCharts() {
+    for (const k of Object.keys(charts)) {
+      if (charts[k]) charts[k].setData([[], []]);
+    }
+  }
+
+  function renderCharts(history) {
+    if (typeof uPlot === 'undefined') return;
+    const points = pickSeries(history, activeRange);
+    const aqi = ensureChart('aqi', 'iw-chart-aqi', 'AQI', '#75A8D9', v => Math.round(v));
+    const temp = ensureChart('temp', 'iw-chart-temp', 'Temp', '#E8A87C', v => v.toFixed(1) + '°');
+    const hum = ensureChart('humidity', 'iw-chart-humidity', 'Humidity', '#7CC4A1', v => Math.round(v) + '%');
+    if (aqi)  aqi.setData(toUplotData(points, 'aqi'));
+    if (temp) temp.setData(toUplotData(points, 'temp'));
+    if (hum)  hum.setData(toUplotData(points, 'humidity'));
+  }
+
+  function resizeCharts() {
+    for (const slot of Object.keys(charts)) {
+      const c = charts[slot];
+      if (!c) continue;
+      const id = 'iw-chart-' + slot;
+      const el = chartContainer(id);
+      if (el) c.setSize(chartSize(el));
+    }
   }
 
   async function loadData(forceFresh) {
@@ -281,8 +479,30 @@
       });
     });
     if (elRefresh) {
-      elRefresh.addEventListener('click', () => loadData(true));
+      elRefresh.addEventListener('click', () => {
+        loadData(true);
+        if (activeHistoryCity) loadAndRenderHistory(activeHistoryCity, true);
+      });
     }
+    if (elHistoryCity) {
+      elHistoryCity.addEventListener('change', () => {
+        selectHistoryCity(elHistoryCity.value);
+      });
+    }
+    elRangeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        elRangeBtns.forEach(b => b.classList.toggle('iw-active', b === btn));
+        activeRange = btn.dataset.range;
+        if (activeHistoryCity && historyCache.has(activeHistoryCity)) {
+          renderCharts(historyCache.get(activeHistoryCity));
+        }
+      });
+    });
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resizeCharts, 150);
+    });
     setInterval(() => {
       if (lastData) renderUpdated(lastData);
     }, 60000);

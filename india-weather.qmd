@@ -7,10 +7,12 @@ sidebar: false
 include-in-header:
   - text: |
       <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.min.css" rel="stylesheet">
       <link rel="stylesheet" href="/static/india-weather/india-weather.css">
 include-after-body:
   - text: |
       <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.iife.min.js"></script>
       <script src="/static/india-weather/india-weather.js"></script>
 ---
 
@@ -43,10 +45,48 @@ include-after-body:
     </aside>
   </div>
 
+  <section class="iw-history" aria-label="History charts">
+    <div class="iw-history-header">
+      <div>
+        <h3>History</h3>
+        <div class="iw-history-sub">Temperature, humidity, and AQI trends. Pick a city and a time range.</div>
+      </div>
+      <div class="iw-history-controls">
+        <label class="iw-city-picker">
+          <span class="iw-sr">City</span>
+          <select id="iw-history-city" aria-label="Select city"></select>
+        </label>
+        <div class="iw-range" role="tablist" aria-label="Time range">
+          <button class="iw-range-btn iw-active" type="button" data-range="24h" role="tab">24h</button>
+          <button class="iw-range-btn" type="button" data-range="7d" role="tab">7d</button>
+          <button class="iw-range-btn" type="button" data-range="30d" role="tab">30d</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="iw-charts">
+      <figure class="iw-chart-card">
+        <figcaption>Air Quality Index <span class="iw-chart-source">(US AQI · Open-Meteo)</span></figcaption>
+        <div id="iw-chart-aqi" class="iw-chart"></div>
+      </figure>
+      <figure class="iw-chart-card">
+        <figcaption>Temperature <span class="iw-chart-source">(°C · Open-Meteo)</span></figcaption>
+        <div id="iw-chart-temp" class="iw-chart"></div>
+      </figure>
+      <figure class="iw-chart-card">
+        <figcaption>Relative humidity <span class="iw-chart-source">(% · Open-Meteo)</span></figcaption>
+        <div id="iw-chart-humidity" class="iw-chart"></div>
+      </figure>
+    </div>
+    <div id="iw-history-status" class="iw-history-status"></div>
+  </section>
+
   <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
-    Weather: <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>.
-    Air quality: <a href="https://aqicn.org/" rel="noopener">WAQI</a> (averaged across CPCB stations within each city).
-    AQI uses the <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> scale.
+    Live tile: weather from <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>,
+    AQI from <a href="https://aqicn.org/" rel="noopener">WAQI</a> (CPCB-station average) on the
+    <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> band scale.
+    History charts use Open-Meteo for both weather and US AQI; the chart's AQI scale is therefore
+    different from the live tile. Data refreshes every 15 minutes.
   </p>
 </div>
 ```
