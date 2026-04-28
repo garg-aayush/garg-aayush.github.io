@@ -34,6 +34,9 @@
   const elHistoryStatus = document.getElementById('iw-history-status');
   const elRangeBtns = document.querySelectorAll('.iw-range-btn');
 
+  // Default camera, also used by the reset-view control to fly back home.
+  const HOME_VIEW = { center: [80.0, 22.5], zoom: 3.8 };
+
   let map = null;
   let lastData = null;
   const cityState = new Map();
@@ -671,18 +674,26 @@
     return [xs, mins, maxs, means];
   }
 
-  // Day-level x-axis formatter for 7d / 30d charts. Lets uPlot pick a
-  // sensible tick density (1, 2, 5 days...) and labels them "M/D".
-  function dayAxisConfig(t) {
+  // Day-level x-axis for 7d / 30d charts. Bars are centered at noon IST
+  // (= 06:30 UTC) for each IST day; uPlot's default tick generator places
+  // splits at midnight UTC, which sits ~6.5h to the left of every bar and
+  // produces the visible misalignment. Override `splits` to return our
+  // actual per-bar timestamps instead, and stride them down for 30d so the
+  // labels don't run into each other.
+  function dayAxisConfig(t, days) {
+    const dayTs = (days || [])
+      .map(d => istDateToTs(d.date))
+      .filter(ts => ts != null);
+    // Aim for ~6 labels regardless of range. 7d -> stride 1, 30d -> stride 5.
+    const stride = dayTs.length > 14 ? 5 : 1;
+    const ticks = dayTs.filter((_, i) => i % stride === 0);
     return {
       stroke: t.text,
       grid: { stroke: t.grid, width: 0.5 },
       ticks: { stroke: t.grid, width: 0.5 },
-      space: 55,
-      // Allowed increments in seconds: 1d, 2d, 5d, 7d. uPlot picks the
-      // smallest increment that satisfies `space`.
-      incrs: [86400, 86400 * 2, 86400 * 5, 86400 * 7],
-      values: (u, splits) => splits.map(s => {
+      space: 50,
+      splits: () => ticks,
+      values: (u, sp) => sp.map(s => {
         const d = new Date(s * 1000);
         return (d.getUTCMonth() + 1) + '/' + d.getUTCDate();
       }),
@@ -696,7 +707,7 @@
     return (u, dataMin, dataMax) => [dataMin - X_PAD, dataMax + X_PAD];
   }
 
-  function buildBandOpts(title, color, bandColor, valueFmt, size) {
+  function buildBandOpts(title, color, bandColor, valueFmt, size, days) {
     const t = themeColors();
     const tip = tooltipPlugin((u, idx) => {
       const x = u.data[0][idx];
@@ -721,7 +732,7 @@
       legend: { show: false },
       scales: { x: { time: true, range: paddedXRange() } },
       axes: [
-        dayAxisConfig(t),
+        dayAxisConfig(t, days),
         {
           stroke: t.text,
           grid: { stroke: t.grid, width: 0.5 },
@@ -752,7 +763,7 @@
     const el = chartContainer(containerId);
     if (!el) return;
     destroyChart(slot);
-    const opts = buildBandOpts(title, color, bandColor, valueFmt, chartSize(el));
+    const opts = buildBandOpts(title, color, bandColor, valueFmt, chartSize(el), days);
     charts[slot] = new uPlot(opts, daysToBandData(days, keyMin, keyMax, keyMean), el);
   }
 
@@ -803,7 +814,7 @@
         y: { range: (u, lo, hi) => [0, Math.max(50, hi)] },
       },
       axes: [
-        dayAxisConfig(t),
+        dayAxisConfig(t, days),
         {
           stroke: t.text,
           grid: { stroke: t.grid, width: 0.5 },
@@ -901,6 +912,44 @@
     setStatus('Could not load weather data. Try reloading the page.', true);
   }
 
+  // Custom Mapbox control: a single button that flies the camera back to
+  // HOME_VIEW. Sits in the top-right stack just below the +/- zoom controls.
+  class ResetViewControl {
+    constructor(view) { this._view = view; }
+    onAdd(map) {
+      this._map = map;
+      this._container = document.createElement('div');
+      this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group iw-reset-ctrl';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'iw-reset-btn';
+      btn.title = 'Reset view';
+      btn.setAttribute('aria-label', 'Reset map view');
+      btn.innerHTML =
+        '<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">'
+        + '<circle cx="10" cy="10" r="2.2" fill="currentColor"/>'
+        + '<path d="M10 1.5v3M10 15.5v3M1.5 10h3M15.5 10h3" '
+        +   'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>'
+        + '<circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.4" fill="none"/>'
+        + '</svg>';
+      btn.addEventListener('click', () => {
+        // Close any open marker popups so the overview isn't obscured.
+        cityState.forEach(entry => {
+          if (entry.popup && entry.popup.isOpen()) entry.popup.remove();
+        });
+        map.flyTo({ center: this._view.center, zoom: this._view.zoom, speed: 1.4 });
+      });
+      this._container.appendChild(btn);
+      return this._container;
+    }
+    onRemove() {
+      if (this._container && this._container.parentNode) {
+        this._container.parentNode.removeChild(this._container);
+      }
+      this._map = null;
+    }
+  }
+
   function initMap() {
     if (typeof mapboxgl === 'undefined') {
       setStatus('Mapbox failed to load.', true);
@@ -920,13 +969,14 @@
       map = new mapboxgl.Map({
         container: 'iw-map',
         style: 'mapbox://styles/mapbox/dark-v11',
-        center: [80.0, 22.5],
-        zoom: 3.8,
-        minZoom: 3.8,
+        center: HOME_VIEW.center,
+        zoom: HOME_VIEW.zoom,
+        minZoom: HOME_VIEW.zoom,
         maxBounds: [[67, 5.5], [98, 37.5]],
         attributionControl: true,
       });
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(new ResetViewControl(HOME_VIEW), 'top-right');
       map.on('load', () => {
         setStatus(null);
         if (lastData) ensureMarkers(lastData);
