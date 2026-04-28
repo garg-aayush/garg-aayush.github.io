@@ -358,14 +358,6 @@
     let tip = null;
     let over = null;
 
-    function clampX(x, w, parentW) {
-      const pad = 12;
-      const half = w / 2;
-      if (x - half < pad) return pad;
-      if (x + half > parentW - pad) return parentW - pad - w;
-      return x - half;
-    }
-
     return {
       hooks: {
         init: (u) => {
@@ -380,8 +372,8 @@
         },
         setCursor: (u) => {
           if (!tip) return;
-          const { idx, left, top } = u.cursor;
-          if (idx == null || left < 0 || top < 0) {
+          const { idx, left } = u.cursor;
+          if (idx == null || left < 0) {
             tip.classList.add('iw-hidden');
             return;
           }
@@ -393,14 +385,15 @@
           tip.innerHTML = html;
           tip.classList.remove('iw-hidden');
 
-          // Position above the cursor; flip below if it would clip the top.
+          // Pin to top of plot and flip to the opposite horizontal half from
+          // the cursor, so the tooltip never covers the point being inspected.
           const parentW = u.over.clientWidth;
-          const parentH = u.over.clientHeight;
           const w = tip.offsetWidth;
-          const h = tip.offsetHeight;
-          const x = clampX(left, w, parentW);
-          let y = top - h - 12;
-          if (y < 4) y = Math.min(top + 16, parentH - h - 4);
+          const pad = 6;
+          const x = (left < parentW / 2)
+            ? Math.max(pad, parentW - w - pad)
+            : pad;
+          const y = pad;
           tip.style.transform = 'translate(' + x + 'px,' + y + 'px)';
         },
         destroy: () => {
