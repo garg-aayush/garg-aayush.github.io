@@ -1,5 +1,8 @@
 // India Weather: client-side renderer.
-// Data is fetched from a JSON file refreshed every ~15 minutes by a GitHub Actions cron.
+// Live tile data is fetched from weather.json (refreshed every 15 minutes).
+// 24h history comes from history-<id>.json (15-min cadence).
+// 7d / 30d history comes from daily-<id>.json (one entry per IST day with
+// min/max/mean for temp, humidity, and US AQI).
 (function () {
   'use strict';
 
@@ -39,9 +42,34 @@
 
   let activeRange = '24h';
   let activeHistoryCity = null;
-  const historyCache = new Map(); // cityId -> { points_24h, points_7d, points_30d, generated_at }
-  const inflightHistory = new Map(); // cityId -> Promise
+  // Hourly history (24h view) and daily aggregates (7d / 30d) are fetched
+  // and cached independently so switching ranges doesn't refetch.
+  const hourlyCache = new Map();   // cityId -> { points_24h, ... }
+  const dailyCache = new Map();    // cityId -> { days: [...] }
+  const inflightHourly = new Map();
+  const inflightDaily = new Map();
   const charts = { aqi: null, temp: null, humidity: null };
+
+  // US AQI category breakpoints (Open-Meteo Air Quality is on the US AQI
+  // scale, not CPCB; the live tile uses CPCB and is shown separately).
+  const US_AQI_CATEGORIES = [
+    { max: 50,  name: 'Good',                         fill: '#00E400', text: '#111' },
+    { max: 100, name: 'Moderate',                     fill: '#FFFF00', text: '#111' },
+    { max: 150, name: 'Unhealthy for sensitive grps', fill: '#FF7E00', text: '#111' },
+    { max: 200, name: 'Unhealthy',                    fill: '#FF0000', text: '#fff' },
+    { max: 300, name: 'Very unhealthy',               fill: '#8F3F97', text: '#fff' },
+    { max: Infinity, name: 'Hazardous',               fill: '#7E0023', text: '#fff' },
+  ];
+
+  function aqiCategory(value) {
+    if (value == null || !Number.isFinite(value)) {
+      return { name: 'No data', fill: 'rgba(255,255,255,0.18)', text: '#9aa0a6' };
+    }
+    for (const c of US_AQI_CATEGORIES) {
+      if (value <= c.max) return c;
+    }
+    return US_AQI_CATEGORIES[US_AQI_CATEGORIES.length - 1];
+  }
 
   function setStatus(msg, isError) {
     if (!elStatus) return;
@@ -254,36 +282,33 @@
     loadAndRenderHistory(id);
   }
 
-  async function loadAndRenderHistory(cityId, forceFresh) {
-    if (!cityId) return;
-    if (!forceFresh && historyCache.has(cityId)) {
-      renderCharts(historyCache.get(cityId));
-      return;
+  // Fetch the right file for the active range. 24h uses hourly history;
+  // 7d / 30d both share the same daily-aggregate file (just different slices).
+  function fetchForRange(cityId, range, forceFresh) {
+    if (range === '24h') {
+      return fetchCachedJson({
+        cityId, forceFresh,
+        cache: hourlyCache,
+        inflight: inflightHourly,
+        remoteFile: 'history-' + cityId + '.json',
+        sampleFile: 'history-' + cityId + '.sample.json',
+      });
     }
-    setHistoryStatus('Loading history…');
-    try {
-      const data = await fetchCityHistory(cityId, forceFresh);
-      historyCache.set(cityId, data);
-      if (cityId === activeHistoryCity) {
-        renderCharts(data);
-        setHistoryStatus('');
-      }
-    } catch (err) {
-      console.warn('History load failed for', cityId, err);
-      if (cityId === activeHistoryCity) {
-        setHistoryStatus('Could not load history for this city.', true);
-        clearCharts();
-      }
-    }
+    return fetchCachedJson({
+      cityId, forceFresh,
+      cache: dailyCache,
+      inflight: inflightDaily,
+      remoteFile: 'daily-' + cityId + '.json',
+      sampleFile: 'daily-' + cityId + '.sample.json',
+    });
   }
 
-  async function fetchCityHistory(cityId, forceFresh) {
-    if (inflightHistory.has(cityId) && !forceFresh) return inflightHistory.get(cityId);
-    const file = 'history-' + cityId + '.json';
-    const sampleFile = 'history-' + cityId + '.sample.json';
+  function fetchCachedJson({ cityId, forceFresh, cache, inflight, remoteFile, sampleFile }) {
+    if (!forceFresh && cache.has(cityId)) return Promise.resolve(cache.get(cityId));
+    if (!forceFresh && inflight.has(cityId)) return inflight.get(cityId);
     const candidates = useLocal
       ? ['/static/india-weather/' + sampleFile]
-      : [HISTORY_REMOTE_BASE + file, '/static/india-weather/' + sampleFile];
+      : [HISTORY_REMOTE_BASE + remoteFile, '/static/india-weather/' + sampleFile];
     const promise = (async () => {
       let lastErr = null;
       for (const base of candidates) {
@@ -291,39 +316,42 @@
         try {
           const r = await fetch(url, forceFresh ? { cache: 'no-store' } : {});
           if (!r.ok) throw new Error('HTTP ' + r.status);
-          return await r.json();
+          const data = await r.json();
+          cache.set(cityId, data);
+          return data;
         } catch (err) {
           lastErr = err;
         }
       }
       throw lastErr || new Error('no sources');
     })();
-    inflightHistory.set(cityId, promise);
+    inflight.set(cityId, promise);
+    try { return promise; }
+    finally { /* cleanup happens in then/finally below */ }
+  }
+
+  async function loadAndRenderHistory(cityId, forceFresh) {
+    if (!cityId) return;
+    setHistoryStatus('Loading history…');
     try {
-      return await promise;
+      const data = await fetchForRange(cityId, activeRange, forceFresh);
+      if (cityId !== activeHistoryCity) return;
+      renderCharts(cityId);
+      setHistoryStatus('');
+    } catch (err) {
+      console.warn('History load failed for', cityId, activeRange, err);
+      if (cityId === activeHistoryCity) {
+        setHistoryStatus('Could not load history for this city.', true);
+        clearCharts();
+      }
     } finally {
-      inflightHistory.delete(cityId);
+      // Always free the inflight slot.
+      inflightHourly.delete(cityId);
+      inflightDaily.delete(cityId);
     }
   }
 
-  function pickSeries(history, range) {
-    if (range === '7d')  return history.points_7d  || [];
-    if (range === '30d') return history.points_30d || [];
-    return history.points_24h || [];
-  }
-
-  function toUplotData(points, key) {
-    const xs = [];
-    const ys = [];
-    for (const p of points) {
-      const ms = new Date(p.t).getTime();
-      if (!Number.isFinite(ms)) continue;
-      const v = p[key];
-      xs.push(Math.floor(ms / 1000));
-      ys.push(v == null || !Number.isFinite(v) ? null : v);
-    }
-    return [xs, ys];
-  }
+  // -- Chart helpers ---------------------------------------------------------
 
   function chartContainer(id) {
     return document.getElementById(id);
@@ -334,10 +362,42 @@
     return { width: Math.max(280, Math.floor(rect.width)), height: 200 };
   }
 
-  function buildChartOptions(title, color, valueFmt, size) {
+  function destroyChart(slot) {
+    if (charts[slot]) {
+      try { charts[slot].destroy(); } catch (e) { /* ignore */ }
+      charts[slot] = null;
+    }
+  }
+
+  function clearCharts() {
+    for (const slot of Object.keys(charts)) destroyChart(slot);
+  }
+
+  function themeColors() {
     const css = getComputedStyle(document.documentElement);
-    const text = (css.getPropertyValue('--text-muted') || '#9aa0a6').trim();
-    const grid = (css.getPropertyValue('--border-color') || '#2e2e33').trim();
+    return {
+      text: (css.getPropertyValue('--text-muted') || '#9aa0a6').trim(),
+      grid: (css.getPropertyValue('--border-color') || '#2e2e33').trim(),
+    };
+  }
+
+  // -- 24h: simple line charts (existing behavior) --------------------------
+
+  function pointsToLine(points, key) {
+    const xs = [];
+    const ys = [];
+    for (const p of points || []) {
+      const ms = new Date(p.t).getTime();
+      if (!Number.isFinite(ms)) continue;
+      const v = p[key];
+      xs.push(Math.floor(ms / 1000));
+      ys.push(v == null || !Number.isFinite(v) ? null : v);
+    }
+    return [xs, ys];
+  }
+
+  function buildLineOpts(title, color, valueFmt, size) {
+    const t = themeColors();
     return {
       width: size.width,
       height: size.height,
@@ -345,60 +405,223 @@
       legend: { show: false },
       scales: { x: { time: true } },
       axes: [
+        { stroke: t.text, grid: { stroke: t.grid, width: 0.5 }, ticks: { stroke: t.grid, width: 0.5 } },
         {
-          stroke: text,
-          grid: { stroke: grid, width: 0.5 },
-          ticks: { stroke: grid, width: 0.5 },
-        },
-        {
-          stroke: text,
-          grid: { stroke: grid, width: 0.5 },
-          ticks: { stroke: grid, width: 0.5 },
+          stroke: t.text,
+          grid: { stroke: t.grid, width: 0.5 },
+          ticks: { stroke: t.grid, width: 0.5 },
           values: (u, splits) => splits.map(v => valueFmt(v)),
         },
       ],
       series: [
         {},
-        {
-          label: title,
-          stroke: color,
-          width: 1.6,
-          points: { show: false },
-          spanGaps: false,
-          value: (u, v) => (v == null ? '—' : valueFmt(v)),
-        },
+        { label: title, stroke: color, width: 1.6, points: { show: false }, spanGaps: false,
+          value: (u, v) => (v == null ? '—' : valueFmt(v)) },
       ],
     };
   }
 
-  function ensureChart(slot, containerId, title, color, valueFmt) {
+  function renderLineChart(slot, containerId, title, color, valueFmt, points, key) {
     const el = chartContainer(containerId);
-    if (!el) return null;
-    const size = chartSize(el);
-    if (charts[slot]) {
-      charts[slot].setSize(size);
-      return charts[slot];
-    }
-    const opts = buildChartOptions(title, color, valueFmt, size);
-    charts[slot] = new uPlot(opts, [[], []], el);
-    return charts[slot];
+    if (!el) return;
+    destroyChart(slot);
+    const opts = buildLineOpts(title, color, valueFmt, chartSize(el));
+    charts[slot] = new uPlot(opts, pointsToLine(points, key), el);
   }
 
-  function clearCharts() {
-    for (const k of Object.keys(charts)) {
-      if (charts[k]) charts[k].setData([[], []]);
-    }
+  // -- 7d / 30d: band charts (temp, humidity) and category bars (AQI) -------
+
+  function daySliceForRange(daily, range) {
+    const days = (daily && Array.isArray(daily.days)) ? daily.days : [];
+    if (range === '7d') return days.slice(-7);
+    if (range === '30d') return days.slice(-30);
+    return days;
   }
 
-  function renderCharts(history) {
+  // Convert "YYYY-MM-DD" (IST date) to a unix timestamp (seconds) at IST noon.
+  // Noon centers daily x-positions on the day so bar charts and labels align
+  // visually under the date.
+  function istDateToTs(date) {
+    // 12:00 IST = 06:30 UTC
+    const ms = Date.parse(date + 'T06:30:00Z');
+    return Number.isFinite(ms) ? Math.floor(ms / 1000) : null;
+  }
+
+  function daysToBandData(days, keyMin, keyMax, keyMean) {
+    const xs = [], mins = [], maxs = [], means = [];
+    for (const d of days) {
+      const ts = istDateToTs(d.date);
+      if (ts == null) continue;
+      xs.push(ts);
+      mins.push(d[keyMin] == null || !Number.isFinite(d[keyMin]) ? null : d[keyMin]);
+      maxs.push(d[keyMax] == null || !Number.isFinite(d[keyMax]) ? null : d[keyMax]);
+      means.push(d[keyMean] == null || !Number.isFinite(d[keyMean]) ? null : d[keyMean]);
+    }
+    return [xs, mins, maxs, means];
+  }
+
+  // Day-level x-axis formatter for 7d / 30d charts. Lets uPlot pick a
+  // sensible tick density (1, 2, 5 days...) and labels them "M/D".
+  function dayAxisConfig(t) {
+    return {
+      stroke: t.text,
+      grid: { stroke: t.grid, width: 0.5 },
+      ticks: { stroke: t.grid, width: 0.5 },
+      space: 55,
+      // Allowed increments in seconds: 1d, 2d, 5d, 7d. uPlot picks the
+      // smallest increment that satisfies `space`.
+      incrs: [86400, 86400 * 2, 86400 * 5, 86400 * 7],
+      values: (u, splits) => splits.map(s => {
+        const d = new Date(s * 1000);
+        return (d.getUTCMonth() + 1) + '/' + d.getUTCDate();
+      }),
+    };
+  }
+
+  // Half-day padding on each side so the leftmost / rightmost daily marker
+  // (and bar) aren't clipped at the chart edge.
+  const X_PAD = 12 * 3600;
+  function paddedXRange() {
+    return (u, dataMin, dataMax) => [dataMin - X_PAD, dataMax + X_PAD];
+  }
+
+  function buildBandOpts(title, color, bandColor, valueFmt, size) {
+    const t = themeColors();
+    return {
+      width: size.width,
+      height: size.height,
+      cursor: { drag: { x: false, y: false } },
+      legend: { show: false },
+      scales: { x: { time: true, range: paddedXRange() } },
+      axes: [
+        dayAxisConfig(t),
+        {
+          stroke: t.text,
+          grid: { stroke: t.grid, width: 0.5 },
+          ticks: { stroke: t.grid, width: 0.5 },
+          values: (u, splits) => splits.map(v => valueFmt(v)),
+        },
+      ],
+      series: [
+        {},
+        // min and max are invisible lines — they only exist so the band fill
+        // has something to reference. They show in the cursor tooltip though.
+        { label: 'min', stroke: 'transparent', fill: undefined, width: 0,
+          points: { show: false }, value: (u, v) => (v == null ? '—' : valueFmt(v)) },
+        { label: 'max', stroke: 'transparent', fill: undefined, width: 0,
+          points: { show: false }, value: (u, v) => (v == null ? '—' : valueFmt(v)) },
+        { label: title, stroke: color, width: 1.8,
+          points: { show: false }, spanGaps: false,
+          value: (u, v) => (v == null ? '—' : valueFmt(v)) },
+      ],
+      bands: [
+        { series: [2, 1], fill: bandColor },
+      ],
+    };
+  }
+
+  function renderBandChart(slot, containerId, title, color, bandColor, valueFmt, days, keyMin, keyMax, keyMean) {
+    const el = chartContainer(containerId);
+    if (!el) return;
+    destroyChart(slot);
+    const opts = buildBandOpts(title, color, bandColor, valueFmt, chartSize(el));
+    charts[slot] = new uPlot(opts, daysToBandData(days, keyMin, keyMax, keyMean), el);
+  }
+
+  function renderAqiBarChart(containerId, days) {
+    const el = chartContainer(containerId);
+    if (!el) return;
+    destroyChart('aqi');
+
+    const xs = [], means = [], fills = [];
+    for (const d of days) {
+      const ts = istDateToTs(d.date);
+      if (ts == null) continue;
+      xs.push(ts);
+      const v = (d.aqi_mean != null && Number.isFinite(d.aqi_mean)) ? d.aqi_mean : null;
+      means.push(v);
+      fills.push(aqiCategory(v).fill);
+    }
+
+    const t = themeColors();
+    // Pick a bar size that scales with point density: ~70% of slot width.
+    const barFactor = days.length > 14 ? 0.55 : 0.65;
+
+    const opts = {
+      width: chartSize(el).width,
+      height: chartSize(el).height,
+      cursor: { drag: { x: false, y: false } },
+      legend: { show: false },
+      scales: {
+        x: { time: true, range: paddedXRange() },
+        y: { range: (u, lo, hi) => [0, Math.max(50, hi)] },
+      },
+      axes: [
+        dayAxisConfig(t),
+        {
+          stroke: t.text,
+          grid: { stroke: t.grid, width: 0.5 },
+          ticks: { stroke: t.grid, width: 0.5 },
+          values: (u, splits) => splits.map(v => Math.round(v)),
+        },
+      ],
+      series: [
+        {},
+        {
+          label: 'AQI',
+          stroke: 'transparent',
+          width: 0,
+          points: { show: false },
+          paths: uPlot.paths.bars({
+            size: [barFactor, 60, 1],
+            align: 0,
+            disp: {
+              fill: { unit: 3, values: () => fills },
+              stroke: { unit: 3, values: () => fills },
+            },
+          }),
+          value: (u, v, sIdx, pIdx) => {
+            if (v == null) return '—';
+            const d = days[pIdx] || {};
+            const cat = aqiCategory(v).name;
+            return Math.round(v) + '  (min ' + (d.aqi_min ?? '—') + ' / max ' + (d.aqi_max ?? '—') + ') · ' + cat;
+          },
+        },
+      ],
+    };
+
+    charts.aqi = new uPlot(opts, [xs, means], el);
+  }
+
+  function renderCharts(cityId) {
     if (typeof uPlot === 'undefined') return;
-    const points = pickSeries(history, activeRange);
-    const aqi = ensureChart('aqi', 'iw-chart-aqi', 'AQI', '#75A8D9', v => Math.round(v));
-    const temp = ensureChart('temp', 'iw-chart-temp', 'Temp', '#E8A87C', v => v.toFixed(1) + '°');
-    const hum = ensureChart('humidity', 'iw-chart-humidity', 'Humidity', '#7CC4A1', v => Math.round(v) + '%');
-    if (aqi)  aqi.setData(toUplotData(points, 'aqi'));
-    if (temp) temp.setData(toUplotData(points, 'temp'));
-    if (hum)  hum.setData(toUplotData(points, 'humidity'));
+
+    if (activeRange === '24h') {
+      const hourly = hourlyCache.get(cityId);
+      const points = (hourly && Array.isArray(hourly.points_24h)) ? hourly.points_24h : [];
+      renderLineChart('aqi',  'iw-chart-aqi',      'AQI',      '#75A8D9',
+        v => Math.round(v),                points, 'aqi');
+      renderLineChart('temp', 'iw-chart-temp',     'Temp',     '#E8A87C',
+        v => v.toFixed(1) + '°',           points, 'temp');
+      renderLineChart('humidity', 'iw-chart-humidity', 'Humidity', '#7CC4A1',
+        v => Math.round(v) + '%',          points, 'humidity');
+      return;
+    }
+
+    const daily = dailyCache.get(cityId);
+    const days = daySliceForRange(daily, activeRange);
+
+    renderAqiBarChart('iw-chart-aqi', days);
+
+    renderBandChart('temp', 'iw-chart-temp', 'Temp °C',
+      '#E8A87C', 'rgba(232, 168, 124, 0.32)',
+      v => v.toFixed(1) + '°',
+      days, 'temp_min', 'temp_max', 'temp_mean');
+
+    renderBandChart('humidity', 'iw-chart-humidity', 'Humidity %',
+      '#7CC4A1', 'rgba(124, 196, 161, 0.32)',
+      v => Math.round(v) + '%',
+      days, 'humidity_min', 'humidity_max', 'humidity_mean');
   }
 
   function resizeCharts() {
@@ -493,9 +716,7 @@
       btn.addEventListener('click', () => {
         elRangeBtns.forEach(b => b.classList.toggle('iw-active', b === btn));
         activeRange = btn.dataset.range;
-        if (activeHistoryCity && historyCache.has(activeHistoryCity)) {
-          renderCharts(historyCache.get(activeHistoryCity));
-        }
+        if (activeHistoryCity) loadAndRenderHistory(activeHistoryCity);
       });
     });
     let resizeTimer = null;
