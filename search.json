@@ -4,7 +4,7 @@
     "href": "india-weather.html",
     "title": "India Weather",
     "section": "",
-    "text": "India · Live Weather & Air Quality\n      Temperature, humidity, UV, and CPCB-station AQI for 8 metros. Refreshed every 15 min.\n    \n    \n      \n      ↻ Refresh\n    \n  \n\n  \n    \n      \n      Loading map...\n    \n\n    \n      \n        Hottest\n        Worst air\n        Most humid\n      \n      \n    \n  \n\n  \n    Weather: Open-Meteo.\n    Air quality: WAQI (averaged across CPCB stations within each city).\n    AQI uses the Indian CPCB scale."
+    "text": "India · Live Weather & Air Quality\n      Temperature, humidity, UV, and CPCB-station AQI for 8 metros. Refreshed every 15 min.\n    \n    \n      \n      ↻ Refresh\n    \n  \n\n  \n    \n      \n      Loading map...\n    \n\n    \n      \n        Hottest\n        Worst air\n        Most humid\n      \n      \n    \n  \n\n  \n    \n      \n        History\n        Temperature, humidity, and AQI trends. Pick a city and a time range.\n      \n      \n        \n          City\n          \n        \n        \n          24h\n          7d\n          30d\n        \n      \n    \n\n    \n      \n        Air Quality Index (US AQI · Open-Meteo)\n        \n      \n      \n        Temperature (°C · Open-Meteo)\n        \n      \n      \n        Relative humidity (% · Open-Meteo)\n        \n      \n    \n    \n  \n\n  \n    Live tile: weather from Open-Meteo,\n    AQI from WAQI (CPCB-station average) on the\n    Indian CPCB band scale.\n    History charts use Open-Meteo for both weather and US AQI; the chart's AQI scale is therefore\n    different from the live tile. Data refreshes every 15 minutes."
   },
   {
     "objectID": "projects.html",
