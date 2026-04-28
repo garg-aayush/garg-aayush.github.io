@@ -23,13 +23,32 @@ jobs:
           ref: master
           path: src
 
-      - name: Fetch weather and AQI
+      - name: Checkout existing data branch
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: data
+          path: data-existing
+
+      - name: Stage prior history (if any) for the fetcher to read
+        run: |
+          set -euo pipefail
+          mkdir -p history-in
+          if [ -d data-existing ]; then
+            cp data-existing/history-*.json history-in/ 2>/dev/null || true
+          fi
+          echo "Prior history files: $(ls history-in/ 2>/dev/null | wc -l)"
+
+      - name: Fetch weather, AQI, and update history
         env:
           WAQI_TOKEN: ${{ secrets.WAQI_TOKEN }}
         working-directory: src
-        run: node scripts/fetch-india-weather.mjs ./weather.json
+        run: |
+          node scripts/fetch-india-weather.mjs ./weather.json \
+            --history-in ../history-in \
+            --history-out ./history-out
 
-      - name: Publish weather.json to data branch
+      - name: Publish weather.json + history to data branch
         working-directory: src
         run: |
           set -euo pipefail
@@ -42,9 +61,13 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Use a worktree-free orphan branch so the data branch always
-          # contains exactly one commit with only weather.json.
+          # contains exactly one commit with weather.json + history-*.json.
           git checkout --orphan data-tmp
           git rm -rf --cached . >/dev/null 2>&1 || true
           git add -f weather.json
+          if compgen -G "history-out/history-*.json" > /dev/null; then
+            cp history-out/history-*.json .
+            git add -f history-*.json
+          fi
           git -c commit.gpgsign=false commit -m "chore(data): update weather.json $(date -u +%FT%TZ)"
           git push --force origin HEAD:data
