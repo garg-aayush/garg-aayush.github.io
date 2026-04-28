@@ -252,6 +252,32 @@
   display: none;
 }
 
+/* Custom reset-view button. Mirrors the look of Mapbox's built-in zoom
+   controls so the two stacked groups read as one cohesive widget. */
+.iw-reset-ctrl .iw-reset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 0;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.iw-reset-ctrl .iw-reset-btn:hover {
+  background: #f3f3f3;
+  color: #000;
+}
+
+.iw-reset-ctrl .iw-reset-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 /* Mapbox popup overrides for dark theme */
 .mapboxgl-popup-content {
   background: var(--bg-secondary) !important;
