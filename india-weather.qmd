@@ -1,6 +1,6 @@
 ---
 title: "How's the weather across India right now?"
-description: "Live temperature, humidity, and air quality across India's major metropolitan cities. Refreshed every ~15 minutes."
+description: "Live temperature, humidity, and air quality across India's major metropolitan cities."
 page-layout: full
 toc: false
 sidebar: false
