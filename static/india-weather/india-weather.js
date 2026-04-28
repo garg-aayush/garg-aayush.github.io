@@ -28,7 +28,6 @@
 
   const elStatus = document.getElementById('iw-status');
   const elUpdated = document.getElementById('iw-updated');
-  const elRefresh = document.getElementById('iw-refresh');
   const elList = document.getElementById('iw-leaderboard-list');
   const elTabs = document.querySelectorAll('.iw-tab');
   const elHistoryCity = document.getElementById('iw-history-city');
@@ -131,7 +130,6 @@
       '<dt>Temp</dt><dd>' + fmtNum(w.temperature_c, 1) + '°C</dd>',
       '<dt>Feels like</dt><dd>' + fmtNum(w.apparent_c, 1) + '°C</dd>',
       '<dt>Humidity</dt><dd>' + fmtNum(w.humidity_pct, 0) + '%</dd>',
-      '<dt>UV index</dt><dd>' + fmtNum(w.uv_index, 1) + '</dd>',
       '<dt>AQI</dt><dd><span class="iw-popup-aqi ' + aqiClass + '">' + aqiVal + '</span>'
         + (a.band ? '<span class="iw-popup-aqi-label">' + a.band + '</span>' : '') + '</dd>',
       (dom ? '<dt>Dominant</dt><dd>' + dom + (a.station_count ? ' · ' + a.station_count + ' stations' : '') + '</dd>' : ''),
@@ -231,7 +229,7 @@
         (b, c) => b.extend([c.lon, c.lat]),
         new mapboxgl.LngLatBounds()
       );
-      map.fitBounds(bounds, { padding: 50, maxZoom: 6, duration: 0 });
+      map.fitBounds(bounds, { padding: 50, maxZoom: 5.5, duration: 0 });
     }
   }
 
@@ -353,6 +351,79 @@
 
   // -- Chart helpers ---------------------------------------------------------
 
+  // Floating tooltip plugin. Each chart passes a `format(uplot, idx)` callback
+  // that returns the inner HTML for the current data point. The plugin handles
+  // positioning, edge clamping, and show/hide.
+  function tooltipPlugin(format) {
+    let tip = null;
+    let over = null;
+
+    function clampX(x, w, parentW) {
+      const pad = 12;
+      const half = w / 2;
+      if (x - half < pad) return pad;
+      if (x + half > parentW - pad) return parentW - pad - w;
+      return x - half;
+    }
+
+    return {
+      hooks: {
+        init: (u) => {
+          over = u.over;
+          tip = document.createElement('div');
+          tip.className = 'iw-chart-tooltip iw-hidden';
+          over.appendChild(tip);
+
+          over.addEventListener('mouseleave', () => {
+            tip.classList.add('iw-hidden');
+          });
+        },
+        setCursor: (u) => {
+          if (!tip) return;
+          const { idx, left, top } = u.cursor;
+          if (idx == null || left < 0 || top < 0) {
+            tip.classList.add('iw-hidden');
+            return;
+          }
+          const html = format(u, idx);
+          if (!html) {
+            tip.classList.add('iw-hidden');
+            return;
+          }
+          tip.innerHTML = html;
+          tip.classList.remove('iw-hidden');
+
+          // Position above the cursor; flip below if it would clip the top.
+          const parentW = u.over.clientWidth;
+          const parentH = u.over.clientHeight;
+          const w = tip.offsetWidth;
+          const h = tip.offsetHeight;
+          const x = clampX(left, w, parentW);
+          let y = top - h - 12;
+          if (y < 4) y = Math.min(top + 16, parentH - h - 4);
+          tip.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        },
+        destroy: () => {
+          if (tip && tip.parentNode) tip.parentNode.removeChild(tip);
+          tip = null;
+        },
+      },
+    };
+  }
+
+  function fmtTime24h(unixSec) {
+    const d = new Date(unixSec * 1000);
+    const hh = d.getHours().toString().padStart(2, '0');
+    const mm = d.getMinutes().toString().padStart(2, '0');
+    const day = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return day + ' · ' + hh + ':' + mm;
+  }
+
+  function fmtDateDay(unixSec) {
+    const d = new Date(unixSec * 1000);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
   function chartContainer(id) {
     return document.getElementById(id);
   }
@@ -398,10 +469,20 @@
 
   function buildLineOpts(title, color, valueFmt, size) {
     const t = themeColors();
+    const tip = tooltipPlugin((u, idx) => {
+      const x = u.data[0][idx];
+      const y = u.data[1][idx];
+      if (x == null) return '';
+      const val = (y == null) ? '—' : valueFmt(y);
+      return '<div class="iw-tt-time">' + fmtTime24h(x) + '</div>'
+        + '<div class="iw-tt-row"><span class="iw-tt-dot" style="background:' + color + '"></span>'
+        + '<span class="iw-tt-label">' + title + '</span>'
+        + '<span class="iw-tt-val">' + val + '</span></div>';
+    });
     return {
       width: size.width,
       height: size.height,
-      cursor: { drag: { x: false, y: false } },
+      cursor: { drag: { x: false, y: false }, points: { size: 8 } },
       legend: { show: false },
       scales: { x: { time: true } },
       axes: [
@@ -418,6 +499,7 @@
         { label: title, stroke: color, width: 1.6, points: { show: false }, spanGaps: false,
           value: (u, v) => (v == null ? '—' : valueFmt(v)) },
       ],
+      plugins: [tip],
     };
   }
 
@@ -487,10 +569,26 @@
 
   function buildBandOpts(title, color, bandColor, valueFmt, size) {
     const t = themeColors();
+    const tip = tooltipPlugin((u, idx) => {
+      const x = u.data[0][idx];
+      const lo = u.data[1][idx];
+      const hi = u.data[2][idx];
+      const mid = u.data[3][idx];
+      if (x == null) return '';
+      const fmt = v => (v == null ? '—' : valueFmt(v));
+      return '<div class="iw-tt-time">' + fmtDateDay(x) + '</div>'
+        + '<div class="iw-tt-row"><span class="iw-tt-dot" style="background:' + color + '"></span>'
+        + '<span class="iw-tt-label">' + title + ' avg</span>'
+        + '<span class="iw-tt-val">' + fmt(mid) + '</span></div>'
+        + '<div class="iw-tt-row iw-tt-sub"><span class="iw-tt-label">min</span>'
+        + '<span class="iw-tt-val">' + fmt(lo) + '</span></div>'
+        + '<div class="iw-tt-row iw-tt-sub"><span class="iw-tt-label">max</span>'
+        + '<span class="iw-tt-val">' + fmt(hi) + '</span></div>';
+    });
     return {
       width: size.width,
       height: size.height,
-      cursor: { drag: { x: false, y: false } },
+      cursor: { drag: { x: false, y: false }, points: { size: 8 } },
       legend: { show: false },
       scales: { x: { time: true, range: paddedXRange() } },
       axes: [
@@ -517,6 +615,7 @@
       bands: [
         { series: [2, 1], fill: bandColor },
       ],
+      plugins: [tip],
     };
   }
 
@@ -547,10 +646,28 @@
     // Pick a bar size that scales with point density: ~70% of slot width.
     const barFactor = days.length > 14 ? 0.55 : 0.65;
 
+    const tip = tooltipPlugin((u, idx) => {
+      const d = days[idx] || {};
+      const v = u.data[1][idx];
+      if (d.date == null) return '';
+      const cat = aqiCategory(v);
+      const fill = cat.fill;
+      const valStr = (v == null) ? '—' : Math.round(v);
+      return '<div class="iw-tt-time">' + fmtDateDay(u.data[0][idx]) + '</div>'
+        + '<div class="iw-tt-row"><span class="iw-tt-dot" style="background:' + fill + '"></span>'
+        + '<span class="iw-tt-label">AQI avg</span>'
+        + '<span class="iw-tt-val">' + valStr + '</span></div>'
+        + '<div class="iw-tt-row iw-tt-sub"><span class="iw-tt-label">min</span>'
+        + '<span class="iw-tt-val">' + (d.aqi_min ?? '—') + '</span></div>'
+        + '<div class="iw-tt-row iw-tt-sub"><span class="iw-tt-label">max</span>'
+        + '<span class="iw-tt-val">' + (d.aqi_max ?? '—') + '</span></div>'
+        + '<div class="iw-tt-cat">' + cat.name + '</div>';
+    });
+
     const opts = {
       width: chartSize(el).width,
       height: chartSize(el).height,
-      cursor: { drag: { x: false, y: false } },
+      cursor: { drag: { x: false, y: false }, points: { size: 0 } },
       legend: { show: false },
       scales: {
         x: { time: true, range: paddedXRange() },
@@ -588,6 +705,7 @@
           },
         },
       ],
+      plugins: [tip],
     };
 
     charts.aqi = new uPlot(opts, [xs, means], el);
@@ -635,7 +753,6 @@
   }
 
   async function loadData(forceFresh) {
-    if (elRefresh) elRefresh.disabled = true;
     let lastErr = null;
     for (const base of DATA_URLS) {
       const url = forceFresh ? base + '?t=' + Date.now() : base;
@@ -645,7 +762,6 @@
         const data = await r.json();
         render(data);
         if (map) setStatus(null);
-        if (elRefresh) elRefresh.disabled = false;
         return;
       } catch (err) {
         lastErr = err;
@@ -653,8 +769,7 @@
       }
     }
     console.error('All data sources failed', lastErr);
-    setStatus('Could not load weather data. Try refreshing.', true);
-    if (elRefresh) elRefresh.disabled = false;
+    setStatus('Could not load weather data. Try reloading the page.', true);
   }
 
   function initMap() {
@@ -669,11 +784,16 @@
     }
     mapboxgl.accessToken = MAPBOX_TOKEN;
     try {
+      // Camera is locked to the Indian subcontinent. minZoom keeps the user
+      // from zooming out past the default Indian view; maxBounds keeps panning
+      // inside the same region so the camera can't drift over empty ocean.
       map = new mapboxgl.Map({
         container: 'iw-map',
         style: 'mapbox://styles/mapbox/dark-v11',
         center: [80.0, 22.5],
         zoom: 3.8,
+        minZoom: 3.8,
+        maxBounds: [[60, 5], [100, 38]],
         attributionControl: true,
       });
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
@@ -701,12 +821,6 @@
         if (lastData) renderLeaderboard(lastData.cities);
       });
     });
-    if (elRefresh) {
-      elRefresh.addEventListener('click', () => {
-        loadData(true);
-        if (activeHistoryCity) loadAndRenderHistory(activeHistoryCity, true);
-      });
-    }
     if (elHistoryCity) {
       elHistoryCity.addEventListener('change', () => {
         selectHistoryCity(elHistoryCity.value);

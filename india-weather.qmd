@@ -1,6 +1,6 @@
 ---
-title: "India Weather"
-description: "Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes."
+title: "How's the weather across India right now?"
+description: "Live temperature, humidity, and air quality across India's major metropolitan cities. Refreshed every ~15 minutes."
 page-layout: full
 toc: false
 sidebar: false
@@ -18,15 +18,8 @@ include-after-body:
 
 ```{=html}
 <div class="iw-root">
-  <div class="iw-header">
-    <div>
-      <h2>India · Live Weather &amp; Air Quality</h2>
-      <div class="iw-subtitle">Temperature, humidity, UV, and CPCB-station AQI for 8 metros. Refreshed every 15 min.</div>
-    </div>
-    <div class="iw-controls">
-      <span id="iw-updated" class="iw-updated"></span>
-      <button id="iw-refresh" class="iw-refresh" type="button" aria-label="Refresh">↻ Refresh</button>
-    </div>
+  <div class="iw-meta">
+    <span id="iw-updated" class="iw-updated"></span>
   </div>
 
   <div class="iw-grid">
@@ -81,7 +74,7 @@ include-after-body:
     <div id="iw-history-status" class="iw-history-status"></div>
   </section>
 
-  <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+  <p class="iw-footnote">
     Live tile: weather from <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>,
     AQI from <a href="https://aqicn.org/" rel="noopener">WAQI</a> (CPCB-station average) on the
     <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> band scale.
