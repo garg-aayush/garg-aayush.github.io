@@ -1,0 +1,52 @@
+---
+title: "India Weather"
+description: "Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes."
+page-layout: full
+toc: false
+sidebar: false
+include-in-header:
+  - text: |
+      <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+      <link rel="stylesheet" href="/static/india-weather/india-weather.css">
+include-after-body:
+  - text: |
+      <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+      <script src="/static/india-weather/india-weather.js"></script>
+---
+
+```{=html}
+<div class="iw-root">
+  <div class="iw-header">
+    <div>
+      <h2>India · Live Weather &amp; Air Quality</h2>
+      <div class="iw-subtitle">Temperature, humidity, UV, and CPCB-station AQI for 8 metros. Refreshed every 15 min.</div>
+    </div>
+    <div class="iw-controls">
+      <span id="iw-updated" class="iw-updated"></span>
+      <button id="iw-refresh" class="iw-refresh" type="button" aria-label="Refresh">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="iw-grid">
+    <div class="iw-map-wrap">
+      <div id="iw-map" role="img" aria-label="Map of Indian metros with live weather"></div>
+      <div id="iw-status" class="iw-status">Loading map...</div>
+    </div>
+
+    <aside class="iw-leaderboard" aria-label="City rankings">
+      <div class="iw-tabs" role="tablist">
+        <button class="iw-tab iw-active" type="button" data-tab="hottest" role="tab">Hottest</button>
+        <button class="iw-tab" type="button" data-tab="worst-air" role="tab">Worst air</button>
+        <button class="iw-tab" type="button" data-tab="humid" role="tab">Most humid</button>
+      </div>
+      <ul id="iw-leaderboard-list" class="iw-list"></ul>
+    </aside>
+  </div>
+
+  <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+    Weather: <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>.
+    Air quality: <a href="https://aqicn.org/" rel="noopener">WAQI</a> (averaged across CPCB stations within each city).
+    AQI uses the <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> scale.
+  </p>
+</div>
+```

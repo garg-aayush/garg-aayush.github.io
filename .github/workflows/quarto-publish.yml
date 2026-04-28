@@ -21,9 +21,32 @@ jobs:
       - name: Render site
         run: quarto render
 
+      - name: Inject Mapbox token into india-weather.js
+        env:
+          MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+        run: |
+          set -euo pipefail
+          target="_site/static/india-weather/india-weather.js"
+          if [ ! -f "$target" ]; then
+            echo "::warning::$target not found; skipping token injection"
+            exit 0
+          fi
+          if [ -z "${MAPBOX_TOKEN:-}" ]; then
+            echo "::warning::MAPBOX_TOKEN secret is not set; map will show a friendly error in production"
+            exit 0
+          fi
+          # Use a delimiter unlikely to appear inside the token.
+          sed -i "s|__MAPBOX_TOKEN__|${MAPBOX_TOKEN}|g" "$target"
+          if grep -q "__MAPBOX_TOKEN__" "$target"; then
+            echo "::error::Token placeholder still present after sed"
+            exit 1
+          fi
+          echo "Mapbox token injected"
+
       - name: Publish to gh-pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
+          render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,50 @@
+name: India Weather Data
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: india-weather-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout master sources
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          path: src
+
+      - name: Fetch weather and AQI
+        env:
+          WAQI_TOKEN: ${{ secrets.WAQI_TOKEN }}
+        working-directory: src
+        run: node scripts/fetch-india-weather.mjs ./weather.json
+
+      - name: Publish weather.json to data branch
+        working-directory: src
+        run: |
+          set -euo pipefail
+          if [ ! -s weather.json ]; then
+            echo "::error::weather.json is missing or empty"
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Use a worktree-free orphan branch so the data branch always
+          # contains exactly one commit with only weather.json.
+          git checkout --orphan data-tmp
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          git add -f weather.json
+          git -c commit.gpgsign=false commit -m "chore(data): update weather.json $(date -u +%FT%TZ)"
+          git push --force origin HEAD:data
