@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="From-scratch LLM builds, deep-dives and practical AI engineering.">
+<meta name="description" content="Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.">
 
-<title>Blogs – Aayush Garg</title>
+<title>India Weather – Aayush Garg</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,25 +27,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-27f44f2d0b0bec8f5a72a112d3ce600e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-27f44f2d0b0bec8f5a72a112d3ce600e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -73,36 +71,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      page: 20,
-    pagination: { item: "<li class='page-item'><a class='page page-link' href='#'></a></li>" },
-      searchColumns: ["listing-date","listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-blog-listings'] = new List('listing-blog-listings', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
 
 <script type="text/javascript">
@@ -113,43 +81,16 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+<link rel="stylesheet" href="./static/india-weather/india-weather.css">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"><meta property="og:title" content="Blogs – Aayush Garg">
-<meta property="og:description" content="From-scratch LLM builds, deep-dives and practical AI engineering.">
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="India Weather – Aayush Garg">
+<meta property="og:description" content="Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.">
 <meta property="og:site_name" content="Aayush Garg">
-<meta name="twitter:title" content="Blogs – Aayush Garg">
-<meta name="twitter:description" content="From-scratch LLM builds, deep-dives and practical AI engineering.">
+<meta name="twitter:title" content="India Weather – Aayush Garg">
+<meta name="twitter:description" content="Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -161,31 +102,31 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
           <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../blog/"> 
+    <a class="nav-link" href="./blog/"> 
 <span class="menu-text">Blogs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../projects.html"> 
+    <a class="nav-link" href="./projects.html"> 
 <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../tools/"> 
+    <a class="nav-link" href="./tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../india-weather.html"> 
+    <a class="nav-link active" href="./india-weather.html" aria-current="page"> 
 <span class="menu-text">India Weather</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../publications.html"> 
+    <a class="nav-link" href="./publications.html"> 
 <span class="menu-text">Publications</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -218,27 +159,26 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(22)</span></div><div class="category" data-category="TExNJTIwRXZhbHVhdGlvbg==">LLM Evaluation <span class="quarto-category-count">(2)</span></div><div class="category" data-category="TExNJTIwVHJhaW5pbmc=">LLM Training <span class="quarto-category-count">(3)</span></div><div class="category" data-category="TG9jYWwlMjBMTE1z">Local LLMs <span class="quarto-category-count">(3)</span></div><div class="category" data-category="UGFwZXIlMjBOb3Rlcw==">Paper Notes <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=">RL &amp; Alignment <span class="quarto-category-count">(5)</span></div><div class="category" data-category="VG9vbHMlMjAlMjYlMjBJbmZyYQ==">Tools &amp; Infra <span class="quarto-category-count">(6)</span></div><div class="category" data-category="VHJhbnNmb3JtZXJz">Transformers <span class="quarto-category-count">(2)</span></div></div></div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full column-page" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Blogs</h1>
+<h1 class="title">India Weather</h1>
 </div>
 
 <div>
   <div class="description">
-    From-scratch LLM builds, deep-dives and practical AI engineering.
+    Live temperature and air quality across 8 Indian metros, refreshed every ~15 minutes.
   </div>
 </div>
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page">
 
     
   
@@ -250,257 +190,40 @@ window.Quarto = {
 </header>
 
 
-<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-<div class="listing-actions-group">
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
+<div class="iw-root page-columns page-full">
+  <div class="iw-header">
+    <div>
+      <h2 class="anchored">India · Live Weather &amp; Air Quality</h2>
+      <div class="iw-subtitle">Temperature, humidity, UV, and CPCB-station AQI for 8 metros. Refreshed every 15 min.</div>
     </div>
+    <div class="iw-controls">
+      <span id="iw-updated" class="iw-updated"></span>
+      <button id="iw-refresh" class="iw-refresh" type="button" aria-label="Refresh">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="iw-grid page-columns page-full">
+    <div class="iw-map-wrap">
+      <div id="iw-map" role="img" aria-label="Map of Indian metros with live weather"></div>
+      <div id="iw-status" class="iw-status">Loading map...</div>
+    </div>
+
+    <aside class="iw-leaderboard" aria-label="City rankings">
+      <div class="iw-tabs" role="tablist">
+        <button class="iw-tab iw-active" type="button" data-tab="hottest" role="tab">Hottest</button>
+        <button class="iw-tab" type="button" data-tab="worst-air" role="tab">Worst air</button>
+        <button class="iw-tab" type="button" data-tab="humid" role="tab">Most humid</button>
+      </div>
+      <ul id="iw-leaderboard-list" class="iw-list"></ul>
+    </aside>
+  </div>
+
+  <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">
+    Weather: <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>.
+    Air quality: <a href="https://aqicn.org/" rel="noopener">WAQI</a> (averaged across CPCB stations within each city).
+    AQI uses the <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> scale.
+  </p>
 </div>
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-
-<th>
-Date
-</th>
-
-<th>
-Title
-</th>
-
-</tr>
-</thead>
-<tbody class="list">
-
-<tr data-index="0" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1777399489524" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140" data-listing-title-sort="Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/5/26</span>
-</td>
-<td>
-<a href="../posts/2026-04-05-qwen35-vs-gemma4/index.html" class="title listing-title">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</a>
-</td>
-
-</tr>
-
-<tr data-index="1" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1777399489524" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134" data-listing-title-sort="Self-Hosted Gemma 4 Chat with Web UI" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/3/26</span>
-</td>
-<td>
-<a href="../posts/2026-04-03-self-hosted-gemma4-chat/index.html" class="title listing-title">Self-Hosted Gemma 4 Chat with Web UI</a>
-</td>
-
-</tr>
-
-<tr data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1777399489524" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152" data-listing-title-sort="Using a local LLM in OpenCode with llama.cpp" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/29/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-29-local-llm-opencode/index.html" class="title listing-title">Using a local LLM in OpenCode with llama.cpp</a>
-</td>
-
-</tr>
-
-<tr data-index="3" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1774569600000" data-listing-file-modified-sort="1777399489524" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2971" data-listing-title-sort="FlashAttention: Making Attention I/O-Aware" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/27/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-27-flash-attention/index.html" class="title listing-title">FlashAttention: Making Attention I/O-Aware</a>
-</td>
-
-</tr>
-
-<tr data-index="4" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1773964800000" data-listing-file-modified-sort="1777399489524" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="817" data-listing-title-sort="Building Browser Tools with Claude Code" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/20/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-20-browser-tools/index.html" class="title listing-title">Building Browser Tools with Claude Code</a>
-</td>
-
-</tr>
-
-<tr data-index="5" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1772064000000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2624" data-listing-title-sort="GRPO: Building Intuition Through Ablation Studies" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/26/26</span>
-</td>
-<td>
-<a href="../posts/2026-02-26-grpo-from-scratch/index.html" class="title listing-title">GRPO: Building Intuition Through Ablation Studies</a>
-</td>
-
-</tr>
-
-<tr data-index="6" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1770854400000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1545" data-listing-title-sort="Tools for Better Claude Code and Terminal Experience" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/12/26</span>
-</td>
-<td>
-<a href="../posts/2026-02-12-cc-tools/index.html" class="title listing-title">Tools for Better Claude Code and Terminal Experience</a>
-</td>
-
-</tr>
-
-<tr data-index="7" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQlMkNMTE0lMjBUcmFpbmluZw==" data-listing-date-sort="1769126400000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2050" data-listing-title-sort="Expert Iteration for Math Reasoning" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/23/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-23-expert-iteration/index.html" class="title listing-title">Expert Iteration for Math Reasoning</a>
-</td>
-
-</tr>
-
-<tr data-index="8" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1768262400000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1983" data-listing-title-sort="A Brief Introduction to Claude Agent Skills" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/13/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-13-claude-skills/index.html" class="title listing-title">A Brief Introduction to Claude Agent Skills</a>
-</td>
-
-</tr>
-
-<tr data-index="9" data-categories="UGFwZXIlMjBOb3Rlcw==" data-listing-date-sort="1767657600000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Key Insights from DeepSeekMath paper" data-listing-filename-sort="2026-01-06-review-deepseek-math.qmd">
-<td>
-<span class="listing-date">1/6/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-06-review-deepseek-math.html" class="title listing-title">Key Insights from DeepSeekMath paper</a>
-</td>
-
-</tr>
-
-<tr data-index="10" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1767225600000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2213" data-listing-title-sort="Understanding GRPO: PPO without the Critic" data-listing-filename-sort="2026-01-01-understanding-grpo.qmd">
-<td>
-<span class="listing-date">1/1/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-01-understanding-grpo.html" class="title listing-title">Understanding GRPO: PPO without the Critic</a>
-</td>
-
-</tr>
-
-<tr data-index="11" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1767052800000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2409" data-listing-title-sort="Deriving the DPO Loss from First Principles" data-listing-filename-sort="2025-12-30-deriving-dpo-loss.qmd">
-<td>
-<span class="listing-date">12/30/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-30-deriving-dpo-loss.html" class="title listing-title">Deriving the DPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="12" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1766620800000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6096" data-listing-title-sort="Deriving the PPO Loss from First Principles" data-listing-filename-sort="2025-12-25-deriving-ppo-loss.qmd">
-<td>
-<span class="listing-date">12/25/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-25-deriving-ppo-loss.html" class="title listing-title">Deriving the PPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="13" data-categories="TExNJTIwVHJhaW5pbmc=" data-listing-date-sort="1764720000000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1981" data-listing-title-sort="What I Learned Building SFT from the Ground Up" data-listing-filename-sort="2025-12-28-sft-from-scratch.qmd">
-<td>
-<span class="listing-date">12/3/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-28-sft-from-scratch.html" class="title listing-title">What I Learned Building SFT from the Ground Up</a>
-</td>
-
-</tr>
-
-<tr data-index="14" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365" data-listing-title-sort="A Guide to Building Custom Nodes in ComfyUI" data-listing-filename-sort="2025-09-10-build-custom-comfyui-node.qmd">
-<td>
-<span class="listing-date">9/10/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="title listing-title">A Guide to Building Custom Nodes in ComfyUI</a>
-</td>
-
-</tr>
-
-<tr data-index="15" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1757289600000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Building GPT from Scratch: Following Karpathy's Tutorial" data-listing-filename-sort="2025-09-08-building-gpt-from-scratch.qmd">
-<td>
-<span class="listing-date">9/8/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-08-building-gpt-from-scratch.html" class="title listing-title">Building GPT from Scratch: Following Karpathy’s Tutorial</a>
-</td>
-
-</tr>
-
-<tr data-index="16" data-categories="UGFwZXIlMjBOb3Rlcw==" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035" data-listing-title-sort="Key Takeaways from Lecture 1: LLM Evaluation Lifecycle" data-listing-filename-sort="2025-09-02-llm-evaluation-lifecycle.qmd">
-<td>
-<span class="listing-date">9/2/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="title listing-title">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
-</td>
-
-</tr>
-
-<tr data-index="17" data-categories="TExNJTIwVHJhaW5pbmc=" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299" data-listing-title-sort="Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-15-finetune-llama3-8B-predibase.qmd">
-<td>
-<span class="listing-date">7/15/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title listing-title">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="18" data-categories="TExNJTIwRXZhbHVhdGlvbg==" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288" data-listing-title-sort="Part II: Comparison of Model Performances on Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-09-compare-models-structured-data.qmd">
-<td>
-<span class="listing-date">7/9/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-09-compare-models-structured-data.html" class="title listing-title">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="19" data-categories="TExNJTIwRXZhbHVhdGlvbg==" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429" data-listing-title-sort="Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction" data-listing-filename-sort="2024-07-03-baseline-gpt4o-structured-data.qmd">
-<td>
-<span class="listing-date">7/3/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="title listing-title">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="20" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744" data-listing-title-sort="Step-by-Step Guide to Setup Your Personal GPU Server" data-listing-filename-sort="2024-06-30-remote-gpu-server.qmd">
-<td>
-<span class="listing-date">6/30/24</span>
-</td>
-<td>
-<a href="../posts/2024-06-30-remote-gpu-server.html" class="title listing-title">Step-by-Step Guide to Setup Your Personal GPU Server</a>
-</td>
-
-</tr>
-
-<tr data-index="21" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1777399489523" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858" data-listing-title-sort="Managing multiple CUDA versions using environment modules in Ubuntu" data-listing-filename-sort="2024-05-19-manage-multiple-cuda.qmd">
-<td>
-<span class="listing-date">5/19/24</span>
-</td>
-<td>
-<a href="../posts/2024-05-19-manage-multiple-cuda.html" class="title listing-title">Managing multiple CUDA versions using environment modules in Ubuntu</a>
-</td>
-
-</tr>
-
-</tbody>
-</table>
-<div class="listing-no-matching d-none">No matching items</div>
-<nav id="blog-listings-pagination" class="listing-pagination" aria-label="Page Navigation">
-  <ul class="pagination"></ul>
-</nav>
-</div>
-
 
 
 
@@ -943,9 +666,11 @@ Title
     </div>
   </div>
 </footer>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+<script src="./static/india-weather/india-weather.js"></script>
 
 
 
 
-<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

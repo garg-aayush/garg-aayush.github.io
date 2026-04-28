@@ -9,7 +9,7 @@
 <link>https://garg-aayush.github.io/blog/</link>
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>From-scratch LLM builds, deep-dives and practical AI engineering.</description>
-<generator>quarto-1.9.36</generator>
+<generator>quarto-1.9.37</generator>
 <lastBuildDate>Sun, 05 Apr 2026 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</title>
