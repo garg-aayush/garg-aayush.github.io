@@ -1,5 +1,16 @@
 /* India Weather page styles. Reuses CSS vars from styles.css. */
 
+/* Quarto auto-injects `page-columns page-full` onto top-level divs in raw HTML
+   blocks under page-layout: full, then auto-places children in the page-columns
+   slots — map ends up in body-content (narrower than the title) and the
+   leaderboard in the right page margin (~215px). Force our two rows back to
+   the column-page slot so they line up with the title and span the full page
+   width. */
+.iw-root.page-columns > .iw-meta,
+.iw-root.page-columns > .iw-grid {
+  grid-column: page-start / page-end !important;
+}
+
 .iw-root {
   margin-top: 0.25rem;
 }
@@ -19,11 +30,18 @@
   letter-spacing: 0.01em;
 }
 
-.iw-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(380px, 30%, 460px);
+.iw-grid,
+.iw-grid.page-columns,
+.iw-grid.page-columns.page-full {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) clamp(380px, 30%, 460px) !important;
   gap: 1rem;
   align-items: stretch;
+}
+/* Quarto's page-columns rule otherwise places the leaderboard in the right
+   margin column instead of the second cell of our template. */
+.iw-grid > * {
+  grid-column: auto !important;
 }
 
 .iw-map-wrap {
