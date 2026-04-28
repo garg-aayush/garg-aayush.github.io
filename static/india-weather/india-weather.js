@@ -167,6 +167,7 @@
   }
 
   function ensureMarkers(data) {
+    const wasEmpty = cityState.size === 0;
     for (const city of data.cities) {
       let entry = cityState.get(city.id);
       if (!entry) {
@@ -185,6 +186,13 @@
         entry.el.innerHTML = markerHtml(city);
         entry.popup.setHTML(popupHtml(city));
       }
+    }
+    if (wasEmpty && data.cities.length > 0) {
+      const bounds = data.cities.reduce(
+        (b, c) => b.extend([c.lon, c.lat]),
+        new mapboxgl.LngLatBounds()
+      );
+      map.fitBounds(bounds, { padding: 50, maxZoom: 6, duration: 0 });
     }
   }
 
