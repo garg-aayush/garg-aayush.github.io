@@ -777,16 +777,17 @@
     }
     mapboxgl.accessToken = MAPBOX_TOKEN;
     try {
-      // Camera is locked to the Indian subcontinent. minZoom keeps the user
-      // from zooming out past the default Indian view; maxBounds keeps panning
-      // inside the same region so the camera can't drift over empty ocean.
+      // Camera is pinned to India. maxBounds tracks the country's actual
+      // bbox (~68-97.5 E, ~6-37.5 N) with a tiny pad so coastlines aren't
+      // clipped, and minZoom matches the initial zoom so the user can never
+      // scroll out to see neighbouring countries or the open ocean.
       map = new mapboxgl.Map({
         container: 'iw-map',
         style: 'mapbox://styles/mapbox/dark-v11',
         center: [80.0, 22.5],
         zoom: 3.8,
         minZoom: 3.8,
-        maxBounds: [[60, 5], [100, 38]],
+        maxBounds: [[67, 5.5], [98, 37.5]],
         attributionControl: true,
       });
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
