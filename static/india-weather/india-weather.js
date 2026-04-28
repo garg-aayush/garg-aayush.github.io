@@ -34,6 +34,9 @@
   const elHistoryStatus = document.getElementById('iw-history-status');
   const elRangeBtns = document.querySelectorAll('.iw-range-btn');
 
+  // Default camera, also used by the reset-view control to fly back home.
+  const HOME_VIEW = { center: [80.0, 22.5], zoom: 3.8 };
+
   let map = null;
   let lastData = null;
   const cityState = new Map();
@@ -901,6 +904,40 @@
     setStatus('Could not load weather data. Try reloading the page.', true);
   }
 
+  // Custom Mapbox control: a single button that flies the camera back to
+  // HOME_VIEW. Sits in the top-right stack just below the +/- zoom controls.
+  class ResetViewControl {
+    constructor(view) { this._view = view; }
+    onAdd(map) {
+      this._map = map;
+      this._container = document.createElement('div');
+      this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group iw-reset-ctrl';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'iw-reset-btn';
+      btn.title = 'Reset view';
+      btn.setAttribute('aria-label', 'Reset map view');
+      btn.innerHTML =
+        '<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">'
+        + '<circle cx="10" cy="10" r="2.2" fill="currentColor"/>'
+        + '<path d="M10 1.5v3M10 15.5v3M1.5 10h3M15.5 10h3" '
+        +   'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>'
+        + '<circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.4" fill="none"/>'
+        + '</svg>';
+      btn.addEventListener('click', () => {
+        map.flyTo({ center: this._view.center, zoom: this._view.zoom, speed: 1.4 });
+      });
+      this._container.appendChild(btn);
+      return this._container;
+    }
+    onRemove() {
+      if (this._container && this._container.parentNode) {
+        this._container.parentNode.removeChild(this._container);
+      }
+      this._map = null;
+    }
+  }
+
   function initMap() {
     if (typeof mapboxgl === 'undefined') {
       setStatus('Mapbox failed to load.', true);
@@ -920,13 +957,14 @@
       map = new mapboxgl.Map({
         container: 'iw-map',
         style: 'mapbox://styles/mapbox/dark-v11',
-        center: [80.0, 22.5],
-        zoom: 3.8,
-        minZoom: 3.8,
+        center: HOME_VIEW.center,
+        zoom: HOME_VIEW.zoom,
+        minZoom: HOME_VIEW.zoom,
         maxBounds: [[67, 5.5], [98, 37.5]],
         attributionControl: true,
       });
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(new ResetViewControl(HOME_VIEW), 'top-right');
       map.on('load', () => {
         setStatus(null);
         if (lastData) ensureMarkers(lastData);
