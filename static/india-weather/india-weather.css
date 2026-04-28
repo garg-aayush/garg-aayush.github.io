@@ -180,76 +180,30 @@
   margin-top: 2px;
 }
 
-/* Mapbox markers: dot at the geo point, pill offset to a chosen anchor,
-   leader line connecting them. The marker root itself is a 0x0 anchor — all
-   visual size lives in absolutely-positioned children. */
+/* Mapbox markers */
 .iw-marker {
-  position: absolute;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-.iw-marker-dot {
-  position: absolute;
-  left: -5px;
-  top: -5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.4);
-  pointer-events: auto;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.iw-marker-leader {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.iw-marker-leader line {
-  stroke: rgba(255, 255, 255, 0.55);
-  stroke-width: 1;
-}
-
-.iw-marker-pill {
-  position: absolute;
-  left: 0;
-  top: 0;
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--accent);
-  border-radius: 12px;
-  padding: 2px 7px;
-  font-size: 0.74rem;
+  border-radius: 14px;
+  padding: 3px 8px;
+  font-size: 0.78rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   cursor: pointer;
-  pointer-events: auto;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  transition: border-color 120ms;
-  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: transform 120ms, border-color 120ms;
 }
 
-.iw-marker-pill:hover {
+.iw-marker:hover {
+  transform: translateY(-1px);
   border-color: var(--text-primary);
 }
 
-.iw-marker-pill .iw-marker-temp {
+.iw-marker .iw-marker-temp {
   color: var(--accent);
   margin-left: 4px;
-}
-
-.iw-marker-pill.iw-hidden,
-.iw-marker-leader.iw-hidden {
-  display: none;
 }
 
 /* Custom reset-view button. Mirrors the look of Mapbox's built-in zoom
