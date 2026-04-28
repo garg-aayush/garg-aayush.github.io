@@ -137,12 +137,149 @@
     ].join('');
   }
 
-  function markerHtml(city) {
+  // -- Marker layout --------------------------------------------------------
+  //
+  // Each marker is a 0x0 wrapper anchored at the city's lng/lat. Inside we
+  // render three layers:
+  //   - a small dot at the wrapper origin (the actual geo pin),
+  //   - an SVG leader from the dot to a chosen anchor point,
+  //   - a label pill (name + temp) translated to that anchor point.
+  //
+  // ANCHOR_OFFSETS maps a compass anchor to the pill's offset (x, y) from the
+  // dot, plus the percentage shift (tx, ty) that aligns the pill's anchored
+  // edge with that point. CITY_ANCHORS hand-curates a preferred anchor order
+  // for cities in the cluttered NCR cluster; everything else falls back to a
+  // generic order. relayoutMarkers() walks cities in priority order and picks
+  // the first anchor whose pill bbox doesn't collide with already-placed
+  // pills; pills with no free anchor are hidden (the dot still shows).
+  const ANCHOR_OFFSETS = {
+    ne: { x:  14, y: -10, tx: '0',     ty: '-100%' },
+    nw: { x: -14, y: -10, tx: '-100%', ty: '-100%' },
+    se: { x:  14, y:  10, tx: '0',     ty: '0' },
+    sw: { x: -14, y:  10, tx: '-100%', ty: '0' },
+    e:  { x:  16, y:   0, tx: '0',     ty: '-50%' },
+    w:  { x: -16, y:   0, tx: '-100%', ty: '-50%' },
+    n:  { x:   0, y: -16, tx: '-50%',  ty: '-100%' },
+    s:  { x:   0, y:  16, tx: '-50%',  ty: '0' },
+  };
+
+  const CITY_ANCHORS = {
+    delhi:     ['ne', 'n', 'nw'],
+    gurugram:  ['sw', 's', 'w'],
+    ghaziabad: ['e', 'se', 'ne'],
+    noida:     ['se', 's', 'e'],
+  };
+  const DEFAULT_ANCHORS = ['ne', 'e', 'se', 'sw', 'w', 'nw', 'n', 's'];
+
+  function pillContents(city) {
     const t = city.weather && city.weather.temperature_c != null
       ? Math.round(city.weather.temperature_c) + '°'
       : '—';
     return '<span class="iw-marker-name">' + city.name + '</span>'
       + '<span class="iw-marker-temp">' + t + '</span>';
+  }
+
+  function buildMarkerElement(city) {
+    const root = document.createElement('div');
+    root.className = 'iw-marker';
+    root.title = city.name;
+
+    const leader = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    leader.setAttribute('class', 'iw-marker-leader');
+    leader.setAttribute('width', '1');
+    leader.setAttribute('height', '1');
+    leader.setAttribute('overflow', 'visible');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('y1', '0');
+    line.setAttribute('x2', '0');
+    line.setAttribute('y2', '0');
+    leader.appendChild(line);
+
+    const pill = document.createElement('div');
+    pill.className = 'iw-marker-pill';
+    pill.innerHTML = pillContents(city);
+
+    const dot = document.createElement('span');
+    dot.className = 'iw-marker-dot';
+
+    root.appendChild(leader);
+    root.appendChild(pill);
+    root.appendChild(dot);
+
+    return { root, leader, line, pill, dot };
+  }
+
+  function applyAnchor(entry, anchor) {
+    const off = ANCHOR_OFFSETS[anchor];
+    if (!off) return;
+    entry.pill.style.transform =
+      'translate(' + off.x + 'px, ' + off.y + 'px) translate(' + off.tx + ', ' + off.ty + ')';
+    entry.line.setAttribute('x2', String(off.x));
+    entry.line.setAttribute('y2', String(off.y));
+    entry.currentAnchor = anchor;
+  }
+
+  function rectsOverlap(a, b) {
+    return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+  }
+
+  function padRect(r, pad) {
+    return { left: r.left - pad, right: r.right + pad, top: r.top - pad, bottom: r.bottom + pad };
+  }
+
+  // Re-runs after every map move/zoom (rAF-coalesced) and after data updates.
+  // Cities are sorted hottest-first so the highest-priority labels claim
+  // their preferred anchor; cooler cities yield. Pills with no clear slot
+  // hide their pill+leader -- the dot stays visible so the city is still
+  // findable via hover or click.
+  function relayoutMarkers() {
+    if (!lastData || cityState.size === 0) return;
+    const sorted = lastData.cities.slice().sort((a, b) => {
+      const ta = (a.weather && a.weather.temperature_c != null) ? a.weather.temperature_c : -Infinity;
+      const tb = (b.weather && b.weather.temperature_c != null) ? b.weather.temperature_c : -Infinity;
+      return tb - ta;
+    });
+
+    const placed = [];
+    for (const city of sorted) {
+      const entry = cityState.get(city.id);
+      if (!entry) continue;
+      const anchors = CITY_ANCHORS[city.id] || DEFAULT_ANCHORS;
+
+      entry.pill.classList.remove('iw-hidden');
+      entry.leader.classList.remove('iw-hidden');
+
+      let chosen = null;
+      let chosenRect = null;
+      for (const a of anchors) {
+        applyAnchor(entry, a);
+        const rect = entry.pill.getBoundingClientRect();
+        const padded = padRect(rect, 3);
+        if (placed.every(r => !rectsOverlap(padded, r))) {
+          chosen = a;
+          chosenRect = padded;
+          break;
+        }
+      }
+
+      if (chosen == null) {
+        entry.pill.classList.add('iw-hidden');
+        entry.leader.classList.add('iw-hidden');
+      } else {
+        placed.push(chosenRect);
+      }
+    }
+  }
+
+  let relayoutScheduled = false;
+  function scheduleRelayout() {
+    if (relayoutScheduled) return;
+    relayoutScheduled = true;
+    requestAnimationFrame(() => {
+      relayoutScheduled = false;
+      relayoutMarkers();
+    });
   }
 
   function leaderboardSorters() {
@@ -208,19 +345,17 @@
     for (const city of data.cities) {
       let entry = cityState.get(city.id);
       if (!entry) {
-        const el = document.createElement('div');
-        el.className = 'iw-marker';
-        el.innerHTML = markerHtml(city);
+        const parts = buildMarkerElement(city);
         const popup = new mapboxgl.Popup({ offset: 18, closeButton: true, maxWidth: '300px' })
           .setHTML(popupHtml(city));
-        const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        const marker = new mapboxgl.Marker({ element: parts.root, anchor: 'center' })
           .setLngLat([city.lon, city.lat])
           .setPopup(popup)
           .addTo(map);
-        entry = { marker, popup, el };
+        entry = Object.assign({ marker, popup, el: parts.root }, parts);
         cityState.set(city.id, entry);
       } else {
-        entry.el.innerHTML = markerHtml(city);
+        entry.pill.innerHTML = pillContents(city);
         entry.popup.setHTML(popupHtml(city));
       }
     }
@@ -231,6 +366,7 @@
       );
       map.fitBounds(bounds, { padding: 50, maxZoom: 5.5, duration: 0 });
     }
+    scheduleRelayout();
   }
 
   function renderUpdated(data) {
@@ -795,6 +931,8 @@
         setStatus(null);
         if (lastData) ensureMarkers(lastData);
       });
+      map.on('move', scheduleRelayout);
+      map.on('zoom', scheduleRelayout);
       map.on('error', (e) => {
         const msg = (e && e.error && e.error.message) || 'Unknown error';
         if (msg.toLowerCase().includes('access token')) {
