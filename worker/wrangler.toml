@@ -1,0 +1,16 @@
+name = "india-weather"
+main = "src/index.mjs"
+compatibility_date = "2026-04-01"
+
+# Cron Triggers run in UTC. */15 here is the actual cadence the Worker sees;
+# unlike GitHub Actions' best-effort scheduler, Cloudflare Cron Triggers fire
+# within seconds of the schedule. This is the whole reason for the Worker.
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Public configuration. Secrets (WAQI_TOKEN, GITHUB_TOKEN) are set out-of-band
+# via `wrangler secret put NAME` and never appear in source.
+[vars]
+GITHUB_OWNER = "garg-aayush"
+GITHUB_REPO = "garg-aayush.github.io"
+DATA_BRANCH = "data"

@@ -1,0 +1,15 @@
+{
+  "name": "india-weather-worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "trigger": "curl -s 'http://localhost:8787/__scheduled?cron=*/15+*+*+*+*'"
+  },
+  "devDependencies": {
+    "wrangler": "^4.86.0"
+  }
+}
