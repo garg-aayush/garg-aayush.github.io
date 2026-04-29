@@ -10,7 +10,176 @@
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>From-scratch LLM builds, deep-dives and practical AI engineering.</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Sun, 05 Apr 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 29 Apr 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Building a Live India Weather Dashboard with Claude Code</title>
+  <link>https://garg-aayush.github.io/posts/2026-04-29-india-weather-with-claude/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>It is summer in India with temperature soaring above 40°C in many parts and like a lot of folks here, I too have a habit of checking the temperature and humidity more often than I would like to admit. Moreover, if you are from northern or western India, you are probably also checking the AQI given how big and genuine the pollution problem is these parts.</p>
+<p>As a fun project, I built a small dashboard that shows the weather and AQI for the major Indian cities along with the option of viewing the history over 24 hours, 7 days and 30 days. Moreover, this dashboard fetches the data every 15 minutes so more or less you have a live view of the weather and AQI for the major Indian cities.</p>
+<p>The dashboard is live at <a href="../../india-weather.html">aayushgarg.dev/india-weather</a>.</p>
+<table align="center">
+<tbody><tr>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg" alt="Live India weather map" width="100%">
+</td>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/weather_dashboard_snap2.jpg" alt="Per-city history charts" width="100%">
+</td>
+</tr>
+</tbody></table>
+<p>As usual (and like most of the devs out there) I used <a href="https://claude.ai/code">Claude Code</a> to build this dashboard. Also, I am an ML Researcher/Engineer, so not the brigtest when it comes to frontend and devops. This post is my reflection on how I went about building (prompting!) this dashboard in stages.</p>
+<section id="what-it-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-it-does">What it does</h2>
+<p>Just a quick overview of what the dashboard does:</p>
+<ul>
+<li>I have picked 20 Indian metropolitan cities and displayed them on an interactive map, with live temperature, humidity and AQI refreshed every 15 minutes</li>
+<li>When you click a marker or a leaderboard entry, you get 24h / 7d / 30d charts for the temperature, humidity and AQI</li>
+<li>The map is based on <a href="https://www.mapbox.com/">Mapbox</a>, locked to India’s bounds</li>
+<li>The site is static, so fetching runs server-side on a cron and the page just reads JSON</li>
+</ul>
+<p>All the numbers are fetched from <a href="https://open-meteo.com/">Open-Meteo</a> and <a href="https://aqicn.org/">WAQI</a>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 16%">
+<col style="width: 12%">
+<col style="width: 18%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th style="text-align: center;">Live (15 min)</th>
+<th style="text-align: center;">24h chart</th>
+<th style="text-align: center;">7d / 30d charts</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Temperature</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>Open-Meteo Forecast</td>
+</tr>
+<tr class="even">
+<td>Humidity</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>Open-Meteo Forecast</td>
+</tr>
+<tr class="odd">
+<td>Live AQI</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td>WAQI / CPCB stations</td>
+</tr>
+<tr class="even">
+<td>Historical AQI</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>Open-Meteo Air Quality (CAMS)</td>
+</tr>
+</tbody>
+</table>
+<p>Why these two options:</p>
+<ul>
+<li>I wanted free APIs with no client-exposed key which rules the paid tiers out like AccuWeather and OpenWeatherMap (even Google Maps I guess).</li>
+<li>Open-Meteo is free for non-commercial use and runs on the same ECMWF + GFS models behind most weather apps.</li>
+<li><strong>WAQI is the more interesting pick.</strong> Its Indian feed comes directly from the CPCB ground stations (the same network behind <code>airquality.cpcb.gov.in</code>) and republishes on the natural CPCB cadence of about 15 minutes, so it is effectively the official live AQI reading with a free developer API in front.</li>
+<li>Open-Meteo’s air-quality stream is different in kind. It is a global chemistry model on a coarse grid which is good for the 24h/7d/30d historical trends but tends to under-read Indian pollution episodes compared to CPCB stations.</li>
+</ul>
+<p>I built this in three loose stages, with stages 2 and 3 overlapping in practice. Below is roughly how each went.</p>
+</section>
+<section id="stage-1-brainstorming-and-building-a-working-v1" class="level2">
+<h2 class="anchored" data-anchor-id="stage-1-brainstorming-and-building-a-working-v1">Stage 1: brainstorming and building a working v1</h2>
+<p>When I am building something new my first instinct is to brainstorm with the coding assistant (Claude Code in my case, codex or whichever one you use) before even asking it to write a single line of code. The shape of the prompt is roughly:</p>
+<blockquote class="blockquote">
+<p>here is what I want to build, here are the options I see, here are the constraints, help me decide.</p>
+</blockquote>
+<p>For this dashboard the biggest constraint was easy to state: since the site is my personal portfolio, anything I pulled in had to fit inside a free tier with enough headroom for the kind of traffic a personal site sees.</p>
+<p>The one line that <strong>ALWAYS</strong> helps me is appending this at the end of the prompt:</p>
+<blockquote class="blockquote">
+<p>Interview me until you have 95% confidence about what I actually want, not what I think I should want.</p>
+</blockquote>
+<p>It tells the model to keep questioning your assumptions instead of taking them at face value which is exactly what you want when you are scoping a new or large feature. Whenever I am about to integrate something I have not built before, this single line saves me a lot of time in fast tracking the development and arriving at a plan that actually fits.</p>
+<p>For this dashboard the back-and-forth helped me take the important decisions early.</p>
+<ul>
+<li>I had said Google Maps, Claude pointed out that on a static site any key would leak in client JS and steered me to Mapbox’s free tier.</li>
+<li>I had said AccuWeather, it asked whether brand mattered more than accuracy for India, and pushed me to Open-Meteo + WAQI, both free and key-optional.</li>
+<li>It also laid out the cadence logic for me: a GitHub Actions cron every 15 minutes that writes a single JSON to a <code>data</code> branch on the same repo which the page then reads on load.</li>
+<li>By the end of the session I had a page that was live with 8 metros, a marker plus card UI and a working live tile and the data was being fetched every 15 minutes.</li>
+</ul>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage1_snap.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><em>Full Claude Code conversation for this stage: <a href="https://gist.github.com/garg-aayush/ad4dce3170fddcefdfb75eabc5b15620">stage-1-brainstorm-and-v1.txt</a>.</em></p>
+</section>
+<section id="stage-2-improving-the-dashboard-with-history-charts-and-ui-fixes" class="level2">
+<h2 class="anchored" data-anchor-id="stage-2-improving-the-dashboard-with-history-charts-and-ui-fixes">Stage 2: improving the dashboard with history charts and UI fixes</h2>
+<p>The next thing that I wanted to do was to add history charts under the map. I wanted to be able to view the history of the temperature, humidity and AQI for each city over certain time periods. This is the first version that I made conversationally with Claude:</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_hischarts.jpg" class="img-fluid" style="width:60.0%"></p>
+<p>Obviously, this was not the best way to view the values. The 7d and 30d views looked terrible with the day-night cycle turning every chart into a sawtooth. Next, I sent Claude the screenshot and asked one question:</p>
+<blockquote class="blockquote">
+<p>Currently, this is how the values look over the 7d and 30d period, I dont think that is the best way to view the values. What is the standard way to show these values?</p>
+</blockquote>
+<p>Claude pointed me at the weather.com pattern where weather apps aggregate the values by day, show a min/max bands with a daily mean line for temp and humidity, and color the AQI bars by EPA category. A second daily cron rebuilds the 30-day window from Open-Meteo each run which looked much nicer:</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_hischarts_better.jpg" class="img-fluid" style="width:60.0%"></p>
+<p>Finally, I improved the UI by fixing a few small issues. Some of them you can see below:</p>
+<table align="center">
+<tbody><tr>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_ui_issues1.jpg" alt="UI issue: label clutter" width="100%">
+</td>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_ui_issues2.jpg" alt="UI issue: bounds and styling" width="100%">
+</td>
+<td>
+<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_ui_issues3.jpg" alt="UI issue: caption and controls" width="100%">
+</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Better labeling for the cities that sit close together, better placement of the labels and leader lines</li>
+<li>Locking the map to India’s bounds</li>
+<li>Adding a reset-view control to the map</li>
+<li>A few alignment and styling tweaks</li>
+</ul>
+<p><em>Full Claude Code conversations for this stage: <a href="https://gist.github.com/garg-aayush/90d071d907958bc086562e5c17652d33">history charts</a>, <a href="https://gist.github.com/garg-aayush/4e7cefa56c5bba94c1ef3f830b3f0f48">daily aggregates</a>, <a href="https://gist.github.com/garg-aayush/259733c719cf10f77cf035e1c28b9380">UI polish</a>.</em></p>
+</section>
+<section id="stage-3-moving-the-cron-from-github-actions-to-cloudflare" class="level2">
+<h2 class="anchored" data-anchor-id="stage-3-moving-the-cron-from-github-actions-to-cloudflare">Stage 3: moving the cron from GitHub Actions to Cloudflare</h2>
+<p>After the dashboard was deployed I noticed the live tile timestamps were drifting. The label said “every 15 minutes” but the GitHub Actions free-tier cron was firing erratically, sometimes 40 mins or even &gt;1 hour late. This is usually the case with the free-tier cron jobs on GitHub Actions.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage3_github_actions.jpg" class="img-fluid" style="width:80.0%"></p>
+<p>I decided to move the cron to Cloudflare Workers which has a free tier and fires within seconds of schedule.</p>
+<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage3_cloudflare.jpg" class="img-fluid" style="width:100.0%"></p>
+<p>The interesting thing for me here is that I had never used Cloudflare workers for cron jobs before. Given how good these assistants are at writing code, it wrote the code, walked me through setup steps and the live cadence has been working well since. <strong>Even unfamiliar backend infra is something you can prompt your way through</strong> (obviously you should have the fundamental knowledge to nudge it in the right direction).</p>
+<p><em>Full Claude Code conversation for this stage: <a href="https://gist.github.com/garg-aayush/aae13309e3c8c8ab42499b2eb9987b7c">Cloudflare Worker migration</a>.</em></p>
+</section>
+<section id="what-i-would-carry-forward" class="level2">
+<h2 class="anchored" data-anchor-id="what-i-would-carry-forward">What I would carry forward</h2>
+<p>A few things from this build that I will keep doing:</p>
+<ul>
+<li><strong>Brainstorm before you build</strong>: Asking the model to interview you back, with a 95% confidence target, saves a lot of rework downstream. This has always worked for me!</li>
+<li><strong>Let it disagree with you</strong>: Mapbox over Google Maps, daily bands over raw sawtooth points, Cloudflare over GitHub Actions. None of those calls were mine. However, make sure your fundamental knowledge is strong enough to nudge it in the right direction.</li>
+<li><strong>Iterate from screenshots</strong>: A picture of what looks wrong plus one question is usually enough to move forward. I also use playwright mcp to let Claude test the UI (though they at times consume a lot of tokens).</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>Tools &amp; Infra</category>
+  <guid>https://garg-aayush.github.io/posts/2026-04-29-india-weather-with-claude/</guid>
+  <pubDate>Wed, 29 Apr 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</title>
   <link>https://garg-aayush.github.io/posts/2026-04-05-qwen35-vs-gemma4/</link>
@@ -6673,386 +6842,6 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
   <category>LLM Evaluation</category>
   <guid>https://garg-aayush.github.io/posts/2024-07-09-compare-models-structured-data.html</guid>
   <pubDate>Tue, 09 Jul 2024 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</title>
-  <link>https://garg-aayush.github.io/posts/2024-07-03-baseline-gpt4o-structured-data.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<section id="introduction" class="level3">
-<h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>Extracting structured data from unstructured texts allow us to condense the information present in the text. This representation then can be used for efficient indexing and other downstream RAG applications.&nbsp;</p>
-<p>I want to evaluate <a href="https://openai.com/index/hello-gpt-4o/">GPT-4o’s</a> performance in extracting structural data, specifically, functional representation, from the unstructured domain-specific text. I will use <a href="https://huggingface.co/datasets/GEM/viggo">ViGGO dataset</a> to evaluate it on custom evaluation criteria and will set it as baseline performance for that can be used for comparison in future work with other models such as <strong>Claude</strong>, <strong>Gemini</strong>, and <strong>custom</strong> fine-tuned open-source models.</p>
-</section>
-<section id="viggo-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="viggo-dataset">ViGGO Dataset</h3>
-<p>This is a dataset for generating text opinions in the video game domain. Strictly speaking, it is intended to generate coherent conversational responses based on input functional representations (set of attributes and values).</p>
-<p>However, I use the <strong>reverse task</strong>, where I <strong>generate structured functional representations from the given text input</strong>. A typical ViGGO dataset example has the output structured functional representation consisting of a single function with attributes and attribute values.</p>
-<pre><code>Text:
-You said that you liked Crysis. Do you often play first person games from Crytek Frankfurt?
-
-Functional Representation:
-verify_attribute(name[Crysis], developer[Crytek Frankfurt], rating[good], player_perspective[first person])</code></pre>
-<p>The function and attributes must be one of the following, respectively:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">Function:</span>
-<span id="cb2-2">[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'inform'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'request'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'give_opinion'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'confirm'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'verify_attribute'</span>, </span>
-<span id="cb2-3"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'suggest'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'request_explanation'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'recommend'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'request_attribute'</span>]</span>
-<span id="cb2-4"></span>
-<span id="cb2-5">Attributes:</span>
-<span id="cb2-6">[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'name'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'release_year'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'esrb'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'genres'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'platforms'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'available_on_steam'</span>,</span>
-<span id="cb2-7"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'has_linux_release'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'has_mac_release'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'specifier'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'rating'</span>, </span>
-<span id="cb2-8"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'player_perspective'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'has_multiplayer'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'developer'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'exp_release_date'</span>]</span></code></pre></div></div>
-<p><strong>Note</strong>: Since I am not training/fine-tuning any model, I will only consider the ViGGO validation datasetfor this exercise.</p>
-</section>
-<section id="prompt-for-generating-the-functional-representation" class="level3">
-<h3 class="anchored" data-anchor-id="prompt-for-generating-the-functional-representation">Prompt for generating the functional representation</h3>
-<p>I use modified version of prompt template used in <a href="https://medium.com/r?url=https%3A%2F%2Fwww.anyscale.com%2Fblog%2Ffine-tuning-llama-2-a-comprehensive-case-study-for-tailoring-models-to-unique-applications">Anyscale’s blog</a> for the ViGGO dataset. The prompt template is a few-shot prompt with examples from each function category to assist the model in understanding the intended output response representation.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">PROMPT_TEMPLATE <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"""</span></span>
-<span id="cb3-2"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Given a target sentence construct the underlying meaning representation of the input sentence as a single function with attributes and attribute values. </span></span>
-<span id="cb3-3"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">This function should describe the target string accurately and the function must be one of the following ['inform', 'request', 'give_opinion', 'confirm', 'verify_attribute', 'suggest', 'request_explanation', 'recommend', 'request_attribute'].</span></span>
-<span id="cb3-4"></span>
-<span id="cb3-5"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">The attributes must be one of the following: ['name', 'exp_release_date', 'release_year', 'developer', 'esrb', 'rating', 'genres', 'player_perspective', 'has_multiplayer', 'platforms', 'available_on_steam', 'has_linux_release', 'has_mac_release', 'specifier']. The order your list the attributes within the function must follow the order listed above. For example the 'name' attribute must always come before the 'exp_release_date' attribute, and so forth.</span></span>
-<span id="cb3-6"></span>
-<span id="cb3-7"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">For each attribute, fill in the corresponding value of the attribute within brackets. A couple of examples are below. Note: you are to output the string after "Output: ". Do not include "Output: " in your answer.</span></span>
-<span id="cb3-8"></span>
-<span id="cb3-9"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 1)</span></span>
-<span id="cb3-10"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: Dirt: Showdown from 2012 is a sport racing game for the PlayStation, Xbox, PC rated E 10+ (for Everyone 10 and Older). It's not available on Steam, Linux, or Mac.</span></span>
-<span id="cb3-11"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: inform(name[Dirt: Showdown], release_year[2012], esrb[E 10+ (for Everyone 10 and Older)], genres[driving/racing, sport], platforms[PlayStation, Xbox, PC], available_on_steam[no], has_linux_release[no], has_mac_release[no])</span></span>
-<span id="cb3-12"></span>
-<span id="cb3-13"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 2) </span></span>
-<span id="cb3-14"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: Were there even any terrible games in 2014?</span></span>
-<span id="cb3-15"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: request(release_year[2014], specifier[terrible])</span></span>
-<span id="cb3-16"></span>
-<span id="cb3-17"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 3)</span></span>
-<span id="cb3-18"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: Adventure games that combine platforming and puzzles  can be frustrating to play, but the side view perspective is perfect for them. That's why I enjoyed playing Little Nightmares.</span></span>
-<span id="cb3-19"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: give_opinion(name[Little Nightmares], rating[good], genres[adventure, platformer, puzzle], player_perspective[side view])</span></span>
-<span id="cb3-20"></span>
-<span id="cb3-21"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 4)</span></span>
-<span id="cb3-22"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: Since we're on the subject of games developed by Telltale Games, I'm wondering, have you played The Wolf Among Us?</span></span>
-<span id="cb3-23"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: recommend(name[The Wolf Among Us], developer[Telltale Games])</span></span>
-<span id="cb3-24"></span>
-<span id="cb3-25"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 5) </span></span>
-<span id="cb3-26"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: Layers of Fear, the indie first person point-and-click adventure game?</span></span>
-<span id="cb3-27"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: confirm(name[Layers of Fear], genres[adventure, indie, point-and-click], player_perspective[first person])  </span></span>
-<span id="cb3-28"></span>
-<span id="cb3-29"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 6) </span></span>
-<span id="cb3-30"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: I bet you like it when you can play games on Steam, like Worms: Reloaded, right?  </span></span>
-<span id="cb3-31"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: suggest(name[Worms: Reloaded], available_on_steam[yes])</span></span>
-<span id="cb3-32"></span>
-<span id="cb3-33"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 7)</span></span>
-<span id="cb3-34"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: I recall you saying that you really enjoyed The Legend of Zelda: Ocarina of Time. Are you typically a big fan of games on Nintendo rated E (for Everyone)?    </span></span>
-<span id="cb3-35"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: verify_attribute(name[The Legend of Zelda: Ocarina of Time], esrb[E (for Everyone)], rating[excellent], platforms[Nintendo])</span></span>
-<span id="cb3-36"></span>
-<span id="cb3-37"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 8)</span></span>
-<span id="cb3-38"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: So what is it about the games that were released in 2005 that you find so excellent?  </span></span>
-<span id="cb3-39"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: request_explanation(release_year[2005], rating[excellent])</span></span>
-<span id="cb3-40"></span>
-<span id="cb3-41"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Example 9)</span></span>
-<span id="cb3-42"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Sentence: Do you think Mac is a better gaming platform than others?</span></span>
-<span id="cb3-43"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Output: request_attribute(has_mac_release[])</span></span>
-<span id="cb3-44"></span>
-<span id="cb3-45"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Give the output for the following sentence:</span></span>
-<span id="cb3-46"><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{input}</span></span>
-<span id="cb3-47"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"""</span></span></code></pre></div></div>
-<p>The typical responses for the above template are not perfect but it can be used for generating structured output for the full dataset.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">Ground Truth: inform(name[FIFA <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>], release_year[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2011</span>], esrb[E (<span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> Everyone)], rating[average], genres[simulation, sport])</span>
-<span id="cb4-2">GPT Response: inform(name[FIFA <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">12</span>], release_year[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2011</span>], esrb[E (<span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> Everyone)], rating[average], genres[sports, simulation])</span>
-<span id="cb4-3"></span>
-<span id="cb4-4"></span>
-<span id="cb4-5">Ground Truth: request(player_perspective[side view], specifier[easy])</span>
-<span id="cb4-6">GPT Response: Output: request(genres[side view], rating[top], specifier[easy])</span>
-<span id="cb4-7"></span>
-<span id="cb4-8"></span>
-<span id="cb4-9">Ground Truth: recommend(name[Need <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> Speed: The Run], platforms[Xbox])</span>
-<span id="cb4-10">GPT Response: confirm(name[Need <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> Speed: The Run], platforms[Xbox])</span></code></pre></div></div>
-</section>
-<section id="evaluation-criteria" class="level3">
-<h3 class="anchored" data-anchor-id="evaluation-criteria">Evaluation criteria</h3>
-<p>Often, you require custom evaluation criteria for custom tasks. For structured functional representation extraction, I define the following binary criteria:</p>
-<ol type="1">
-<li><p><strong>Function Name Match</strong>: The function name must match the ground truth function name.</p></li>
-<li><p><strong>Function and Attributes Match</strong>: The generated function name and attributes must match the ground truth function attributes. However, the order of the attributes does not matter.</p></li>
-<li><p><strong>Function, Attributes, and Values Match</strong>: The generated function name, attributes, and values must match the ground truth function attributes and values. The order of the attributes and values does not matter.</p></li>
-<li><p><strong>Exact Match</strong>: The generated function must exactly match the ground truth function.</p></li>
-</ol>
-<p>The above criteria are in order of increasing strictness. The first criterion is the least strict, and the last criterion is the most strict. These criteria will help me evaluate the model’s performance.</p>
-</section>
-<section id="evaluation-strategy" class="level3">
-<h3 class="anchored" data-anchor-id="evaluation-strategy">Evaluation Strategy</h3>
-<p>Although not ideal, I ask the model to evaluate its own performance on the given task. This approach has limitations, as it could potentially introduce bias in the evaluation process. However, it serves as a starting point for our analysis. I ask the model to compare the generated function with the ground truth function and provide a boolean score based on the above evaluation criteria.</p>
-<p>Since, I need the evaluation scores in a more structured format to analyze the model’s performance effectively. I use <a href="https://docs.pydantic.dev/latest/">pydantic</a> and <a href="https://python.useinstructor.com/">instructor</a> packages to obtain the evaluation scores in a structured format. I use the following prompt and pydantic model to evaluate the GPT-4o performance:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">class</span> EvaluateFunctionRepresentation(BaseModel):</span>
-<span id="cb5-2">    function_match: <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">bool</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> Field(description<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The function name is the same but the attributes and values can be different."</span>)</span>
-<span id="cb5-3">    function_attribute_match: <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">bool</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> Field(description<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The function and the attributes are the same but the values can be different."</span>)</span>
-<span id="cb5-4">    function_attributes_values_match: <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">bool</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> Field(description<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The generated representation has same function and attributes and corresponding values without the same attributes and values order."</span>)</span>
-<span id="cb5-5">    exact_match: <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">bool</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> Field(description<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"The generated representation is exactly the same as the ground truth representation."</span>)</span>
-<span id="cb5-6"></span>
-<span id="cb5-7">PROMPT_TEMPLATE_SCORE_EVAL <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"""I will provide you with two functional representations strings. One will be the ground truth representation (ground_truth) and the other will be a generated representation (generated). You need to compare the generated representation with the ground truth representation and provide the following similarity match in true or false:</span></span>
-<span id="cb5-8"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">1) function_match</span></span>
-<span id="cb5-9"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">2) function_attributes_match</span></span>
-<span id="cb5-10"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">3) function_attributes_values_match</span></span>
-<span id="cb5-11"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">4) exact_match</span></span>
-<span id="cb5-12"></span>
-<span id="cb5-13"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">A typical functional representation is of this form: function(attribute1[values], attribute2[values], attribute3[values], ...). </span></span>
-<span id="cb5-14"></span>
-<span id="cb5-15"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Given the following two functional representation, provide the similarity scores for the following:</span></span>
-<span id="cb5-16"></span>
-<span id="cb5-17"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">ground_truth: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{ground_truth}</span></span>
-<span id="cb5-18"></span>
-<span id="cb5-19"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">generated: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{generated}</span></span>
-<span id="cb5-20"></span>
-<span id="cb5-21"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">Let's think step by step.</span></span>
-<span id="cb5-22"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"""</span></span></code></pre></div></div>
-<p><strong>Please go through the <a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Evaluate_GPT4_Viggo_dataset.ipynb">GPT-4o baseline evaluation notebook</a> for more details on prompt template and evaluation process and responses.</strong></p>
-</section>
-<section id="evaluating-the-performance" class="level3">
-<h3 class="anchored" data-anchor-id="evaluating-the-performance">Evaluating the performance</h3>
-<p>Using the above evaluation strategy, I generate the average evaluation scores for the full dataset.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png" class="img-fluid figure-img"></p>
-<figcaption>GPT-4o Evaluation Metrics</figcaption>
-</figure>
-</div>
-<p>The task of generating functional representations from natural language sentences is challenging as seen in the above scores. The best the model can do is to provide the exact match only for <strong>30%</strong> of the examples. Even the correct function name evaluation score is only about <strong>80%</strong>. These results indicate that while GPT-4o shows some capability in extracting functional representations, there’s significant room for improvement.</p>
-</section>
-<section id="conclusion" class="level3">
-<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
-<p>The above evaluation exercise provides a good baseline and useful evaluation criteria/metrics that can be used to assess the performance of other models on the same task in the future. Generating functional representations is a complex task and is not easily accomplished using prompt-engineering techniques like few-shot learning as seen in the results.</p>
-</section>
-<section id="next-steps" class="level3">
-<h3 class="anchored" data-anchor-id="next-steps">Next steps…</h3>
-<ul>
-<li><p>Evaluate other large models like <strong>Claude</strong>, <strong>Gemini</strong>, and <strong>Llama-3–70B</strong> on the same task to compare their performance. This will provide a broader perspective on how different LLMs handle structured data extraction.</p></li>
-<li><p>Explore alternative evaluation methods that don’t rely on the model evaluating itself. Most importantly, to eliminate potential biases in the evaluation process.</p></li>
-<li><p>Fine-tune smaller models like <strong>Llama-3–8B</strong> or <strong>Mistral-7B</strong> for this domain-specific structured representation task. Fine-tuning will not only improve the model’s performance but also enhance latency and reduce the number of input tokens required to generate the output.</p></li>
-<li><p>Investigate the impact of different prompt engineering techniques on the model’s performance.</p></li>
-</ul>
-</section>
-<section id="references" class="level3">
-<h3 class="anchored" data-anchor-id="references">References</h3>
-<ul>
-<li><a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Evaluate_GPT4_Viggo_dataset.ipynb">GPT-4o baseline evaluation notebook</a></li>
-<li><a href="https://openai.com/index/hello-gpt-4o/">OpenAI GPT-4o</a></li>
-<li><a href="https://huggingface.co/datasets/GEM/viggo">ViGGO Dataset</a></li>
-<li><a href="https://www.anyscale.com/blog/fine-tuning-llama-2-a-comprehensive-case-study-for-tailoring-models-to-unique-applications">Anyscale Blog on Fine-tuning Llama 2</a></li>
-<li><a href="https://docs.pydantic.dev/latest/">Pydantic Documentation</a></li>
-<li><a href="https://python.useinstructor.com/">Instructor Package</a></li>
-</ul>
-<hr>
-<p>Thanks for reading! If you have any questions or feedback, please let me know on <a href="https://twitter.com/Aayush_ander">Twitter</a> or <a href="https://www.linkedin.com/in/aayush-garg-8b26a734/">LinkedIn</a>.</p>
-
-
-</section>
-
- ]]></description>
-  <category>LLM Evaluation</category>
-  <guid>https://garg-aayush.github.io/posts/2024-07-03-baseline-gpt4o-structured-data.html</guid>
-  <pubDate>Wed, 03 Jul 2024 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
