@@ -14,10 +14,3 @@ crons = ["*/15 * * * *"]
 GITHUB_OWNER = "garg-aayush"
 GITHUB_REPO = "garg-aayush.github.io"
 DATA_BRANCH = "data"
-
-# Bundle the canonical cities.json from the site into the Worker so we have a
-# single source of truth and don't pay an extra HTTP round-trip per run.
-[[rules]]
-type = "Data"
-globs = ["**/cities.json"]
-fallthrough = true
