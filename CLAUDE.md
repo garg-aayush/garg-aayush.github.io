@@ -14,10 +14,11 @@ quarto render posts/    # Render only blog posts
 ## CI/CD
 - Pushes to `master` trigger `.github/workflows/quarto-publish.yml`
 - Workflow runs `quarto render`, then a `sed` step substitutes any `__MAPBOX_TOKEN__` placeholder in `_site/` from the `MAPBOX_TOKEN` repo secret, then publishes `_site/` to `gh-pages` via `quarto-dev/quarto-actions/publish@v2` with `render: false`
-- Two cron workflows feed the orphan `data` branch (force-push, single-commit):
-  - `.github/workflows/india-weather-data.yml` runs every 15 minutes (Open-Meteo + WAQI live snapshot + 24h trailing window).
-  - `.github/workflows/india-weather-daily.yml` runs once per day at 02:00 IST and rewrites 30-day per-city daily aggregates from Open-Meteo (forecast API + air-quality API).
-  - Both workflows share the concurrency group `india-weather-data-publish` and each carries forward the other's files when force-pushing, so they cannot race-clobber each other. See "Live Data Pages" below.
+- Two crons feed the orphan `data` branch (force-push, single-commit):
+  - **Cloudflare Worker** in `worker/` runs every 15 minutes (Open-Meteo + WAQI live snapshot + 24h trailing window). Cron Triggers fire on schedule, unlike Actions which drifted 30-80 min. Owns `weather.json` and `history-*.json`.
+  - `.github/workflows/india-weather-daily.yml` runs once per day at 02:00 IST and rewrites 30-day per-city daily aggregates from Open-Meteo (forecast API + air-quality API). Owns `daily-*.json`.
+  - Each writer carries the other's files forward when force-pushing the orphan commit, so they cannot race-clobber. See "Live Data Pages" below.
+  - `.github/workflows/india-weather-data.yml` is kept as a `workflow_dispatch`-only fallback — usable from the Actions UI if the Worker is ever benched.
 
 ## Architecture
 
@@ -93,15 +94,16 @@ Pages that fetch data refreshed by a cron workflow rather than at build time. Cu
 - `static/india-weather/weather.sample.json` — hand-authored fixture used as a fallback when the remote data branch is unreachable
 - `static/india-weather/history-<id>.sample.json` — per-city 24h fallbacks for ?local dev / data-branch outages
 - `static/india-weather/daily-<id>.sample.json` — per-city 30-day daily-aggregate fallbacks
-- `scripts/fetch-india-weather.mjs` — pure-Node ESM fetcher (no deps, uses built-in `fetch` and `AbortController`); writes the live `weather.json` and a 24h-only rolling `history-<id>.json` per city when given `--history-in` / `--history-out`
+- `worker/` — Cloudflare Worker that owns the 15-min live cron. `src/fetch-weather.mjs` is the pure-functions Open-Meteo + WAQI pipeline; `src/github.mjs` is the Git Data API client (reads tree by branch, embeds blob content inline in `POST /git/trees`, parentless commit + force ref-update); `src/index.mjs` wires it together in `scheduled()` and exposes a `/__trigger` endpoint guarded by `TRIGGER_SECRET` for manual runs. Bundles `static/india-weather/cities.json` cross-directory so there's a single source of truth.
+- `scripts/fetch-india-weather.mjs` — pure-Node ESM fetcher; was the live cron's body when Actions owned it. Now only used by the fallback workflow if it's manually dispatched.
 - `scripts/fetch-india-weather-daily.mjs` — pure-Node ESM daily-aggregate fetcher; rewrites the 30-day window from Open-Meteo each run (no incremental append, missed runs self-heal)
-- `.github/workflows/india-weather-data.yml` — `*/15` cron + `workflow_dispatch`; owns `weather.json` and `history-*.json`
-- `.github/workflows/india-weather-daily.yml` — `30 20 * * *` cron (= 02:00 IST) + `workflow_dispatch`; owns `daily-*.json`
+- `.github/workflows/india-weather-data.yml` — `workflow_dispatch`-only fallback (the `schedule:` trigger was removed when the Worker took over). Still writes `weather.json` and `history-*.json` if manually dispatched.
+- `.github/workflows/india-weather-daily.yml` — `30 20 * * *` cron (= 02:00 IST) + `workflow_dispatch`; owns `daily-*.json`. Stays on Actions: runs once a day where cron drift is harmless.
 
 ### Architecture
-- The 15-min cron checks out `master`, runs the fetcher (which calls Open-Meteo for weather and WAQI for AQI), updates the rolling 24h history, then publishes the resulting `weather.json` + `history-*.json` as a single-commit force-push to the orphan `data` branch — preserving the daily cron's `daily-*.json` files when it does so.
+- The Worker fires every 15 minutes via Cloudflare Cron Trigger (within seconds of schedule, no drift). On each tick: read the data branch tree by name (one call), pull each `history-*.json` blob, fetch Open-Meteo + WAQI in parallel, append a new point, and write a single parentless commit via `POST /git/trees` with file content inlined — keeping the data branch at exactly one commit and matching the orphan-style push the retired Actions cron used. Daily files are carried forward by SHA so the daily cron is never stomped on. Total subrequest count is ~46/run, deliberately under Cloudflare's free-tier 50 cap.
 - The daily cron checks out `master`, runs the daily-aggregate fetcher (Open-Meteo Forecast API + Air Quality API with `past_days=30`, `timezone=Asia/Kolkata`), aggregates hourly data into per-IST-day min/max/mean for temp, humidity, and US AQI, and force-pushes the resulting `daily-*.json` files alongside the preserved `weather.json` + `history-*.json`.
-- Both workflows share concurrency group `india-weather-data-publish` so they serialize and never race-clobber the orphan force-push.
+- The Worker and the daily Actions cron each carry the other's files forward by SHA when they push, so neither clobbers the other. They are not in a shared concurrency group (Worker is on Cloudflare, Actions on GitHub) — collision risk is ~0.3 %/day and `force: true` ref updates resolve harmlessly when it does happen.
 - The published page reads `weather.json`, `history-<id>.json`, and `daily-<id>.json` from `https://raw.githubusercontent.com/garg-aayush/garg-aayush.github.io/data/`. If a fetch fails, the JS falls back to the bundled `*.sample.json` files. Per-city history files are loaded lazily on city/range selection.
 - Visitor count never affects API call volume because all fetching happens server-side on the cron schedule.
 
@@ -116,13 +118,14 @@ Pages that fetch data refreshed by a cron workflow rather than at build time. Cu
 - No bootstrap workflow is required: each daily cron run rebuilds the entire 30-day window from Open-Meteo, so missed runs self-heal automatically.
 
 ### Token handling
-- **No tokens in source, ever.** Both `MAPBOX_TOKEN` and `WAQI_TOKEN` live as GitHub repo Secrets.
-- `WAQI_TOKEN` is consumed inside the cron workflow only; never reaches the client.
+- **No tokens in source, ever.** `MAPBOX_TOKEN` lives as a GitHub repo Secret; `WAQI_TOKEN` and `GITHUB_TOKEN` (a fine-grained PAT scoped to this repo, Contents:Write) live as Cloudflare Worker secrets set via `wrangler secret put`. `TRIGGER_SECRET` is also a Worker secret guarding the manual `/__trigger` endpoint.
+- `WAQI_TOKEN` is consumed inside the Worker only; never reaches the client. The fallback Actions workflow still reads it from GitHub Secrets if manually dispatched.
 - `MAPBOX_TOKEN` must reach the client to render the map. The repo source has only a `__MAPBOX_TOKEN__` placeholder in `india-weather.js`. The publish workflow's `sed` step replaces it after `quarto render` and before pushing to `gh-pages`. Local dev falls back to `localStorage.iwMapboxToken` so the token never touches a shell history or dotfile either.
 - Mapbox URL allowlist on the token: `aayushgarg.dev`, `garg-aayush.github.io`, `localhost`. Bare hostnames only; Mapbox does not accept wildcards or path suffixes.
 
 ### Known caveats
-- **GitHub Actions cron drift.** Scheduled runs are best-effort. The very first scheduled tick after a workflow is registered often does not fire for 30 to 60 minutes, and `*/15` runs can be delayed or dropped under load. The page handles this gracefully (the client shows a relative `Updated Nm ago` timestamp from `generated_at`), and `workflow_dispatch` is available for manual force-refresh.
 - **`raw.githubusercontent.com` Fastly cache.** Responses are cached for ~5 minutes, and Fastly does NOT vary the cache by query string. The current Refresh button cache-busts with `?t=Date.now()` but Fastly ignores it; the button effectively only re-renders the existing cached payload. Worst-case staleness is therefore cron interval (15 min) plus Fastly TTL (5 min) ≈ 20 min. Acceptable for portfolio purposes; switch to jsDelivr if a tighter SLA is ever needed.
+- **Cloudflare Workers free-tier subrequest cap.** 50 subrequests per Worker invocation. We sit at ~46 (2 Open-Meteo + 20 WAQI + 1 tree read + 20 history blob reads + 3 GitHub writes). Adding cities costs 2 each; we hit the cap at 22 cities. Mitigation paths if it ever bites: Workers Paid ($5/mo, 1000-subrequest cap), or move history reads into Cloudflare KV (one batched read replaces 20 GitHub blob reads).
+- **WAQI dominant pollutant is dropped under the Worker.** The popup's "Dominant: PM2.5" line stays blank. Reinstating it costs +20 subrequests (one WAQI feed call per city) and would push us over the free-tier cap; revisit when/if we go to Workers Paid.
 - **GitHub secret scanning.** Push protection flags any `pk.*` Mapbox token landing in any branch (including `gh-pages`). The first push after rotating the Mapbox token will be blocked once and require a click-through unblock URL. Pasting a `pk.*` directly into source instead of the placeholder will be permanently blocked.
 - **Mapbox token type.** Use `pk.*` (public, scoped read-only). Never put an `sk.*` token anywhere near the client.
