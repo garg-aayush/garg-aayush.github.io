@@ -14,8 +14,17 @@
 // provided, the script reads the existing per-city history-<id>.json files and
 // appends a new point to points_24h (used for the 24h chart view). The 7d / 30d
 // chart views are owned by scripts/fetch-india-weather-daily.mjs and are not
-// touched here. The chart-friendly AQI value is pulled from Open-Meteo Air
-// Quality so the historical series has a single, backfillable source.
+// touched here.
+//
+// Two AQI values are written into each point:
+//   - aqi      : Open-Meteo Air Quality (CAMS, US AQI). Backfillable, model-based,
+//                used as the rendered series until the rolling window has enough
+//                aqi_waqi points to take over (and as the fallback if WAQI is
+//                blocked).
+//   - aqi_waqi : WAQI / CPCB-station average. The same value shown on the live
+//                tile, but accumulated over 24h so the chart can match the live
+//                number once the window is full. Free WAQI has no historical
+//                endpoint, so this series only grows forward from rollout.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -188,12 +197,18 @@ async function fetchWaqiCity(city) {
 
 // History helpers ------------------------------------------------------------
 
+const HISTORY_SOURCE = {
+  weather: 'open-meteo',
+  aqi: 'open-meteo-air-quality',
+  aqi_waqi: 'waqi-cpcb',
+};
+
 function emptyHistory(city) {
   return {
     city: city.id,
     name: city.name,
     generated_at: new Date().toISOString(),
-    source: { weather: 'open-meteo', aqi: 'open-meteo-air-quality' },
+    source: { ...HISTORY_SOURCE },
     points_24h: [],
   };
 }
@@ -208,7 +223,7 @@ function readHistory(dir, city) {
       city: city.id,
       name: city.name,
       generated_at: parsed.generated_at || new Date().toISOString(),
-      source: parsed.source || { weather: 'open-meteo', aqi: 'open-meteo-air-quality' },
+      source: { ...HISTORY_SOURCE, ...(parsed.source || {}) },
       points_24h: Array.isArray(parsed.points_24h) ? parsed.points_24h : [],
     };
   } catch (err) {
@@ -286,11 +301,15 @@ async function main() {
     for (let i = 0; i < cities.length; i++) {
       const city = cities[i];
       const w = weatherList[i];
+      const waqiValue = results[i] && results[i].aqi && results[i].aqi.value != null
+        ? results[i].aqi.value
+        : null;
       const point = {
         t: new Date(nowMs).toISOString(),
         temp: w && w.temperature_c != null ? w.temperature_c : null,
         humidity: w && w.humidity_pct != null ? w.humidity_pct : null,
         aqi: omAqiList[i],
+        aqi_waqi: waqiValue,
       };
       const prior = readHistory(HISTORY_IN, city);
       const next = updateHistory(prior, point, nowMs);
