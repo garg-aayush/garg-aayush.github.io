@@ -10,15 +10,29 @@ permalink: /2026-04-29-india-weather-with-claude/
 
 It is summer in India and like a lot of folks back home, I find myself checking the temperature and humidity more often than I would like to admit. Both affect everything, from the soil in our balcony pots to whether the AC actually wins the fight at 2pm. The bigger one though is AQI. If you live in or around North India, pollution is genuinely a public health problem for half the year.
 
-I wanted a small dashboard on my portfolio that pulled all of this into one place for the major Indian cities. I am an AI/ML engineer; frontend and devops are not my day job. So I decided to just prompt [Claude Code](https://claude.ai/code) in stages and see how far it would take me. This post is a short reflection on how that went. The dashboard is live at [aayushgarg.dev/india-weather](/india-weather.html).
+I wanted a small dashboard on my portfolio that pulled all of this into one place for the major Indian cities. I am an AI/ML engineer; frontend and devops are not my day job. So I prompted [Claude Code](https://claude.ai/code) in stages and saw how far it would go. This post is a short reflection on how that went. The dashboard is live at [aayushgarg.dev/india-weather](/india-weather.html).
 
-<!-- Screenshot: live map view with markers and leaderboard -->
+![](/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg){width=100%}
 
 ## What it does
 
-The page shows 20 metropolitan cities across India with live temperature, humidity, and AQI, updated every 15 minutes. Click a marker or a leaderboard entry for 24h, 7d, or 30d charts on each parameter. Data comes from [Open-Meteo](https://open-meteo.com/) (model-based forecasts and air quality) and [WAQI](https://aqicn.org/) (CPCB ground stations for live AQI). The map is Mapbox, locked to India's bounds. The site itself is static, so fetching happens server-side on a cron and the page just reads JSON.
+- 20 Indian metropolitan cities on an interactive map, with live temperature, humidity, and AQI refreshed every 15 minutes
+- Click a marker or leaderboard entry for 24h / 7d / 30d charts
+- Mapbox base, locked to India's bounds
+- Static site, so fetching runs server-side on a cron and the page just reads JSON
 
-I built this in three loose stages. Below is roughly how each one went.
+The numbers come from [Open-Meteo](https://open-meteo.com/) and [WAQI](https://aqicn.org/):
+
+| Metric         | Live (15 min) | 24h chart | 7d / 30d charts | Source                        |
+|----------------|:-------------:|:---------:|:---------------:|-------------------------------|
+| Temperature    | ✓             | ✓         | ✓               | Open-Meteo Forecast           |
+| Humidity       | ✓             | ✓         | ✓               | Open-Meteo Forecast           |
+| Live AQI       | ✓             |           |                 | WAQI / CPCB stations          |
+| Historical AQI |               | ✓         | ✓               | Open-Meteo Air Quality (CAMS) |
+
+Why these two and not AccuWeather or OpenWeatherMap: I wanted free APIs with no client-exposed key, which rules the paid tiers out. Open-Meteo is free for non-commercial use and runs on the same ECMWF + GFS models behind most weather apps. WAQI is the more interesting pick. Its Indian feed comes directly from CPCB ground stations (the same ones behind airquality.cpcb.gov.in) and republishes roughly every 15 minutes, which is the natural CPCB cadence. So it is effectively the official live AQI with a free developer API in front, and our 15-minute cron lines up with the upstream refresh without wasting polls.
+
+I built this in three loose stages, with stages 2 and 3 overlapping in practice. Below is roughly how each went.
 
 ## Stage 1: a working v1 in one evening
 
@@ -32,24 +46,25 @@ That last line did most of the work. I had said Google Maps; Claude pointed out 
 
 ## Stage 2: graphs, more cities, a cleaner UI
 
-v1 felt thin after a few days. I asked for history charts under the map, with the cron keeping a rolling 24h window per city. We picked [uPlot](https://github.com/leeoniya/uPlot) (3KB, very fast) and added 24h line charts.
+Using v1 the gaps became obvious. I asked for history charts under the map, with the cron keeping a rolling 24h window per city. We picked [uPlot](https://github.com/leeoniya/uPlot) (3KB, very fast) and added 24h line charts.
 
 The 7d and 30d views looked terrible at first. The day-night cycle turned every chart into a sawtooth. I sent Claude a screenshot and asked one question:
 
 > Currently, this is how the values look over the 7d and 30d period, I dont think that is the best way to view the values. What is the standard way to show these values?
 
-It pointed at what weather.com and Windy do: aggregate by day, show a min/max band with a daily mean line for temp and humidity, and color the AQI bars by EPA category. That is a different shape of data, so we added a second daily cron that rebuilds the 30-day window each run. The same back-and-forth expanded the city list from 8 to 20, fixed label clutter where cities sit close together, and locked panning to India's bounds, each one a single prompt with a screenshot.
+It pointed at the standard weather.com pattern: aggregate by day, min/max bands with a daily mean line for temp and humidity, AQI bars colored by EPA category. We added a second daily cron to rebuild the 30-day window each run. The same back-and-forth expanded the city list from 8 to 20, fixed label clutter where cities sit close together, and locked panning to India's bounds. One prompt per change.
 
-<!-- Screenshot: chart view (7d AQI bars or 24h temp/humidity) -->
+![](/static/img/blog-2026-04-29/weather_dashboard_snap2.jpg){width=100%}
+
 <!-- Gist: stage 2 conversation -->
 
 ## Stage 3: the cron was lying to me
 
-A week later the live tile timestamps looked off. The label said "every 15 minutes" but the data felt much older. So I asked:
+Around the same time I noticed the live tile timestamps were off. The label said "every 15 minutes" but the data felt much older. So I asked:
 
 > 15 minutes work fine, but what I am seeing seems to me the cron job is only running once every hour.
 
-Claude pulled the actual run history. Average gap between runs was 40 minutes, sometimes 80. This is well documented behaviour on free GitHub Actions runners; `*/15` schedules drift heavily under load. We compared options (an external pinger, accepting the drift, moving off Actions) and settled on a Cloudflare Worker with a Cron Trigger, which fires within seconds of schedule on the free tier. Claude wrote the Worker, ported the fetcher, and kept the daily aggregator on Actions (drift is harmless once a day). The live cadence has been honest since.
+Claude pulled the run history: the average gap between runs was 40 minutes, sometimes 80. Free GitHub Actions runners drift heavily under load on `*/15` schedules. We compared options and moved to a Cloudflare Worker with a Cron Trigger, which fires within seconds of schedule on the free tier. Claude wrote the Worker, ported the fetcher, and kept the daily aggregator on Actions (drift is harmless once a day). The live cadence has been honest since.
 
 <!-- Gist: stage 3 conversation -->
 
@@ -59,7 +74,7 @@ A few things from this that I will keep doing:
 
 - **Force the model to interview before it builds.** Most bad outcomes I have had with Claude Code came from skipping this step. That one line is the cheapest insurance I have found.
 - **Let it disagree with you.** Mapbox over Google Maps, Open-Meteo over AccuWeather, min/max bands over raw points, Cloudflare Workers over Actions; none of those calls were mine. Going in with opinions but holding them lightly produces better software than insisting on the first idea.
-- **Ship a v1 fast and iterate.** The dashboard was usable on day one with 8 cities and no charts. Everything since has been polish on a foundation that already worked, and each step was a small contained prompt rather than a rewrite.
-- **Measure the runner before you trust it.** I built around GitHub's `*/15` cron assuming it meant 15 minutes. It did not. Worth checking actual cadence before you wire UI promises around it.
+- **Ship a v1 fast and iterate.** The dashboard was usable on day one with 8 cities and no charts. Everything since has been polish on a foundation that worked, each step a small contained prompt rather than a rewrite.
+- **Measure the runner before you trust it.** I built around GitHub's `*/15` cron assuming it meant 15 minutes. It did not. Check the actual cadence before wiring UI promises around it.
 
-I did not write much HTML, JavaScript, or Worker code by hand. Most of my time went into framing the problem, looking at screenshots, and deciding what to do next. With Claude Code, that turns out to be enough to ship something that works.
+I did not write much HTML, JavaScript, or Worker code by hand. Most of my time went into framing the problem, looking at screenshots, and deciding what to do next. That turned out to be enough.
