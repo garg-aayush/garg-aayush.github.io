@@ -59,7 +59,7 @@ include-after-body:
 
     <div class="iw-charts">
       <figure class="iw-chart-card">
-        <figcaption>Air Quality Index <span class="iw-chart-source">(US AQI · Open-Meteo)</span></figcaption>
+        <figcaption>Air Quality Index <span id="iw-aqi-source" class="iw-chart-source">(US AQI · Open-Meteo)</span></figcaption>
         <div id="iw-chart-aqi" class="iw-chart"></div>
       </figure>
       <figure class="iw-chart-card">
@@ -78,8 +78,11 @@ include-after-body:
     Live tile: weather from <a href="https://open-meteo.com/" rel="noopener">Open-Meteo</a>,
     AQI from <a href="https://aqicn.org/" rel="noopener">WAQI</a> (CPCB-station average) on the
     <a href="https://cpcb.nic.in/" rel="noopener">Indian CPCB</a> band scale.
-    History charts use Open-Meteo for both weather and US AQI; the chart's AQI scale is therefore
-    different from the live tile. Data refreshes every 15 minutes.
+    History charts: temperature and humidity are always Open-Meteo. The 24h AQI series matches
+    the live tile (CPCB stations via WAQI, accumulated forward from rollout); the 7d / 30d AQI
+    series uses Open-Meteo (CAMS, US AQI) because WAQI's historical endpoint is paywalled. The
+    two AQI sources are on different scales, so 7d / 30d bars will not always agree with the
+    live CPCB number. Data refreshes every 15 minutes.
   </p>
 </div>
 ```

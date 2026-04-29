@@ -33,6 +33,19 @@
   const elHistoryCity = document.getElementById('iw-history-city');
   const elHistoryStatus = document.getElementById('iw-history-status');
   const elRangeBtns = document.querySelectorAll('.iw-range-btn');
+  const elAqiSource = document.getElementById('iw-aqi-source');
+
+  // The AQI chart caption changes between ranges: 24h reads CPCB stations via
+  // WAQI when the rolling window has accumulated them, otherwise Open-Meteo's
+  // CAMS series. 7d / 30d are always CAMS (WAQI history is paywalled).
+  const AQI_SOURCE_LABEL = {
+    waqi:    '(CPCB stations · WAQI)',
+    cams:    '(US AQI · Open-Meteo)',
+  };
+  function setAqiSourceLabel(kind) {
+    if (!elAqiSource) return;
+    elAqiSource.textContent = AQI_SOURCE_LABEL[kind] || AQI_SOURCE_LABEL.cams;
+  }
 
   // Default camera, also used by the reset-view control to fly back home.
   const HOME_VIEW = { center: [80.0, 22.5], zoom: 3.8 };
@@ -721,8 +734,14 @@
     if (activeRange === '24h') {
       const hourly = hourlyCache.get(cityId);
       const points = (hourly && Array.isArray(hourly.points_24h)) ? hourly.points_24h : [];
+      // Prefer WAQI/CPCB stations (matches the live tile) once the rolling
+      // window has accumulated them. Falls back to CAMS during the 24h
+      // warm-up after rollout, or if WAQI was blocked across the window.
+      const hasWaqi = points.some(p => p && p.aqi_waqi != null && Number.isFinite(p.aqi_waqi));
+      const aqiKey = hasWaqi ? 'aqi_waqi' : 'aqi';
+      setAqiSourceLabel(hasWaqi ? 'waqi' : 'cams');
       renderLineChart('aqi',  'iw-chart-aqi',      'AQI',      '#75A8D9',
-        v => Math.round(v),                points, 'aqi');
+        v => Math.round(v),                points, aqiKey);
       renderLineChart('temp', 'iw-chart-temp',     'Temp',     '#E8A87C',
         v => v.toFixed(1) + '°',           points, 'temp');
       renderLineChart('humidity', 'iw-chart-humidity', 'Humidity', '#7CC4A1',
@@ -733,6 +752,7 @@
     const daily = dailyCache.get(cityId);
     const days = daySliceForRange(daily, activeRange);
 
+    setAqiSourceLabel('cams');
     renderAqiBarChart('iw-chart-aqi', days);
 
     renderBandChart('temp', 'iw-chart-temp', 'Temp °C',
