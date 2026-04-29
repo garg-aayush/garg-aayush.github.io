@@ -735,11 +735,24 @@
       const hourly = hourlyCache.get(cityId);
       const points = (hourly && Array.isArray(hourly.points_24h)) ? hourly.points_24h : [];
       // Prefer WAQI/CPCB stations (matches the live tile) once the rolling
-      // window has accumulated them. Falls back to CAMS during the 24h
-      // warm-up after rollout, or if WAQI was blocked across the window.
-      const hasWaqi = points.some(p => p && p.aqi_waqi != null && Number.isFinite(p.aqi_waqi));
-      const aqiKey = hasWaqi ? 'aqi_waqi' : 'aqi';
-      setAqiSourceLabel(hasWaqi ? 'waqi' : 'cams');
+      // window has enough of them. Two guards:
+      //   coverage >= 75%  - kills premature flips during the warm-up. The
+      //                      old "any single point" rule would flip on the
+      //                      first WAQI run and show one dot with 95 nulls
+      //                      around it. Also auto-reverts to CAMS if WAQI
+      //                      stays dead for hours and the proportion drops.
+      //   recent point     - kills the case where WAQI was healthy for 18h
+      //                      then died; without this we'd label the chart
+      //                      "CPCB" while its right edge is hours stale.
+      // Falls back to CAMS when either guard fails.
+      const total = points.length;
+      const withWaqi = points.filter(p => p && p.aqi_waqi != null && Number.isFinite(p.aqi_waqi)).length;
+      const coverage = total > 0 ? withWaqi / total : 0;
+      const latest = points[points.length - 1];
+      const recentHasWaqi = !!(latest && latest.aqi_waqi != null && Number.isFinite(latest.aqi_waqi));
+      const useWaqi = coverage >= 0.75 && recentHasWaqi;
+      const aqiKey = useWaqi ? 'aqi_waqi' : 'aqi';
+      setAqiSourceLabel(useWaqi ? 'waqi' : 'cams');
       renderLineChart('aqi',  'iw-chart-aqi',      'AQI',      '#75A8D9',
         v => Math.round(v),                points, aqiKey);
       renderLineChart('temp', 'iw-chart-temp',     'Temp',     '#E8A87C',
