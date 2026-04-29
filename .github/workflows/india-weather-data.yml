@@ -1,8 +1,11 @@
-name: India Weather Data
+name: India Weather Data (fallback)
 
+# The 15-min live cron is now owned by the Cloudflare Worker in worker/,
+# which fires on schedule (within seconds) instead of suffering Actions'
+# 30-80 min cron drift. This workflow is kept as a manual fallback only —
+# `workflow_dispatch` lets us force-refresh the data branch from the Actions
+# UI if the Worker is ever benched (token rotation, account issue, etc.).
 on:
-  schedule:
-    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
