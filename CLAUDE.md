@@ -87,7 +87,7 @@ Pages that fetch data refreshed by a cron workflow rather than at build time. Cu
 
 ### Files (India Weather)
 - `india-weather.qmd` — top-level Quarto page; embeds the Mapbox + uPlot CDNs and the page skeleton via raw HTML
-- `static/india-weather/india-weather.js` — client renderer (Mapbox markers, popups, leaderboard, fitBounds, fixture-fallback fetch, uPlot history charts; 24h = line charts, 7d/30d = min/max bands + mean line for temp & humidity, US-AQI category bars for AQI)
+- `static/india-weather/india-weather.js` — client renderer (Mapbox markers, popups, leaderboard, fitBounds, reset-view control, fixture-fallback fetch, uPlot history charts; 24h = line charts, 7d/30d = min/max bands + mean line for temp & humidity, US-AQI category bars for AQI)
 - `static/india-weather/india-weather.css` — page-specific styles, reuses the global CSS variables from `styles.css`
 - `static/india-weather/cities.json` — city config (id, name, lat, lon, bbox); read by both fetchers and the client
 - `static/india-weather/weather.sample.json` — hand-authored fixture used as a fallback when the remote data branch is unreachable
@@ -109,6 +109,8 @@ Pages that fetch data refreshed by a cron workflow rather than at build time. Cu
 - `history-<id>.json` holds the 24h trailing window only: `points_24h` at 15-min cadence. Point shape: `{ t: ISO-UTC, temp: °C, humidity: %, aqi: US-AQI }`.
 - `daily-<id>.json` holds the last 30 complete IST days as `days: [...]`. Each entry: `{ date: "YYYY-MM-DD", temp_min, temp_max, temp_mean, humidity_min, humidity_max, humidity_mean, aqi_min, aqi_max, aqi_mean }`. The 7d view slices the last 7 days; 30d uses all 30. The in-progress IST day is excluded.
 - The chart's AQI series uses Open-Meteo Air Quality (US AQI scale) because WAQI's historical endpoint is paywalled even with a token. The live tile / leaderboard still shows WAQI's CPCB-station reading. The two AQI numbers are on different scales and will not match exactly; this is documented inline on the page.
+- 7d / 30d x-axis ticks are *not* uPlot's auto-generated splits. The bars sit at noon IST (06:30 UTC) per day; uPlot's defaults place ticks at midnight UTC, which slips ~6.5h to the left of every bar. `dayAxisConfig(t, days)` overrides `splits` to return our actual per-day timestamps (stride 1 for 7d, stride 5 for 30d). If you change the chart, keep this override or the labels will visibly drift again.
+- Map camera is locked to India: `minZoom: 3.8` matches the initial zoom and `maxBounds: [[67, 5.5], [98, 37.5]]` clips panning to roughly the country's bbox. There is also a custom reset-view control (top-right, just below the +/- group) that flies back to `[80, 22.5]` zoom 3.8 and closes any open marker popup.
 - 7d / 30d AQI bars are colored by the day's mean US AQI on the standard EPA category scale (Good / Moderate / USG / Unhealthy / Very Unhealthy / Hazardous). Temp and humidity for those views render as a min/max band with a daily-mean line on top.
 - No bootstrap workflow is required: each daily cron run rebuilds the entire 30-day window from Open-Meteo, so missed runs self-heal automatically.
 
