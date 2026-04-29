@@ -8,20 +8,32 @@ date: 2026-04-29
 permalink: /2026-04-29-india-weather-with-claude/
 ---
 
-It is summer in India and like a lot of folks back home, I find myself checking the temperature and humidity more often than I would like to admit. Both affect everything, from the soil in our balcony pots to whether the AC actually wins the fight at 2pm. The bigger one though is AQI. If you live in or around North India, pollution is genuinely a public health problem for half the year.
+It is summer in India with temperature soaring above 40°C in many parts and like a lot of folks here, I too have a habit of checking the temperature and humidity more often than I would like to admit. Moreover, if you are from northern or western India, you are probably also checking the AQI given how big and genuine the pollution problem is these parts.
 
-I wanted a small dashboard on my portfolio that pulled all of this into one place for the major Indian cities. I am an AI/ML engineer; frontend and devops are not my day job. So I prompted [Claude Code](https://claude.ai/code) in stages and saw how far it would go. This post is a short reflection on how that went. The dashboard is live at [aayushgarg.dev/india-weather](/india-weather.html).
+As a fun project, I built a small dashboard that shows the weather and AQI for the major Indian cities along with the option of viewing the history over 24 hours, 7 days and 30 days. Moreover, this dashboard fetches the data every 15 minutes so more or less you have a live view of the weather and AQI for the major Indian cities. 
 
-![](/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg){width=100%}
+The dashboard is live at [aayushgarg.dev/india-weather](/india-weather.html).
+
+<table align="center">
+  <tr>
+    <td><img src="/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg" alt="Live India weather map" width="100%"></td>
+    <td><img src="/static/img/blog-2026-04-29/weather_dashboard_snap2.jpg" alt="Per-city history charts" width="100%"></td>
+  </tr>
+</table>
+
+As usual (and like most of the devs out there) I used [Claude Code](https://claude.ai/code) to build this dashboard. Also, I am an ML Researcher/Engineer, so not the brigtest when it comes to frontend and devops. This post is my reflection on how I went about building (prompting!) this dashboard in stages.
+
 
 ## What it does
 
-- 20 Indian metropolitan cities on an interactive map, with live temperature, humidity, and AQI refreshed every 15 minutes
-- Click a marker or leaderboard entry for 24h / 7d / 30d charts
-- Mapbox base, locked to India's bounds
-- Static site, so fetching runs server-side on a cron and the page just reads JSON
+Just a quick overview of what the dashboard does:
 
-The numbers come from [Open-Meteo](https://open-meteo.com/) and [WAQI](https://aqicn.org/):
+- I have picked 20 Indian metropolitan cities and displayed them on an interactive map, with live temperature, humidity and AQI refreshed every 15 minutes
+- When you click a marker or a leaderboard entry, you get 24h / 7d / 30d charts for the temperature, humidity and AQI
+- The map is based on [Mapbox](https://www.mapbox.com/), locked to India's bounds
+- The site is static, so fetching runs server-side on a cron and the page just reads JSON
+
+All the numbers are fetched from [Open-Meteo](https://open-meteo.com/) and [WAQI](https://aqicn.org/):
 
 | Metric         | Live (15 min) | 24h chart | 7d / 30d charts | Source                        |
 |----------------|:-------------:|:---------:|:---------------:|-------------------------------|
@@ -30,51 +42,90 @@ The numbers come from [Open-Meteo](https://open-meteo.com/) and [WAQI](https://a
 | Live AQI       | ✓             |           |                 | WAQI / CPCB stations          |
 | Historical AQI |               | ✓         | ✓               | Open-Meteo Air Quality (CAMS) |
 
-Why these two and not AccuWeather or OpenWeatherMap: I wanted free APIs with no client-exposed key, which rules the paid tiers out. Open-Meteo is free for non-commercial use and runs on the same ECMWF + GFS models behind most weather apps. WAQI is the more interesting pick. Its Indian feed comes directly from CPCB ground stations (the same ones behind airquality.cpcb.gov.in) and republishes roughly every 15 minutes, which is the natural CPCB cadence. So it is effectively the official live AQI with a free developer API in front, and our 15-minute cron lines up with the upstream refresh without wasting polls.
+
+Why these two options: 
+
+- I wanted free APIs with no client-exposed key which rules the paid tiers out like AccuWeather and OpenWeatherMap (even Google Maps I guess). 
+- Open-Meteo is free for non-commercial use and runs on the same ECMWF + GFS models behind most weather apps. 
+- **WAQI is the more interesting pick.** Its Indian feed comes directly from the CPCB ground stations (the same network behind `airquality.cpcb.gov.in`) and republishes on the natural CPCB cadence of about 15 minutes, so it is effectively the official live AQI reading with a free developer API in front. 
+- Open-Meteo's air-quality stream is different in kind. It is a global chemistry model on a coarse grid which is good for the 24h/7d/30d historical trends but tends to under-read Indian pollution episodes compared to CPCB stations.
 
 I built this in three loose stages, with stages 2 and 3 overlapping in practice. Below is roughly how each went.
 
-## Stage 1: a working v1 in one evening
+## Stage 1: brainstorming and building a working v1
 
-I did not start with an instruction, I started with a brainstorm:
+When I am building something new my first instinct is to brainstorm with the coding assistant (Claude Code in my case, codex or whichever one you use) before even asking it to write a single line of code. The shape of the prompt is roughly: 
 
-> Lets brainstorm the new tab that I want on my portfolio that makes use of the google maps and shows the urban map of the important metropolitan cities in India, along with the temperature, humidity and AQI [...] Make sure to interview me until you are 95% sure what I actually want, not what I think I want.
+> here is what I want to build, here are the options I see, here are the constraints, help me decide. 
 
-That last line did most of the work. I had said Google Maps; Claude pointed out that on a static site any key leaks in client JS, and that Mapbox is free and prettier. I had said AccuWeather; it asked whether brand mattered more than accuracy for India, and pushed me toward Open-Meteo + WAQI. We landed on 8 metros, a marker plus card UI, and a single JSON force-pushed to a `data` branch by a GitHub Actions cron every 15 minutes. By the end of the evening the page was live.
+For this dashboard the biggest constraint was easy to state: since the site is my personal portfolio, anything I pulled in had to fit inside a free tier with enough headroom for the kind of traffic a personal site sees.
 
-<!-- Gist: stage 1 conversation -->
+The one line that **ALWAYS** helps me is appending this at the end of the prompt:
 
-## Stage 2: graphs, more cities, a cleaner UI
+> Interview me until you have 95% confidence about what I actually want, not what I think I should want.
 
-Using v1 the gaps became obvious. I asked for history charts under the map, with the cron keeping a rolling 24h window per city. We picked [uPlot](https://github.com/leeoniya/uPlot) (3KB, very fast) and added 24h line charts.
+It tells the model to keep questioning your assumptions instead of taking them at face value which is exactly what you want when you are scoping a new or large feature. Whenever I am about to integrate something I have not built before, this single line saves me a lot of time in fast tracking the development and arriving at a plan that actually fits.
 
-The 7d and 30d views looked terrible at first. The day-night cycle turned every chart into a sawtooth. I sent Claude a screenshot and asked one question:
+For this dashboard the back-and-forth helped me take the important decisions early. 
+
+- I had said Google Maps, Claude pointed out that on a static site any key would leak in client JS and steered me to Mapbox's free tier. 
+- I had said AccuWeather, it asked whether brand mattered more than accuracy for India, and pushed me to Open-Meteo + WAQI, both free and key-optional. 
+- It also laid out the cadence logic for me: a GitHub Actions cron every 15 minutes that writes a single JSON to a `data` branch on the same repo which the page then reads on load. 
+- By the end of the session I had a page that was live with 8 metros, a marker plus card UI and a working live tile and the data was being fetched every 15 minutes.
+
+![](/static/img/blog-2026-04-29/stage1_snap.jpg){width=100%}
+
+*Full Claude Code conversation for this stage: [stage-1-brainstorm-and-v1.txt](https://gist.github.com/garg-aayush/ad4dce3170fddcefdfb75eabc5b15620).*
+
+## Stage 2: improving the dashboard with history charts and UI fixes
+
+The next thing that I wanted to do was to add history charts under the map. I wanted to be able to view the history of the temperature, humidity and AQI for each city over certain time periods. This is the first version that I made conversationally with Claude:
+
+![](/static/img/blog-2026-04-29/stage2_hischarts.jpg){width=60%}
+
+Obviously, this was not the best way to view the values. The 7d and 30d views looked terrible with the day-night cycle turning every chart into a sawtooth. Next, I sent Claude the screenshot and asked one question:
 
 > Currently, this is how the values look over the 7d and 30d period, I dont think that is the best way to view the values. What is the standard way to show these values?
 
-It pointed at the standard weather.com pattern: aggregate by day, min/max bands with a daily mean line for temp and humidity, AQI bars colored by EPA category. We added a second daily cron to rebuild the 30-day window each run. The same back-and-forth expanded the city list from 8 to 20, fixed label clutter where cities sit close together, and locked panning to India's bounds. One prompt per change.
+Claude pointed me at the weather.com pattern where weather apps aggregate the values by day, show a min/max bands with a daily mean line for temp and humidity, and color the AQI bars by EPA category. A second daily cron rebuilds the 30-day window from Open-Meteo each run which looked much nicer:
 
-![](/static/img/blog-2026-04-29/weather_dashboard_snap2.jpg){width=100%}
+![](/static/img/blog-2026-04-29/stage2_hischarts_better.jpg){width=60%}
 
-<!-- Gist: stage 2 conversation -->
+Finally, I improved the UI by fixing a few small issues. Some of them you can see below:
 
-## Stage 3: the cron was lying to me
+<table align="center">
+  <tr>
+    <td><img src="/static/img/blog-2026-04-29/stage2_ui_issues1.jpg" alt="UI issue: label clutter" width="100%"></td>
+    <td><img src="/static/img/blog-2026-04-29/stage2_ui_issues2.jpg" alt="UI issue: bounds and styling" width="100%"></td>
+    <td><img src="/static/img/blog-2026-04-29/stage2_ui_issues3.jpg" alt="UI issue: caption and controls" width="100%"></td>
+  </tr>
+</table>
 
-Around the same time I noticed the live tile timestamps were off. The label said "every 15 minutes" but the data felt much older. So I asked:
+- Better labeling for the cities that sit close together, better placement of the labels and leader lines
+- Locking the map to India's bounds
+- Adding a reset-view control to the map
+- A few alignment and styling tweaks
 
-> 15 minutes work fine, but what I am seeing seems to me the cron job is only running once every hour.
+*Full Claude Code conversations for this stage: [history charts](https://gist.github.com/garg-aayush/90d071d907958bc086562e5c17652d33), [daily aggregates](https://gist.github.com/garg-aayush/4e7cefa56c5bba94c1ef3f830b3f0f48), [UI polish](https://gist.github.com/garg-aayush/259733c719cf10f77cf035e1c28b9380).*
 
-Claude pulled the run history: the average gap between runs was 40 minutes, sometimes 80. Free GitHub Actions runners drift heavily under load on `*/15` schedules. We compared options and moved to a Cloudflare Worker with a Cron Trigger, which fires within seconds of schedule on the free tier. Claude wrote the Worker, ported the fetcher, and kept the daily aggregator on Actions (drift is harmless once a day). The live cadence has been honest since.
+## Stage 3: moving the cron from GitHub Actions to Cloudflare
 
-<!-- Gist: stage 3 conversation -->
+After the dashboard was deployed I noticed the live tile timestamps were drifting. The label said "every 15 minutes" but the GitHub Actions free-tier cron was firing erratically, sometimes 40 mins or even >1 hour late. This is usually the case with the free-tier cron jobs on GitHub Actions.
+
+![](/static/img/blog-2026-04-29/stage3_github_actions.jpg){width=80%}
+
+I decided to move the cron to Cloudflare Workers which has a free tier and fires within seconds of schedule.
+
+![](/static/img/blog-2026-04-29/stage3_cloudflare.jpg){width=100%}
+
+The interesting thing for me here is that I had never used Cloudflare workers for cron jobs before. Given how good these assistants are at writing code, it wrote the code, walked me through setup steps and the live cadence has been working well since. **Even unfamiliar backend infra is something you can prompt your way through** (obviously you should have the fundamental knowledge to nudge it in the right direction).
+
+*Full Claude Code conversation for this stage: [Cloudflare Worker migration](https://gist.github.com/garg-aayush/aae13309e3c8c8ab42499b2eb9987b7c).*
 
 ## What I would carry forward
 
-A few things from this that I will keep doing:
+A few things from this build that I will keep doing:
 
-- **Force the model to interview before it builds.** Most bad outcomes I have had with Claude Code came from skipping this step. That one line is the cheapest insurance I have found.
-- **Let it disagree with you.** Mapbox over Google Maps, Open-Meteo over AccuWeather, min/max bands over raw points, Cloudflare Workers over Actions; none of those calls were mine. Going in with opinions but holding them lightly produces better software than insisting on the first idea.
-- **Ship a v1 fast and iterate.** The dashboard was usable on day one with 8 cities and no charts. Everything since has been polish on a foundation that worked, each step a small contained prompt rather than a rewrite.
-- **Measure the runner before you trust it.** I built around GitHub's `*/15` cron assuming it meant 15 minutes. It did not. Check the actual cadence before wiring UI promises around it.
-
-I did not write much HTML, JavaScript, or Worker code by hand. Most of my time went into framing the problem, looking at screenshots, and deciding what to do next. That turned out to be enough.
+- **Brainstorm before you build**: Asking the model to interview you back, with a 95% confidence target, saves a lot of rework downstream. This has always worked for me!
+- **Let it disagree with you**: Mapbox over Google Maps, daily bands over raw sawtooth points, Cloudflare over GitHub Actions. None of those calls were mine. However, make sure your fundamental knowledge is strong enough to nudge it in the right direction.
+- **Iterate from screenshots**: A picture of what looks wrong plus one question is usually enough to move forward. I also use playwright mcp to let Claude test the UI (though they at times consume a lot of tokens).
