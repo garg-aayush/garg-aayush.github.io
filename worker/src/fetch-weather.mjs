@@ -134,25 +134,15 @@ async function fetchWaqiCity(city, token) {
 
   const avg = Math.round(stations.reduce((sum, s) => sum + s.aqi, 0) / stations.length);
 
-  // Dominant pollutant: pull from the worst station's full feed. One extra
-  // call per city; cheap when we run all cities in parallel.
-  let dominant = null;
-  const worst = stations.reduce((a, b) => (a.aqi >= b.aqi ? a : b));
-  try {
-    const feedUrl = 'https://api.waqi.info/feed/@' + worst.uid + '/'
-      + '?token=' + encodeURIComponent(token);
-    const feed = await safeFetch(feedUrl);
-    if (feed && feed.status === 'ok' && feed.data) {
-      dominant = feed.data.dominentpol || null;
-    }
-  } catch (err) {
-    console.error('WAQI feed failed for', city.id, ':', err && err.message ? err.message : err);
-  }
-
+  // Dominant-pollutant lookup is intentionally omitted here. It would cost one
+  // extra WAQI call per city (20 cities = 20 subrequests) and Cloudflare's
+  // free tier caps Workers at 50 subrequests per invocation. The popup's
+  // "Dominant" line just stays blank under the Worker; revisit if we ever go
+  // to Workers Paid ($5/mo, 1000-subrequest cap).
   return {
     value: avg,
     band: cpcbBand(avg),
-    dominant_pollutant: dominant,
+    dominant_pollutant: null,
     station_count: stations.length,
   };
 }

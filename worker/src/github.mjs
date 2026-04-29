@@ -58,22 +58,21 @@ function decodeBlobContent(blob) {
 //   exists         - false if the branch does not exist (first-ever run)
 //   historyByCity  - { [cityId]: parsedHistoryJson } for each history-*.json
 //   dailyEntries   - array of tree entries for daily-*.json (carry forward by SHA)
+//
+// Subrequest count: 1 (tree by branch name) + N history blob reads. The
+// trees endpoint accepts a branch name in place of a SHA, which lets us
+// skip the otherwise-required ref + commit lookups and saves two calls
+// against Cloudflare's 50-subrequest per-invocation cap.
 export async function readDataBranch({ token, owner, repo, branch }) {
-  let ref;
+  let tree;
   try {
-    ref = await ghFetch(`/repos/${owner}/${repo}/git/ref/heads/${branch}`, { token });
+    tree = await ghFetch(`/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`, { token });
   } catch (err) {
     if (err.status === 404) {
       return { exists: false, historyByCity: {}, dailyEntries: [] };
     }
     throw err;
   }
-  const commitSha = ref.object.sha;
-
-  const commit = await ghFetch(`/repos/${owner}/${repo}/git/commits/${commitSha}`, { token });
-  const treeSha = commit.tree.sha;
-
-  const tree = await ghFetch(`/repos/${owner}/${repo}/git/trees/${treeSha}`, { token });
   const entries = (tree.tree || []).filter(e => e.type === 'blob');
 
   const dailyEntries = entries.filter(e => /^daily-.*\.json$/.test(e.path));
@@ -103,30 +102,26 @@ export async function commitDataBranch({
   token, owner, repo, branch,
   weather, history, dailyEntries, message,
 }) {
-  // 1. Upload weather.json + every history-<id>.json as fresh blobs in parallel.
-  const blobInputs = [
-    { path: 'weather.json', content: JSON.stringify(weather, null, 2) + '\n' },
-    ...Object.entries(history).map(([cityId, h]) => ({
-      path: 'history-' + cityId + '.json',
-      content: JSON.stringify(h) + '\n',
-    })),
-  ];
-
-  const newBlobEntries = await Promise.all(blobInputs.map(async ({ path, content }) => {
-    const blob = await ghFetch(`/repos/${owner}/${repo}/git/blobs`, {
-      token,
-      method: 'POST',
-      body: { content, encoding: 'utf-8' },
-    });
-    return { path, mode: '100644', type: 'blob', sha: blob.sha };
-  }));
-
-  // 2. Build the new tree from scratch (no base_tree). New blobs + daily
-  //    carry-forwards. We deliberately drop any other paths that may have
-  //    been on the branch — the data branch only contains these three
+  // 1. Build the new tree from scratch (no base_tree). New files are passed
+  //    inline via `content`; GitHub creates the blobs as a side-effect of
+  //    creating the tree, which saves us 21 individual blob POSTs (and keeps
+  //    us inside Cloudflare's 50-subrequest cap on the free tier). Daily
+  //    files are carried forward by SHA. Any other paths on the branch are
+  //    deliberately dropped — the data branch only contains these three
   //    file families.
   const treeEntries = [
-    ...newBlobEntries,
+    {
+      path: 'weather.json',
+      mode: '100644',
+      type: 'blob',
+      content: JSON.stringify(weather, null, 2) + '\n',
+    },
+    ...Object.entries(history).map(([cityId, h]) => ({
+      path: 'history-' + cityId + '.json',
+      mode: '100644',
+      type: 'blob',
+      content: JSON.stringify(h) + '\n',
+    })),
     ...dailyEntries.map(e => ({
       path: e.path,
       mode: e.mode || '100644',
@@ -141,7 +136,7 @@ export async function commitDataBranch({
     body: { tree: treeEntries },
   });
 
-  // 3. Parentless commit. The ref will point at this and orphan all prior
+  // 2. Parentless commit. The ref will point at this and orphan all prior
   //    commits, which Git GCs eventually. Branch stays at one commit.
   const commit = await ghFetch(`/repos/${owner}/${repo}/git/commits`, {
     token,
@@ -149,7 +144,7 @@ export async function commitDataBranch({
     body: { message, tree: tree.sha, parents: [] },
   });
 
-  // 4. Force-update the ref. If the branch doesn't exist (first run), create
+  // 3. Force-update the ref. If the branch doesn't exist (first run), create
   //    it via POST /git/refs instead.
   let ref;
   try {
