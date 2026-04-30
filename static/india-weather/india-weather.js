@@ -476,7 +476,33 @@
     return [xs, ys];
   }
 
-  function buildLineOpts(title, color, valueFmt, size) {
+  // WAQI/CPCB only refreshes ~hourly while we sample every 15 min, so the raw
+  // series is a run of identical values then a jump. Drawing straight lines
+  // through that is the classic staircase shape. Dropping all but the first
+  // point of each run leaves only transition moments, so the line slopes
+  // directly between value changes (still always keeping the very last sample
+  // so the line reaches the right edge of the chart). Nulls are preserved as
+  // gap markers and never collapsed.
+  function collapseRuns(xs, ys) {
+    if (ys.length === 0) return [xs, ys];
+    const xs2 = [];
+    const ys2 = [];
+    for (let i = 0; i < ys.length; i++) {
+      if (i === 0 || ys[i] == null || ys[i - 1] == null || ys[i] !== ys[i - 1]) {
+        xs2.push(xs[i]);
+        ys2.push(ys[i]);
+      }
+    }
+    const lastIdx = xs.length - 1;
+    if (xs2[xs2.length - 1] !== xs[lastIdx]) {
+      xs2.push(xs[lastIdx]);
+      ys2.push(ys[lastIdx]);
+    }
+    return [xs2, ys2];
+  }
+
+  function buildLineOpts(title, color, valueFmt, size, opts) {
+    const spanGaps = !!(opts && opts.spanGaps);
     const t = themeColors();
     const tip = tooltipPlugin((u, idx) => {
       const x = u.data[0][idx];
@@ -505,19 +531,21 @@
       ],
       series: [
         {},
-        { label: title, stroke: color, width: 1.6, points: { show: false }, spanGaps: false,
+        { label: title, stroke: color, width: 1.6, points: { show: false }, spanGaps,
           value: (u, v) => (v == null ? '—' : valueFmt(v)) },
       ],
       plugins: [tip],
     };
   }
 
-  function renderLineChart(slot, containerId, title, color, valueFmt, points, key) {
+  function renderLineChart(slot, containerId, title, color, valueFmt, points, key, opts) {
     const el = chartContainer(containerId);
     if (!el) return;
     destroyChart(slot);
-    const opts = buildLineOpts(title, color, valueFmt, chartSize(el));
-    charts[slot] = new uPlot(opts, pointsToLine(points, key), el);
+    const lineOpts = buildLineOpts(title, color, valueFmt, chartSize(el), opts);
+    let data = pointsToLine(points, key);
+    if (opts && opts.collapseRuns) data = collapseRuns(data[0], data[1]);
+    charts[slot] = new uPlot(lineOpts, data, el);
   }
 
   // -- 7d / 30d: band charts (temp, humidity) and category bars (AQI) -------
@@ -753,12 +781,19 @@
       const useWaqi = coverage >= 0.75 && recentHasWaqi;
       const aqiKey = useWaqi ? 'aqi_waqi' : 'aqi';
       setAqiSourceLabel(useWaqi ? 'waqi' : 'cams');
+      // AQI: collapse run-length plateaus so the line tracks transitions
+      // instead of stair-stepping (see collapseRuns). spanGaps:true bridges
+      // the occasional missed Open-Meteo / WAQI sample on temp & humidity so
+      // the line doesn't break on sub-hour outages.
       renderLineChart('aqi',  'iw-chart-aqi',      'AQI',      '#75A8D9',
-        v => Math.round(v),                points, aqiKey);
+        v => Math.round(v),                points, aqiKey,
+        { spanGaps: true, collapseRuns: true });
       renderLineChart('temp', 'iw-chart-temp',     'Temp',     '#E8A87C',
-        v => v.toFixed(1) + '°',           points, 'temp');
+        v => v.toFixed(1) + '°',           points, 'temp',
+        { spanGaps: true });
       renderLineChart('humidity', 'iw-chart-humidity', 'Humidity', '#7CC4A1',
-        v => Math.round(v) + '%',          points, 'humidity');
+        v => Math.round(v) + '%',          points, 'humidity',
+        { spanGaps: true });
       return;
     }
 
