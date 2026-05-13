@@ -283,7 +283,8 @@
       .map(c => '<option value="' + c.id + '">' + c.name + '</option>')
       .join('');
     if (!activeHistoryCity) {
-      activeHistoryCity = sorted[0].id;
+      const preferred = sorted.find(c => c.id === 'delhi');
+      activeHistoryCity = (preferred || sorted[0]).id;
       elHistoryCity.value = activeHistoryCity;
       loadAndRenderHistory(activeHistoryCity);
     }
