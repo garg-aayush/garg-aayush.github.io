@@ -250,6 +250,18 @@ pre {
   padding: 1rem;
 }
 
+/* Wide tables in posts: scroll horizontally on phones instead of squeezing
+   columns into 3-letter slivers. Excludes the blog listing (which is its own
+   styled card layout on mobile). */
+@media (max-width: 768px) {
+  main table:not(.quarto-listing-table) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+}
+
 /* Blockquote styling */
 blockquote {
   border-left: 4px solid var(--accent);
