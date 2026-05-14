@@ -39,7 +39,9 @@
 }
 
 @media (max-width: 600px) {
-  .profile-pic {
+  /* Higher specificity than `.content img` further down so the hide actually wins. */
+  .profile-header .quarto-figure,
+  .profile-header .profile-pic {
     display: none;
   }
 }
@@ -83,8 +85,11 @@
   margin-bottom: 1rem;
 }
 
-/* Blog listings - table style */
-#blog-listings {
+/* Blog listings - table style.
+   Quarto renders the listing into #listing-<id> (e.g. #listing-blog-listings),
+   not the raw id used in the page frontmatter, so we target the table class
+   directly. */
+.quarto-listing-container-table {
   margin-top: 1.5rem;
   width: 100%;
   overflow-x: auto;
@@ -124,58 +129,52 @@
 
 /* Responsive table for mobile */
 @media (max-width: 768px) {
-  #blog-listings table {
+  .quarto-listing-table {
     font-size: 0.9rem;
   }
-  
-  #blog-listings th,
-  #blog-listings td {
+
+  .quarto-listing-table th,
+  .quarto-listing-table td {
     padding: 0.5rem;
   }
 }
 
-@media (max-width: 480px) {
-  #blog-listings table,
-  #blog-listings thead,
-  #blog-listings tbody,
-  #blog-listings th,
-  #blog-listings td,
-  #blog-listings tr {
+@media (max-width: 640px) {
+  .quarto-listing-table,
+  .quarto-listing-table thead,
+  .quarto-listing-table tbody,
+  .quarto-listing-table th,
+  .quarto-listing-table td,
+  .quarto-listing-table tr {
     display: block;
   }
-  
-  #blog-listings thead tr {
+
+  .quarto-listing-table thead tr {
     position: absolute;
     top: -9999px;
     left: -9999px;
   }
-  
-  #blog-listings tr {
-    margin-bottom: 1rem;
+
+  .quarto-listing-table tr {
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 0;
     border-bottom: 1px solid var(--border-color);
   }
-  
-  #blog-listings td {
+
+  .quarto-listing-table td {
     border: none;
-    position: relative;
-    padding-left: 40%;
-    text-align: right;
-  }
-  
-  #blog-listings td:before {
-    position: absolute;
-    left: 6px;
-    width: 35%;
-    white-space: nowrap;
+    padding: 0.15rem 0;
     text-align: left;
-    font-weight: bold;
   }
-  
-  #blog-listings td:nth-of-type(1):before {
-    content: "Date";
+
+  .quarto-listing-table td:nth-of-type(1) {
+    font-size: 0.8rem;
+    color: var(--text-muted);
   }
-  #blog-listings td:nth-of-type(2):before {
-    content: "Title";
+
+  .quarto-listing-table td:nth-of-type(2) a {
+    font-size: 1rem;
+    line-height: 1.35;
   }
 }
 
@@ -252,6 +251,18 @@ pre {
   background-color: var(--bg-secondary);
   border-radius: 6px;
   padding: 1rem;
+}
+
+/* Wide tables in posts: scroll horizontally on phones instead of squeezing
+   columns into 3-letter slivers. Excludes the blog listing (which is its own
+   styled card layout on mobile). */
+@media (max-width: 768px) {
+  main table:not(.quarto-listing-table) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
 }
 
 /* Blockquote styling */

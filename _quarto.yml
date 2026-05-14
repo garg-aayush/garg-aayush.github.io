@@ -26,7 +26,7 @@ website:
     title: false
     background: dark
     pinned: true
-    collapse: false
+    collapse: true
     left:
       - text: Home
         href: index.qmd
