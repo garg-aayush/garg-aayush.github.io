@@ -85,8 +85,11 @@
   margin-bottom: 1rem;
 }
 
-/* Blog listings - table style */
-#blog-listings {
+/* Blog listings - table style.
+   Quarto renders the listing into #listing-<id> (e.g. #listing-blog-listings),
+   not the raw id used in the page frontmatter, so we target the table class
+   directly. */
+.quarto-listing-container-table {
   margin-top: 1.5rem;
   width: 100%;
   overflow-x: auto;
@@ -126,50 +129,50 @@
 
 /* Responsive table for mobile */
 @media (max-width: 768px) {
-  #blog-listings table {
+  .quarto-listing-table {
     font-size: 0.9rem;
   }
-  
-  #blog-listings th,
-  #blog-listings td {
+
+  .quarto-listing-table th,
+  .quarto-listing-table td {
     padding: 0.5rem;
   }
 }
 
 @media (max-width: 640px) {
-  #blog-listings table,
-  #blog-listings thead,
-  #blog-listings tbody,
-  #blog-listings th,
-  #blog-listings td,
-  #blog-listings tr {
+  .quarto-listing-table,
+  .quarto-listing-table thead,
+  .quarto-listing-table tbody,
+  .quarto-listing-table th,
+  .quarto-listing-table td,
+  .quarto-listing-table tr {
     display: block;
   }
 
-  #blog-listings thead tr {
+  .quarto-listing-table thead tr {
     position: absolute;
     top: -9999px;
     left: -9999px;
   }
 
-  #blog-listings tr {
+  .quarto-listing-table tr {
     margin-bottom: 0.5rem;
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--border-color);
   }
 
-  #blog-listings td {
+  .quarto-listing-table td {
     border: none;
     padding: 0.15rem 0;
     text-align: left;
   }
 
-  #blog-listings td:nth-of-type(1) {
+  .quarto-listing-table td:nth-of-type(1) {
     font-size: 0.8rem;
     color: var(--text-muted);
   }
 
-  #blog-listings td:nth-of-type(2) a {
+  .quarto-listing-table td:nth-of-type(2) a {
     font-size: 1rem;
     line-height: 1.35;
   }
