@@ -39,7 +39,9 @@
 }
 
 @media (max-width: 600px) {
-  .profile-pic {
+  /* Higher specificity than `.content img` further down so the hide actually wins. */
+  .profile-header .quarto-figure,
+  .profile-header .profile-pic {
     display: none;
   }
 }
