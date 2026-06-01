@@ -9,7 +9,7 @@
 <link>https://garg-aayush.github.io/</link>
 <atom:link href="https://garg-aayush.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>ML engineer who ships production AI systems and rebuilds LLMs from first principles.</description>
-<generator>quarto-1.9.37</generator>
+<generator>quarto-1.9.38</generator>
 <lastBuildDate>Wed, 29 Apr 2026 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Building a Live India Weather Dashboard with Claude Code</title>
