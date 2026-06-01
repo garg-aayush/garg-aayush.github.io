@@ -26,13 +26,13 @@ format:
 
 ![](static/img/aayush_cropped.jpg){.profile-pic fig-alt="Aayush Garg"}
 
-I am a Senior ML Engineer specializing in computer vision and LLMs. At Jiffy, I build the AI image enhancement pipeline powering a $100M+ DTF printing business and Smart Redraw, a multi-agent image editing system. Outside work, I build the full LLM stack from first principles and write about it here.
+I am an ML Engineer (Forward Deployed) at Applied Computing, where I deploy and tune Orbital, a physics-informed foundation model for energy operations, inside live industrial environments. Previously at Jiffy, I built the AI image enhancement pipeline powering a $100M+ DTF printing business and Smart Redraw, a multi-agent image editing system. Outside work, I build the full LLM stack from first principles and write about it here.
 
 :::
 
 ## 💼 Current Work
 
-I work at the intersection of computer vision and LLMs, building production AI systems. On the side, I am building the full LLM stack from scratch: BPE tokenizers, GPT-2 pretraining, SFT and GRPO alignment. My background in research and computational geophysics keeps me drawn to understanding things from first principles.
+At Applied Computing, I deploy, tune, and operationalise Orbital's AI systems (time-series forecasting, anomaly detection, multi-agent copilots and RAG pipelines) inside live energy operations spanning cloud, on-premise, and air-gapped infrastructure. On the side, I am building the full LLM stack from scratch: BPE tokenizers, GPT-2 pretraining, SFT and GRPO alignment. My background in research and computational geophysics keeps me drawn to understanding things from first principles.
 
 If you are interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) or [Twitter](https://twitter.com/Aayush_ander).
 

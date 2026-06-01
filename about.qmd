@@ -6,7 +6,9 @@ toc: true
 
 I am a Senior ML Engineer specializing in computer vision and LLMs. I ship production generative AI systems and on the side rebuild them from scratch to understand how they really work. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.
 
-Currently, I am working as a Senior Machine Learning Engineer at [Jiffy](https://www.jiffy.com/) where I build the AI image enhancement pipeline powering a $100M+ DTF printing business, architect Smart Redraw (a multi-agent AI editing system), and develop end-to-end ML solutions spanning LLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation.
+Currently, I am an ML Engineer (Forward Deployed) at [Applied Computing](https://appliedcomputing.com/), where I deploy, tune, and operationalise Orbital, a physics-informed foundation model for energy operations, inside live industrial environments spanning cloud, on-premise, hybrid, and air-gapped infrastructure.
+
+Before that, at [Jiffy](https://www.jiffy.com/), I built the AI image enhancement pipeline powering a $100M+ DTF printing business, architected Smart Redraw (a multi-agent AI editing system), and developed end-to-end ML solutions spanning LLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation.
 
 Previously at [Flixstock](https://www.flixstock.com/), I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.
 
@@ -21,10 +23,27 @@ I love connecting and collaborating with new people. Please don't hesitate to re
 ::: {.experience-card}
 ::: {.card-header}
 ::: {.company-name}
+Applied Computing
+:::
+::: {.card-date}
+May 2026 - Present
+:::
+:::
+::: {.card-role}
+ML Engineer (Forward Deployed)
+:::
+::: {.card-description}
+Deploy and tune Orbital's AI systems (time-series forecasting, anomaly detection, multi-agent copilots and RAG pipelines) inside live energy operations across cloud, on-prem, and air-gapped infrastructure.
+:::
+:::
+
+::: {.experience-card}
+::: {.card-header}
+::: {.company-name}
 Jiffy
 :::
 ::: {.card-date}
-Jan 2024 - Present
+Jan 2024 - Mar 2026
 :::
 :::
 ::: {.card-role}
