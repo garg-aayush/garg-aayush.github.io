@@ -162,15 +162,15 @@ The result is an interpolated estimate at every missing point with confidence ba
 
 ## Example 1: Decomposing the Mauna Loa $\text{CO}_2$ Series {#example-co2-decomposition}
 
-**The dataset.** The Keeling Curve records atmospheric $\text{CO}_2$ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` ([`sm.datasets.co2`](https://www.statsmodels.org/stable/datasets/generated/co2.html)). Resampled to monthly, it gives 526 points from March 1958 to December 2001, ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions, and an annual cycle of roughly $\pm 3$ ppm driven by Northern Hemisphere vegetation (plants absorb $\text{CO}_2$ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
+**Dataset:** The Keeling Curve records atmospheric $\text{CO}_2$ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` ([sm.datasets.co2](https://www.statsmodels.org/stable/datasets/generated/co2.html)). Resampled to monthly, it gives 526 points from March 1958 to December 2001 ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions and an annual cycle of roughly $\pm 3$ ppm driven by Northern Hemisphere vegetation (plants absorb $\text{CO}_2$ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
 
-**The model.** A structural model with a local linear trend and a 12-month seasonal component. The state vector is
+**The model.** A structural model with a local linear trend and a 12-month seasonal component. The state vector is with dynamics:
 
 $$
 x = [\, \text{level}, \; \text{slope}, \; s_1, s_2, \ldots, s_{11} \,] \quad \text{(dimension 13)}
 $$
 
-with dynamics: the level follows a random walk with drift ($\text{level}_k = \text{level}_{k-1} + \text{slope}_{k-1} + \eta$), the slope itself drifts slowly, and the seasonal factors obey a sum-to-zero constraint over each 12-month cycle, implemented as a shift register. The observation is simply level plus the current seasonal factor plus noise.
+the level follows a random walk with drift ($\text{level}_k = \text{level}_{k-1} + \text{slope}_{k-1} + \eta$), the slope itself drifts slowly and the seasonal factors obey a sum-to-zero constraint over each 12-month cycle, implemented as a shift register. The observation is simply level plus the current seasonal factor plus noise.
 
 The transition matrix encodes all of this:
 
@@ -204,19 +204,19 @@ model = UnobservedComponents(
 results = model.fit(disp=False)
 ```
 
-**Results.** The full decomposition, from-scratch on the left and `statsmodels` on the right:
+**Results:** The full decomposition from-scratch on the left and `statsmodels` on the right:
 
 ![Mauna Loa $\text{CO}_2$ structural decomposition: observed, trend, seasonal, residual](/static/img/blog-2026-07-15/fig7_co2_decomposition.png){width=100%}
 
-The trend captures the accelerating rise: not a straight line but a curve that gently steepens as emission rates increase. The seasonal component is a clean, nearly constant annual oscillation, dropping about 6 ppm from the May peak to the September trough each year as Northern Hemisphere forests absorb carbon through the growing season. The residual is tiny (about 0.09 ppm standard deviation in the `statsmodels` version), confirming that trend plus seasonal explains nearly everything. The two implementations agree closely; the visible difference is just MLE-optimized variances versus my hand-tuned ones, which changes the trend smoothness slightly.
+The trend captures the accelerating rise: not a straight line but a curve that gently steepens as emission rates increase. The seasonal component is a clean, nearly constant annual oscillation dropping about 6 ppm from the May peak to the September trough each year as Northern Hemisphere forests absorb carbon through the growing season. The residual is tiny (about 0.09 ppm standard deviation in the `statsmodels` version) confirming that trend plus seasonal explains nearly everything. The two implementations agree closely, the visible difference is just MLE-optimized variances versus my hand-tuned ones which changes the trend smoothness slightly.
 
 Zooming into 1990 to 1996 shows the components at the individual-cycle level:
 
 ![Zoomed view of the $\text{CO}_2$ seasonal cycles, 1990 to 1996](/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png){width=100%}
 
-The green line is the trend alone, the blue line adds the estimated seasonal component, and the observed points cluster tightly around the reconstruction.
+The green line is the trend alone, the blue line adds the estimated seasonal component and the observed points cluster tightly around the reconstruction.
 
-**What the fitted parameters say.** I find the MLE variances more informative than the plots:
+The below MLE variances are as informative as the plots:
 
 | Parameter | Estimate | Interpretation |
 |---|---|---|
@@ -225,13 +225,13 @@ The green line is the trend alone, the blue line adds the estimated seasonal com
 | $\sigma^2_\text{trend}$ | $3.4 \times 10^{-6}$ | The growth rate changes very slowly |
 | $\sigma^2_\text{seasonal}$ | $\approx 0$ | The seasonal shape is essentially fixed over 43 years |
 
-The near-zero seasonal variance is the model telling us the annual $\text{CO}_2$ cycle has barely changed shape across four decades. This kind of interpretability, where the fitted noise variances are themselves findings, is something you simply do not get from a black-box smoother.
+> The near-zero seasonal variance is the model telling us the annual $\text{CO}_2$ cycle has barely changed shape across four decades. This kind of interpretability is quite useful.
 
 ## Example 2: Filling Gaps in the AirPassengers Series {#example-airpassengers-gaps}
 
-**The dataset.** The Box-Jenkins [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html): monthly international airline passenger totals (in thousands) from January 1949 to December 1960, 144 observations. It ships with R's datasets package and is freely available as a CSV via the [Rdatasets repository](https://vincentarelbundock.github.io/Rdatasets/). Strong upward trend, strong seasonality, and crucially the seasonal amplitude grows with the level: the summer peaks of the late 1950s are far taller in absolute terms than those of 1949. That is **multiplicative** seasonality, which a linear filter cannot represent directly. The standard fix is to work in log-space, where multiplicative structure becomes additive, then exponentiate the estimates back at the end.
+**Dataset:** The Box-Jenkins [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html): monthly international airline passenger totals (in thousands) from January 1949 to December 1960, 144 observations. This data is freely available as a CSV via the [Rdatasets repository](https://vincentarelbundock.github.io/Rdatasets/). Strong upward trend, strong seasonality and crucially the seasonal amplitude grows with the level: the summer peaks of the late 1950s are far taller in absolute terms than those of 1949. That is **multiplicative** seasonality which a linear filter cannot represent directly. The standard fix is to work in log-space where multiplicative structure becomes additive then exponentiate the estimates back at the end.
 
-**Simulating sensor failure.** To test interpolation honestly, I deleted three chunks of the data and kept the removed values as ground truth:
+**Simulating sensor failure.** To test interpolation, I deleted three chunks of the data and kept the removed values as ground truth:
 
 | Gap | Duration | What it spans |
 |---|---|---|
@@ -260,21 +260,21 @@ for k in range(n):
         P = P_prior
 ```
 
-During a gap, $P$ grows at every step because nothing arrives to shrink it, which is exactly what produces the widening confidence bands. The backward smoother pass then pulls information from the observations after the gap back through it, tightening the estimate from both sides.
+During a gap, $P$ grows at every step because nothing arrives to shrink it which is exactly what produces the widening confidence bands. The backward smoother pass then pulls information from the observations after the gap back through it, tightening the estimate from both sides.
 
-**Results.** The full series, with the from-scratch and `statsmodels` versions against plain linear interpolation:
+**Results:** The full series with the from-scratch and `statsmodels` versions against plain linear interpolation:
 
 ![AirPassengers gap filling with the Kalman smoother](/static/img/blog-2026-07-15/fig9_airpassengers_interpolation.png){width=100%}
 
-The smoothed lines continue the seasonal oscillation straight through the gaps, while linear interpolation just draws a line between the gap edges and ignores the seasonality entirely. Also worth noticing is the causal filtered estimate (light blue): it drifts during the gaps because it has no measurements to correct against and only snaps back once data resumes. The smoothed estimate stays close to the truth throughout, because it also sees the data on the far side.
+The smoothed lines continue the seasonal oscillation straight through the gaps while linear interpolation just draws a line between the gap edges and ignores the seasonality entirely. Also worth noticing is the causal filtered estimate (light blue): it drifts during the gaps because it has no measurements to correct against and only snaps back once data resumes. The smoothed estimate stays close to the truth throughout, because it also sees the data on the far side.
 
-Zooming into each gap, with the hidden true values marked:
+Zooming into each gap with the hidden true values marked:
 
 ![Zoomed comparison of each gap: smoother vs linear interpolation vs hidden truth](/static/img/blog-2026-07-15/fig10_airpassengers_gaps_zoomed.png){width=100%}
 
-The 9-month gap in the middle panel is the one that sold me: the smoother reconstructs nearly a full seasonal cycle purely from the learned dynamics and the data on either side.
+The 9-month gap in the middle panel catches your eye as we are able to reconstruct nearly a full seasonal cycle purely from the learned dynamics and the data on either side.
 
-**The numbers.** RMSE against the held-out true values, in thousands of passengers:
+If we look at the RMSE against the held-out true values (in thousands of passengers):
 
 | Gap | Kalman smoother | Linear interpolation | Improvement |
 |---|---|---|---|
@@ -282,19 +282,21 @@ The 9-month gap in the middle panel is the one that sold me: the smoother recons
 | 9 months (Jan 1955 to Oct 1955) | 6.3 | 52.5 | $8.3\times$ |
 | 4 months (Jun 1958 to Oct 1958) | 26.3 | 106.0 | $4.0\times$ |
 
-The smoother's advantage grows with gap size, and is largest wherever the seasonal pattern deviates most from a straight line (the full cycle in the 9-month gap, the summer peak in the 4-month one). The reason is simple: the state-space model *knows* about the 12-month periodicity. The seasonal states carry a memory of the seasonal shape and the dynamics propagate it forward, and backward, through the gap. Linear interpolation knows nothing.
+The smoother's advantage grows with gap size and is largest wherever the seasonal pattern deviates most from a straight line. This is because the state-space model *knows* about the 12-month periodicity. The seasonal states carry a memory of the seasonal shape and the dynamics propagate it forward, and backward, through the gap. Linear interpolation knows nothing.
 
 ## Beyond Linear and Gaussian
 
-Everything above assumes linear dynamics and Gaussian noise. When your problem breaks those assumptions (multiplicative effects you cannot log away, regime switching, stochastic volatility), there is a well-trodden ladder of extensions: the **Extended Kalman Filter** linearizes around the current estimate with Jacobians, the **Unscented Kalman Filter** propagates a small set of sigma points through the nonlinearity instead, and **particle filters** represent the state distribution with weighted samples and handle essentially anything, at much higher compute cost. I am deliberately not covering these here; for most time-series pre-processing tasks, the linear filter plus a well-chosen transform gets you surprisingly far.
+Everything above assumes linear dynamics and Gaussian noise. When your problem breaks those assumptions (multiplicative effects you cannot log away, regime switching, stochastic volatility) there is a well-trodden ladder of extensions: the **Extended Kalman Filter** linearizes around the current estimate with Jacobians, the **Unscented Kalman Filter** propagates a small set of sigma points through the nonlinearity instead, and **particle filters** represent the state distribution with weighted samples and handle essentially anything, at much higher compute cost.
+
+> I have not explored these extensions myself. For actual predictions we anyway rely on ML-based forecasting models, and for the pre-processing role the Kalman filter plays in my workflow, the linear version plus a good transform (like the log-transform in Example 2) has been enough.
 
 ## Wrapping Up
 
-The mental model I keep coming back to: formulate the problem as hidden states plus dynamics plus noisy observations, run the **filter** (predict-update) when you need causal, online estimates, run the **smoother** (forward-backward) when you have the whole series offline, and let maximum likelihood (what `statsmodels` does on `fit`) pick the noise variances. Denoising, decomposition, forecasting and gap-filling all fall out of that one setup, each with calibrated uncertainty attached.
+Most of the value I get from the Kalman filter has nothing to do with using it as the final forecasting model. It is a pre-processing workhorse: it denoises, decomposes a series into interpretable trend and seasonal components, and fills gaps with dynamics-aware estimates and honest uncertainty bands instead of straight lines. Your forecasting model, ML-based or otherwise, is only as good as the data you feed it, and this is the tool that gets the data into shape.
 
-For me the practical takeaway from the two examples is that this is not just elegant theory. The $\text{CO}_2$ decomposition produced interpretable components and fitted variances that were findings in themselves, and the gap-filling beat linear interpolation by $2.5\times$ to $8\times$ on held-out truth, precisely because the model understood the seasonality. Given how much of time-series work is pre-processing, that is a tool worth having within reach rather than buried inside library internals.
+The second takeaway is persistence. The predict-only Kalman forecast carries the whole state forward (level, slope and seasonal shape, not just the last value), which makes it a natural baseline for any forecasting work: it is cheap, causal and surprisingly hard to beat, as the gap-filling in Example 2 showed against linear interpolation. If an ML model cannot beat this baseline, it is not learning much.
 
-The full runnable code for both examples, from-scratch NumPy and `statsmodels` side by side, will be up in my [handbook repo](https://github.com/garg-aayush/handbook).
+Both of these usually sit buried inside library internals. They are worth understanding and having within reach.
 
 ## References and Further Reading
 
