@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 420" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <marker id="aFwd" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563EB"/>
+    </marker>
+    <marker id="aBck" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#DC2626"/>
+    </marker>
+    <marker id="aSmooth" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7C3AED"/>
+    </marker>
+    <filter id="shd" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <text x="370" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#1E293B">Figure 3: Kalman Smoothing (RTS Smoother)</text>
+
+  <!-- Time axis labels -->
+  <text x="100" y="60" text-anchor="middle" font-size="12" fill="#6B7280">t₁</text>
+  <text x="230" y="60" text-anchor="middle" font-size="12" fill="#6B7280">t₂</text>
+  <text x="370" y="60" text-anchor="middle" font-size="12" fill="#6B7280">t₃</text>
+  <text x="510" y="60" text-anchor="middle" font-size="12" fill="#6B7280">t₄</text>
+  <text x="640" y="60" text-anchor="middle" font-size="12" fill="#6B7280">t₅</text>
+
+  <!-- Pass 1: Forward (Kalman filter) -->
+  <text x="30" y="115" font-size="13" font-weight="700" fill="#2563EB">Pass 1</text>
+  <text x="30" y="132" font-size="11" fill="#2563EB">Forward</text>
+
+  <circle cx="100" cy="120" r="22" fill="#DBEAFE" stroke="#2563EB" stroke-width="2" filter="url(#shd)"/>
+  <text x="100" y="125" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">x̂₁</text>
+
+  <circle cx="230" cy="120" r="22" fill="#DBEAFE" stroke="#2563EB" stroke-width="2" filter="url(#shd)"/>
+  <text x="230" y="125" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">x̂₂</text>
+
+  <circle cx="370" cy="120" r="22" fill="#DBEAFE" stroke="#2563EB" stroke-width="2" filter="url(#shd)"/>
+  <text x="370" y="125" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">x̂₃</text>
+
+  <circle cx="510" cy="120" r="22" fill="#DBEAFE" stroke="#2563EB" stroke-width="2" filter="url(#shd)"/>
+  <text x="510" y="125" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">x̂₄</text>
+
+  <circle cx="640" cy="120" r="22" fill="#DBEAFE" stroke="#2563EB" stroke-width="2" filter="url(#shd)"/>
+  <text x="640" y="125" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">x̂₅</text>
+
+  <line x1="124" y1="120" x2="204" y2="120" stroke="#2563EB" stroke-width="2" marker-end="url(#aFwd)"/>
+  <line x1="254" y1="120" x2="344" y2="120" stroke="#2563EB" stroke-width="2" marker-end="url(#aFwd)"/>
+  <line x1="394" y1="120" x2="484" y2="120" stroke="#2563EB" stroke-width="2" marker-end="url(#aFwd)"/>
+  <line x1="534" y1="120" x2="614" y2="120" stroke="#2563EB" stroke-width="2" marker-end="url(#aFwd)"/>
+
+  <!-- Pass 2: Backward -->
+  <text x="30" y="225" font-size="13" font-weight="700" fill="#DC2626">Pass 2</text>
+  <text x="30" y="242" font-size="11" fill="#DC2626">Backward</text>
+
+  <circle cx="100" cy="230" r="22" fill="#FEE2E2" stroke="#DC2626" stroke-width="2" filter="url(#shd)"/>
+  <text x="100" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#991B1B">x̃₁</text>
+
+  <circle cx="230" cy="230" r="22" fill="#FEE2E2" stroke="#DC2626" stroke-width="2" filter="url(#shd)"/>
+  <text x="230" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#991B1B">x̃₂</text>
+
+  <circle cx="370" cy="230" r="22" fill="#FEE2E2" stroke="#DC2626" stroke-width="2" filter="url(#shd)"/>
+  <text x="370" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#991B1B">x̃₃</text>
+
+  <circle cx="510" cy="230" r="22" fill="#FEE2E2" stroke="#DC2626" stroke-width="2" filter="url(#shd)"/>
+  <text x="510" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#991B1B">x̃₄</text>
+
+  <circle cx="640" cy="230" r="22" fill="#FEE2E2" stroke="#DC2626" stroke-width="2" filter="url(#shd)"/>
+  <text x="640" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#991B1B">x̃₅</text>
+
+  <line x1="616" y1="230" x2="536" y2="230" stroke="#DC2626" stroke-width="2" marker-end="url(#aBck)"/>
+  <line x1="486" y1="230" x2="396" y2="230" stroke="#DC2626" stroke-width="2" marker-end="url(#aBck)"/>
+  <line x1="346" y1="230" x2="256" y2="230" stroke="#DC2626" stroke-width="2" marker-end="url(#aBck)"/>
+  <line x1="206" y1="230" x2="126" y2="230" stroke="#DC2626" stroke-width="2" marker-end="url(#aBck)"/>
+
+  <!-- Result: Smoothed -->
+  <text x="30" y="340" font-size="13" font-weight="700" fill="#7C3AED">Result</text>
+  <text x="30" y="357" font-size="11" fill="#7C3AED">Smoothed</text>
+
+  <circle cx="100" cy="345" r="22" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.5" filter="url(#shd)"/>
+  <text x="100" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="#5B21B6">x̂ˢ₁</text>
+
+  <circle cx="230" cy="345" r="22" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.5" filter="url(#shd)"/>
+  <text x="230" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="#5B21B6">x̂ˢ₂</text>
+
+  <circle cx="370" cy="345" r="22" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.5" filter="url(#shd)"/>
+  <text x="370" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="#5B21B6">x̂ˢ₃</text>
+
+  <circle cx="510" cy="345" r="22" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.5" filter="url(#shd)"/>
+  <text x="510" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="#5B21B6">x̂ˢ₄</text>
+
+  <circle cx="640" cy="345" r="22" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2.5" filter="url(#shd)"/>
+  <text x="640" y="350" text-anchor="middle" font-size="13" font-weight="700" fill="#5B21B6">x̂ˢ₅</text>
+
+  <!-- Merge arrows from forward and backward into smoothed -->
+  <line x1="100" y1="144" x2="100" y2="206" stroke="#6B7280" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="100" y1="254" x2="100" y2="321" stroke="#6B7280" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <line x1="370" y1="144" x2="370" y2="206" stroke="#6B7280" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="370" y1="254" x2="370" y2="321" stroke="#6B7280" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <line x1="640" y1="144" x2="640" y2="206" stroke="#6B7280" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="640" y1="254" x2="640" y2="321" stroke="#6B7280" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <!-- Annotation -->
+  <rect x="120" y="392" width="500" height="22" rx="4" fill="#F8FAFC"/>
+  <text x="370" y="408" text-anchor="middle" font-size="11.5" fill="#64748B">Each smoothed estimate x̂ˢₖ incorporates information from all measurements z₁ … z₅</text>
+</svg>

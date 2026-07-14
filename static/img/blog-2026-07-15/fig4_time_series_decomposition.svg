@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <clipPath id="plotClip"><rect x="80" y="40" width="590" height="100"/></clipPath>
+    <clipPath id="trendClip"><rect x="80" y="165" width="590" height="90"/></clipPath>
+    <clipPath id="seasonClip"><rect x="80" y="280" width="590" height="90"/></clipPath>
+    <clipPath id="residClip"><rect x="80" y="395" width="590" height="90"/></clipPath>
+  </defs>
+
+  <text x="370" y="26" text-anchor="middle" font-size="18" font-weight="700" fill="#1E293B">Figure 4: Structural Time-Series Decomposition via Kalman Filter</text>
+
+  <!-- Panel 1: Observed data -->
+  <rect x="78" y="38" width="594" height="104" rx="6" fill="#FAFAFA" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="86" y="55" font-size="12" font-weight="700" fill="#374151">Observed Data  y(t)</text>
+  <!-- Simulated noisy signal: trend + seasonal + noise -->
+  <polyline clip-path="url(#plotClip)" fill="none" stroke="#2563EB" stroke-width="1.8" points="
+    90,100 110,80 130,105 150,75 170,95 190,68 210,90 230,62 250,85 270,58
+    290,80 310,55 330,78 350,52 370,72 390,48 410,68 430,45 450,65 470,42
+    490,62 510,40 530,58 550,48 570,52 590,55 610,45 630,60 650,42 660,55
+  "/>
+
+  <!-- Panel 2: Trend -->
+  <rect x="78" y="163" width="594" height="94" rx="6" fill="#FAFAFA" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="86" y="180" font-size="12" font-weight="700" fill="#16A34A">Trend  μ(t)</text>
+  <polyline clip-path="url(#trendClip)" fill="none" stroke="#16A34A" stroke-width="2.2" points="
+    90,245 130,240 170,234 210,227 250,220 290,213 330,207 370,201 410,196
+    450,192 490,189 530,187 570,186 610,186 650,185 660,185
+  "/>
+  <!-- Confidence band -->
+  <polygon clip-path="url(#trendClip)" fill="#16A34A" opacity="0.1" points="
+    90,250 130,246 170,240 210,234 250,227 290,220 330,213 370,207 410,201
+    450,197 490,194 530,192 570,191 610,191 650,190 660,190
+    660,180 650,180 610,181 570,181 530,182 490,184 450,187 410,191
+    370,195 330,201 290,206 250,213 210,220 170,228 130,234 90,240
+  "/>
+
+  <!-- Panel 3: Seasonal -->
+  <rect x="78" y="278" width="594" height="94" rx="6" fill="#FAFAFA" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="86" y="295" font-size="12" font-weight="700" fill="#EA580C">Seasonal  s(t)</text>
+  <!-- Repeating sinusoidal pattern -->
+  <polyline clip-path="url(#seasonClip)" fill="none" stroke="#EA580C" stroke-width="2" points="
+    90,325 105,310 120,305 135,310 150,325 165,340 180,345 195,340
+    210,325 225,310 240,305 255,310 270,325 285,340 300,345 315,340
+    330,325 345,310 360,305 375,310 390,325 405,340 420,345 435,340
+    450,325 465,310 480,305 495,310 510,325 525,340 540,345 555,340
+    570,325 585,310 600,305 615,310 630,325 645,340 660,345
+  "/>
+  <!-- Zero line -->
+  <line x1="80" y1="325" x2="670" y2="325" stroke="#D1D5DB" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Panel 4: Residual -->
+  <rect x="78" y="393" width="594" height="94" rx="6" fill="#FAFAFA" stroke="#E5E7EB" stroke-width="1"/>
+  <text x="86" y="410" font-size="12" font-weight="700" fill="#7C3AED">Residual  ε(t)</text>
+  <!-- Random-looking scatter -->
+  <polyline clip-path="url(#residClip)" fill="none" stroke="#7C3AED" stroke-width="1.5" points="
+    90,440 110,445 130,432 150,448 170,438 190,443 210,435 230,450 250,437
+    270,442 290,447 310,435 330,440 350,433 370,445 390,438 410,450 430,440
+    450,435 470,448 490,440 510,443 530,437 550,445 570,440 590,433 610,448
+    630,440 650,443 660,438
+  "/>
+  <line x1="80" y1="440" x2="670" y2="440" stroke="#D1D5DB" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Plus/equals signs -->
+  <text x="40" y="215" text-anchor="middle" font-size="28" fill="#9CA3AF">=</text>
+  <text x="40" y="330" text-anchor="middle" font-size="28" fill="#9CA3AF">+</text>
+  <text x="40" y="445" text-anchor="middle" font-size="28" fill="#9CA3AF">+</text>
+
+  <!-- Bottom annotation -->
+  <text x="370" y="508" text-anchor="middle" font-size="11.5" fill="#64748B">The Kalman filter estimates each component simultaneously as hidden states.</text>
+</svg>
