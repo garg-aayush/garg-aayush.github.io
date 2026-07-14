@@ -152,21 +152,13 @@ The noise variances control how flexible each component is: a large process nois
 
 **Forecasting.** Once the filter has consumed all the data, forecasting is just running the predict step repeatedly with no more updates. The predicted state at horizon $h$ is the point forecast; the predicted covariance gives you honest uncertainty bands that widen with horizon, since every extra predict step adds process noise with no measurement to correct it.
 
-> This predict-only forecast is persistence done properly: it carries the whole state forward (level, slope and seasonal shape, not just the last value), and on the gap-filling example below it beats naive persistence and even linear interpolation in every gap despite using only past data.
+> This predict-only forecast is persistence done properly: it carries the whole state forward (level, slope and seasonal shape, not just the last value).
 
 **Interpolation and missing data.** This is where the smoother genuinely shines and the mechanism is quite simple: at timesteps with no measurement skip the update step. The predict step still runs, carrying the state through the gap while the uncertainty grows. On the backward pass, information from after the gap flows back through it.
 
 ![Gap filling with Kalman smoothing: uncertainty widens mid-gap and narrows at the edges](/static/img/blog-2026-07-15/fig5_interpolation.svg){width=100%}
 
 The result is an interpolated estimate at every missing point with confidence bands that widen toward the middle of the gap and narrow near its edges. Linear or spline interpolation gives you neither the dynamics-awareness nor the uncertainty. Irregular sampling works by the same principle: the predict step can project over any time interval, you just adjust $F$ and $Q$ for the actual elapsed time.
-
-**Parameter estimation.** In practice you rarely know $Q$ and $R$ up front. The filter hands you the solution: under the model, each innovation $\tilde{y}_k$ is Gaussian with mean zero and covariance $S_k$, so the log-likelihood of the whole dataset is
-
-$$
-\log L = -\tfrac{1}{2} \sum_k \left[ \log |S_k| + \tilde{y}_k^\top S_k^{-1} \tilde{y}_k \right]
-$$
-
-One filter pass evaluates it, an optimizer maximizes it over the unknown variances. This "prediction error decomposition" is how `statsmodels` and friends fit their state-space models. You can also hand-tune $Q$ and $R$ from intuition (larger $Q$ tracks rapid changes but is noisier, larger $R$ trusts the model more and smooths harder), which I did in the from-scratch versions below.
 
 ## Worked Example 1: Decomposing the Mauna Loa CO₂ Series {#example-co2-decomposition}
 
@@ -298,7 +290,7 @@ Everything above assumes linear dynamics and Gaussian noise. When your problem b
 
 ## Wrapping Up
 
-The mental model I keep coming back to: formulate the problem as hidden states plus dynamics plus noisy observations, run the **filter** (predict-update) when you need causal, online estimates, run the **smoother** (forward-backward) when you have the whole series offline, and let maximum likelihood over the innovations pick the noise variances. Denoising, decomposition, forecasting and gap-filling all fall out of that one setup, each with calibrated uncertainty attached.
+The mental model I keep coming back to: formulate the problem as hidden states plus dynamics plus noisy observations, run the **filter** (predict-update) when you need causal, online estimates, run the **smoother** (forward-backward) when you have the whole series offline, and let maximum likelihood (what `statsmodels` does on `fit`) pick the noise variances. Denoising, decomposition, forecasting and gap-filling all fall out of that one setup, each with calibrated uncertainty attached.
 
 For me the practical takeaway from the two examples is that this is not just elegant theory. The CO₂ decomposition produced interpretable components and fitted variances that were findings in themselves, and the gap-filling beat linear interpolation by 2.5x to 8x on held-out truth, precisely because the model understood the seasonality. Given how much of time-series work is pre-processing, that is a tool worth having within reach rather than buried inside library internals.
 
