@@ -16,7 +16,7 @@ The Kalman filter is a recursive algorithm that estimates the hidden state of a 
 
 This post builds the filter and the smoother from first principles and then applies them to two classic datasets: decomposing the [Mauna Loa $\text{CO}_2$ series](https://www.statsmodels.org/stable/datasets/generated/co2.html) into trend and seasonality and reconstructing artificially deleted chunks of the [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html).
 
-> You can find the full code for both examples in my [handbook repo](https://github.com/garg-aayush/handbook).
+> You can find the full code for both examples in my [handbook repo](https://github.com/garg-aayush/handbook/tree/main/time-series/kalman-filters).
 
 ## The Problem: Hidden States Behind Noisy Observations
 
