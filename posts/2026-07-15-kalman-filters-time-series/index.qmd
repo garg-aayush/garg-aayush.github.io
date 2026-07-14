@@ -3,18 +3,18 @@ title: "Kalman Filters and Smoothing for Time-Series Data"
 tags: ["Kalman Filter", "Kalman Smoothing", "State-Space Models", "Time Series", "statsmodels", "Interpolation"]
 categories: [Time Series]
 mathjax: true
-description: "A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap-filling, with worked examples on real datasets"
+description: "A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples"
 date: 2026-07-15
 permalink: /2026-07-15-kalman-filters-time-series/
 ---
 
 An important part of my current work involves time-series data. Over the past couple of months, I have come to appreciate the importance of preprocessing, especially because time-series data is often noisy, incomplete, irregularly sampled, and contains gaps. Your time‑series prediction model is only as good as your understanding and the preprocessing you apply to the data. There is one approach that really helps with denoising, filling gaps, separating trends and is a sort of a Swiss Army Knife for time-series data: the **Kalman filter**.
 
-The Kalman filter is a recursive algorithm that estimates the hidden state of a dynamic system from a sequence of noisy measurements. It was published by Rudolf Kalman back in 1960 and famously flew on the Apollo missions but the reason I care about it today is more mundane. It is provably optimal for linear-Gaussian systems, it runs cheaply in real time and gives you uncertainty estimates for free alongside every state estimate. When you combine it with its smoothing extension, it handles denoising, decomposition, forecasting and interpolation all from one framework. 
+The Kalman filter is a recursive algorithm that estimates the hidden state of a dynamic system from a sequence of noisy measurements. It was published by [Rudolf Kalman back in 1960](https://doi.org/10.1115/1.3662552) and famously flew on the Apollo missions but the reason I care about it today is more mundane. It is provably optimal for linear-Gaussian systems, it runs cheaply in real time and gives you uncertainty estimates for free alongside every state estimate. When you combine it with its smoothing extension, it handles denoising, decomposition, forecasting and interpolation all from one framework. 
 
-> If you have ever used `statsmodels`' structural time-series models or R's `StructTS`, you were running a Kalman filter under the hood.
+> If you have ever used [`statsmodels`' structural time-series models](https://www.statsmodels.org/stable/statespace.html) or R's [`StructTS`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/StructTS.html), you were running a Kalman filter under the hood.
 
-This post builds the filter and the smoother from first principles and then applies them to two classic datasets: decomposing the Mauna Loa $\text{CO}_2$ series into trend and seasonality and reconstructing artificially deleted chunks of the AirPassengers series. 
+This post builds the filter and the smoother from first principles and then applies them to two classic datasets: [decomposing the Mauna Loa $\text{CO}_2$ series into trend and seasonality](#example-co2-decomposition) and [reconstructing artificially deleted chunks of the AirPassengers series](#example-airpassengers-gaps).
 
 > You can find the full code for both examples in my [handbook repo](https://github.com/garg-aayush/handbook).
 
@@ -48,11 +48,13 @@ where:
 - $w_k \sim \mathcal{N}(0, Q)$ is the process noise, random disturbances to the dynamics
 - $v_k \sim \mathcal{N}(0, R)$ is the measurement noise, sensor imprecision
 
-The key assumption is that both noise sources are Gaussian and independent of each other.
+**The key assumption is that both noise sources are Gaussian and independent of each other.**
 
 ![The linear state-space model](/static/img/blog-2026-07-15/fig2_state_space_model.svg){width=100%}
 
-What makes this formulation so useful for time-series work is its generality. The state vector can contain anything: a level, a slope, eleven seasonal factors, a bias term. The matrices $F$ and $H$ define how those pieces relate to each other and to what you actually observe. Many classical time-series methods (ARIMA, exponential smoothing, structural models) turn out to be special cases of this one linear state-space form.
+What makes this formulation so useful for time-series work is its generality. The state vector can contain anything: a level, a slope, eleven seasonal factors, a bias term. The matrices $F$ and $H$ define how those pieces relate to each other and to what you actually observe. 
+
+> Many classical time-series methods (ARIMA, exponential smoothing, structural models) turn out to be special cases of this one linear state-space form.
 
 ## The Kalman Filter: Predict, then Update
 
@@ -72,7 +74,7 @@ $$
 P^-_k = F \, P_{k-1} F^\top + Q
 $$
 
-The superscript $-$ marks a "prior" estimate, before seeing the measurement. Notice that the covariance $P^-_k$ grows because of the added process noise $Q$. This is the model admitting that the further it extrapolates without data, the less sure it is. That one property ends up doing a lot of work later, when we get to missing data.
+The superscript $-$ marks a "prior" estimate before seeing the measurement. Notice that the covariance $P^-_k$ grows because of the added process noise $Q$. This is the model admitting that the further it extrapolates without data, the less sure it is. That one property ends up doing a lot of work later when we get to missing data.
 
 ### Update step
 
@@ -146,7 +148,7 @@ Everything in time-series pre-processing that I care about falls out of this one
 
 ![Structural time-series decomposition via the Kalman filter](/static/img/blog-2026-07-15/fig4_time_series_decomposition.svg){width=100%}
 
-The noise variances control how flexible each component is: a large process noise on the trend lets it move fast, a tiny one forces it to evolve slowly and smoothly. This is exactly what `statsmodels.tsa.UnobservedComponents` and R's `StructTS` do internally.
+The noise variances control how flexible each component is: a large process noise on the trend lets it move fast, a tiny one forces it to evolve slowly and smoothly. This is exactly what [`statsmodels.tsa.UnobservedComponents`](https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.structural.UnobservedComponents.html) and R's [`StructTS`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/StructTS.html) do internally.
 
 **Forecasting.** Once the filter has consumed all the data, forecasting is just running the predict step repeatedly with no more updates. The predicted state at horizon $h$ is the point forecast; the predicted covariance gives you honest uncertainty bands that widen with horizon, since every extra predict step adds process noise with no measurement to correct it.
 
@@ -164,7 +166,7 @@ $$
 
 One filter pass evaluates it, an optimizer maximizes it over the unknown variances. This "prediction error decomposition" is how `statsmodels` and friends fit their state-space models. You can also hand-tune $Q$ and $R$ from intuition (larger $Q$ tracks rapid changes but is noisier, larger $R$ trusts the model more and smooths harder), which I did in the from-scratch versions below.
 
-## Worked Example 1: Decomposing the Mauna Loa CO₂ Series
+## Worked Example 1: Decomposing the Mauna Loa CO₂ Series {#example-co2-decomposition}
 
 **The dataset.** The Keeling Curve records atmospheric CO₂ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` (`sm.datasets.co2`). Resampled to monthly, it gives 526 points from March 1958 to December 2001, ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions, and an annual cycle of roughly ±3 ppm driven by Northern Hemisphere vegetation (plants absorb CO₂ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
 
@@ -231,7 +233,7 @@ The green line is the trend alone, the blue line adds the estimated seasonal com
 
 The near-zero seasonal variance is the model telling us the annual CO₂ cycle has barely changed shape across four decades. This kind of interpretability, where the fitted noise variances are themselves findings, is something you simply do not get from a black-box smoother.
 
-## Worked Example 2: Filling Gaps in the AirPassengers Series
+## Worked Example 2: Filling Gaps in the AirPassengers Series {#example-airpassengers-gaps}
 
 **The dataset.** The Box-Jenkins AirPassengers series: monthly international airline passenger totals (in thousands) from January 1949 to December 1960, 144 observations. Strong upward trend, strong seasonality, and crucially the seasonal amplitude grows with the level: the summer peaks of the late 1950s are far taller in absolute terms than those of 1949. That is **multiplicative** seasonality, which a linear filter cannot represent directly. The standard fix is to work in log-space, where multiplicative structure becomes additive, then exponentiate the estimates back at the end.
 
@@ -302,8 +304,9 @@ The full runnable code for both examples, from-scratch NumPy and `statsmodels` s
 
 ## References and Further Reading
 
-- Kalman, R. E. (1960). "A New Approach to Linear Filtering and Prediction Problems." *Journal of Basic Engineering*, 82(1), 35-45.
-- Rauch, H. E., Tung, F., and Striebel, C. T. (1965). "Maximum Likelihood Estimates of Linear Dynamic Systems." *AIAA Journal*, 3(8), 1445-1450.
-- Harvey, A. C. (1989). *Forecasting, Structural Time Series Models and the Kalman Filter.* Cambridge University Press.
-- Durbin, J. and Koopman, S. J. (2012). *Time Series Analysis by State Space Methods.* 2nd ed., Oxford University Press.
-- Commandeur, J. J. F. and Koopman, S. J. (2007). *An Introduction to State Space Time Series Analysis.* Oxford University Press.
+- Kalman, R. E. (1960). ["A New Approach to Linear Filtering and Prediction Problems."](https://doi.org/10.1115/1.3662552) *Journal of Basic Engineering*, 82(1), 35-45.
+- Rauch, H. E., Tung, F., and Striebel, C. T. (1965). ["Maximum Likelihood Estimates of Linear Dynamic Systems."](https://doi.org/10.2514/3.3166) *AIAA Journal*, 3(8), 1445-1450.
+- Harvey, A. C. (1989). [*Forecasting, Structural Time Series Models and the Kalman Filter.*](https://doi.org/10.1017/CBO9781107049994) Cambridge University Press.
+- Durbin, J. and Koopman, S. J. (2012). [*Time Series Analysis by State Space Methods.*](https://doi.org/10.1093/acprof:oso/9780199641178.001.0001) 2nd ed., Oxford University Press.
+- Commandeur, J. J. F. and Koopman, S. J. (2007). [*An Introduction to State Space Time Series Analysis.*](https://global.oup.com/academic/product/an-introduction-to-state-space-time-series-analysis-9780199228874) Oxford University Press.
+- [`statsmodels` state-space documentation](https://www.statsmodels.org/stable/statespace.html), the library used throughout the worked examples.
