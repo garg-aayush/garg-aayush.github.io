@@ -160,9 +160,9 @@ The noise variances control how flexible each component is: a large process nois
 
 The result is an interpolated estimate at every missing point with confidence bands that widen toward the middle of the gap and narrow near its edges. Linear or spline interpolation gives you neither the dynamics-awareness nor the uncertainty. Irregular sampling works by the same principle: the predict step can project over any time interval, you just adjust $F$ and $Q$ for the actual elapsed time.
 
-## Worked Example 1: Decomposing the Mauna Loa CO₂ Series {#example-co2-decomposition}
+## Example 1: Decomposing the Mauna Loa $\text{CO}_2$ Series {#example-co2-decomposition}
 
-**The dataset.** The Keeling Curve records atmospheric CO₂ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` ([`sm.datasets.co2`](https://www.statsmodels.org/stable/datasets/generated/co2.html)). Resampled to monthly, it gives 526 points from March 1958 to December 2001, ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions, and an annual cycle of roughly ±3 ppm driven by Northern Hemisphere vegetation (plants absorb CO₂ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
+**The dataset.** The Keeling Curve records atmospheric $\text{CO}_2$ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` ([`sm.datasets.co2`](https://www.statsmodels.org/stable/datasets/generated/co2.html)). Resampled to monthly, it gives 526 points from March 1958 to December 2001, ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions, and an annual cycle of roughly $\pm 3$ ppm driven by Northern Hemisphere vegetation (plants absorb $\text{CO}_2$ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
 
 **The model.** A structural model with a local linear trend and a 12-month seasonal component. The state vector is
 
@@ -206,13 +206,13 @@ results = model.fit(disp=False)
 
 **Results.** The full decomposition, from-scratch on the left and `statsmodels` on the right:
 
-![Mauna Loa CO₂ structural decomposition: observed, trend, seasonal, residual](/static/img/blog-2026-07-15/fig7_co2_decomposition.png){width=100%}
+![Mauna Loa $\text{CO}_2$ structural decomposition: observed, trend, seasonal, residual](/static/img/blog-2026-07-15/fig7_co2_decomposition.png){width=100%}
 
 The trend captures the accelerating rise: not a straight line but a curve that gently steepens as emission rates increase. The seasonal component is a clean, nearly constant annual oscillation, dropping about 6 ppm from the May peak to the September trough each year as Northern Hemisphere forests absorb carbon through the growing season. The residual is tiny (about 0.09 ppm standard deviation in the `statsmodels` version), confirming that trend plus seasonal explains nearly everything. The two implementations agree closely; the visible difference is just MLE-optimized variances versus my hand-tuned ones, which changes the trend smoothness slightly.
 
 Zooming into 1990 to 1996 shows the components at the individual-cycle level:
 
-![Zoomed view of the CO₂ seasonal cycles, 1990 to 1996](/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png){width=100%}
+![Zoomed view of the $\text{CO}_2$ seasonal cycles, 1990 to 1996](/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png){width=100%}
 
 The green line is the trend alone, the blue line adds the estimated seasonal component, and the observed points cluster tightly around the reconstruction.
 
@@ -225,9 +225,9 @@ The green line is the trend alone, the blue line adds the estimated seasonal com
 | $\sigma^2_\text{trend}$ | $3.4 \times 10^{-6}$ | The growth rate changes very slowly |
 | $\sigma^2_\text{seasonal}$ | $\approx 0$ | The seasonal shape is essentially fixed over 43 years |
 
-The near-zero seasonal variance is the model telling us the annual CO₂ cycle has barely changed shape across four decades. This kind of interpretability, where the fitted noise variances are themselves findings, is something you simply do not get from a black-box smoother.
+The near-zero seasonal variance is the model telling us the annual $\text{CO}_2$ cycle has barely changed shape across four decades. This kind of interpretability, where the fitted noise variances are themselves findings, is something you simply do not get from a black-box smoother.
 
-## Worked Example 2: Filling Gaps in the AirPassengers Series {#example-airpassengers-gaps}
+## Example 2: Filling Gaps in the AirPassengers Series {#example-airpassengers-gaps}
 
 **The dataset.** The Box-Jenkins [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html): monthly international airline passenger totals (in thousands) from January 1949 to December 1960, 144 observations. It ships with R's datasets package and is freely available as a CSV via the [Rdatasets repository](https://vincentarelbundock.github.io/Rdatasets/). Strong upward trend, strong seasonality, and crucially the seasonal amplitude grows with the level: the summer peaks of the late 1950s are far taller in absolute terms than those of 1949. That is **multiplicative** seasonality, which a linear filter cannot represent directly. The standard fix is to work in log-space, where multiplicative structure becomes additive, then exponentiate the estimates back at the end.
 
@@ -278,9 +278,9 @@ The 9-month gap in the middle panel is the one that sold me: the smoother recons
 
 | Gap | Kalman smoother | Linear interpolation | Improvement |
 |---|---|---|---|
-| 8 months (Jul 1951 to Mar 1952) | 8.7 | 21.7 | 2.5x |
-| 9 months (Jan 1955 to Oct 1955) | 6.3 | 52.5 | 8.3x |
-| 4 months (Jun 1958 to Oct 1958) | 26.3 | 106.0 | 4.0x |
+| 8 months (Jul 1951 to Mar 1952) | 8.7 | 21.7 | $2.5\times$ |
+| 9 months (Jan 1955 to Oct 1955) | 6.3 | 52.5 | $8.3\times$ |
+| 4 months (Jun 1958 to Oct 1958) | 26.3 | 106.0 | $4.0\times$ |
 
 The smoother's advantage grows with gap size, and is largest wherever the seasonal pattern deviates most from a straight line (the full cycle in the 9-month gap, the summer peak in the 4-month one). The reason is simple: the state-space model *knows* about the 12-month periodicity. The seasonal states carry a memory of the seasonal shape and the dynamics propagate it forward, and backward, through the gap. Linear interpolation knows nothing.
 
@@ -292,7 +292,7 @@ Everything above assumes linear dynamics and Gaussian noise. When your problem b
 
 The mental model I keep coming back to: formulate the problem as hidden states plus dynamics plus noisy observations, run the **filter** (predict-update) when you need causal, online estimates, run the **smoother** (forward-backward) when you have the whole series offline, and let maximum likelihood (what `statsmodels` does on `fit`) pick the noise variances. Denoising, decomposition, forecasting and gap-filling all fall out of that one setup, each with calibrated uncertainty attached.
 
-For me the practical takeaway from the two examples is that this is not just elegant theory. The CO₂ decomposition produced interpretable components and fitted variances that were findings in themselves, and the gap-filling beat linear interpolation by 2.5x to 8x on held-out truth, precisely because the model understood the seasonality. Given how much of time-series work is pre-processing, that is a tool worth having within reach rather than buried inside library internals.
+For me the practical takeaway from the two examples is that this is not just elegant theory. The $\text{CO}_2$ decomposition produced interpretable components and fitted variances that were findings in themselves, and the gap-filling beat linear interpolation by $2.5\times$ to $8\times$ on held-out truth, precisely because the model understood the seasonality. Given how much of time-series work is pre-processing, that is a tool worth having within reach rather than buried inside library internals.
 
 The full runnable code for both examples, from-scratch NumPy and `statsmodels` side by side, will be up in my [handbook repo](https://github.com/garg-aayush/handbook).
 
@@ -303,4 +303,4 @@ The full runnable code for both examples, from-scratch NumPy and `statsmodels` s
 - Harvey, A. C. (1989). [*Forecasting, Structural Time Series Models and the Kalman Filter.*](https://doi.org/10.1017/CBO9781107049994) Cambridge University Press.
 - Durbin, J. and Koopman, S. J. (2012). [*Time Series Analysis by State Space Methods.*](https://doi.org/10.1093/acprof:oso/9780199641178.001.0001) 2nd ed., Oxford University Press.
 - Commandeur, J. J. F. and Koopman, S. J. (2007). [*An Introduction to State Space Time Series Analysis.*](https://global.oup.com/academic/product/an-introduction-to-state-space-time-series-analysis-9780199228874) Oxford University Press.
-- [`statsmodels` state-space documentation](https://www.statsmodels.org/stable/statespace.html), the library used throughout the worked examples.
+- [`statsmodels` state-space documentation](https://www.statsmodels.org/stable/statespace.html), the library used throughout the examples.
