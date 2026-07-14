@@ -288,15 +288,13 @@ The smoother's advantage grows with gap size and is largest wherever the seasona
 
 Everything above assumes linear dynamics and Gaussian noise. When your problem breaks those assumptions (multiplicative effects you cannot log away, regime switching, stochastic volatility) there is a well-trodden ladder of extensions: the **Extended Kalman Filter** linearizes around the current estimate with Jacobians, the **Unscented Kalman Filter** propagates a small set of sigma points through the nonlinearity instead, and **particle filters** represent the state distribution with weighted samples and handle essentially anything, at much higher compute cost.
 
-> I have not explored these extensions myself. For actual predictions we anyway rely on ML-based forecasting models, and for the pre-processing role the Kalman filter plays in my workflow, the linear version plus a good transform (like the log-transform in Example 2) has been enough.
+> I have not explored these extensions myself. For actual predictions we anyway rely on ML-based forecasting models.
 
 ## Wrapping Up
 
-Most of the value I get from the Kalman filter has nothing to do with using it as the final forecasting model. It is a pre-processing workhorse: it denoises, decomposes a series into interpretable trend and seasonal components, and fills gaps with dynamics-aware estimates and honest uncertainty bands instead of straight lines. Your forecasting model, ML-based or otherwise, is only as good as the data you feed it, and this is the tool that gets the data into shape.
+Most of the value I get from the Kalman filter has nothing to do with using it as the final forecasting model. It is a pre-processing workhorse: it denoises, decomposes a series into interpretable trend and seasonal components and fills gaps with dynamics-aware estimates and honest uncertainty bands instead of straight lines. Your forecasting model, ML-based or otherwise is only as good as the data you feed it and this is the tool that gets the data into shape.
 
-The second takeaway is persistence. The predict-only Kalman forecast carries the whole state forward (level, slope and seasonal shape, not just the last value), which makes it a natural baseline for any forecasting work: it is cheap, causal and surprisingly hard to beat, as the gap-filling in Example 2 showed against linear interpolation. If an ML model cannot beat this baseline, it is not learning much.
-
-Both of these usually sit buried inside library internals. They are worth understanding and having within reach.
+The second takeaway is persistence. The predict-only Kalman forecast carries the whole state forward (level, slope and seasonal shape, not just the last value) which makes it a natural baseline for any forecasting work: it is cheap, causal and surprisingly hard to beat as the gap-filling in Example 2 showed against linear interpolation. If an ML model cannot beat this baseline, it is not learning much.
 
 ## References and Further Reading
 
