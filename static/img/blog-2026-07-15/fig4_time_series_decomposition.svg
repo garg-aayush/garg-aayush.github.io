@@ -6,7 +6,7 @@
     <clipPath id="residClip"><rect x="80" y="395" width="590" height="90"/></clipPath>
   </defs>
 
-  <text x="370" y="26" text-anchor="middle" font-size="18" font-weight="700" fill="#1E293B">Figure 4: Structural Time-Series Decomposition via Kalman Filter</text>
+  <text x="370" y="26" text-anchor="middle" font-size="18" font-weight="700" fill="#E8EAED">Structural Time-Series Decomposition via Kalman Filter</text>
 
   <!-- Panel 1: Observed data -->
   <rect x="78" y="38" width="594" height="104" rx="6" fill="#FAFAFA" stroke="#E5E7EB" stroke-width="1"/>
@@ -60,10 +60,10 @@
   <line x1="80" y1="440" x2="670" y2="440" stroke="#D1D5DB" stroke-width="1" stroke-dasharray="4,3"/>
 
   <!-- Plus/equals signs -->
-  <text x="40" y="215" text-anchor="middle" font-size="28" fill="#9CA3AF">=</text>
-  <text x="40" y="330" text-anchor="middle" font-size="28" fill="#9CA3AF">+</text>
-  <text x="40" y="445" text-anchor="middle" font-size="28" fill="#9CA3AF">+</text>
+  <text x="40" y="215" text-anchor="middle" font-size="28" fill="#C3C7CE">=</text>
+  <text x="40" y="330" text-anchor="middle" font-size="28" fill="#C3C7CE">+</text>
+  <text x="40" y="445" text-anchor="middle" font-size="28" fill="#C3C7CE">+</text>
 
   <!-- Bottom annotation -->
-  <text x="370" y="508" text-anchor="middle" font-size="11.5" fill="#64748B">The Kalman filter estimates each component simultaneously as hidden states.</text>
+  <text x="370" y="508" text-anchor="middle" font-size="11.5" fill="#A3A9B3">The Kalman filter estimates each component simultaneously as hidden states.</text>
 </svg>

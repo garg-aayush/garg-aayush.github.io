@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 320" font-family="'Segoe UI', Arial, sans-serif">
   <defs>
     <marker id="arrBlk" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+      <polygon points="0 0, 10 3.5, 0 7" fill="#C3C7CE"/>
     </marker>
     <marker id="arrOrange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#EA580C"/>
@@ -11,11 +11,11 @@
     </filter>
   </defs>
 
-  <text x="370" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#1E293B">Figure 2: The Linear State-Space Model</text>
+  <text x="370" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#E8EAED">The Linear State-Space Model</text>
 
   <!-- Hidden state row -->
-  <text x="30" y="105" font-size="13" font-weight="600" fill="#6B7280">Hidden</text>
-  <text x="30" y="120" font-size="13" font-weight="600" fill="#6B7280">States</text>
+  <text x="30" y="105" font-size="13" font-weight="600" fill="#A3A9B3">Hidden</text>
+  <text x="30" y="120" font-size="13" font-weight="600" fill="#A3A9B3">States</text>
 
   <!-- State nodes -->
   <circle cx="160" cy="112" r="38" fill="#EFF6FF" stroke="#2563EB" stroke-width="2" filter="url(#sh)"/>
@@ -31,23 +31,23 @@
   <text x="590" y="120" text-anchor="middle" font-size="11" fill="#1E40AF">k+1</text>
 
   <!-- State transition arrows -->
-  <line x1="200" y1="112" x2="328" y2="112" stroke="#374151" stroke-width="2" marker-end="url(#arrBlk)"/>
-  <text x="265" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#374151" font-style="italic">F</text>
+  <line x1="200" y1="112" x2="328" y2="112" stroke="#C3C7CE" stroke-width="2" marker-end="url(#arrBlk)"/>
+  <text x="265" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#C3C7CE" font-style="italic">F</text>
 
-  <line x1="410" y1="112" x2="538" y2="112" stroke="#374151" stroke-width="2" marker-end="url(#arrBlk)"/>
-  <text x="475" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#374151" font-style="italic">F</text>
+  <line x1="410" y1="112" x2="538" y2="112" stroke="#C3C7CE" stroke-width="2" marker-end="url(#arrBlk)"/>
+  <text x="475" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#C3C7CE" font-style="italic">F</text>
 
   <!-- Continuation dots -->
   <text x="650" y="117" font-size="22" fill="#9CA3AF">···</text>
   <text x="90" y="117" font-size="22" fill="#9CA3AF">···</text>
 
   <!-- Process noise labels -->
-  <text x="265" y="82" text-anchor="middle" font-size="11" fill="#9333EA" font-style="italic">+ wₖ</text>
-  <text x="475" y="82" text-anchor="middle" font-size="11" fill="#9333EA" font-style="italic">+ wₖ₊₁</text>
+  <text x="265" y="82" text-anchor="middle" font-size="11" fill="#C084FC" font-style="italic">+ wₖ</text>
+  <text x="475" y="82" text-anchor="middle" font-size="11" fill="#C084FC" font-style="italic">+ wₖ₊₁</text>
 
   <!-- Observation row label -->
-  <text x="30" y="255" font-size="13" font-weight="600" fill="#6B7280">Observed</text>
-  <text x="30" y="270" font-size="13" font-weight="600" fill="#6B7280">Measurements</text>
+  <text x="30" y="255" font-size="13" font-weight="600" fill="#A3A9B3">Observed</text>
+  <text x="30" y="270" font-size="13" font-weight="600" fill="#A3A9B3">Measurements</text>
 
   <!-- Observation nodes -->
   <rect x="130" y="235" width="60" height="50" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="2" filter="url(#sh)"/>
@@ -73,12 +73,12 @@
   <text x="565" y="195" text-anchor="middle" font-size="14" font-weight="600" fill="#EA580C" font-style="italic">H</text>
 
   <!-- Measurement noise labels -->
-  <text x="185" y="195" font-size="11" fill="#DC2626" font-style="italic">+ vₖ₋₁</text>
-  <text x="393" y="195" font-size="11" fill="#DC2626" font-style="italic">+ vₖ</text>
-  <text x="605" y="195" font-size="11" fill="#DC2626" font-style="italic">+ vₖ₊₁</text>
+  <text x="185" y="195" font-size="11" fill="#F87171" font-style="italic">+ vₖ₋₁</text>
+  <text x="393" y="195" font-size="11" fill="#F87171" font-style="italic">+ vₖ</text>
+  <text x="605" y="195" font-size="11" fill="#F87171" font-style="italic">+ vₖ₊₁</text>
 
   <!-- Legend -->
-  <rect x="120" y="297" width="500" height="22" rx="4" fill="#F8FAFC"/>
+  <rect x="65" y="297" width="610" height="22" rx="4" fill="#F8FAFC"/>
   <text x="370" y="314" text-anchor="middle" font-size="11.5" fill="#64748B">
     F = state transition   |   H = observation model   |   w ~ N(0,Q) process noise   |   v ~ N(0,R) measurement noise
   </text>

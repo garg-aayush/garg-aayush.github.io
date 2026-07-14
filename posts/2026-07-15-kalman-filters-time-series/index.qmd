@@ -8,21 +8,25 @@ date: 2026-07-15
 permalink: /2026-07-15-kalman-filters-time-series/
 ---
 
-A big part of my current work involves time-series data, and I have come to appreciate that pre-processing is not a side chore. Denoising, filling gaps, separating trend from seasonality: this is where most of the real effort goes before any forecasting model even sees the data. One tool keeps showing up everywhere in this space, usually hidden inside library internals: the **Kalman filter**.
+An important part of my current work involves time-series data. Over the past couple of months, I have come to appreciate the importance of preprocessing, especially because time-series data is often noisy, incomplete, irregularly sampled, and contains gaps. Your time‑series prediction model is only as good as your understanding and the preprocessing you apply to the data. There is one approach that really helps with denoising, filling gaps, separating trends and is a sort of a Swiss Army Knife for time-series data: the **Kalman filter**.
 
-The Kalman filter is a recursive algorithm that estimates the hidden state of a dynamic system from a sequence of noisy measurements. It was published by Rudolf Kalman back in 1960 and famously flew on the Apollo missions, but the reason I care about it today is more mundane: it is provably optimal for linear-Gaussian systems, it runs cheaply in real time, and it gives you uncertainty estimates for free alongside every state estimate. Combined with its smoothing extension, it handles denoising, decomposition, forecasting and interpolation all from one framework. If you have ever used `statsmodels`' structural time-series models or R's `StructTS`, you were running a Kalman filter under the hood.
+The Kalman filter is a recursive algorithm that estimates the hidden state of a dynamic system from a sequence of noisy measurements. It was published by Rudolf Kalman back in 1960 and famously flew on the Apollo missions but the reason I care about it today is more mundane. It is provably optimal for linear-Gaussian systems, it runs cheaply in real time and gives you uncertainty estimates for free alongside every state estimate. When you combine it with its smoothing extension, it handles denoising, decomposition, forecasting and interpolation all from one framework. 
 
-This post builds the filter and the smoother from first principles and then applies them to two classic datasets: decomposing the Mauna Loa CO₂ series into trend and seasonality, and reconstructing artificially deleted chunks of the AirPassengers series. The full code for both examples (a from-scratch NumPy implementation next to the `statsmodels` version) will live in my [handbook repo](https://github.com/garg-aayush/handbook), so here I only show the pieces that carry the ideas.
+> If you have ever used `statsmodels`' structural time-series models or R's `StructTS`, you were running a Kalman filter under the hood.
+
+This post builds the filter and the smoother from first principles and then applies them to two classic datasets: decomposing the Mauna Loa $\text{CO}_2$ series into trend and seasonality and reconstructing artificially deleted chunks of the AirPassengers series. 
+
+> You can find the full code for both examples in my [handbook repo](https://github.com/garg-aayush/handbook).
 
 ## The Problem: Hidden States Behind Noisy Observations
 
-Many real-world systems share the same structure. There is some quantity you actually care about (the "state") that evolves over time according to dynamics you roughly understand, but you never get to observe it directly. Instead, you receive measurements corrupted by noise. Tracking an aircraft with radar is the textbook example: the state is position and velocity, the measurement is a noisy radar return. But a noisy sensor reading in an industrial process, or a financial series where the "true" level is buried under daily fluctuation, is the same problem.
+Many real-world systems share the same structure. There is some quantity you actually care about (the "state") that evolves over time according to dynamics you roughly understand but you never get to observe it directly. Instead, you receive measurements corrupted by noise. Tracking an aircraft with radar is the textbook example: the state is position and velocity, the measurement is a noisy radar return. However, a noisy sensor reading in an industrial process or a financial series where the "true" level is buried under daily fluctuation is the same problem.
 
-The challenge is to combine two imperfect sources of information, your knowledge of how the system evolves and the noisy observations, into the best possible estimate of the true state at each point in time. That is exactly what the Kalman filter does, and the way it balances the two is the interesting part.
+The challenge is to combine two imperfect sources of information, your knowledge of how the system evolves and the noisy observations, into the best possible estimate of the true state at each point in time. That is exactly what the Kalman filter does and the way it balances the two is the interesting part.
 
 ## The State-Space Model
 
-The filter operates on a **state-space model**, which writes down both the dynamics and the observation process in matrix form. For a discrete-time linear system:
+The filter operates on a **state-space model** which writes down both the dynamics and the observation process in matrix form. For a discrete-time linear system:
 
 **State equation** (how the hidden state evolves):
 
