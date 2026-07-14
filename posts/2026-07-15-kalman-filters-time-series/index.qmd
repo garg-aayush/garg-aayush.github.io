@@ -12,7 +12,7 @@ An important part of my current work involves time-series data. Over the past co
 
 The Kalman filter is a recursive algorithm that estimates the hidden state of a dynamic system from a sequence of noisy measurements. It was published by [Rudolf Kalman back in 1960](https://doi.org/10.1115/1.3662552) and famously flew on the Apollo missions but the reason I care about it today is more mundane. It is provably optimal for linear-Gaussian systems, it runs cheaply in real time and gives you uncertainty estimates for free alongside every state estimate. When you combine it with its smoothing extension, it handles denoising, decomposition, forecasting and interpolation all from one framework. 
 
-> If you have ever used [`statsmodels`' structural time-series models](https://www.statsmodels.org/stable/statespace.html) or R's [`StructTS`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/StructTS.html), you were running a Kalman filter under the hood.
+> If you have ever used [statsmodels](https://www.statsmodels.org/stable/statespace.html) you were running a Kalman filter under the hood.
 
 This post builds the filter and the smoother from first principles and then applies them to two classic datasets: decomposing the [Mauna Loa $\text{CO}_2$ series](https://www.statsmodels.org/stable/datasets/generated/co2.html) into trend and seasonality and reconstructing artificially deleted chunks of the [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html).
 
@@ -20,9 +20,9 @@ This post builds the filter and the smoother from first principles and then appl
 
 ## The Problem: Hidden States Behind Noisy Observations
 
-Many real-world systems share the same structure. There is some quantity you actually care about (the "state") that evolves over time according to dynamics you roughly understand but you never get to observe it directly. Instead, you receive measurements corrupted by noise. Tracking an aircraft with radar is the textbook example: the state is position and velocity, the measurement is a noisy radar return. However, a noisy sensor reading in an industrial process or a financial series where the "true" level is buried under daily fluctuation is the same problem.
+Many real-world systems share the same structure. There is some quantity you actually care about (the **state**) that evolves over time according to dynamics you roughly understand but you never get to observe it directly. Instead, you receive measurements corrupted by noise. Tracking an aircraft with radar is the textbook example: the state is position and velocity, the measurement is a noisy radar return. However, a noisy sensor reading in an industrial process or a financial series where the **true** level is buried under daily fluctuation is the same problem.
 
-The challenge is to combine two imperfect sources of information, your knowledge of how the system evolves and the noisy observations, into the best possible estimate of the true state at each point in time. That is exactly what the Kalman filter does and the way it balances the two is the interesting part.
+**The challenge is to combine two imperfect sources of information, your knowledge of how the system evolves and the noisy observations, into the best possible estimate of the true state at each point in time**. That is exactly what the Kalman filter does and the way it balances the two is the interesting part.
 
 ## The State-Space Model
 
@@ -52,7 +52,7 @@ where:
 
 ![The linear state-space model](/static/img/blog-2026-07-15/fig2_state_space_model.svg){width=100%}
 
-What makes this formulation so useful for time-series work is its generality. The state vector can contain anything: a level, a slope, eleven seasonal factors, a bias term. The matrices $F$ and $H$ define how those pieces relate to each other and to what you actually observe. 
+What makes this formulation so useful for time-series work is its **generality**. The state vector can contain anything: a level, a slope, eleven seasonal factors, a bias term. The matrices $F$ and $H$ define how those pieces relate to each other and to what you actually observe. 
 
 > Many classical time-series methods (ARIMA, exponential smoothing, structural models) turn out to be special cases of this one linear state-space form.
 
@@ -108,15 +108,17 @@ The gain is the heart of the algorithm and worth staring at for a minute.
 
 ![Intuition behind the Kalman gain](/static/img/blog-2026-07-15/fig6_kalman_gain.svg){width=100%}
 
-When the measurement noise $R$ is large (an unreliable sensor), $K_k$ shrinks toward zero and the filter mostly trusts its own prediction. When the prior uncertainty $P^-_k$ is large (an uncertain model), $K_k$ grows toward one and the filter mostly trusts the measurement. In between, it blends the two optimally: for a linear-Gaussian system, no other linear combination of prediction and measurement achieves lower mean squared error. I find this the most satisfying way to think about the filter: it is a trust dial that re-tunes itself at every timestep based on who currently deserves more trust, the model or the sensor.
+When the measurement noise $R$ is large (an unreliable sensor), $K_k$ shrinks toward zero and the filter mostly trusts its own prediction. When the prior uncertainty $P^-_k$ is large (an uncertain model), $K_k$ grows toward one and the filter mostly trusts the measurement. **In between it blends the two optimally: for a linear-Gaussian system, no other linear combination of prediction and measurement achieves lower mean squared error**. 
 
-One practical note on initialization. The filter needs a starting $\hat{x}_0$ and $P_0$. For time-series work the standard trick is a "diffuse" initialization, i.e. a huge $P_0$, which effectively tells the filter "I know nothing, learn the state from the data". It converges to sensible estimates within a few timesteps either way, as long as every state component actually influences the observations through $H$ (a component that does not is unobservable, and no amount of filtering will recover it).
+>It is a trust dial that re-tunes itself at every timestep based on who currently deserves more trust, the model or the sensor.
+
+One practical note on initialization. The filter needs a starting $\hat{x}_0$ and $P_0$. For time-series work the standard trick is a **diffuse** initialization i.e. a huge $P_0$ which effectively tells the filter "I know nothing, learn the state from the data". It converges to sensible estimates within a few timesteps either way, as long as every state component actually influences the observations through $H$ (a component that does not is unobservable and no amount of filtering will recover it).
 
 ## Kalman Smoothing: Using the Future Too
 
-The filter as described is **causal**: the estimate at time $k$ uses only measurements up to $k$. That is what you want in real time. But for offline analysis of a time series you already have the whole dataset sitting in front of you, so why should the estimate at 1995 ignore everything you know about 1996?
+The filter as described is **causal**: the estimate at time $k$ uses only measurements up to $k$. That is what you want in real time. But for offline analysis of a time series you already have the whole dataset sitting in front of you so why should the estimate at 1995 ignore everything you know about 1996?
 
-**Kalman smoothing** fixes this by producing estimates that use all measurements, past and future. The standard form is the Rauch-Tung-Striebel (RTS) smoother, which works in two passes.
+**Kalman smoothing** fixes this by producing estimates that use all measurements including both past and future. The standard form is the **Rauch-Tung-Striebel (RTS) smoother** which works in two passes.
 
 ![The RTS smoother: forward filter pass plus backward smoothing pass](/static/img/blog-2026-07-15/fig3_kalman_smoothing.svg){width=100%}
 
@@ -136,11 +138,9 @@ $$
 P^s_k = P_k + G_k \left( P^s_{k+1} - P^-_{k+1} \right) G_k^\top
 $$
 
-The smoothed estimates are always at least as good as the filtered ones, since they use strictly more information. The improvement is most dramatic in two places: at the start of the series, where the filter is still shaking off its initial conditions and the smoother can reach back from later data to correct it, and inside gaps in the data, where the smoother blends forward extrapolation from the past with backward extrapolation from the future. That second case is the star of the second worked example below.
+The smoothed estimates are always at least as good as the filtered ones since they use strictly more information. The improvement is most dramatic in two places: at the start of the series where the filter is still shaking off its initial conditions and the smoother can reach back from later data to correct it,and inside gaps in the data, where the smoother blends forward extrapolation from the past with backward extrapolation from the future.
 
-## What This Buys You for Time-Series Work
-
-Everything in time-series pre-processing that I care about falls out of this one framework.
+## What can we do with the Kalman filter and smoother?
 
 **Denoising.** If your series is a noisy version of some smooth underlying process, model the state as the true value plus its rate of change and let the filter separate signal from noise. Unlike a moving average or a generic low-pass filter, the Kalman approach adapts automatically: it smooths harder where the signal-to-noise ratio is low and lighter where it is high, and tells you how reliable each denoised value is.
 
@@ -148,15 +148,17 @@ Everything in time-series pre-processing that I care about falls out of this one
 
 ![Structural time-series decomposition via the Kalman filter](/static/img/blog-2026-07-15/fig4_time_series_decomposition.svg){width=100%}
 
-The noise variances control how flexible each component is: a large process noise on the trend lets it move fast, a tiny one forces it to evolve slowly and smoothly. This is exactly what [`statsmodels.tsa.UnobservedComponents`](https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.structural.UnobservedComponents.html) and R's [`StructTS`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/StructTS.html) do internally.
+The noise variances control how flexible each component is: a large process noise on the trend lets it move fast, a tiny one forces it to evolve slowly and smoothly. This is exactly what [statsmodels.tsa.UnobservedComponents](https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.structural.UnobservedComponents.html) do internally.
 
 **Forecasting.** Once the filter has consumed all the data, forecasting is just running the predict step repeatedly with no more updates. The predicted state at horizon $h$ is the point forecast; the predicted covariance gives you honest uncertainty bands that widen with horizon, since every extra predict step adds process noise with no measurement to correct it.
 
-**Interpolation and missing data.** This is where the smoother genuinely shines, and the mechanism is almost embarrassingly simple: at timesteps with no measurement, skip the update step. The predict step still runs, carrying the state through the gap while the uncertainty grows. On the backward pass, information from after the gap flows back through it.
+> This predict-only forecast is persistence done properly: it carries the whole state forward (level, slope and seasonal shape, not just the last value), and on the gap-filling example below it beats naive persistence and even linear interpolation in every gap despite using only past data.
+
+**Interpolation and missing data.** This is where the smoother genuinely shines and the mechanism is quite simple: at timesteps with no measurement skip the update step. The predict step still runs, carrying the state through the gap while the uncertainty grows. On the backward pass, information from after the gap flows back through it.
 
 ![Gap filling with Kalman smoothing: uncertainty widens mid-gap and narrows at the edges](/static/img/blog-2026-07-15/fig5_interpolation.svg){width=100%}
 
-The result is an interpolated estimate at every missing point, with confidence bands that widen toward the middle of the gap and narrow near its edges. Linear or spline interpolation gives you neither the dynamics-awareness nor the uncertainty. Irregular sampling works by the same principle: the predict step can project over any time interval, you just adjust $F$ and $Q$ for the actual elapsed time.
+The result is an interpolated estimate at every missing point with confidence bands that widen toward the middle of the gap and narrow near its edges. Linear or spline interpolation gives you neither the dynamics-awareness nor the uncertainty. Irregular sampling works by the same principle: the predict step can project over any time interval, you just adjust $F$ and $Q$ for the actual elapsed time.
 
 **Parameter estimation.** In practice you rarely know $Q$ and $R$ up front. The filter hands you the solution: under the model, each innovation $\tilde{y}_k$ is Gaussian with mean zero and covariance $S_k$, so the log-likelihood of the whole dataset is
 
