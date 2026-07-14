@@ -14,7 +14,7 @@ The Kalman filter is a recursive algorithm that estimates the hidden state of a 
 
 > If you have ever used [`statsmodels`' structural time-series models](https://www.statsmodels.org/stable/statespace.html) or R's [`StructTS`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/StructTS.html), you were running a Kalman filter under the hood.
 
-This post builds the filter and the smoother from first principles and then applies them to two classic datasets: [decomposing the Mauna Loa $\text{CO}_2$ series into trend and seasonality](#example-co2-decomposition) and [reconstructing artificially deleted chunks of the AirPassengers series](#example-airpassengers-gaps).
+This post builds the filter and the smoother from first principles and then applies them to two classic datasets: decomposing the [Mauna Loa $\text{CO}_2$ series](https://www.statsmodels.org/stable/datasets/generated/co2.html) into trend and seasonality and reconstructing artificially deleted chunks of the [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html).
 
 > You can find the full code for both examples in my [handbook repo](https://github.com/garg-aayush/handbook).
 
@@ -168,7 +168,7 @@ One filter pass evaluates it, an optimizer maximizes it over the unknown varianc
 
 ## Worked Example 1: Decomposing the Mauna Loa CO₂ Series {#example-co2-decomposition}
 
-**The dataset.** The Keeling Curve records atmospheric CO₂ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` (`sm.datasets.co2`). Resampled to monthly, it gives 526 points from March 1958 to December 2001, ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions, and an annual cycle of roughly ±3 ppm driven by Northern Hemisphere vegetation (plants absorb CO₂ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
+**The dataset.** The Keeling Curve records atmospheric CO₂ (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with `statsmodels` ([`sm.datasets.co2`](https://www.statsmodels.org/stable/datasets/generated/co2.html)). Resampled to monthly, it gives 526 points from March 1958 to December 2001, ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions, and an annual cycle of roughly ±3 ppm driven by Northern Hemisphere vegetation (plants absorb CO₂ in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.
 
 **The model.** A structural model with a local linear trend and a 12-month seasonal component. The state vector is
 
@@ -235,7 +235,7 @@ The near-zero seasonal variance is the model telling us the annual CO₂ cycle h
 
 ## Worked Example 2: Filling Gaps in the AirPassengers Series {#example-airpassengers-gaps}
 
-**The dataset.** The Box-Jenkins AirPassengers series: monthly international airline passenger totals (in thousands) from January 1949 to December 1960, 144 observations. Strong upward trend, strong seasonality, and crucially the seasonal amplitude grows with the level: the summer peaks of the late 1950s are far taller in absolute terms than those of 1949. That is **multiplicative** seasonality, which a linear filter cannot represent directly. The standard fix is to work in log-space, where multiplicative structure becomes additive, then exponentiate the estimates back at the end.
+**The dataset.** The Box-Jenkins [AirPassengers series](https://vincentarelbundock.github.io/Rdatasets/doc/datasets/AirPassengers.html): monthly international airline passenger totals (in thousands) from January 1949 to December 1960, 144 observations. It ships with R's datasets package and is freely available as a CSV via the [Rdatasets repository](https://vincentarelbundock.github.io/Rdatasets/). Strong upward trend, strong seasonality, and crucially the seasonal amplitude grows with the level: the summer peaks of the late 1950s are far taller in absolute terms than those of 1949. That is **multiplicative** seasonality, which a linear filter cannot represent directly. The standard fix is to work in log-space, where multiplicative structure becomes additive, then exponentiate the estimates back at the end.
 
 **Simulating sensor failure.** To test interpolation honestly, I deleted three chunks of the data and kept the removed values as ground truth:
 
