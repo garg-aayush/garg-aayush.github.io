@@ -9,7 +9,7 @@
 <link>https://garg-aayush.github.io/blog/</link>
 <atom:link href="https://garg-aayush.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>From-scratch LLM builds, deep-dives and practical AI engineering.</description>
-<generator>quarto-1.9.38</generator>
+<generator>quarto-1.10.18</generator>
 <lastBuildDate>Wed, 15 Jul 2026 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Kalman Filters and Smoothing for Time-Series Data</title>
