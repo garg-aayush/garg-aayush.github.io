@@ -4,9 +4,11 @@ sidebar: false
 toc: true
 ---
 
-I am a Senior ML Engineer specializing in computer vision and LLMs. I ship production generative AI systems and on the side rebuild them from scratch to understand how they really work. I bridge deep research expertise with hands-on engineering to build AI products that drive real business impact.
+I build production AI systems for complex industrial operations. My work combines machine learning, product engineering, and customer delivery, taking solutions from an initially ambiguous operating problem through modelling, validation, deployment, and production support.
 
-Currently, I am an ML Engineer (Forward Deployed) at [Applied Computing](https://appliedcomputing.com/), where I deploy, tune, and operationalise Orbital, a physics-informed foundation model for energy operations, inside live industrial environments spanning cloud, on-premise, hybrid, and air-gapped infrastructure.
+Currently, I am a Forward Deployed ML Engineer at [Applied Computing](https://appliedcomputing.com/), working on decision systems for refineries and energy operations. I collaborate directly with process engineers and operators to turn plant data, engineering knowledge, and operational constraints into forecasting, anomaly detection, and optimisation capabilities that fit real workflows.
+
+My background spans computational geophysics, industrial research, computer vision, generative AI, and production ML. That combination helps me move between scientific problems, software systems, and the practical realities of deploying technology for customers.
 
 Before that, at [Jiffy](https://www.jiffy.com/), I built the AI image enhancement pipeline powering a $100M+ DTF printing business, architected Smart Redraw (a multi-agent AI editing system), and developed end-to-end ML solutions spanning LLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation.
 
@@ -26,14 +28,14 @@ I love connecting and collaborating with new people. Please don't hesitate to re
 Applied Computing
 :::
 ::: {.card-date}
-May 2026 - Present
+May 2026 to Present
 :::
 :::
 ::: {.card-role}
 ML Engineer (Forward Deployed)
 :::
 ::: {.card-description}
-Deploy and tune Orbital's AI systems (time-series forecasting, anomaly detection, multi-agent copilots and RAG pipelines) inside live energy operations across cloud, on-prem, and air-gapped infrastructure.
+Build and deliver production AI systems for refinery and energy operations, working directly with process engineers and operators from problem framing and industrial data integration through model validation, deployment, and production support. Translate plant constraints and customer feedback into forecasting, anomaly detection, and optimisation capabilities that industrial teams can understand and trust.
 :::
 :::
 
