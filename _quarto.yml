@@ -66,7 +66,9 @@ format:
   html:
     from: markdown+raw_html
     theme: [cosmo, theme-dark.scss]
-    css: styles.css
+    css:
+      - static/design-tokens.css
+      - styles.css
     toc: true
     smooth-scroll: true
     link-external-newwindow: true
@@ -74,5 +76,6 @@ format:
 resources:
   - static
   - tools/*.html
+  - tools/common.css
   - tools/analytics.js
   - CNAME
