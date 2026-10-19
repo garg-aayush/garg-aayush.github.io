@@ -179,7 +179,7 @@ Once you are done implementing, testing is straightforward.
 **Note**: I have also added the installation steps [here](https://github.com/garg-aayush/ComfyUI-Svg2Raster?tab=readme-ov-file#installation).
 
 ## Step 5: Sharing and Publishing Your Node
-Once everything worked, I created a GitHub repo for the nodes. You can see how I structured mine in the [Svg2Raster](github.com/garg-aayush/ComfyUI-Svg2Raster) repo.
+Once everything worked, I created a GitHub repo for the nodes. You can see how I structured mine in the [Svg2Raster](https://github.com/garg-aayush/ComfyUI-Svg2Raster) repo.
 
 Some Essential files in the repo are:
 

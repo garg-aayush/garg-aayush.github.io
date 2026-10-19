@@ -8,7 +8,7 @@ date: 2024-07-15
 permalink: /2024-07-15-finetune-llama3-8B-predibase/
 ---
 
-Last week, I published the [second blog](https://aayushgarg.dev/2024-07-09-compare-models-structured-data/) in my LLM fine-tuning series, comparing various models performance in functional representation extraction.
+Last week, I published the [second blog](2024-07-09-compare-models-structured-data.qmd) in my LLM fine-tuning series, comparing various models performance in functional representation extraction.
 
 In this third part of the series, I discuss the **first steps toward fine-tuning an (open-source)-LLM for functional representation extraction**. My aim is to give you all a sneak peek at the kind of performance you can expect from fine-tuning an LLM for a custom task. To streamline this step (and to satisfy my own curiosity 😊), I will use [Predibase](https://predibase.com/). It is a fast, cheap, and efficient open-source LLM fine-tuning and deployment platform.
 
@@ -106,7 +106,7 @@ Predibase provides both popular `Serverless endpoints` and `Dedicated deployment
 > Note, atleast for now, [serverless deployments](https://docs.predibase.com/user-guide/inference/serverless_endpoints) are available for free.
 
 ### Generate the responses for validation dataset
-Similar to my previous blogs, I will evaluate the finetuned model on ViGGO `validation` dataset and calculate custom [performance metrics](https://aayushgarg.dev/2024-07-09-compare-models-structured-data/) metrics for a better understanding of finetuned model performance.
+Similar to my previous blogs, I will evaluate the finetuned model on ViGGO `validation` dataset and calculate custom [performance metrics](2024-07-09-compare-models-structured-data.qmd) metrics for a better understanding of finetuned model performance.
 
 First, I generate the responses for the validation dataset:
 
@@ -174,7 +174,7 @@ After uploading this new dataset, finetuning the model, and evaluating it with t
 
 ## References
 
-- [Part II blog post of series](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/)
+- [Part II blog post of series](2024-07-03-baseline-gpt4o-structured-data.qmd)
 - [Notebook I: Analyze_Viggo_Dataset.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Analyze_Viggo_Dataset.ipynb)
 - [Notebook II: Finetune_llama-3-8b_Predibase.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Finetune_llama-3-8b_Predibase.ipynb)
 - [Predibase Platform](https://predibase.com/)
