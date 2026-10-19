@@ -82,7 +82,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-e6385f69fa77e47b1b08ebba615a1174.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -151,14 +151,15 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../../static/design-tokens.css">
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="Kalman Filters and Smoothing for Time-Series Data – Aayush Garg">
 <meta property="og:description" content="A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples">
-<meta property="og:image" content="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig2_state_space_model.svg">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-07-15/fig2_state_space_model.svg">
 <meta property="og:site_name" content="Aayush Garg">
 <meta name="twitter:title" content="Kalman Filters and Smoothing for Time-Series Data – Aayush Garg">
 <meta name="twitter:description" content="A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples">
-<meta name="twitter:image" content="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig2_state_space_model.svg">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-07-15/fig2_state_space_model.svg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -220,7 +221,7 @@ window.Quarto = {
 <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://garg-aayush.github.io/blog/index.xml"> <i class="bi bi-rss" role="img">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -728,7 +729,7 @@ x = [\, \text{level}, \; \text{slope}, \; s_1, s_2, \ldots, s_{11} \,] \quad \te
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+        var filterRegex = new RegExp("https:\/\/aayushgarg\.dev");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

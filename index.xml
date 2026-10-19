@@ -6,14 +6,14 @@
       version="2.0">
 <channel>
 <title>Aayush Garg</title>
-<link>https://garg-aayush.github.io/</link>
-<atom:link href="https://garg-aayush.github.io/index.xml" rel="self" type="application/rss+xml"/>
+<link>https://aayushgarg.dev/</link>
+<atom:link href="https://aayushgarg.dev/index.xml" rel="self" type="application/rss+xml"/>
 <description>Forward Deployed ML Engineer building production AI systems for refineries and energy operations.</description>
 <generator>quarto-1.10.18</generator>
 <lastBuildDate>Wed, 15 Jul 2026 00:00:00 GMT</lastBuildDate>
 <item>
   <title>Kalman Filters and Smoothing for Time-Series Data</title>
-  <link>https://garg-aayush.github.io/posts/2026-07-15-kalman-filters-time-series/</link>
+  <link>https://aayushgarg.dev/posts/2026-07-15-kalman-filters-time-series/</link>
   <description><![CDATA[ 
 
 
@@ -51,7 +51,7 @@
 <p><strong>The key assumption is that both noise sources are Gaussian and independent of each other.</strong></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig2_state_space_model.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig2_state_space_model.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>The linear state-space model</figcaption>
 </figure>
 </div>
@@ -65,7 +65,7 @@
 <p>The filter processes measurements one at a time, maintaining a running estimate of the state and of its own uncertainty. Each timestep has two steps: <strong>predict</strong> and <strong>update</strong>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig1_predict_update_cycle.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig1_predict_update_cycle.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>The Kalman filter predict-update cycle</figcaption>
 </figure>
 </div>
@@ -91,7 +91,7 @@
 <p>The gain is the heart of the algorithm and worth staring at for a minute.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig6_kalman_gain.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig6_kalman_gain.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>Intuition behind the Kalman gain</figcaption>
 </figure>
 </div>
@@ -108,7 +108,7 @@
 <p><strong>Kalman smoothing</strong> fixes this by producing estimates that use all measurements including both past and future. The standard form is the <strong>Rauch-Tung-Striebel (RTS) smoother</strong> which works in two passes.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig3_kalman_smoothing.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig3_kalman_smoothing.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>The RTS smoother: forward filter pass plus backward smoothing pass</figcaption>
 </figure>
 </div>
@@ -125,7 +125,7 @@
 <p><strong>Structural decomposition.</strong> Model the series as trend + seasonal + residual, give each component its own block in the state vector with its own dynamics, and the filter estimates all of them simultaneously, with uncertainty.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig4_time_series_decomposition.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig4_time_series_decomposition.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>Structural time-series decomposition via the Kalman filter</figcaption>
 </figure>
 </div>
@@ -137,7 +137,7 @@
 <p><strong>Interpolation and missing data.</strong> This is where the smoother genuinely shines and the mechanism is quite simple: at timesteps with no measurement skip the update step. The predict step still runs, carrying the state through the gap while the uncertainty grows. On the backward pass, information from after the gap flows back through it.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig5_interpolation.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig5_interpolation.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>Gap filling with Kalman smoothing: uncertainty widens mid-gap and narrows at the edges</figcaption>
 </figure>
 </div>
@@ -326,7 +326,7 @@ font-style: inherit;">False</span>)</span></code></pre></div></div>
 <p><strong>Results:</strong> The full decomposition from-scratch on the left and <code>statsmodels</code> on the right:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig7_co2_decomposition.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig7_co2_decomposition.png" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>Mauna Loa <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BCO%7D_2"> structural decomposition: observed, trend, seasonal, residual</figcaption>
 </figure>
 </div>
@@ -334,7 +334,7 @@ font-style: inherit;">False</span>)</span></code></pre></div></div>
 <p>Zooming into 1990 to 1996 shows the components at the individual-cycle level:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>Zoomed view of the <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BCO%7D_2"> seasonal cycles, 1990 to 1996</figcaption>
 </figure>
 </div>
@@ -501,7 +501,7 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 <p><strong>Results:</strong> The full series with the from-scratch and <code>statsmodels</code> versions against plain linear interpolation:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig9_airpassengers_interpolation.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig9_airpassengers_interpolation.png" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>AirPassengers gap filling with the Kalman smoother</figcaption>
 </figure>
 </div>
@@ -509,7 +509,7 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 <p>Zooming into each gap with the hidden true values marked:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-07-15/fig10_airpassengers_gaps_zoomed.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-07-15/fig10_airpassengers_gaps_zoomed.png" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>Zoomed comparison of each gap: smoother vs linear interpolation vs hidden truth</figcaption>
 </figure>
 </div>
@@ -575,12 +575,12 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 
  ]]></description>
   <category>Time Series</category>
-  <guid>https://garg-aayush.github.io/posts/2026-07-15-kalman-filters-time-series/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-07-15-kalman-filters-time-series/</guid>
   <pubDate>Wed, 15 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Building a Live India Weather Dashboard with Claude Code</title>
-  <link>https://garg-aayush.github.io/posts/2026-04-29-india-weather-with-claude/</link>
+  <link>https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/</link>
   <description><![CDATA[ 
 
 
@@ -592,10 +592,10 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 <table align="center">
 <tbody><tr>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg" alt="Live India weather map" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg" alt="Live India weather map" width="100%">
 </td>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/weather_dashboard_snap2.jpg" alt="Per-city history charts" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-04-29/weather_dashboard_snap2.jpg" alt="Per-city history charts" width="100%">
 </td>
 </tr>
 </tbody></table>
@@ -686,30 +686,30 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 <li>It also laid out the cadence logic for me: a GitHub Actions cron every 15 minutes that writes a single JSON to a <code>data</code> branch on the same repo which the page then reads on load.</li>
 <li>By the end of the session I had a page that was live with 8 metros, a marker plus card UI and a working live tile and the data was being fetched every 15 minutes.</li>
 </ul>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage1_snap.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage1_snap.jpg" class="img-fluid" style="width:100.0%"></p>
 <p><em>Full Claude Code conversation for this stage: <a href="https://gist.github.com/garg-aayush/ad4dce3170fddcefdfb75eabc5b15620">stage-1-brainstorm-and-v1.txt</a>.</em></p>
 </section>
 <section id="stage-2-improving-the-dashboard-with-history-charts-and-ui-fixes" class="level2">
 <h2 class="anchored" data-anchor-id="stage-2-improving-the-dashboard-with-history-charts-and-ui-fixes">Stage 2: improving the dashboard with history charts and UI fixes</h2>
 <p>The next thing that I wanted to do was to add history charts under the map. I wanted to be able to view the history of the temperature, humidity and AQI for each city over certain time periods. This is the first version that I made conversationally with Claude:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_hischarts.jpg" class="img-fluid" style="width:60.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage2_hischarts.jpg" class="img-fluid" style="width:60.0%"></p>
 <p>Obviously, this was not the best way to view the values. The 7d and 30d views looked terrible with the day-night cycle turning every chart into a sawtooth. Next, I sent Claude the screenshot and asked one question:</p>
 <blockquote class="blockquote">
 <p>Currently, this is how the values look over the 7d and 30d period, I dont think that is the best way to view the values. What is the standard way to show these values?</p>
 </blockquote>
 <p>Claude pointed me at the weather.com pattern where weather apps aggregate the values by day, show a min/max bands with a daily mean line for temp and humidity, and color the AQI bars by EPA category. A second daily cron rebuilds the 30-day window from Open-Meteo each run which looked much nicer:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_hischarts_better.jpg" class="img-fluid" style="width:60.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage2_hischarts_better.jpg" class="img-fluid" style="width:60.0%"></p>
 <p>Finally, I improved the UI by fixing a few small issues. Some of them you can see below:</p>
 <table align="center">
 <tbody><tr>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_ui_issues1.jpg" alt="UI issue: label clutter" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage2_ui_issues1.jpg" alt="UI issue: label clutter" width="100%">
 </td>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_ui_issues2.jpg" alt="UI issue: bounds and styling" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage2_ui_issues2.jpg" alt="UI issue: bounds and styling" width="100%">
 </td>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage2_ui_issues3.jpg" alt="UI issue: caption and controls" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage2_ui_issues3.jpg" alt="UI issue: caption and controls" width="100%">
 </td>
 </tr>
 </tbody></table>
@@ -724,9 +724,9 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 <section id="stage-3-moving-the-cron-from-github-actions-to-cloudflare" class="level2">
 <h2 class="anchored" data-anchor-id="stage-3-moving-the-cron-from-github-actions-to-cloudflare">Stage 3: moving the cron from GitHub Actions to Cloudflare</h2>
 <p>After the dashboard was deployed I noticed the live tile timestamps were drifting. The label said “every 15 minutes” but the GitHub Actions free-tier cron was firing erratically, sometimes 40 mins or even &gt;1 hour late. This is usually the case with the free-tier cron jobs on GitHub Actions.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage3_github_actions.jpg" class="img-fluid" style="width:80.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage3_github_actions.jpg" class="img-fluid" style="width:80.0%"></p>
 <p>I decided to move the cron to Cloudflare Workers which has a free tier and fires within seconds of schedule.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-29/stage3_cloudflare.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-04-29/stage3_cloudflare.jpg" class="img-fluid" style="width:100.0%"></p>
 <p>The interesting thing for me here is that I had never used Cloudflare workers for cron jobs before. Given how good these assistants are at writing code, it wrote the code, walked me through setup steps and the live cadence has been working well since. <strong>Even unfamiliar backend infra is something you can prompt your way through</strong> (obviously you should have the fundamental knowledge to nudge it in the right direction).</p>
 <p><em>Full Claude Code conversation for this stage: <a href="https://gist.github.com/garg-aayush/aae13309e3c8c8ab42499b2eb9987b7c">Cloudflare Worker migration</a>.</em></p>
 </section>
@@ -744,12 +744,12 @@ font-style: inherit;">=</span> P_prior</span></code></pre></div></div>
 
  ]]></description>
   <category>Tools &amp; Infra</category>
-  <guid>https://garg-aayush.github.io/posts/2026-04-29-india-weather-with-claude/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-04-29-india-weather-with-claude/</guid>
   <pubDate>Wed, 29 Apr 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</title>
-  <link>https://garg-aayush.github.io/posts/2026-04-05-qwen35-vs-gemma4/</link>
+  <link>https://aayushgarg.dev/posts/2026-04-05-qwen35-vs-gemma4/</link>
   <description><![CDATA[ 
 
 
@@ -2000,12 +2000,12 @@ font-style: inherit;">todos</span>)</span>
 
  ]]></description>
   <category>Local LLMs</category>
-  <guid>https://garg-aayush.github.io/posts/2026-04-05-qwen35-vs-gemma4/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-04-05-qwen35-vs-gemma4/</guid>
   <pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Self-Hosted Gemma 4 Chat with Web UI</title>
-  <link>https://garg-aayush.github.io/posts/2026-04-03-self-hosted-gemma4-chat/</link>
+  <link>https://aayushgarg.dev/posts/2026-04-03-self-hosted-gemma4-chat/</link>
   <description><![CDATA[ 
 
 
@@ -2469,7 +2469,7 @@ font-style: inherit;">bash</span> ~/start-server.sh</span></code></pre></div></d
 <pre><code>http://&lt;YOUR_TAILSCALE_IP&gt;:8001</code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-04-03/snapshot-iphone.jpg" class="img-fluid figure-img" style="width:50.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-04-03/snapshot-iphone.jpg" class="img-fluid figure-img" style="width:50.0%"></p>
 <figcaption>llama.cpp web UI running Gemma 4 on iPhone over Tailscale</figcaption>
 </figure>
 </div>
@@ -2555,12 +2555,12 @@ font-style: inherit;">bash</span> ~/start-server.sh</span></code></pre></div></d
 
  ]]></description>
   <category>Local LLMs</category>
-  <guid>https://garg-aayush.github.io/posts/2026-04-03-self-hosted-gemma4-chat/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-04-03-self-hosted-gemma4-chat/</guid>
   <pubDate>Fri, 03 Apr 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Using a local LLM in OpenCode with llama.cpp</title>
-  <link>https://garg-aayush.github.io/posts/2026-03-29-local-llm-opencode/</link>
+  <link>https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/</link>
   <description><![CDATA[ 
 
 
@@ -2686,7 +2686,7 @@ font-style: inherit;">sudo</span> tailscale up <span class="at" style="color: #6
 background-color: null;
 font-style: inherit;">--ssh</span></span></code></pre></div></div>
 <p>If everything worked, you should be able to ping your GPU machine from your MacBook using the Tailscale IP and see both devices connected to your tailscale VPN:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-29/tailscale-status.png" class="img-fluid" style="width:75.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-03-29/tailscale-status.png" class="img-fluid" style="width:75.0%"></p>
 </section>
 </section>
 <section id="step-3-download-the-qwen3.5-27b-gguf-model" class="level2">
@@ -2843,7 +2843,7 @@ background-color: null;
 font-style: inherit;">python3</span> <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">-m</span> json.tool</span></code></pre></div></div>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-29/local-server-test.png" class="img-fluid" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-03-29/local-server-test.png" class="img-fluid" style="width:100.0%"></p>
 </section>
 <section id="step-5-start-the-server-on-the-tailscale-ip" class="level2">
 <h2 class="anchored" data-anchor-id="step-5-start-the-server-on-the-tailscale-ip">Step 5: Start the server on the Tailscale IP</h2>
@@ -3240,7 +3240,7 @@ font-style: inherit;">}</span></span>
 background-color: null;
 font-style: inherit;">}</span></span></code></pre></div></div>
 <p>If everything worked, you should see the local model available in OpenCode’s model selector:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-29/models-in-opencode.png" class="img-fluid" style="width:50.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-03-29/models-in-opencode.png" class="img-fluid" style="width:50.0%"></p>
 </section>
 <section id="trying-it-out" class="level2">
 <h2 class="anchored" data-anchor-id="trying-it-out">Trying it out</h2>
@@ -3344,7 +3344,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <li><strong>Why llama.cpp?</strong> I started with the <a href="https://unsloth.ai/docs/models/qwen3.5">Unsloth guide</a> which uses llama.cpp with the GGUF format. Since I am setting this up locally for myself, llama.cpp felt like an easier choice than vLLM.</li>
 <li><strong>Why Qwen3.5-27B over 35B-A3B?</strong> The MoE variant is 3-5x faster (~60-100 tok/s) because only 3B parameters are active per token but the 27B has all 27B parameters active and <a href="https://www.reddit.com/r/LocalLLaMA/comments/1rivckt/visualizing_all_qwen_35_vs_qwen_3_benchmarks/">consistently scores higher across benchmarks</a>. For coding tasks, I preferred quality.</li>
 <li><strong>Why UD-Q4_K_XL quantization?</strong> <a href="https://unsloth.ai/blog/dynamic-v2">Unsloth’s Dynamic 2.0</a> quantization selectively upcasts important layers to 8 or 16-bit precision, so you get better quality without paying the full VRAM cost of a higher quant. <a href="https://kaitchup.substack.com/p/summary-of-qwen35-gguf-evaluations">Benjamin Marie’s benchmarks</a> show UD-Q4_K_XL stays within a 1-point accuracy drop of the original while being ~8GB smaller than comparable quants.</li>
-<li><strong>Hybrid architecture and KV cache.</strong> Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all. <img src="https://garg-aayush.github.io/static/img/blog-2026-03-29/kv-cache-comparison.png" class="img-fluid" style="width:75.0%"></li>
+<li><strong>Hybrid architecture and KV cache.</strong> Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all. <img src="https://aayushgarg.dev/static/img/blog-2026-03-29/kv-cache-comparison.png" class="img-fluid" style="width:75.0%"></li>
 <li><strong>KV cache type.</strong> Qwen3.5 is trained in bfloat16, so bf16 is a better choice than llama.cpp’s default f16 given it has a better dynamic range. This <a href="https://www.reddit.com/r/LocalLLaMA/comments/1ryoab7/qwen_35_27b_quantize_kv_cache_or_not/">r/LocalLLaMA discussion</a> mentions that <code>q8_0</code> doesn’t seem to hurt quality too much but I haven’t tested it myself and decided to go with the safe option of <code>bf16</code>.</li>
 <li><strong>Start with a small context size.</strong> Begin with <code>--ctx-size 16384</code> to verify everything works (correct IP, template path, model loading) before committing more VRAM. The server starts faster with a smaller KV cache, so you can iterate quickly on configuration issues.</li>
 <li><strong>Use <code>-j4</code> instead of <code>-j</code> when building llama.cpp.</strong> The <code>-j</code> flag without a number spawns as many parallel compiler processes as it can. This can lead to an OOM kill (Error 137). Limiting to <code>-j4/2/8</code> depending on your available RAM avoids this.</li>
@@ -3358,12 +3358,12 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 
  ]]></description>
   <category>Local LLMs</category>
-  <guid>https://garg-aayush.github.io/posts/2026-03-29-local-llm-opencode/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-03-29-local-llm-opencode/</guid>
   <pubDate>Sun, 29 Mar 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>FlashAttention: Making Attention I/O-Aware</title>
-  <link>https://garg-aayush.github.io/posts/2026-03-27-flash-attention/</link>
+  <link>https://aayushgarg.dev/posts/2026-03-27-flash-attention/</link>
   <description><![CDATA[ 
 
 
@@ -3458,7 +3458,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <li><strong>The logsumexp value <img src="https://latex.codecogs.com/png.latex?L"></strong>: a single scalar per query row that encodes everything needed to recover <img src="https://latex.codecogs.com/png.latex?P"> during the backward pass.</li>
 </ol>
 <p>These fixes are not independent. Fusion needs tiling (intermediates are too large for SRAM otherwise). Tiling needs online softmax (softmax is not directly associative). Recomputation needs <img src="https://latex.codecogs.com/png.latex?L"> (the backward pass must recover <img src="https://latex.codecogs.com/png.latex?P"> without storing it). I will walk through each fix in turn, building up the complete algorithm.</p>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-03-27/flashattention.png" class="img-fluid" style="width:100.0%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-03-27/flashattention.png" class="img-fluid" style="width:100.0%">
 <p align="center">
 <em>Left: GPU memory hierarchy. Center: FlashAttention tiled computation with Q, K, V blocks loaded into SRAM. Right: FlashAttention fuses all attention ops into a single kernel, eliminating separate HBM round-trips. (Source: <a href="https://arxiv.org/abs/2205.14135">Dao et al., 2022</a>)</em>
 </p>
@@ -3576,12 +3576,12 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 
  ]]></description>
   <category>Transformers</category>
-  <guid>https://garg-aayush.github.io/posts/2026-03-27-flash-attention/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-03-27-flash-attention/</guid>
   <pubDate>Fri, 27 Mar 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Building Browser Tools with Claude Code</title>
-  <link>https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</link>
+  <link>https://aayushgarg.dev/posts/2026-03-20-browser-tools/</link>
   <description><![CDATA[ 
 
 
@@ -3589,7 +3589,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 
 <p>I have been an admirer of Simon Willison’s <a href="https://tools.simonwillison.net/">tools site</a> for a while now. On his website you can find more than a hundred single-file HTML + JavaScript tools he has built using LLMs. They are mostly self-contained HTML + JavaScript files.</p>
 <p>I always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using <a href="https://claude.ai/code">Claude Code</a> and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/tools_preview.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-03-20/tools_preview.jpg" class="img-fluid" style="width:100.0%"></p>
 <section id="the-tools" class="level2">
 <h2 class="anchored" data-anchor-id="the-tools">The Tools</h2>
 <p>Here is what is there so far, grouped by category. All tools support drag-and-drop for file input and run entirely in the browser (nothing leaves your machine).</p>
@@ -3607,10 +3607,10 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <table align="center">
 <tbody><tr>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/binary_mask_creator.jpg" alt="Binary Mask Creator" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-03-20/binary_mask_creator.jpg" alt="Binary Mask Creator" width="100%">
 </td>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/svg_convertor.jpg" alt="SVG Viewer &amp; Converter" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-03-20/svg_convertor.jpg" alt="SVG Viewer &amp; Converter" width="100%">
 </td>
 </tr>
 </tbody></table>
@@ -3637,7 +3637,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <li><a href="../../tools/url-encoder.html"><strong>URL Encoder/Decoder</strong></a>: Percent encode and decode useful for API calls and debugging.</li>
 </ul>
 <p>The YAML/JSON converter I like a lot, especially when working with training configs. The Base64 tool is another one I use often when working with llm/image-gen APIs, sometimes they send back base64 encoded images or require base64 encoded images as input and I can directly do that here.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-03-20/yaml2json.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-03-20/yaml2json.jpg" class="img-fluid" style="width:100.0%"></p>
 <blockquote class="blockquote">
 <p>For what it is worth, I do have all of these set up as skills in my Claude Code setup too. But it is always nice to have something in the browser where you can quickly drag and drop an image and get the <strong>result without opening a terminal session or burning tokens</strong>.</p>
 </blockquote>
@@ -3658,12 +3658,12 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 
  ]]></description>
   <category>Tools &amp; Infra</category>
-  <guid>https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-03-20-browser-tools/</guid>
   <pubDate>Fri, 20 Mar 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>GRPO: Building Intuition Through Ablation Studies</title>
-  <link>https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</link>
+  <link>https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/</link>
   <description><![CDATA[ 
 
 
@@ -3941,12 +3941,12 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 
  ]]></description>
   <category>RL &amp; Alignment</category>
-  <guid>https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-02-26-grpo-from-scratch/</guid>
   <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Tools for Better Claude Code and Terminal Experience</title>
-  <link>https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</link>
+  <link>https://aayushgarg.dev/posts/2026-02-12-cc-tools/</link>
   <description><![CDATA[ 
 
 
@@ -3959,11 +3959,11 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <section id="codexbar" class="level3">
 <h3 class="anchored" data-anchor-id="codexbar">CodexBar</h3>
 <p><a href="https://github.com/steipete/CodexBar">CodexBar</a> is a lightweight menu bar app that tracks usage and limits across different AI providers. It shows session and weekly limits (credits) right in the menu bar. This is genuinely useful as you always know where you stand.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/codexbar-snapshot.jpg" class="img-fluid" style="width:40.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-02-12/codexbar-snapshot.jpg" class="img-fluid" style="width:40.0%"></p>
 </section>
 <section id="ccusage" class="level3">
 <h3 class="anchored" data-anchor-id="ccusage">ccusage</h3>
-<p><a href="https://github.com/ryoppippi/ccusage">ccusage</a> is a cli tool for analyzing claude code usage from local json files. It gives you session wise, daily and monthly breakdowns of your usage. It is useful for understanding your consumption patterns and keeping an eye on how much you are actually using. Most importantly, it is a great tool to have inline usage info in claude code. <img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/ccusage-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><a href="https://github.com/ryoppippi/ccusage">ccusage</a> is a cli tool for analyzing claude code usage from local json files. It gives you session wise, daily and monthly breakdowns of your usage. It is useful for understanding your consumption patterns and keeping an eye on how much you are actually using. Most importantly, it is a great tool to have inline usage info in claude code. <img src="https://aayushgarg.dev/static/img/blog-2026-02-12/ccusage-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
 </section>
 </section>
 <section id="managing-your-ai-context" class="level2">
@@ -3973,7 +3973,7 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="context-commands-context-clear-compact">Context Commands: <code>/context</code>, <code>/clear</code>, <code>/compact</code></h3>
 <p>Most of us are aware of these three Claude Code commands but more often than not, maybe out of habit, we dont use them often enough and end up hitting the session limit.</p>
 <ul>
-<li><strong><code>/context</code></strong> — it provides a great visualization of your current conversation context usage as a colored grid. <strong>I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.</strong> <img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/context-snapshot.jpg" class="img-fluid" style="width:75.0%"></li>
+<li><strong><code>/context</code></strong> — it provides a great visualization of your current conversation context usage as a colored grid. <strong>I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.</strong> <img src="https://aayushgarg.dev/static/img/blog-2026-02-12/context-snapshot.jpg" class="img-fluid" style="width:75.0%"></li>
 <li><strong><code>/clear</code></strong> — this completely resets your conversation history. <strong>I use it between unrelated tasks to start fresh with an empty context window avoiding both context degradation and session limit.</strong></li>
 <li><strong><code>/compact [instructions]</code></strong> — It summarizes your conversation to free up context space while preserving important information.</li>
 </ul>
@@ -4005,10 +4005,10 @@ font-style: inherit;">-p</span> gpt-oss</span></code></pre></div></div>
 <table align="center">
 <tbody><tr>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/context-skills.jpg" alt="Playwright Skills" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-02-12/context-skills.jpg" alt="Playwright Skills" width="100%">
 </td>
 <td>
-<img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/context-mcp.jpg" alt="Playwright MCP" width="100%">
+<img src="https://aayushgarg.dev/static/img/blog-2026-02-12/context-mcp.jpg" alt="Playwright MCP" width="100%">
 </td>
 </tr>
 </tbody></table>
@@ -4186,17 +4186,17 @@ background-color: null;
 font-style: inherit;">'eza -lh --git --sort=modified --tree --level=2 --icons'</span> <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># tree view</span></span></code></pre></div></div>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/eza-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-02-12/eza-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
 </section>
 <section id="bat" class="level3">
 <h3 class="anchored" data-anchor-id="bat">bat</h3>
 <p><a href="https://github.com/sharkdp/bat">bat</a> is simly <code>cat</code> with syntax highlighting, line numbers and git integration. It automatically detects the file type and renders accordingly.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/bat-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-02-12/bat-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
 </section>
 <section id="yazi" class="level3">
 <h3 class="anchored" data-anchor-id="yazi">yazi</h3>
 <p><a href="https://github.com/sxyazi/yazi">yazi</a> is a fast terminal file manager with support for previewing different file types including images and PDFs right in the terminal. <strong>This is especially useful when you are already deep in a terminal session with Claude Code and need to quickly browse files or check an image without switching to Finder.</strong></p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-02-12/yazi-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-02-12/yazi-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
 </section>
 </section>
 <section id="wrapping-up" class="level2">
@@ -4208,12 +4208,12 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 
  ]]></description>
   <category>Tools &amp; Infra</category>
-  <guid>https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-02-12-cc-tools/</guid>
   <pubDate>Thu, 12 Feb 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Expert Iteration for Math Reasoning</title>
-  <link>https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</link>
+  <link>https://aayushgarg.dev/posts/2026-01-23-expert-iteration/</link>
   <description><![CDATA[ 
 
 
@@ -4229,7 +4229,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 <p>Here, the filtering step acts as the “expert”. It identifies which of the model own generations are correct. <strong>The model then learns to imitate its own best behaviors.</strong></p>
 </blockquote>
 <p>I see Expert Iteration for LLMs as <strong>SFT on self-generated, filtered data, repeated iteratively</strong> as shown in this loop:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/expert-iteration-diagram.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-23/expert-iteration-diagram.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p>Note: STaR paper retrains from the base pretrained model at each iteration to avoid overfitting and introduces rationalization for failed problems. The approach used here (following the CS336 assignment) does not uses rationalization and continues training from the previous iteration checkpoint.</p>
 </blockquote>
@@ -4298,7 +4298,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 <p>My initial experiments with a constant <code>7e-5</code> showed overfitting with val. accuracy plateauing and then declining. Using a <code>lr=1e-5</code> avoided overfitting but resulted in extremely slow learning.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/lr_sweep_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-23/lr_sweep_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
 </figure>
 </div>
 <blockquote class="blockquote">
@@ -4346,7 +4346,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/sampling_strategy_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-23/sampling_strategy_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
 </figure>
 </div>
 <p>Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.</p>
@@ -4362,7 +4362,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 <li><strong><img src="https://latex.codecogs.com/png.latex?D"> (batch_per_ei)</strong>: <img src="https://latex.codecogs.com/png.latex?%7B512,%201024,%202048%7D"></li>
 <li><strong><img src="https://latex.codecogs.com/png.latex?R"> (num_rollouts)</strong>: <img src="https://latex.codecogs.com/png.latex?%7B2,%204%7D"></li>
 </ul>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/ei_grid_plot.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-23/ei_grid_plot.png" class="img-fluid"></p>
 <p>Looking at the results, some observations stand out:</p>
 <ul>
 <li><p>The best configuration is <img src="https://latex.codecogs.com/png.latex?D=1024,%20R=4"> achieving <strong>41.7%</strong> accuracy.</p></li>
@@ -4381,7 +4381,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 <section id="filter-rate-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="filter-rate-analysis">Filter Rate Analysis</h3>
 <p>To better understand the above accuracy results, I also tracked the <strong>filter rate (correct rollouts / total rollouts)</strong> across iterations for different experiments.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/ei_filter_rate_plot.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-23/ei_filter_rate_plot.png" class="img-fluid"></p>
 <p>A few things stand out:</p>
 <ul>
 <li><p>The filter rate increase across iterations as the model improves, generating more correct solutions. This in turn provides more training signal and improves the model. <strong>This is the core mechanism behind Expert Iteration.</strong></p></li>
@@ -4395,7 +4395,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 <section id="pushing-accuracy-with-multi-epoch-training" class="level2">
 <h2 class="anchored" data-anchor-id="pushing-accuracy-with-multi-epoch-training">Pushing Accuracy with Multi-Epoch Training</h2>
 <p>So far, all my experiments used just 1 epoch of SFT per expert iteration step. I wanted to see if I could push accuracy even higher and the simplest way to check this is by training for more epochs per iteration. I ran additional experiments with 2 epochs per iteration for two batch sizes: <img src="https://latex.codecogs.com/png.latex?D=512"> and <img src="https://latex.codecogs.com/png.latex?D=1024"> (both with <img src="https://latex.codecogs.com/png.latex?R=4">).</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-23/ei_multiepoch_plot.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-23/ei_multiepoch_plot.png" class="img-fluid"></p>
 <p>Training for 2 epochs per iteration consistently outperforms 1 epoch across both configurations. My understanding is that with a large rollout count <img src="https://latex.codecogs.com/png.latex?R"> the filtered dataset is already diverse enough that training for multiple epochs extracts more signal without memorizing. This improved learning leads to better filter rates and accuracy in subsequent iterations.</p>
 </section>
 <section id="comparison-to-sft-experiments" class="level2">
@@ -4472,12 +4472,12 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
  ]]></description>
   <category>RL &amp; Alignment</category>
   <category>LLM Training</category>
-  <guid>https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-01-23-expert-iteration/</guid>
   <pubDate>Fri, 23 Jan 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>A Brief Introduction to Claude Agent Skills</title>
-  <link>https://garg-aayush.github.io/posts/2026-01-13-claude-skills/</link>
+  <link>https://aayushgarg.dev/posts/2026-01-13-claude-skills/</link>
   <description><![CDATA[ 
 
 
@@ -4487,7 +4487,7 @@ font-style: inherit;"># tree view</span></span></code></pre></div></div>
 <p>I had been aware of <a href="https://www.claude.com/news/skills">Claude Skills</a> when they launched in October 2025 (thanks to <a href="https://simonwillison.net/2025/Oct/16/claude-skills/">Simon Willison’s blog post</a>). However, I did not really dig into them until I came across <a href="https://huggingface.co/blog/hf-skills-training">this Hugging Face blog post</a> where they used Claude Code to fine-tune an open-source LLM. They built <a href="https://github.com/huggingface/skills">Hugging Face Skills</a> that let you do something like this <code>Fine-tune Qwen3-0.6B on the dataset open-r1/codeforces-cots</code> and Claude handles everything from GPU selection, script generation, job submission, progress monitoring and pushing the finished model to the Hub. That was a woah moment for me!</p>
 <p>Skills deserve all the attention they are getting. They provide the domain knowledge that modern LLMs and agents need despite their impressive general capabilities. They are simple folders with packaged expertise that agents can dynamically invoke for relevant requests.</p>
 <p>In this post, I will explain what skills are, why they matter and walk you through one of the skills I use daily: a <a href="https://github.com/garg-aayush/tutorials/tree/main/claude-skills/basic-image-editing">simple image editing skill</a> as an example of how you can quickly build skills for your own use.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/image-editing-skill-ex-1.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/image-editing-skill-ex-1.png" class="img-fluid"></p>
 <section id="what-are-agent-skills" class="level2">
 <h2 class="anchored" data-anchor-id="what-are-agent-skills">What Are Agent Skills?</h2>
 <p>Simply put, Skills are organized folders that package expertise into discoverable capabilities. Each skill contains a <code>SKILL.md</code>, a markdown file with some YAML metadata, with instructions that Claude reads when relevant. This is along with optional supporting files like scripts and templates.</p>
@@ -4645,22 +4645,22 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <p>For example, I work a lot with images. I often need to do basic editing operations like resizing, rotating, and cropping. These are simple operations but I do them constantly. <strong>A basic image editing skill accessible in Claude makes a lot of sense for my day to day work.</strong></p>
 <p><strong>Step 2: Bootstrap with the Skills Creator</strong></p>
 <p>First of all, ensure the <code>skill-creator</code> skill is enabled in your Claude account. You can do this by going to Settings -&gt; Capabilities and enabling the <code>skill-creator</code> skill.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_1.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/walkthrough_1.png" class="img-fluid"></p>
 <p>Once you have enabled the skill-creator, you can describe what you want to create a skill for. For eg, I want to create a skill for basic image editing:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_2.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/walkthrough_2.png" class="img-fluid"></p>
 <p>Claude used the skill-creator framework to scaffold the initial structure: a <code>SKILL.md</code> with proper YAML frontmatter and a Python script with core operations.</p>
 <p><strong>Step 3: Test Immediately, Iterate Constantly</strong></p>
 <p>One thing I always make sure of: I dont try to create a polished skill in one go. Whatever skill gets created, test it immediately. This is one of the things I appreciate about creating skills in the Claude web app. You can test them instantly in the same conversation.</p>
 <p>For eg, I uploaded a test image and asked Claude to change the background to orange:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_3.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/walkthrough_3.png" class="img-fluid"></p>
 <p>This gives you a tight feedback loop. You test what you’re building, and if something doesn’t work, Claude can fix it for you right there. No context-switching between environments. You build, test, and refine in one place.</p>
 <p><strong>Step 4: Iterate and Improve</strong></p>
 <p>Once you have a basic working version, you can start adding more operations and optimizing.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid"></p>
 <p>Similarly, since this skill runs Python scripts locally, I switched to PEP 723 inline metadata so <code>uv run</code> installs dependencies automatically on the fly:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/walkthrough_4.png" class="img-fluid"></p>
 <p>If you have some domain knowledge, use it. Go through the code Claude generated and check if it’s doing something redundant. You can review and ask Claude to make those optimizations.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-13/walkthrough_5.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-13/walkthrough_5.png" class="img-fluid"></p>
 <p>Finally, once you have a version you are happy with, go through the <code>SKILL.md</code> file and make sure the examples are good. If not, add them manually. <strong>Good examples help Claude understand exactly how to use the skill.</strong></p>
 <p><strong>Step 5: Export and Use Across Agents</strong></p>
 <p>Once you have a skill you want to keep, export it. You can use it in the Claude web app, Claude Code, or other agents like Codex CLI and Cursor.</p>
@@ -4691,12 +4691,12 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 
  ]]></description>
   <category>Tools &amp; Infra</category>
-  <guid>https://garg-aayush.github.io/posts/2026-01-13-claude-skills/</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-01-13-claude-skills/</guid>
   <pubDate>Tue, 13 Jan 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Key Insights from DeepSeekMath paper</title>
-  <link>https://garg-aayush.github.io/posts/2026-01-06-review-deepseek-math.html</link>
+  <link>https://aayushgarg.dev/posts/2026-01-06-review-deepseek-math.html</link>
   <description><![CDATA[ 
 
 
@@ -4704,7 +4704,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 
 <p>Over the weekend, I finished reading the <a href="https://arxiv.org/abs/2402.03300">DeepSeekMath</a> paper which introduced GRPO (the RL algorithm I covered in my <a href="https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html">previous post</a>). Below are my thoughts and key takeaways from the paper.</p>
 <p>In this paper, the authors show that a small domain-specific model (7B parameters) can approach the performance of SOTA general models like GPT-4 on competition-level math when it is pre-trained on a sufficiently large, well-curated math corpus (120B tokens) and then reinforced with RL. It outperform major open-source models available at that time including same or larger size math-specialized models like <a href="https://arxiv.org/abs/2308.09583">WizardMath-v1.1 7B</a>, <a href="https://arxiv.org/abs/2310.10631">Llemma 34B</a> and <a href="https://arxiv.org/abs/2309.12284">MetaMath 70B</a>. As shown below, DeepseekMath-7B achieves 51.7% on the competition-level <a href="https://arxiv.org/abs/2103.03874">MATH benchmark</a>.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image1-benchmark.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image1-benchmark.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p>In a nutshell: <strong>data quality and domain-specific pre-training are more critical for mathematical reasoning than sheer parameter count</strong>.</p>
 </blockquote>
@@ -4718,7 +4718,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <li><p>Firstly, they created the pre-training corpus from the Common Crawl which shows that if you use a well-thought data curation pipeline you can extract a high-quality domain-specific data from the public Common Crawl data.</p></li>
 <li><p>Secondly, the resulting corpus is substantially larger than <a href="https://arxiv.org/abs/2310.06786">OpenWebMath</a> (roughly 9 times larger), reinforcing the point that <em>scale matters</em>, as long as quality is maintained.</p></li>
 </ol>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image2-math-datacorpus-comparison.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image2-math-datacorpus-comparison.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p>Note, I will go deeper into the pipeline later in this post because I feel it is broadly reusable beyond math.</p>
 </blockquote>
@@ -4727,7 +4727,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="grpo-ppo-without-the-critic">GRPO: PPO Without the Critic</h3>
 <p>The second major novelty is their <strong>more memory-efficient alternative to <a href="https://arxiv.org/abs/1707.06347">PPO</a></strong>: <strong>GRPO (Group Relative Policy Optimization)</strong>.</p>
 <p>At a high level, GRPO removes the need to train a separate critic (value) model. Instead of learning a value function for advantage estimation, GRPO samples a <em>group</em> of multiple completions per prompt (64 in their experiments) and uses the normalized average reward of the group as the baseline. This significantly reduces memory and compute overhead while preserving the stability mechanisms associated with PPO (clipping and KL regularization).</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image3-grpo.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image3-grpo.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p>For a detailed explanation of GRPO, see my <a href="https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html">previous post on Understanding GRPO</a>.</p>
 </blockquote>
@@ -4742,7 +4742,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <section id="arxiv-papers-are-surprisingly-ineffective" class="level3">
 <h3 class="anchored" data-anchor-id="arxiv-papers-are-surprisingly-ineffective">ArXiv Papers are Surprisingly Ineffective</h3>
 <p>ArXiv papers are often a default ingredient in many math pre-training recipes, but the authors report that pre-training on arXiv content was not helpful in their setup. In some cases, it led to no improvement or even to worse performance.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image4-archive.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image4-archive.png" class="img-fluid"></p>
 <p>Note, the authors have been cautious claiming it to be definitely true and rather presented it as an empirical finding that requires more studies to confirm it.</p>
 <blockquote class="blockquote">
 <p>Still, I found this interesting. It suggests arXiv-style technical writing might be more useful for formal exposition (or informalization) than for improving competition-style problem solving.</p>
@@ -4752,7 +4752,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="online-rl-training-is-superior-to-offline">Online RL Training is Superior to Offline</h3>
 <p>Sampling training data from the real-time policy model (online) significantly outperforms sampling from the initial SFT model (offline).</p>
 <p>In their experiments, Online <a href="https://arxiv.org/abs/2308.01825">Rejection Sampling Fine-Tuning (RFT)</a> significantly outperformed standard (offline) RFT on both <a href="https://arxiv.org/abs/2110.14168">GSM8K</a> and MATH benchmarks. While the two methods perform similarly in the early stages of training, Online RFT gains a distinct advantage as training progresses.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image5-online-offline.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image5-online-offline.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p>As the policy diverges from the initial SFT model, data sampled from SFT becomes less relevant to the current model’s decision boundaries. Early on when the policy is close to SFT, it doesn’t matter much. Later, this staleness hurts the performance.</p>
 </blockquote>
@@ -4761,7 +4761,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="rl-sharpens-distribution-does-not-expand-model-capability">RL Sharpens Distribution, Does not Expand Model Capability</h3>
 <p>This is one of my favorite analyses in the paper. The authors compare <strong>Maj@K</strong> (majority voting accuracy) and <strong>Pass@K</strong> (whether any of K samples is correct) for both the Instruct and RL models.</p>
 <p>At K=64 samples, both models reach similar Pass@K ceilings (around 83-85% on MATH) which indicates that the fundamental capability is the same. However, RL consistently outperforms on Maj@K.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image6-majpass.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image6-majpass.png" class="img-fluid"></p>
 <blockquote class="blockquote">
 <p>This suggests RL isn’t expanding fundamental reasoning abilities. Instead it is sharpening the distribution of the model’s output which boosts the correct responses that were already within the model’s capability.</p>
 </blockquote>
@@ -4771,7 +4771,7 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 <h2 class="anchored" data-anchor-id="the-iterative-data-curation-pipeline">The Iterative Data Curation Pipeline</h2>
 <p>As I mentioned earlier, one of the key contributions of this paper is their data curation pipeline that extracts high-quality mathematical content from Common Crawl.</p>
 <p>The reason I am going into detail here is that you can <strong>draw parallels from this approach to create any other domain-specific dataset from publicly available data like Common Crawl</strong>. The pipeline is iterative and uses a fastText classifier at its core. Crudely, this is how the pipeline works:</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2026-01-06/image7-data-pipeline.png" class="img-fluid"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-01-06/image7-data-pipeline.png" class="img-fluid"></p>
 <section id="train-a-fasttext-classifier" class="level3">
 <h3 class="anchored" data-anchor-id="train-a-fasttext-classifier">1) Train a fastText Classifier</h3>
 <p>They start with <a href="https://huggingface.co/datasets/open-web-math/open-web-math">OpenWebMath</a> as a seed corpus (high-quality math web text). Using this seed, they build a binary classification dataset:</p>
@@ -4824,12 +4824,12 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 
  ]]></description>
   <category>Paper Notes</category>
-  <guid>https://garg-aayush.github.io/posts/2026-01-06-review-deepseek-math.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-01-06-review-deepseek-math.html</guid>
   <pubDate>Tue, 06 Jan 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Understanding GRPO: PPO without the Critic</title>
-  <link>https://garg-aayush.github.io/posts/2026-01-01-understanding-grpo.html</link>
+  <link>https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html</link>
   <description><![CDATA[ 
 
 
@@ -5031,12 +5031,12 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 
  ]]></description>
   <category>RL &amp; Alignment</category>
-  <guid>https://garg-aayush.github.io/posts/2026-01-01-understanding-grpo.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2026-01-01-understanding-grpo.html</guid>
   <pubDate>Thu, 01 Jan 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Deriving the DPO Loss from First Principles</title>
-  <link>https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</link>
+  <link>https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html</link>
   <description><![CDATA[ 
 
 
@@ -5257,12 +5257,12 @@ font-style: inherit;">---</span></span></code></pre></div></div>
 
  ]]></description>
   <category>RL &amp; Alignment</category>
-  <guid>https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-12-30-deriving-dpo-loss.html</guid>
   <pubDate>Tue, 30 Dec 2025 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Deriving the PPO Loss from First Principles</title>
-  <link>https://garg-aayush.github.io/posts/2025-12-25-deriving-ppo-loss.html</link>
+  <link>https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html</link>
   <description><![CDATA[ 
 
 
@@ -5688,12 +5688,12 @@ In the LLM context consider a state where the prompt is “Where is Shanghai?”
 
  ]]></description>
   <category>RL &amp; Alignment</category>
-  <guid>https://garg-aayush.github.io/posts/2025-12-25-deriving-ppo-loss.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-12-25-deriving-ppo-loss.html</guid>
   <pubDate>Thu, 25 Dec 2025 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>What I Learned Building SFT from the Ground Up</title>
-  <link>https://garg-aayush.github.io/posts/2025-12-28-sft-from-scratch.html</link>
+  <link>https://aayushgarg.dev/posts/2025-12-28-sft-from-scratch.html</link>
   <description><![CDATA[ 
 
 
@@ -5981,12 +5981,12 @@ font-style: inherit;">100</span></span></code></pre></div></div>
 
  ]]></description>
   <category>LLM Training</category>
-  <guid>https://garg-aayush.github.io/posts/2025-12-28-sft-from-scratch.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-12-28-sft-from-scratch.html</guid>
   <pubDate>Wed, 03 Dec 2025 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>A Guide to Building Custom Nodes in ComfyUI</title>
-  <link>https://garg-aayush.github.io/posts/2025-09-10-build-custom-comfyui-node.html</link>
+  <link>https://aayushgarg.dev/posts/2025-09-10-build-custom-comfyui-node.html</link>
   <description><![CDATA[ 
 
 
@@ -5997,7 +5997,7 @@ font-style: inherit;">100</span></span></code></pre></div></div>
 <section id="svg2raster" class="level2">
 <h2 class="anchored" data-anchor-id="svg2raster"><a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a></h2>
 <p>ComfyUI does not natively support vector graphics like <a href="https://en.wikipedia.org/wiki/SVG">SVGs</a>. I often work with them and needed lightweight nodes to load (SVG-&gt;JPEGs/PNGs) and manipulate SVGs in ComfyUI.</p>
-<p>Thus, I built <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a>, a small custom node package that makes it easy to use SVGs with other nodes. <img src="https://garg-aayush.github.io/static/img/blog-2025-09-10/workflow.png" class="img-fluid" alt="SVG2Raster"></p>
+<p>Thus, I built <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a>, a small custom node package that makes it easy to use SVGs with other nodes. <img src="https://aayushgarg.dev/static/img/blog-2025-09-10/workflow.png" class="img-fluid" alt="SVG2Raster"></p>
 </section>
 <section id="writing-your-custom-comfyui-node" class="level1">
 <h1>Writing your Custom ComfyUI Node</h1>
@@ -6406,7 +6406,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 </section>
 <section id="step-5-sharing-and-publishing-your-node" class="level2">
 <h2 class="anchored" data-anchor-id="step-5-sharing-and-publishing-your-node">Step 5: Sharing and Publishing Your Node</h2>
-<p>Once everything worked, I created a GitHub repo for the nodes. You can see how I structured mine in the <a href="github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a> repo.</p>
+<p>Once everything worked, I created a GitHub repo for the nodes. You can see how I structured mine in the <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a> repo.</p>
 <p>Some Essential files in the repo are:</p>
 <table class="caption-top table">
 <thead>
@@ -6444,12 +6444,12 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 
  ]]></description>
   <category>Tools &amp; Infra</category>
-  <guid>https://garg-aayush.github.io/posts/2025-09-10-build-custom-comfyui-node.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-09-10-build-custom-comfyui-node.html</guid>
   <pubDate>Wed, 10 Sep 2025 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Building GPT from Scratch: Following Karpathy’s Tutorial</title>
-  <link>https://garg-aayush.github.io/posts/2025-09-08-building-gpt-from-scratch.html</link>
+  <link>https://aayushgarg.dev/posts/2025-09-08-building-gpt-from-scratch.html</link>
   <description><![CDATA[ 
 
 
@@ -6670,12 +6670,12 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 
  ]]></description>
   <category>Transformers</category>
-  <guid>https://garg-aayush.github.io/posts/2025-09-08-building-gpt-from-scratch.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-09-08-building-gpt-from-scratch.html</guid>
   <pubDate>Mon, 08 Sep 2025 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</title>
-  <link>https://garg-aayush.github.io/posts/2025-09-02-llm-evaluation-lifecycle.html</link>
+  <link>https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html</link>
   <description><![CDATA[ 
 
 
@@ -6691,7 +6691,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 </section>
 <section id="the-three-gulfs" class="level2">
 <h2 class="anchored" data-anchor-id="the-three-gulfs">2. The Three Gulfs</h2>
-<p>The below image beautifully captures and categorizes the challenges associated with any LLM application: <img src="https://garg-aayush.github.io/static/img/blog-2025-09-02/three-gulfs.png" class="img-fluid" alt="Three gulfs"></p>
+<p>The below image beautifully captures and categorizes the challenges associated with any LLM application: <img src="https://aayushgarg.dev/static/img/blog-2025-09-02/three-gulfs.png" class="img-fluid" alt="Three gulfs"></p>
 <ul>
 <li><p><strong>Gulf of Comprehension</strong>: This is a result of limited understanding of the input data (user queries) and the pipeline’s outputs (behavior). Bridging it requires examining examples to identify common failure modes. This brings it own challenge: <strong>“How to manually review every input or output to identify failure modes?”</strong></p></li>
 <li><p><strong>Gulf of Specification</strong>: It refers to the difficulty of translating a user’s high-level intent into unambiguous precise instructions for the LLM. Bridging it requires writing detailed prompts that captures “true intent” which in itself is challenging due to <strong>ambiguous nature of natural language.</strong></p></li>
@@ -6703,7 +6703,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 <p>Hamel and Shreya introduced a structured way to bridge the above gulfs: <strong>Analyze → Measure → Improve</strong> lifecycle.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2025-09-02/pitfalls.png" class="img-fluid figure-img"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2025-09-02/pitfalls.png" class="img-fluid figure-img"></p>
 <figcaption>Analyze → Measure → Improve Lifecycle</figcaption>
 </figure>
 </div>
@@ -6745,7 +6745,7 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 <p>When we write prompts it’s easy to ignore that LLMs are non-deterministic, prompt-sensitive and can confidently hallucinate. Thus, always remember: <strong><em>“LLMs are powerful but imperfect components. Leverage strengths, anticipate weaknesses.”</em></strong></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg" class="img-fluid figure-img"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg" class="img-fluid figure-img"></p>
 <figcaption>LLM Strengths vs.&nbsp;Weaknesses</figcaption>
 </figure>
 </div>
@@ -6793,18 +6793,18 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
 
  ]]></description>
   <category>Paper Notes</category>
-  <guid>https://garg-aayush.github.io/posts/2025-09-02-llm-evaluation-lifecycle.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-09-02-llm-evaluation-lifecycle.html</guid>
   <pubDate>Tue, 02 Sep 2025 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</title>
-  <link>https://garg-aayush.github.io/posts/2024-07-15-finetune-llama3-8B-predibase.html</link>
+  <link>https://aayushgarg.dev/posts/2024-07-15-finetune-llama3-8B-predibase.html</link>
   <description><![CDATA[ 
 
 
 
 
-<p>Last week, I published the <a href="https://aayushgarg.dev/2024-07-09-compare-models-structured-data/">second blog</a> in my LLM fine-tuning series, comparing various models performance in functional representation extraction.</p>
+<p>Last week, I published the <a href="../posts/2024-07-09-compare-models-structured-data.html">second blog</a> in my LLM fine-tuning series, comparing various models performance in functional representation extraction.</p>
 <p>In this third part of the series, I discuss the <strong>first steps toward fine-tuning an (open-source)-LLM for functional representation extraction</strong>. My aim is to give you all a sneak peek at the kind of performance you can expect from fine-tuning an LLM for a custom task. To streamline this step (and to satisfy my own curiosity 😊), I will use <a href="https://predibase.com/">Predibase</a>. It is a fast, cheap, and efficient open-source LLM fine-tuning and deployment platform.</p>
 <blockquote class="blockquote">
 <p>FYI: I have some free Predibase credits through Dan’s and Hamel’s LLM course. Therefore, it is a perfect opportunity to put those credits to good use! 😬</p>
@@ -6828,7 +6828,7 @@ font-style: inherit;">2012</span>], rating[excellent], platforms[PC])</span></co
 <p>As shown in the graph below, the selected <code>1K</code> dataset is a fairly representative sample of the full ViGGO train dataset.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/viggo_function_name_distribution_1K.png" class="img-fluid figure-img"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2024-07-15/viggo_function_name_distribution_1K.png" class="img-fluid figure-img"></p>
 <figcaption>Understanding Data Distribution</figcaption>
 </figure>
 </div>
@@ -6883,7 +6883,7 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"viggo_train_val_dataset_1K"</span>)</span></code></pre></div></div>
-<p>Once uploade, you can check the uploaded dataset on the Predibase UI. <img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/predibase_ui_dataset.png" class="img-fluid" alt="Dataset"> <img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/predibase_ui_dataset2.png" class="img-fluid" alt="Dataset"></p>
+<p>Once uploade, you can check the uploaded dataset on the Predibase UI. <img src="https://aayushgarg.dev/static/img/blog-2024-07-15/predibase_ui_dataset.png" class="img-fluid" alt="Dataset"> <img src="https://aayushgarg.dev/static/img/blog-2024-07-15/predibase_ui_dataset2.png" class="img-fluid" alt="Dataset"></p>
 <p>For detailed steps on uploading the dataset to Predibase, please refer to the companion <a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Finetune_llama-3-8b_Predibase.ipynb">blog notebook</a>.</p>
 </section>
 <section id="setup-and-finetune" class="level2">
@@ -6949,7 +6949,7 @@ background-color: null;
 font-style: inherit;">"baseline-llama-3-8b"</span>,</span>
 <span id="cb4-17">)</span></code></pre></div></div>
 <p>That’s all you need to do to submit a job! Once completed, it will be available on the Predibase platform.</p>
-<p><img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/predibase_ui_train1.png" class="img-fluid" alt="train-1"> <img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/predibase_ui_train2.png" class="img-fluid" alt="train-2"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2024-07-15/predibase_ui_train1.png" class="img-fluid" alt="train-1"> <img src="https://aayushgarg.dev/static/img/blog-2024-07-15/predibase_ui_train2.png" class="img-fluid" alt="train-2"></p>
 <p>You can always tweak multiple hyperparameters (see <a href="https://docs.predibase.com/sdk-guide/SDKv2/ConfigClasses/FineTuningConfig">Finetuning Config</a>) and run the fine-tune job again. All your fine-tune jobs will be available on the Predibase platform.</p>
 </section>
 <section id="evaluate-the-fine-tuned-model" class="level2">
@@ -6960,7 +6960,7 @@ font-style: inherit;">"baseline-llama-3-8b"</span>,</span>
 </blockquote>
 <section id="generate-the-responses-for-validation-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="generate-the-responses-for-validation-dataset">Generate the responses for validation dataset</h3>
-<p>Similar to my previous blogs, I will evaluate the finetuned model on ViGGO <code>validation</code> dataset and calculate custom <a href="https://aayushgarg.dev/2024-07-09-compare-models-structured-data/">performance metrics</a> metrics for a better understanding of finetuned model performance.</p>
+<p>Similar to my previous blogs, I will evaluate the finetuned model on ViGGO <code>validation</code> dataset and calculate custom <a href="../posts/2024-07-09-compare-models-structured-data.html">performance metrics</a> metrics for a better understanding of finetuned model performance.</p>
 <p>First, I generate the responses for the validation dataset:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -7078,7 +7078,7 @@ font-style: inherit;">"text"</span>: text}</span></code></pre></div></div>
 <p>Now, I can generate the evaluation scores using custom evaluation metrics and compare them with previously calculated GPT-4 and Claude 3.5 Sonnet scores:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/finetuned_llama-3-8B_baseline.png" class="img-fluid figure-img"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2024-07-15/finetuned_llama-3-8B_baseline.png" class="img-fluid figure-img"></p>
 <figcaption>plot-finetuned-model</figcaption>
 </figure>
 </div>
@@ -7110,7 +7110,7 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 <p>After uploading this new dataset, finetuning the model, and evaluating it with the new adapter <code>viggo-finetune-1K/3</code>, there is significantly improved evaluation metrics. Notably, the model now surpasses GPT-4o’s scores for <code>exact_match</code> and <code>function_name_match</code>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://garg-aayush.github.io/static/img/blog-2024-07-15/finetuned_llama-3-8B_update1.png" class="img-fluid figure-img"></p>
+<p><img src="https://aayushgarg.dev/static/img/blog-2024-07-15/finetuned_llama-3-8B_update1.png" class="img-fluid figure-img"></p>
 <figcaption>plot-finetuned-model</figcaption>
 </figure>
 </div>
@@ -7134,7 +7134,7 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <ul>
-<li><a href="https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/">Part II blog post of series</a></li>
+<li><a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html">Part II blog post of series</a></li>
 <li><a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Analyze_Viggo_Dataset.ipynb">Notebook I: Analyze_Viggo_Dataset.ipynb</a></li>
 <li><a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Finetune_llama-3-8b_Predibase.ipynb">Notebook II: Finetune_llama-3-8b_Predibase.ipynb</a></li>
 <li><a href="https://predibase.com/">Predibase Platform</a></li>
@@ -7152,7 +7152,7 @@ font-style: inherit;">"""</span></span></code></pre></div></div>
 
  ]]></description>
   <category>LLM Training</category>
-  <guid>https://garg-aayush.github.io/posts/2024-07-15-finetune-llama3-8B-predibase.html</guid>
+  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2024-07-15-finetune-llama3-8B-predibase.html</guid>
   <pubDate>Mon, 15 Jul 2024 00:00:00 GMT</pubDate>
 </item>
 </channel>

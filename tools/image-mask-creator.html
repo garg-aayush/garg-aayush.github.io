@@ -4,29 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="analytics.js"></script>
+  <script src="file-utils.js"></script>
   <title>Binary Mask Creator — Aayush Garg</title>
+  <link rel="stylesheet" href="../static/design-tokens.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg-body: #1d1e20;
-      --bg-card: #2e2e33;
-      --bg-inset: #37383e;
-      --bg-hover: #414244;
-      --border: #333333;
-      --text-primary: #dadada;
-      --text-content: #c4c4c5;
-      --text-muted: #9b9c9d;
-      --text-dim: #707073;
-      --accent: #75A8D9;
-      --accent-hover: #8fbce5;
-      --accent-dim: rgba(117, 168, 217, 0.15);
-      --green: #72994E;
-      --green-dim: rgba(114, 153, 78, 0.15);
-      --orange: #EE6331;
-      --orange-dim: rgba(238, 99, 49, 0.12);
-      --code-bg: #37383e;
-    }
+
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -475,6 +459,8 @@
   </div>
 
   <script>
+    const { formatBytes, downloadBlob } = ToolFiles;
+
     /* ── Constants ── */
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
     const MAX_DIMENSION = 8192;
@@ -910,11 +896,7 @@
       exportCanvas.toBlob((blob) => {
         if (!blob) return;
         const baseName = originalFile.name.replace(/\.[^.]+$/, '');
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${baseName}-mask.jpg`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        downloadBlob(blob, `${baseName}-mask.jpg`);
       }, 'image/jpeg', 0.95);
     });
 
@@ -968,12 +950,6 @@
     }
 
     /* ── Formatting helpers ── */
-    function formatBytes(bytes) {
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / 1048576).toFixed(1) + ' MB';
-    }
-
     function friendlyType(mime) {
       const map = {
         'image/png': 'PNG', 'image/jpeg': 'JPEG', 'image/webp': 'WebP',

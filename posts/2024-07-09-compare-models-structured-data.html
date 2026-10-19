@@ -82,7 +82,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e6385f69fa77e47b1b08ebba615a1174.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,16 +122,17 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <style>html{ scroll-behavior: smooth; }</style>
 
 
+<link rel="stylesheet" href="../static/design-tokens.css">
 <link rel="stylesheet" href="../styles.css">
 <meta property="og:title" content="Part II: Comparison of Model Performances on Structured Functional Representation Extraction – Aayush Garg">
 <meta property="og:description" content="This blog post compares the performance of various models in extracting structured functional representations from text.">
-<meta property="og:image" content="https://garg-aayush.github.io/static/img/blog-2024-07-09/all_metrics_comparison.png">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2024-07-09/all_metrics_comparison.png">
 <meta property="og:site_name" content="Aayush Garg">
 <meta property="og:image:height" content="2968">
 <meta property="og:image:width" content="4770">
 <meta name="twitter:title" content="Part II: Comparison of Model Performances on Structured Functional Representation Extraction – Aayush Garg">
 <meta name="twitter:description" content="This blog post compares the performance of various models in extracting structured functional representations from text.">
-<meta name="twitter:image" content="https://garg-aayush.github.io/static/img/blog-2024-07-09/all_metrics_comparison.png">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2024-07-09/all_metrics_comparison.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image-height" content="2968">
 <meta name="twitter:image-width" content="4770">
@@ -195,7 +196,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://garg-aayush.github.io/blog/index.xml"> <i class="bi bi-rss" role="img">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -264,7 +265,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 
 <section id="introduction" class="level3">
 <h3 class="anchored" data-anchor-id="introduction">Introduction</h3>
-<p>In the <a href="https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/">previous blog post</a>, I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the <a href="https://huggingface.co/datasets/GEM/viggo">ViGGO Dataset</a>.</p>
+<p>In the <a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html">previous blog post</a>, I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the <a href="https://huggingface.co/datasets/GEM/viggo">ViGGO Dataset</a>.</p>
 <p>Building on that foundation, I expand the experiment to include a broader range of models, both open-source and proprietary. This comparison aims to provide insights on how well these models perform out of the box in structured data extraction tasks, which is quite crucial for RAG applications, knowledge base construction, and reasoning systems.</p>
 <p>I evaluate and compare the performance of these six LLM models:</p>
 <ol type="1">
@@ -369,7 +370,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </section>
 <section id="evaluation-strategy" class="level3">
 <h3 class="anchored" data-anchor-id="evaluation-strategy">Evaluation Strategy</h3>
-<p>To assess the models’ performance, I used the same evaluation criteria as in the <a href="https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/">previous post</a>:</p>
+<p>To assess the models’ performance, I used the same evaluation criteria as in the <a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html">previous post</a>:</p>
 <ol type="1">
 <li><strong>Function Name Match</strong>: The function name must match the ground truth function name.</li>
 <li><strong>Function and Attributes Match</strong>: The generated function name and attributes must match the ground truth function attributes. However, the order of the attributes does not matter.</li>
@@ -421,7 +422,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <ul>
-<li><a href="https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/">Part I blog post of series</a></li>
+<li><a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html">Part I blog post of series</a></li>
 <li><a href="https://huggingface.co/datasets/GEM/viggo">ViGGO Dataset</a></li>
 <li><a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Generate_responses_all_llms.ipynb">Notebook I: Generate_responses_all_llms.ipynb</a></li>
 <li><a href="https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Compare_model_performances.ipynb">Notebook II: Compare_models_performances.ipynb</a></li>
@@ -506,7 +507,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/garg-aayush\.github\.io");
+        var filterRegex = new RegExp("https:\/\/aayushgarg\.dev");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
