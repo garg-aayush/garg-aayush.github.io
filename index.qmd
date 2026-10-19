@@ -1,54 +1,153 @@
 ---
 title: "Aayush Garg"
 description: "Forward Deployed ML Engineer building production AI systems for refineries and energy operations."
+title-block-style: none
+page-layout: full
+body-classes: home
+toc: false
 sidebar: false
-toc: true
+# Fills the []{.build-month} span in the Now box header with the month of the build
+filters:
+  - _filters/build-month.lua
 listing:
-  date-format: short
-  feed: true
-  filter-ui: false
-  type: table
-  sort-ui: false
-  sort: "date desc"
-  categories: false
-  fields: [date, title]
-  id: blog-listings
-  contents: 
-    - posts/20*.qmd
-    - posts/20*/index.qmd
-  max-items: 10
-format:
-  html:
-    anchor-sections: true
+  # The Now rows. Edit text, link and sub-line here. Add live: true for the green status dot. The Latest post row is added automatically after the first row.
+  - id: now-rows
+    template: _templates/now.ejs
+    contents:
+      - label: Working on
+        text: Forecasting and anomaly detection for refinery operations
+        sub: Applied Computing
+        href: https://appliedcomputing.com/
+      - label: Building
+        text: FlashAttention2 from first principles
+        sub: building-from-scratch
+        href: https://github.com/garg-aayush/building-from-scratch
+      - label: Live
+        text: India weather and air quality
+        sub: Updated every 15 minutes
+        href: india-weather.html
+        live: true
+  # The newest post, shown in the Now box. Only the row label is set here.
+  - id: latest-post
+    template: _templates/now.ejs
+    template-params:
+      label: Latest post
+    fields: [date, title, reading-time]
+    date-format: "D MMM YYYY"
+    sort: "date desc"
+    max-items: 1
+    contents:
+      - posts/20*.qmd
+      - posts/20*/index.qmd
+  # The career path, one entry per stage. Fields: dates, title, description. Add badge (the pill text) to mark the current stage.
+  - id: path
+    template: _templates/timeline.ejs
+    sort: false
+    contents:
+      - dates: 2015 to 2022
+        title: Research
+        description: PhD at TU Delft, then research geophysicist at Shell, applying deep learning to imaging and inversion problems.
+      - dates: 2022 to 2026
+        title: ML development
+        description: Diffusion pipelines at Flixstock. The image enhancement pipeline and Smart Redraw at Jiffy.
+      - dates: 2026 onward
+        title: Applied ML in the field
+        description: Production AI for refineries and energy operations at Applied Computing.
+        badge: Now
+  # The newest posts, shown as rows and published as the RSS feed.
+  - id: blog-listings
+    template: _templates/post-rows.ejs
+    feed: true
+    fields: [date, title, categories, reading-time]
+    date-format: "D MMM YYYY"
+    sort: "date desc"
+    max-items: 5
+    contents:
+      - posts/20*.qmd
+      - posts/20*/index.qmd
+  # What I have built, as rows. Fields: title, href, description.
+  - id: featured
+    template: _templates/work-rows.ejs
+    sort: false
+    contents:
+      - title: building-from-scratch
+        href: https://github.com/garg-aayush/building-from-scratch
+        description: "Language models from first principles: GPT-2, a BPE tokenizer with a Rust encoder, KV cache, SFT and GRPO."
+      - title: India Weather
+        href: india-weather.html
+        description: Weather and air quality across Indian cities on one map, with 24-hour history.
+      - title: Browser tools
+        href: tools/
+        description: Image, JSON, YAML, LaTeX and diff utilities that run entirely in your browser.
 ---
 
-::: {layout="[21,79]" .profile-header}
+::: {.hero}
 
-![](static/img/aayush_cropped.jpg){.profile-pic fig-alt="Aayush Garg"}
+::: {.hero-copy}
 
-I am a Forward Deployed ML Engineer at Applied Computing, where I build and deliver production AI systems for refineries and energy operations. I work with process engineers and operators to turn plant data, physics, and operating constraints into forecasting, anomaly detection, and optimisation tools they can understand, trust, and act on. Previously at Jiffy, I built the AI image enhancement pipeline powering a $100M+ DTF printing business and Smart Redraw, a multi-agent image editing system. Outside work, I rebuild modern language models from first principles and write about what I learn.
+::: {.hero-id}
+
+![](static/img/aayush-avatar.jpg){.avatar width="72" height="72" loading="eager" fig-alt="Portrait of Aayush Garg"}
+
+::: {.hero-name}
+
+# Aayush Garg {.no-anchor}
+
+::: {.hero-role}
+Forward deployed ML engineer at Applied Computing
+:::
 
 :::
 
-## 💼 Current Work
+:::
 
-At Applied Computing, my work spans the full lifecycle of industrial AI delivery. I frame operational problems with customers, integrate historian and engineering data, build and validate models, translate operator feedback into product improvements, and deploy reliable systems into customer-controlled environments. The role sits at the intersection of machine learning, product engineering, process understanding, and technical customer delivery.
+::: {.hero-statement}
+I build and deploy AI systems, from first principles to production.
+:::
 
-If you are interested in my work or want to collaborate, feel free to reach out via [email](mailto:aayushgargiitr@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) or [Twitter](https://twitter.com/Aayush_ander).
+::: {.hero-lede}
+Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock. Outside work, I rebuild language models from scratch and write about what I learn.
+:::
 
----
+::: {.hero-actions}
+[Read the writing](blog/){.btn-solid} [About me](about.qmd){.link-arrow}
+:::
 
-## 📮 Blog
+:::
 
-I write about LLMs, concepts deep-dives and practical AI engineering. Below are my recent posts.
+::: {.now-panel}
+
+::: {.now-head}
+**Now** []{.build-month}
+:::
+
+::: {.now-list}
+
+::: {#now-rows}
+:::
+
+::: {#latest-post}
+:::
+
+:::
+
+:::
+
+:::
+
+## [Path]{.sec-head} {.no-anchor}
+
+::: {#path}
+:::
+
+## [Writing [All writing](blog/)]{.sec-head} {.no-anchor}
 
 ::: {#blog-listings}
 :::
 
-## 📬 Reach Out
+## [Built [All work](projects.qmd)]{.sec-head} {.no-anchor}
 
-The best way to follow my work is on [GitHub](https://github.com/garg-aayush), [Twitter](https://twitter.com/Aayush_ander), or [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734).
-
-::: {.template-credit}
-*Template inspired by [hamel.dev](https://hamel.dev/) and [Lil'Log](https://lilianweng.github.io/).*
+::: {#featured}
 :::
+
+{{< include _contact.qmd >}}

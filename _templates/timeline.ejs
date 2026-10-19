@@ -1,0 +1,26 @@
+<%
+// One row per stage, used by the homepage path and the About experience. The page's CSS decides the layout.
+// Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
+// Reads dates, title, optional role, description (Markdown works), optional href (links the title) and optional badge (marks the current stage and shows as a pill by the dates) from a YAML item.
+const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const rows = items.map((item) => {
+  const href = item.href ?? "";
+  const link = /^https?:/.test(href) ? ` class="title-link" target="_blank" rel="noopener"` : ` class="title-link no-external"`;
+  const title = href ? `<a href="${esc(href)}"${link}>${item.title}</a>` : item.title;
+  const badge = item.badge ? ` <span class="tl-badge">${esc(item.badge)}</span>` : "";
+  return `<li class="tl-row${item.badge ? " is-current" : ""}">
+<p class="tl-dates">${esc(item.dates)}${badge}</p>
+<div class="tl-body">
+<h3 class="tl-title no-anchor">${title}</h3>
+${item.role ? `<p class="tl-role">${esc(item.role)}</p>` : ""}
+<p class="tl-text">${item.description ?? ""}</p>
+</div>
+</li>`;
+});
+%>
+
+```{=html}
+<ol class="timeline">
+<%= rows.join("\n") %>
+</ol>
+```

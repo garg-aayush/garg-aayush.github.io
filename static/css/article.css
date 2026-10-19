@@ -1,0 +1,589 @@
+/* Owns articles (posts/, marked by body.article-page) and the content rules shared by every page: images, code blocks, callouts, wide tables and equations. */
+
+/* ---------- Article layout ---------- */
+
+/* Single column below the rail breakpoint, centered. Quarto's own named grid lines are kept because its blocks position themselves by name. */
+body.article-page.floating .page-columns.page-layout-article {
+  grid-template-columns:
+    [screen-start] minmax(var(--gutter), 1fr)
+    [screen-start-inset page-start page-start-inset body-start-outset body-start body-content-start] minmax(0, 700px)
+    [body-content-end body-end body-end-outset page-end-inset page-end] minmax(var(--gutter), 1fr)
+    [screen-end-inset screen-end];
+}
+
+/* Contents rail, contents rail gap and body column are centered as one group */
+@media (min-width: 992px) {
+  body.article-page.floating .page-columns.page-layout-article {
+    --rail-width: clamp(168px, calc(168px + 22 * (100vw - 992px) / 208), 190px);
+    --rail-gap: clamp(40px, calc(40px + 32 * (100vw - 992px) / 208), 72px);
+    grid-template-columns:
+      [screen-start] minmax(var(--gutter), 1fr)
+      [screen-start-inset page-start] var(--rail-width)
+      [page-start-inset body-start-outset] var(--rail-gap)
+      [body-start body-content-start] minmax(0, 700px)
+      [body-content-end body-end body-end-outset page-end-inset page-end] minmax(var(--gutter), 1fr)
+      [screen-end-inset screen-end];
+  }
+}
+
+/* ---------- Title block ---------- */
+
+.article-head {
+  margin: 0;
+  padding-top: var(--space-64);
+}
+
+.article-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.article-kicker .article-cat {
+  color: var(--accent);
+}
+
+/* The dot between kicker and byline parts. Decorative, so the alternative text is empty. */
+:is(.article-kicker, .article-byline) > * + *::before {
+  content: "\00b7";
+  content: "\00b7" / "";
+  margin-inline: var(--space-8);
+}
+
+.article-head h1.title {
+  margin-top: var(--space-12);
+}
+
+.article-head .description {
+  margin-top: var(--space-16);
+}
+
+.article-byline {
+  display: flex;
+  flex-wrap: wrap;
+  margin: var(--space-24) 0 var(--space-32);
+  padding-bottom: var(--space-16);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.article-byline .article-author {
+  color: var(--text-content);
+}
+
+@media (max-width: 600px) {
+  .article-head {
+    padding-top: var(--space-32);
+  }
+
+  .article-byline {
+    margin: var(--space-16) 0 var(--space-24);
+  }
+}
+
+/* ---------- Contents rail (wide screens) ---------- */
+
+/* Quarto makes this element sticky and full height. The offset set by static/js/site.js drops the rail to the first line of the body. */
+body.article-page .sidebar.sidebar-navigation {
+  top: calc(var(--nav-height) + var(--space-32));
+  max-height: calc(100vh - var(--nav-height) - var(--space-48));
+  margin-top: var(--rail-offset, 0px);
+  grid-column: page-start / page-start-inset;
+  padding: 0;
+  overflow-x: hidden;
+  background: transparent;
+  border: 0;
+}
+
+/* The track is the 2px line left of the items; its accent fill is scaled by the reading progress that site.js writes to --read-progress */
+body.article-page .sidebar nav[role="doc-toc"] {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 0 var(--space-16);
+  font-size: var(--fs-label);
+  line-height: 1.35;
+}
+
+body.article-page .sidebar nav[role="doc-toc"]::before,
+body.article-page .sidebar nav[role="doc-toc"]::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  border-radius: 2px;
+  background-color: var(--border);
+}
+
+body.article-page .sidebar nav[role="doc-toc"]::after {
+  background-color: var(--accent);
+  transform: scaleY(var(--read-progress, 0));
+  transform-origin: top;
+}
+
+body.article-page .sidebar nav[role="doc-toc"] #toc-title {
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+body.article-page .sidebar nav[role="doc-toc"] ul {
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Nested h3 items are indented without their own track */
+body.article-page .sidebar nav[role="doc-toc"] ul ul {
+  padding-left: var(--space-12);
+}
+
+/* Quarto draws its own left border on the links, so it is cleared here */
+body.article-page .sidebar nav[role="doc-toc"] ul > li > a {
+  display: block;
+  padding: 6px 0;
+  border-left: 0;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+body.article-page .sidebar nav[role="doc-toc"] ul > li > a:hover,
+body.article-page .sidebar nav[role="doc-toc"] ul > li > a.active {
+  border-left: 0;
+  /* Quarto sets the link color with !important */
+  color: var(--text-primary) !important;
+}
+
+/* ---------- Contents disclosure (narrow screens) ---------- */
+
+.article-toc-mobile {
+  margin: var(--space-24) 0 var(--space-32);
+}
+
+.article-toc-mobile details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-label);
+  line-height: 1.4;
+}
+
+.article-toc-mobile summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-height: calc(var(--touch-target) + 2px);
+  padding: 0 14px;
+  list-style: none;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.article-toc-mobile summary::-webkit-details-marker {
+  display: none;
+}
+
+.article-toc-mobile summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--text-dim);
+  border-bottom: 1.5px solid var(--text-dim);
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.article-toc-mobile details[open] > summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.article-toc-mobile details[open] > summary::after {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.article-toc-mobile ul {
+  margin: 0;
+  padding: var(--space-4) 14px var(--space-8);
+  list-style: none;
+}
+
+.article-toc-mobile li {
+  margin: 0;
+}
+
+.article-toc-mobile li a {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.article-toc-mobile li a:hover {
+  color: var(--text-primary);
+}
+
+.article-toc-mobile li + li {
+  border-top: 1px solid var(--border);
+}
+
+@media (min-width: 992px) {
+  .article-toc-mobile {
+    display: none;
+  }
+}
+
+/* ---------- Reading progress line under the navbar (narrow screens, added by site.js) ---------- */
+
+.read-progress {
+  position: fixed;
+  z-index: 1029;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--accent);
+  transform: scaleX(var(--read-progress, 0));
+  transform-origin: left;
+  pointer-events: none;
+}
+
+@media (min-width: 992px) {
+  .read-progress {
+    display: none;
+  }
+}
+
+/* ---------- Article body ---------- */
+
+body.article-page main.content {
+  font-size: var(--fs-article);
+  line-height: var(--lh-article);
+  color: var(--text-content);
+  padding-block: 0 var(--space-48);
+}
+
+/* :where() keeps these block spacings below the specificity of component rules such as the byline */
+:where(body.article-page main.content) :where(p, ul, ol, dl) {
+  margin-top: 0;
+  margin-bottom: var(--space-24);
+}
+
+body.article-page main.content :where(li > p, li > ul, li > ol) {
+  margin-bottom: var(--space-8);
+}
+
+body.article-page main.content :is(h2, h3, h4) {
+  scroll-margin-top: calc(var(--nav-height) + var(--space-24));
+}
+
+body.article-page main.content h2 {
+  margin-top: calc(var(--space-32) + var(--space-24));
+  margin-bottom: var(--space-16);
+}
+
+body.article-page main.content h3 {
+  margin-top: var(--space-32);
+  margin-bottom: var(--space-12);
+}
+
+body.article-page main.content h4 {
+  margin-top: var(--space-24);
+  margin-bottom: var(--space-8);
+  font-size: 1em;
+}
+
+body.article-page main.content ul,
+body.article-page main.content ol {
+  padding-left: 1.4em;
+}
+
+body.article-page main.content li {
+  margin-bottom: var(--space-8);
+}
+
+body.article-page main.content li::marker {
+  color: var(--text-dim);
+}
+
+body.article-page main.content blockquote {
+  margin: 0 0 var(--space-24);
+  font-size: inherit;
+}
+
+body.article-page main.content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Footnotes */
+body.article-page main.content .footnotes {
+  margin-top: var(--space-48);
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+/* End of article */
+.article-end {
+  margin: var(--space-48) 0 0;
+  padding-top: var(--space-24);
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-ui);
+  line-height: 1.4;
+}
+
+.article-end .link-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+}
+
+.article-end .link-back::before {
+  content: "\2190";
+  content: "\2190" / "";
+  margin-right: var(--space-8);
+}
+
+/* ---------- Content shared by every page ---------- */
+
+/* Images and figures */
+.content img,
+.quarto-figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+/* Images inside lists or tables sit in the text flow */
+.content :is(li, td, th) img {
+  margin-block: var(--space-8);
+}
+
+.content figure {
+  margin: var(--space-32) 0;
+}
+
+.content figure img {
+  margin: 0 auto;
+}
+
+.content figcaption,
+.content .quarto-figure figcaption,
+.content .table-caption,
+.content caption {
+  margin-top: var(--space-12);
+  font-size: var(--fs-label);
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+/* Code blocks. Quarto wraps highlighted blocks in div.sourceCode and puts the copy button beside the pre. */
+pre {
+  margin-bottom: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-pre);
+  line-height: 1.65;
+}
+
+pre code {
+  font-size: inherit;
+}
+
+/* Quarto pads plain (unhighlighted) blocks to .2em */
+main pre:not(.sourceCode) {
+  margin-block: var(--space-24);
+  padding: 18px 20px;
+}
+
+div.sourceCode {
+  margin: var(--space-24) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+div.sourceCode pre,
+div.sourceCode pre.sourceCode {
+  margin: 0;
+  overflow-x: auto;
+  /* Quarto sets overflow-y: visible on this element */
+  overflow-y: hidden !important;
+  font-size: var(--fs-pre);
+}
+
+/* Quarto's filename attribute: bar above the block, one shared border */
+.code-with-filename {
+  margin: var(--space-24) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-card);
+  overflow: hidden;
+}
+
+.code-with-filename .code-with-filename-file {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.code-with-filename .code-with-filename-file pre {
+  margin: 0;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.code-with-filename .code-with-filename-file strong {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.code-with-filename div.sourceCode {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+/* Copy button. Quarto draws the icon as a ::before image, so brightness lifts its dark grey (and blue on hover) to match the palette. */
+.code-copy-button {
+  top: var(--space-8);
+  right: var(--space-8);
+  margin: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+}
+
+.code-copy-button:hover {
+  border-color: var(--text-dim);
+}
+
+.code-copy-button > .bi::before {
+  filter: brightness(1.8);
+}
+
+.code-copy-button:hover > .bi::before {
+  filter: brightness(2.2);
+}
+
+/* The filename bar already sits above the block, so the button drops to the bar's height */
+.code-with-filename .code-copy-button {
+  top: var(--space-8);
+}
+
+@media (max-width: 600px) {
+  pre,
+  main pre:not(.sourceCode) {
+    padding: 14px 16px;
+  }
+}
+
+/* A long URL or inline code in running text breaks at the edge instead of widening the page. The links and code inside inherit it. Code blocks keep their own horizontal scroll, and table cells are left out so a table scrolls in its box rather than squeezing its columns. */
+main :is(p, li, dd, blockquote, figcaption) {
+  overflow-wrap: break-word;
+}
+
+/* Quarto lets inline code wrap only in paragraphs, definitions and table cells. Elsewhere it stays white-space: pre, which forbids wrapping. */
+main :is(li, blockquote, figcaption) code:not(pre code) {
+  white-space: pre-wrap;
+}
+
+/* Output under a code cell */
+.cell-output {
+  margin-left: var(--space-24);
+  border-left: 2px solid var(--border);
+}
+
+.cell-output div.sourceCode {
+  margin-block: var(--space-8) var(--space-24);
+}
+
+/* Tables: hairline rows, sans column labels, scroll inside their own box instead of widening the page. The blog listing is excluded because it is its own layout. */
+main table:not(.quarto-listing-table) {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: var(--space-24) 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+main table:not(.quarto-listing-table) :is(th, td) {
+  padding: var(--space-12) var(--space-24) var(--space-12) 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background-color: transparent;
+}
+
+main table:not(.quarto-listing-table) thead th {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+main table:not(.quarto-listing-table) tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+/* Callouts: surface panel with a neutral edge instead of Quarto's colored header bar. Selectors repeat Quarto's own so they win. */
+main div.callout.callout {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--text-dim);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-card);
+}
+
+main div.callout.callout-style-default > div.callout-header {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-size: var(--fs-ui);
+  opacity: 1;
+}
+
+main div.callout.callout-style-default .callout-body {
+  font-size: var(--fs-ui);
+  line-height: 1.6;
+  color: var(--text-content);
+}
+
+main div.callout .callout-title-container {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Equations. Display math is Heading colored and scrolls inside the column. */
+mjx-container[display="true"] {
+  /* MathJax sets an inline min-width on numbered equations, which would beat max-width on phones */
+  min-width: 0 !important;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  color: var(--text-primary);
+}

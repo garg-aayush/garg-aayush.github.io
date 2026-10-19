@@ -1,0 +1,28 @@
+<%
+// One row per post. Used by the homepage and the Writing index.
+// Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
+// template-params.description: true adds the one-line description under the title.
+// template-params.root is the path from the page to the site root, for example ../ on pages one folder deep.
+const root = templateParams?.root ?? "";
+const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const rows = items.map((item) => {
+  const categories = Array.isArray(item.categories) ? item.categories : [];
+  const description = templateParams?.description && item.description ? `<p class="post-desc">${esc(item.description)}</p>` : "";
+  const category = categories.length ? `<span class="post-cat">${esc(categories.join(", "))}</span>` : "";
+  return `<li class="post-row" ${metadataAttrs(item)}>
+<time class="post-date">${esc(item.date)}</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="${esc(root + item.outputHref)}" class="title-link no-arrow no-external">${esc(item.title)}</a></h3>
+${description}
+</div>
+${category}
+<span class="post-read">${esc(item["reading-time"])}</span>
+</li>`;
+});
+%>
+
+```{=html}
+<ol class="list post-rows">
+<%= rows.join("\n") %>
+</ol>
+```

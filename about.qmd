@@ -1,9 +1,38 @@
 ---
 title: "About"
+page-layout: full
+body-classes: pg
 sidebar: false
-toc: true
+toc: false
+listing:
+  id: experience
+  template: _templates/timeline.ejs
+  sort: false
+  # Professional experience, newest first. Fields: dates, title (company), role, description, and an optional href (company URL) that links the title.
+  contents:
+    - title: Applied Computing
+      dates: May 2026 to Present
+      role: ML Engineer (Forward Deployed)
+      description: "Build and deliver production AI systems for refinery and energy operations, working directly with process engineers and operators from problem framing and industrial data integration through model validation, deployment, and production support. Translate plant constraints and customer feedback into forecasting, anomaly detection, and optimisation capabilities that industrial teams can understand and trust."
+    - title: Jiffy
+      dates: Jan 2024 - Mar 2026
+      role: Senior Machine Learning Engineer
+      description: "Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system) and ML solutions spanning fine-tuning, model deployment and LLM-powered automation."
+    - title: Flixstock
+      dates: Aug 2022 - Dec 2023
+      role: Software Development Engineer III
+      description: "Built Stable Diffusion pipelines for background generation, identity transfer and video generation."
+    - title: Shell
+      dates: Oct 2019 - Jul 2022
+      role: Research Geophysicist
+      description: "Built DL-based denoising models for seismic data, worked on uncertainty quantification and DL-based Hessian operators for wave-equation optimization."
+    - title: TU Delft
+      dates: Aug 2015 - Aug 2019
+      role: PhD Researcher
+      description: "Developed JMI-res for high-resolution subsurface imaging and created a DL-based super-resolution approach for seismic spatial aliasing removal."
 ---
 
+::: {.about-intro}
 I build production AI systems for complex industrial operations. My work combines machine learning, product engineering, and customer delivery, taking solutions from an initially ambiguous operating problem through modelling, validation, deployment, and production support.
 
 Currently, I am a Forward Deployed ML Engineer at [Applied Computing](https://appliedcomputing.com/), working on decision systems for refineries and energy operations. I collaborate directly with process engineers and operators to turn plant data, engineering knowledge, and operational constraints into forecasting, anomaly detection, and optimisation capabilities that fit real workflows.
@@ -17,94 +46,11 @@ Previously at [Flixstock](https://www.flixstock.com/), I integrated the HuggingF
 Unlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics and I worked for [Shell](https://www.shell.com/) as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.
 
 I love connecting and collaborating with new people. Please don't hesitate to reach out! 😊
-
-## Professional Experience
-
-::: {.experience-grid}
-
-::: {.experience-card}
-::: {.card-header}
-::: {.company-name}
-Applied Computing
-:::
-::: {.card-date}
-May 2026 to Present
-:::
-:::
-::: {.card-role}
-ML Engineer (Forward Deployed)
-:::
-::: {.card-description}
-Build and deliver production AI systems for refinery and energy operations, working directly with process engineers and operators from problem framing and industrial data integration through model validation, deployment, and production support. Translate plant constraints and customer feedback into forecasting, anomaly detection, and optimisation capabilities that industrial teams can understand and trust.
-:::
 :::
 
-::: {.experience-card}
-::: {.card-header}
-::: {.company-name}
-Jiffy
-:::
-::: {.card-date}
-Jan 2024 - Mar 2026
-:::
-:::
-::: {.card-role}
-Senior Machine Learning Engineer
-:::
-::: {.card-description}
-Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system) and ML solutions spanning fine-tuning, model deployment and LLM-powered automation.
-:::
+## [Professional experience]{.sec-head} {.no-anchor}
+
+::: {#experience}
 :::
 
-::: {.experience-card}
-::: {.card-header}
-::: {.company-name}
-Flixstock
-:::
-::: {.card-date}
-Aug 2022 - Dec 2023
-:::
-:::
-::: {.card-role}
-Software Development Engineer III
-:::
-::: {.card-description}
-Built Stable Diffusion pipelines for background generation, identity transfer and video generation.
-:::
-:::
-
-::: {.experience-card}
-::: {.card-header}
-::: {.company-name}
-Shell
-:::
-::: {.card-date}
-Oct 2019 - Jul 2022
-:::
-:::
-::: {.card-role}
-Research Geophysicist
-:::
-::: {.card-description}
-Built DL-based denoising models for seismic data, worked on uncertainty quantification and DL-based Hessian operators for wave-equation optimization.
-:::
-:::
-
-::: {.experience-card}
-::: {.card-header}
-::: {.company-name}
-TU Delft
-:::
-::: {.card-date}
-Aug 2015 - Aug 2019
-:::
-:::
-::: {.card-role}
-PhD Researcher
-:::
-::: {.card-description}
-Developed JMI-res for high-resolution subsurface imaging and created a DL-based super-resolution approach for seismic spatial aliasing removal.
-:::
-:::
-
-:::
+{{< include _contact.qmd >}}

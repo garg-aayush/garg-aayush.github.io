@@ -44,14 +44,21 @@ async function decodedDownload(page, testInfo, filename) {
   return result;
 }
 
-test('mobile navigation opens and reaches the tools catalog', async ({ page }) => {
+test('mobile navigation keeps its links in one row and reaches the tools catalog', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  const toggle = page.getByLabel('Toggle navigation');
-  await expect(toggle).toBeVisible();
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await page.locator('#navbarCollapse').getByRole('link', { name: 'Tools', exact: true }).click();
+  await expect(page.getByLabel('Toggle navigation')).toHaveCount(0);
+  const nav = page.locator('#quarto-header');
+  const boxes = [];
+  for (const name of ['Writing', 'Work', 'Tools', 'About']) {
+    const link = nav.getByRole('link', { name, exact: true });
+    await expect(link).toBeVisible();
+    boxes.push(await link.boundingBox());
+  }
+  expect(new Set(boxes.map(box => Math.round(box.y))).size, 'links share one row').toBe(1);
+  for (const box of boxes) expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), 'horizontal overflow').toBeLessThanOrEqual(0);
+  await nav.getByRole('link', { name: 'Tools', exact: true }).click();
   await expect(page).toHaveURL(/\/tools\/$/);
   await expect(page.getByRole('heading', { name: 'Tools', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Image Resizer', exact: true })).toBeVisible();

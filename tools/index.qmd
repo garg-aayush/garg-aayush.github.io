@@ -1,26 +1,28 @@
 ---
 title: "Tools"
 description: "Browser-based tools that run entirely client-side. No data leaves your browser."
+page-layout: full
+body-classes: pg
 sidebar: false
-toc: true
+toc: false
+include-after-body:
+  - text: |
+      <script src="/static/js/tools-catalog.js"></script>
 ---
 
-```{=html}
-<div class="listing-actions-group">
-  <div class="input-group input-group-sm quarto-listing-filter">
-    <span class="input-group-text"><i class="bi bi-search"></i></span>
-    <input id="tools-filter" type="text" class="search form-control" placeholder="Filter">
-  </div>
-</div>
-<div id="tools-no-results" style="display: none; padding: 1.5rem 0; color: #888; font-style: italic;">No tools match your search.</div>
-```
+::: {#tools-filter-slot .tools-filter data-placeholder="Filter tools"}
+:::
 
-## Image Tools
+::: {#tools-no-results .tools-empty hidden=""}
+No tools match your search.
+:::
+
+## [Image tools]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
 ::: {.tool-item}
-[Image Format Converter](image-converter.html){.tool-link} [convert between formats]{.tool-tagline}
+[Image Format Converter](image-converter.html){.tool-link .title-link} [convert between formats]{.tool-tagline}
 
 ::: {.tool-desc}
 Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
@@ -28,7 +30,7 @@ Convert images between PNG, JPEG, and WebP with adjustable quality and transpare
 :::
 
 ::: {.tool-item}
-[Image Resizer](image-resizer.html){.tool-link} [resize by dimensions or percentage]{.tool-tagline}
+[Image Resizer](image-resizer.html){.tool-link .title-link} [resize by dimensions or percentage]{.tool-tagline}
 
 ::: {.tool-desc}
 Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
@@ -36,7 +38,7 @@ Resize images by dimensions, percentage, or fit-within bounds with aspect ratio 
 :::
 
 ::: {.tool-item}
-[Image Cropper](image-cropper.html){.tool-link} [interactive crop with presets]{.tool-tagline}
+[Image Cropper](image-cropper.html){.tool-link .title-link} [interactive crop with presets]{.tool-tagline}
 
 ::: {.tool-desc}
 Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
@@ -44,7 +46,7 @@ Interactively crop images with draggable selection, aspect ratio presets, and fu
 :::
 
 ::: {.tool-item}
-[Binary Mask Creator](image-mask-creator.html){.tool-link} [masks for ai inpainting/edits]{.tool-tagline}
+[Binary Mask Creator](image-mask-creator.html){.tool-link .title-link} [masks for ai inpainting/edits]{.tool-tagline}
 
 ::: {.tool-desc}
 Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.
@@ -52,7 +54,7 @@ Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, a
 :::
 
 ::: {.tool-item}
-[Image Adjust & Transform](image-operations.html){.tool-link} [flip, rotate, adjust colors]{.tool-tagline}
+[Image Adjust & Transform](image-operations.html){.tool-link .title-link} [flip, rotate, adjust colors]{.tool-tagline}
 
 ::: {.tool-desc}
 Flip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.
@@ -60,7 +62,7 @@ Flip, rotate, invert colors, convert to grayscale, and adjust brightness and con
 :::
 
 ::: {.tool-item}
-[SVG Viewer & Converter](svg-viewer.html){.tool-link} [preview and export SVGs as raster images]{.tool-tagline}
+[SVG Viewer & Converter](svg-viewer.html){.tool-link .title-link} [preview and export SVGs as raster images]{.tool-tagline}
 
 ::: {.tool-desc}
 Preview SVG files with zoom and background controls, inspect metadata and source, and export to PNG, JPEG, or WebP at any scale.
@@ -69,12 +71,12 @@ Preview SVG files with zoom and background controls, inspect metadata and source
 
 :::
 
-## Viewer Tools
+## [Viewer tools]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
 ::: {.tool-item}
-[HTML Viewer](html-viewer.html){.tool-link} [paste HTML, see it rendered live]{.tool-tagline}
+[HTML Viewer](html-viewer.html){.tool-link .title-link} [paste HTML, see it rendered live]{.tool-tagline}
 
 ::: {.tool-desc}
 Paste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.
@@ -82,7 +84,7 @@ Paste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-si
 :::
 
 ::: {.tool-item}
-[Markdown Viewer](markdown-viewer.html){.tool-link} [live preview with math & code highlighting]{.tool-tagline}
+[Markdown Viewer](markdown-viewer.html){.tool-link .title-link} [live preview with math & code highlighting]{.tool-tagline}
 
 ::: {.tool-desc}
 Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries.
@@ -90,7 +92,7 @@ Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted cod
 :::
 
 ::: {.tool-item}
-[JSON Formatter & Viewer](json-formatter.html){.tool-link} [format, validate, and explore JSON]{.tool-tagline}
+[JSON Formatter & Viewer](json-formatter.html){.tool-link .title-link} [format, validate, and explore JSON]{.tool-tagline}
 
 ::: {.tool-desc}
 Paste or drop JSON to format with syntax highlighting, collapsible tree view, validation with line-level error reporting, search, and one-click copy.
@@ -98,7 +100,7 @@ Paste or drop JSON to format with syntax highlighting, collapsible tree view, va
 :::
 
 ::: {.tool-item}
-[Diff Viewer](diff-viewer.html){.tool-link} [compare text side-by-side with word-level highlighting]{.tool-tagline}
+[Diff Viewer](diff-viewer.html){.tool-link .title-link} [compare text side-by-side with word-level highlighting]{.tool-tagline}
 
 ::: {.tool-desc}
 Compare two text blocks with line-level and word-level diff highlighting. Side-by-side and unified diff modes. Requires internet for diff library.
@@ -106,7 +108,7 @@ Compare two text blocks with line-level and word-level diff highlighting. Side-b
 :::
 
 ::: {.tool-item}
-[LaTeX Math Preview](latex-preview.html){.tool-link} [scratchpad for previewing LaTeX equations]{.tool-tagline}
+[LaTeX Math Preview](latex-preview.html){.tool-link .title-link} [scratchpad for previewing LaTeX equations]{.tool-tagline}
 
 ::: {.tool-desc}
 Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback, symbol palette, render mode toggle, and saved snippets. Requires internet for KaTeX.
@@ -115,12 +117,12 @@ Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback
 
 :::
 
-## Data Tools
+## [Data tools]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
 ::: {.tool-item}
-[YAML ↔ JSON Converter](yaml-json-converter.html){.tool-link} [bidirectional conversion with validation]{.tool-tagline}
+[YAML ↔ JSON Converter](yaml-json-converter.html){.tool-link .title-link} [bidirectional conversion with validation]{.tool-tagline}
 
 ::: {.tool-desc}
 Convert between YAML and JSON with live validation, configurable indentation, file drop support, and sample data. Requires internet for js-yaml library.
@@ -128,7 +130,7 @@ Convert between YAML and JSON with live validation, configurable indentation, fi
 :::
 
 ::: {.tool-item}
-[Base64 Encoder/Decoder](base64.html){.tool-link} [encode/decode images and text]{.tool-tagline}
+[Base64 Encoder/Decoder](base64.html){.tool-link .title-link} [encode/decode images and text]{.tool-tagline}
 
 ::: {.tool-desc}
 Decode base64 to image with live preview and download, encode images to base64 data URIs (drag-and-drop), or encode/decode plain text.
@@ -136,7 +138,7 @@ Decode base64 to image with live preview and download, encode images to base64 d
 :::
 
 ::: {.tool-item}
-[URL Encoder/Decoder](url-encoder.html){.tool-link} [percent-encode and decode URL components]{.tool-tagline}
+[URL Encoder/Decoder](url-encoder.html){.tool-link .title-link} [percent-encode and decode URL components]{.tool-tagline}
 
 ::: {.tool-desc}
 Percent-encode and decode URL strings with live conversion. Toggle between encodeURIComponent and encodeURI modes.
@@ -145,64 +147,6 @@ Percent-encode and decode URL strings with live conversion. Toggle between encod
 
 :::
 
-::: {.template-credit}
-*Most of these tools were vibe-coded so if you run into any quirks, that's probably why.*
-
-*Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
+::: {.tools-note}
+Most of these tools were vibe-coded so if you run into any quirks, that's probably why. Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).
 :::
-
-```{=html}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.tool-item').forEach(item => {
-    const desc = item.querySelector('.tool-desc');
-    if (!desc) return;
-    item.style.cursor = 'pointer';
-    item.addEventListener('click', (e) => {
-      // Don't toggle if they clicked the actual link to navigate
-      if (e.target.closest('a.tool-link')) return;
-      desc.classList.toggle('open');
-    });
-  });
-
-  // Search/filter functionality
-  const filterInput = document.getElementById('tools-filter');
-  const noResults = document.getElementById('tools-no-results');
-  if (!filterInput) return;
-
-  filterInput.addEventListener('input', () => {
-    const query = filterInput.value.toLowerCase().trim();
-    let totalVisible = 0;
-
-    document.querySelectorAll('.tools-list').forEach(list => {
-      const heading = list.previousElementSibling;
-      let visibleInSection = 0;
-
-      list.querySelectorAll('.tool-item').forEach(item => {
-        const link = item.querySelector('.tool-link');
-        const tagline = item.querySelector('.tool-tagline');
-        const desc = item.querySelector('.tool-desc');
-        const text = [
-          link ? link.textContent : '',
-          tagline ? tagline.textContent : '',
-          desc ? desc.textContent : ''
-        ].join(' ').toLowerCase();
-
-        const match = !query || text.includes(query);
-        item.style.display = match ? '' : 'none';
-        if (match) visibleInSection++;
-      });
-
-      const sectionHidden = visibleInSection === 0;
-      list.style.display = sectionHidden ? 'none' : '';
-      if (heading && heading.tagName === 'H2') {
-        heading.style.display = sectionHidden ? 'none' : '';
-      }
-      totalVisible += visibleInSection;
-    });
-
-    noResults.style.display = totalVisible === 0 && query ? 'block' : 'none';
-  });
-});
-</script>
-```
