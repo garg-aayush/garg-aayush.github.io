@@ -500,6 +500,16 @@ div.sourceCode pre.sourceCode {
   }
 }
 
+/* A long URL or inline code in running text breaks at the edge instead of widening the page. The links and code inside inherit it. Code blocks keep their own horizontal scroll, and table cells are left out so a table scrolls in its box rather than squeezing its columns. */
+main :is(p, li, dd, blockquote, figcaption) {
+  overflow-wrap: break-word;
+}
+
+/* Quarto lets inline code wrap only in paragraphs, definitions and table cells. Elsewhere it stays white-space: pre, which forbids wrapping. */
+main :is(li, blockquote, figcaption) code:not(pre code) {
+  white-space: pre-wrap;
+}
+
 /* Output under a code cell */
 .cell-output {
   margin-left: var(--space-24);
