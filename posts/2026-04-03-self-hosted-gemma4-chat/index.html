@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-04-03">
 <meta name="description" content="Steps to set up a self-hosted Gemma 4 chat with llama.cpp’s built-in web UI, web search via MCP, and access from any device over Tailscale.">
 
 <title>Self-Hosted Gemma 4 Chat with Web UI – Aayush Garg</title>
@@ -72,17 +71,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-8ba3ab1eef57a15509773c6ff8383788.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,10 +119,15 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
 
+<link rel="stylesheet" href="../../static/fonts/fonts.css">
 <link rel="stylesheet" href="../../static/design-tokens.css">
 <link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../static/css/home.css">
+<link rel="stylesheet" href="../../static/css/article.css">
+<link rel="stylesheet" href="../../static/css/pages.css">
 <meta property="og:title" content="Self-Hosted Gemma 4 Chat with Web UI – Aayush Garg">
 <meta property="og:description" content="Steps to set up a self-hosted Gemma 4 chat with llama.cpp’s built-in web UI, web search via MCP, and access from any device over Tailscale.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-04-03/snapshot-iphone.jpg">
@@ -134,82 +138,47 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed article-page quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#my-setup" id="toc-my-setup" class="nav-link active" data-scroll-target="#my-setup">My Setup</a></li>
@@ -222,43 +191,41 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
   <li><a href="#troubleshooting" id="toc-troubleshooting" class="nav-link" data-scroll-target="#troubleshooting">Troubleshooting</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Self-Hosted Gemma 4 Chat with Web UI</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">Local LLMs</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    Steps to set up a self-hosted Gemma 4 chat with llama.cpp’s built-in web UI, web search via MCP, and access from any device over Tailscale.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">April 3, 2026</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  <span class="quarto-category article-cat">Local LLMs</span>
+  <span class="article-date">3 Apr 2026</span>
+</p>
+<h1 class="title display-7">Self-Hosted Gemma 4 Chat with Web UI</h1>
+<div class="description">Steps to set up a self-hosted Gemma 4 chat with llama.cpp’s built-in web UI, web search via MCP, and access from any device over Tailscale.</div>
+<p class="article-byline">
+  <span class="article-author">Aayush Garg</span>
+  <span>6 min read</span>
+  <span>8 sections</span>
+</p>
 </header>
 
 
+<nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
+<ul>
+<li><a href="#my-setup">My Setup</a></li>
+<li><a href="#build-llama.cpp">1. Build llama.cpp</a></li>
+<li><a href="#create-the-mcp-config">2. Create the MCP Config</a></li>
+<li><a href="#create-the-launch-script">3. Create the Launch Script</a></li>
+<li><a href="#connect-from-your-devices">4. Connect from Your Devices</a></li>
+<li><a href="#verify-web-search-is-working">5. Verify Web Search Is Working</a></li>
+<li><a href="#enable-vision-optional">6. Enable Vision (Optional)</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</details></nav>
 <p>These are the steps to set up a self-hosted Gemma 4 chat with a web UI that you can use from your phone and laptop, keeping all your data and models private. It is just llama.cpp’s built-in web UI served over Tailscale.</p>
 <blockquote class="blockquote">
 <p>This post is based on my <a href="https://gist.github.com/garg-aayush/5c93e167831330c5d7c96dbc8541ef80">gist</a> which I keep as context for future reference.</p>
@@ -500,6 +467,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </table>
 
 
+<nav class="article-end" aria-label="All writing"><a class="link-back" href="../../blog/">All writing</a></nav>
 </section>
 
 </main> <!-- /main -->
@@ -912,35 +880,38 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../../static/js/site.js"></script>
 
 
 

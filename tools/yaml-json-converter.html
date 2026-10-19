@@ -201,6 +201,7 @@
 
         .convert-row {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
             margin: 16px 0;
@@ -225,6 +226,12 @@
 
         .indent-select:focus {
             border-color: var(--accent);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 1;
         }
     </style>
 </head>

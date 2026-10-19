@@ -72,17 +72,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-8ba3ab1eef57a15509773c6ff8383788.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,6 +120,7 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -151,8 +152,12 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../../static/fonts/fonts.css">
 <link rel="stylesheet" href="../../static/design-tokens.css">
 <link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../static/css/home.css">
+<link rel="stylesheet" href="../../static/css/article.css">
+<link rel="stylesheet" href="../../static/css/pages.css">
 <meta property="og:title" content="Kalman Filters and Smoothing for Time-Series Data – Aayush Garg">
 <meta property="og:description" content="A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-07-15/fig2_state_space_model.svg">
@@ -163,82 +168,47 @@ window.Quarto = {
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed article-page quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#the-problem-hidden-states-behind-noisy-observations" id="toc-the-problem-hidden-states-behind-noisy-observations" class="nav-link active" data-scroll-target="#the-problem-hidden-states-behind-noisy-observations">The Problem: Hidden States Behind Noisy Observations</a></li>
@@ -258,43 +228,43 @@ window.Quarto = {
   <li><a href="#references-and-further-reading" id="toc-references-and-further-reading" class="nav-link" data-scroll-target="#references-and-further-reading">References and Further Reading</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Kalman Filters and Smoothing for Time-Series Data</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">Time Series</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">July 15, 2026</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  <span class="quarto-category article-cat">Time Series</span>
+  <span class="article-date">15 Jul 2026</span>
+</p>
+<h1 class="title display-7">Kalman Filters and Smoothing for Time-Series Data</h1>
+<div class="description">A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples</div>
+<p class="article-byline">
+  <span class="article-author">Aayush Garg</span>
+  <span>16 min read</span>
+  <span>10 sections</span>
+</p>
 </header>
 
 
+<nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
+<ul>
+<li><a href="#the-problem-hidden-states-behind-noisy-observations">The Problem: Hidden States Behind Noisy Observations</a></li>
+<li><a href="#the-state-space-model">The State-Space Model</a></li>
+<li><a href="#the-kalman-filter-predict-then-update">The Kalman Filter: Predict, then Update</a></li>
+<li><a href="#kalman-smoothing-using-the-future-too">Kalman Smoothing: Using the Future Too</a></li>
+<li><a href="#what-can-we-do-with-the-kalman-filter-and-smoother">What can we do with the Kalman filter and smoother?</a></li>
+<li><a href="#example-co2-decomposition">Example 1: Decomposing the Mauna Loa <span class="math inline">\(\text{CO}_2\)</span> Series</a></li>
+<li><a href="#example-airpassengers-gaps">Example 2: Filling Gaps in the AirPassengers Series</a></li>
+<li><a href="#beyond-linear-and-gaussian">Beyond Linear and Gaussian</a></li>
+<li><a href="#wrapping-up">Wrapping Up</a></li>
+<li><a href="#references-and-further-reading">References and Further Reading</a></li>
+</ul>
+</details></nav>
 <p>An important part of my current work involves time-series data. Over the past couple of months, I have come to appreciate the importance of preprocessing, especially because time-series data is often noisy, incomplete, irregularly sampled, and contains gaps. Your time‑series prediction model is only as good as your understanding and the preprocessing you apply to the data. There is one approach that really helps with denoising, filling gaps, separating trends and is a sort of a Swiss Army Knife for time-series data: the <strong>Kalman filter</strong>.</p>
 <p>The Kalman filter is a recursive algorithm that estimates the hidden state of a dynamic system from a sequence of noisy measurements. It was published by <a href="https://doi.org/10.1115/1.3662552">Rudolf Kalman back in 1960</a> and famously flew on the Apollo missions but the reason I care about it today is more mundane. It is provably optimal for linear-Gaussian systems, it runs cheaply in real time and gives you uncertainty estimates for free alongside every state estimate. When you combine it with its smoothing extension, it handles denoising, decomposition, forecasting and interpolation all from one framework.</p>
 <blockquote class="blockquote">
@@ -653,6 +623,7 @@ x = [\, \text{level}, \; \text{slope}, \; s_1, s_2, \ldots, s_{11} \,] \quad \te
 </ul>
 
 
+<nav class="article-end" aria-label="All writing"><a class="link-back" href="../../blog/">All writing</a></nav>
 </section>
 
 </main> <!-- /main -->
@@ -1065,35 +1036,38 @@ x = [\, \text{level}, \; \text{slope}, \; s_1, s_2, \ldots, s_{11} \,] \quad \te
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../../static/js/site.js"></script>
 
 
 

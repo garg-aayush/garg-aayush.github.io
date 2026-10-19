@@ -72,17 +72,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-8ba3ab1eef57a15509773c6ff8383788.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,10 +120,15 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
 
+<link rel="stylesheet" href="../../static/fonts/fonts.css">
 <link rel="stylesheet" href="../../static/design-tokens.css">
 <link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../../static/css/home.css">
+<link rel="stylesheet" href="../../static/css/article.css">
+<link rel="stylesheet" href="../../static/css/pages.css">
 <meta property="og:title" content="Tools for Better Claude Code and Terminal Experience – Aayush Garg">
 <meta property="og:description" content="A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-02-12/codexbar-snapshot.jpg">
@@ -134,82 +139,47 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed article-page quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#tracking-your-ai-usage" id="toc-tracking-your-ai-usage" class="nav-link active" data-scroll-target="#tracking-your-ai-usage">Tracking Your AI Usage</a>
@@ -234,43 +204,39 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
   <li><a href="#wrapping-up" id="toc-wrapping-up" class="nav-link" data-scroll-target="#wrapping-up">Wrapping Up</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Tools for Better Claude Code and Terminal Experience</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">Tools &amp; Infra</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">February 12, 2026</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  <span class="quarto-category article-cat">Tools &amp; Infra</span>
+  <span class="article-date">12 Feb 2026</span>
+</p>
+<h1 class="title display-7">Tools for Better Claude Code and Terminal Experience</h1>
+<div class="description">A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.</div>
+<p class="article-byline">
+  <span class="article-author">Aayush Garg</span>
+  <span>8 min read</span>
+  <span>6 sections</span>
+</p>
 </header>
 
 
+<nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
+<ul>
+<li><a href="#tracking-your-ai-usage">Tracking Your AI Usage</a></li>
+<li><a href="#managing-your-ai-context">Managing Your AI Context</a></li>
+<li><a href="#prefer-skills-over-mcp-servers">Prefer Skills Over MCP Servers</a></li>
+<li><a href="#the-llm-cli-tool">The <code>llm</code> CLI Tool</a></li>
+<li><a href="#upgrading-your-terminal-basics">Upgrading Your Terminal Basics</a></li>
+<li><a href="#wrapping-up">Wrapping Up</a></li>
+</ul>
+</details></nav>
 <p>I have been using <a href="https://cursor.com/">Cursor</a> for a long time and recently started using <a href="https://claude.com/code">Claude Code</a> in my day-to-day work. Thus, over the past few weeks I have spent a lot more time in the terminal and a handful of tools and practices have stuck with me. None of them are groundbreaking or elaborate but have made my overall experience noticeably more productive. This is a short post sharing what has worked for me in case any of it is useful to you.</p>
 <section id="tracking-your-ai-usage" class="level2">
 <h2 class="anchored" data-anchor-id="tracking-your-ai-usage">Tracking Your AI Usage</h2>
@@ -396,6 +362,7 @@ pycode [-x|--exec] &lt;task&gt;         Generate a Python script from a task des
 <p>None of these tools and tips are complex or elaborate and most of them are not even AI-specific. But together they have quietly improved how I work with better visibility into usage, healthier context windows, quicker LLM access from the terminal and a slightly nicer shell experience.</p>
 
 
+<nav class="article-end" aria-label="All writing"><a class="link-back" href="../../blog/">All writing</a></nav>
 </section>
 
 </main> <!-- /main -->
@@ -808,35 +775,38 @@ pycode [-x|--exec] &lt;task&gt;         Generate a Python script from a task des
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../../static/js/site.js"></script>
 
 
 

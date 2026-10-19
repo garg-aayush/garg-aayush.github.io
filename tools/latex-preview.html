@@ -374,10 +374,6 @@
             border-color: var(--accent);
         }
 
-        .snippet-name-input::placeholder {
-            color: var(--text-dim);
-        }
-
         .snippet-list {
             display: flex;
             flex-direction: column;
@@ -437,6 +433,12 @@
         .katex .mord, .katex .mop, .katex .mrel,
         .katex .mopen, .katex .mclose, .katex .mpunct,
         .katex .mbin, .katex .minner { color: inherit; }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>

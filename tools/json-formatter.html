@@ -79,13 +79,13 @@
 
         .split-pane {
             display: grid;
-            grid-template-columns: 1fr 1.5fr;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
             gap: 12px;
         }
 
         @media (max-width: 768px) {
             .split-pane {
-                grid-template-columns: 1fr;
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
@@ -343,6 +343,12 @@
             font-style: italic;
             padding: 20px;
             text-align: center;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 1;
         }
     </style>
 </head>

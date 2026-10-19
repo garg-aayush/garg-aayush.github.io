@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="From-scratch LLM builds, deep-dives and practical AI engineering.">
+<meta name="description" content="From-scratch LLM builds, deep dives and practical AI engineering.">
 
-<title>Blogs – Aayush Garg</title>
+<title>Writing – Aayush Garg</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-listing/list.min.js"></script>
 <script src="../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -45,10 +45,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-3952ace34293c15347894a1b40e6f7bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-107a80a2c67166390cf3933d5f1787b8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,6 +79,34 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-blog-chips .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-project','listing-website','listing-format','listing-resources','listing-engines','listing-language','listing-page-layout','listing-toc-location','listing-toc-title','listing-back-link-text','listing-back-link-href','listing-byline','listing-execute','listing-title','listing-tags','listing-categories','listing-mathjax','listing-description','listing-date','listing-permalink','listing-path','listing-outputHref','listing-date-modified','listing-author','listing-filename','listing-file-modified','listing-reading-time','listing-word-count',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
+      
+      searchColumns: ["listing-project","listing-website","listing-format","listing-resources","listing-engines","listing-language","listing-page-layout","listing-toc-location","listing-toc-title","listing-back-link-text","listing-back-link-href","listing-byline","listing-execute","listing-title","listing-tags","listing-categories","listing-mathjax","listing-description","listing-date","listing-permalink","listing-path","listing-outputHref","listing-date-modified","listing-author","listing-filename","listing-file-modified","listing-reading-time","listing-word-count"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-blog-chips'] = new List('listing-blog-chips', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
     const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
@@ -86,10 +114,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      page: 20,
-    pagination: { item: "<li class='page-item'><a class='page page-link' href='#'></a></li>" },
-      searchColumns: ["listing-date","listing-title","listing-author"],
+      valueNames: ['listing-date','listing-title','listing-description','listing-categories','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
+      
+      searchColumns: ["listing-project","listing-website","listing-format","listing-resources","listing-engines","listing-language","listing-page-layout","listing-toc-location","listing-toc-title","listing-back-link-text","listing-back-link-href","listing-byline","listing-execute","listing-title","listing-tags","listing-categories","listing-mathjax","listing-description","listing-date","listing-permalink","listing-path","listing-outputHref","listing-date-modified","listing-author","listing-filename","listing-file-modified","listing-reading-time","listing-word-count"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -116,6 +143,7 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -147,107 +175,76 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../static/fonts/fonts.css">
 <link rel="stylesheet" href="../static/design-tokens.css">
 <link rel="stylesheet" href="../styles.css">
-<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"><meta property="og:title" content="Blogs – Aayush Garg">
-<meta property="og:description" content="From-scratch LLM builds, deep-dives and practical AI engineering.">
+<link rel="stylesheet" href="../static/css/home.css">
+<link rel="stylesheet" href="../static/css/article.css">
+<link rel="stylesheet" href="../static/css/pages.css">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"><meta property="og:title" content="Writing – Aayush Garg">
+<meta property="og:description" content="From-scratch LLM builds, deep dives and practical AI engineering.">
 <meta property="og:site_name" content="Aayush Garg">
-<meta name="twitter:title" content="Blogs – Aayush Garg">
-<meta name="twitter:description" content="From-scratch LLM builds, deep-dives and practical AI engineering.">
+<meta name="twitter:title" content="Writing – Aayush Garg">
+<meta name="twitter:description" content="From-scratch LLM builds, deep dives and practical AI engineering.">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed writing quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(24)</span></div><div class="category" data-category="TExNJTIwRXZhbHVhdGlvbg==">LLM Evaluation <span class="quarto-category-count">(2)</span></div><div class="category" data-category="TExNJTIwVHJhaW5pbmc=">LLM Training <span class="quarto-category-count">(3)</span></div><div class="category" data-category="TG9jYWwlMjBMTE1z">Local LLMs <span class="quarto-category-count">(3)</span></div><div class="category" data-category="UGFwZXIlMjBOb3Rlcw==">Paper Notes <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=">RL &amp; Alignment <span class="quarto-category-count">(5)</span></div><div class="category" data-category="VGltZSUyMFNlcmllcw==">Time Series <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VG9vbHMlMjAlMjYlMjBJbmZyYQ==">Tools &amp; Infra <span class="quarto-category-count">(7)</span></div><div class="category" data-category="VHJhbnNmb3JtZXJz">Transformers <span class="quarto-category-count">(2)</span></div></div></div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Blogs</h1>
+<h1 class="title">Writing</h1>
 </div>
 
 <div>
   <div class="description">
-    From-scratch LLM builds, deep-dives and practical AI engineering.
+    From-scratch LLM builds, deep dives and practical AI engineering.
   </div>
 </div>
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page">
 
     
   
@@ -259,275 +256,240 @@ window.Quarto = {
 </header>
 
 
-<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-<div class="listing-actions-group">
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
+<div id="listing-blog-chips" class="quarto-listing quarto-listing-container-custom">
+<div class="quarto-listing-category category-chips" role="group" aria-label="Categories">
+<a class="category no-external active" data-category="" href="#">All <span class="chip-count">24</span></a>
+<a class="category no-external" data-category="TExNJTIwRXZhbHVhdGlvbg==" href="#category=LLM%20Evaluation">LLM Evaluation <span class="chip-count">2</span></a>
+<a class="category no-external" data-category="TExNJTIwVHJhaW5pbmc=" href="#category=LLM%20Training">LLM Training <span class="chip-count">3</span></a>
+<a class="category no-external" data-category="TG9jYWwlMjBMTE1z" href="#category=Local%20LLMs">Local LLMs <span class="chip-count">3</span></a>
+<a class="category no-external" data-category="UGFwZXIlMjBOb3Rlcw==" href="#category=Paper%20Notes">Paper Notes <span class="chip-count">2</span></a>
+<a class="category no-external" data-category="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" href="#category=RL%20%26%20Alignment">RL &amp; Alignment <span class="chip-count">5</span></a>
+<a class="category no-external" data-category="VGltZSUyMFNlcmllcw==" href="#category=Time%20Series">Time Series <span class="chip-count">1</span></a>
+<a class="category no-external" data-category="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" href="#category=Tools%20%26%20Infra">Tools &amp; Infra <span class="chip-count">7</span></a>
+<a class="category no-external" data-category="VHJhbnNmb3JtZXJz" href="#category=Transformers">Transformers <span class="chip-count">2</span></a>
 </div>
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-
-<th>
-Date
-</th>
-
-<th>
-Title
-</th>
-
-</tr>
-</thead>
-<tbody class="list">
-
-<tr data-index="0" data-categories="VGltZSUyMFNlcmllcw==" data-listing-date-sort="1784073600000" data-listing-file-modified-sort="1792401967256" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3157" data-listing-title-sort="Kalman Filters and Smoothing for Time-Series Data" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">7/15/26</span>
-</td>
-<td>
-<a href="../posts/2026-07-15-kalman-filters-time-series/index.html" class="title listing-title">Kalman Filters and Smoothing for Time-Series Data</a>
-</td>
-
-</tr>
-
-<tr data-index="1" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1777420800000" data-listing-file-modified-sort="1792401967256" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1649" data-listing-title-sort="Building a Live India Weather Dashboard with Claude Code" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/29/26</span>
-</td>
-<td>
-<a href="../posts/2026-04-29-india-weather-with-claude/index.html" class="title listing-title">Building a Live India Weather Dashboard with Claude Code</a>
-</td>
-
-</tr>
-
-<tr data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1792401967256" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140" data-listing-title-sort="Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/5/26</span>
-</td>
-<td>
-<a href="../posts/2026-04-05-qwen35-vs-gemma4/index.html" class="title listing-title">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</a>
-</td>
-
-</tr>
-
-<tr data-index="3" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134" data-listing-title-sort="Self-Hosted Gemma 4 Chat with Web UI" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/3/26</span>
-</td>
-<td>
-<a href="../posts/2026-04-03-self-hosted-gemma4-chat/index.html" class="title listing-title">Self-Hosted Gemma 4 Chat with Web UI</a>
-</td>
-
-</tr>
-
-<tr data-index="4" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152" data-listing-title-sort="Using a local LLM in OpenCode with llama.cpp" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/29/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-29-local-llm-opencode/index.html" class="title listing-title">Using a local LLM in OpenCode with llama.cpp</a>
-</td>
-
-</tr>
-
-<tr data-index="5" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1774569600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2971" data-listing-title-sort="FlashAttention: Making Attention I/O-Aware" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/27/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-27-flash-attention/index.html" class="title listing-title">FlashAttention: Making Attention I/O-Aware</a>
-</td>
-
-</tr>
-
-<tr data-index="6" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1773964800000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="817" data-listing-title-sort="Building Browser Tools with Claude Code" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/20/26</span>
-</td>
-<td>
-<a href="../posts/2026-03-20-browser-tools/index.html" class="title listing-title">Building Browser Tools with Claude Code</a>
-</td>
-
-</tr>
-
-<tr data-index="7" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1772064000000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2624" data-listing-title-sort="GRPO: Building Intuition Through Ablation Studies" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/26/26</span>
-</td>
-<td>
-<a href="../posts/2026-02-26-grpo-from-scratch/index.html" class="title listing-title">GRPO: Building Intuition Through Ablation Studies</a>
-</td>
-
-</tr>
-
-<tr data-index="8" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1770854400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1545" data-listing-title-sort="Tools for Better Claude Code and Terminal Experience" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/12/26</span>
-</td>
-<td>
-<a href="../posts/2026-02-12-cc-tools/index.html" class="title listing-title">Tools for Better Claude Code and Terminal Experience</a>
-</td>
-
-</tr>
-
-<tr data-index="9" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQlMkNMTE0lMjBUcmFpbmluZw==" data-listing-date-sort="1769126400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2050" data-listing-title-sort="Expert Iteration for Math Reasoning" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/23/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-23-expert-iteration/index.html" class="title listing-title">Expert Iteration for Math Reasoning</a>
-</td>
-
-</tr>
-
-<tr data-index="10" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1768262400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1983" data-listing-title-sort="A Brief Introduction to Claude Agent Skills" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/13/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-13-claude-skills/index.html" class="title listing-title">A Brief Introduction to Claude Agent Skills</a>
-</td>
-
-</tr>
-
-<tr data-index="11" data-categories="UGFwZXIlMjBOb3Rlcw==" data-listing-date-sort="1767657600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Key Insights from DeepSeekMath paper" data-listing-filename-sort="2026-01-06-review-deepseek-math.qmd">
-<td>
-<span class="listing-date">1/6/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-06-review-deepseek-math.html" class="title listing-title">Key Insights from DeepSeekMath paper</a>
-</td>
-
-</tr>
-
-<tr data-index="12" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1767225600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2213" data-listing-title-sort="Understanding GRPO: PPO without the Critic" data-listing-filename-sort="2026-01-01-understanding-grpo.qmd">
-<td>
-<span class="listing-date">1/1/26</span>
-</td>
-<td>
-<a href="../posts/2026-01-01-understanding-grpo.html" class="title listing-title">Understanding GRPO: PPO without the Critic</a>
-</td>
-
-</tr>
-
-<tr data-index="13" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1767052800000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2409" data-listing-title-sort="Deriving the DPO Loss from First Principles" data-listing-filename-sort="2025-12-30-deriving-dpo-loss.qmd">
-<td>
-<span class="listing-date">12/30/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-30-deriving-dpo-loss.html" class="title listing-title">Deriving the DPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="14" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1766620800000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6096" data-listing-title-sort="Deriving the PPO Loss from First Principles" data-listing-filename-sort="2025-12-25-deriving-ppo-loss.qmd">
-<td>
-<span class="listing-date">12/25/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-25-deriving-ppo-loss.html" class="title listing-title">Deriving the PPO Loss from First Principles</a>
-</td>
-
-</tr>
-
-<tr data-index="15" data-categories="TExNJTIwVHJhaW5pbmc=" data-listing-date-sort="1764720000000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1981" data-listing-title-sort="What I Learned Building SFT from the Ground Up" data-listing-filename-sort="2025-12-28-sft-from-scratch.qmd">
-<td>
-<span class="listing-date">12/3/25</span>
-</td>
-<td>
-<a href="../posts/2025-12-28-sft-from-scratch.html" class="title listing-title">What I Learned Building SFT from the Ground Up</a>
-</td>
-
-</tr>
-
-<tr data-index="16" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365" data-listing-title-sort="A Guide to Building Custom Nodes in ComfyUI" data-listing-filename-sort="2025-09-10-build-custom-comfyui-node.qmd">
-<td>
-<span class="listing-date">9/10/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="title listing-title">A Guide to Building Custom Nodes in ComfyUI</a>
-</td>
-
-</tr>
-
-<tr data-index="17" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1757289600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179" data-listing-title-sort="Building GPT from Scratch: Following Karpathy's Tutorial" data-listing-filename-sort="2025-09-08-building-gpt-from-scratch.qmd">
-<td>
-<span class="listing-date">9/8/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-08-building-gpt-from-scratch.html" class="title listing-title">Building GPT from Scratch: Following Karpathy’s Tutorial</a>
-</td>
-
-</tr>
-
-<tr data-index="18" data-categories="UGFwZXIlMjBOb3Rlcw==" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035" data-listing-title-sort="Key Takeaways from Lecture 1: LLM Evaluation Lifecycle" data-listing-filename-sort="2025-09-02-llm-evaluation-lifecycle.qmd">
-<td>
-<span class="listing-date">9/2/25</span>
-</td>
-<td>
-<a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="title listing-title">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a>
-</td>
-
-</tr>
-
-<tr data-index="19" data-categories="TExNJTIwVHJhaW5pbmc=" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299" data-listing-title-sort="Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-15-finetune-llama3-8B-predibase.qmd">
-<td>
-<span class="listing-date">7/15/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title listing-title">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="20" data-categories="TExNJTIwRXZhbHVhdGlvbg==" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288" data-listing-title-sort="Part II: Comparison of Model Performances on Structured Functional Representation Extraction" data-listing-filename-sort="2024-07-09-compare-models-structured-data.qmd">
-<td>
-<span class="listing-date">7/9/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-09-compare-models-structured-data.html" class="title listing-title">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="21" data-categories="TExNJTIwRXZhbHVhdGlvbg==" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429" data-listing-title-sort="Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction" data-listing-filename-sort="2024-07-03-baseline-gpt4o-structured-data.qmd">
-<td>
-<span class="listing-date">7/3/24</span>
-</td>
-<td>
-<a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="title listing-title">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a>
-</td>
-
-</tr>
-
-<tr data-index="22" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744" data-listing-title-sort="Step-by-Step Guide to Setup Your Personal GPU Server" data-listing-filename-sort="2024-06-30-remote-gpu-server.qmd">
-<td>
-<span class="listing-date">6/30/24</span>
-</td>
-<td>
-<a href="../posts/2024-06-30-remote-gpu-server.html" class="title listing-title">Step-by-Step Guide to Setup Your Personal GPU Server</a>
-</td>
-
-</tr>
-
-<tr data-index="23" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858" data-listing-title-sort="Managing multiple CUDA versions using environment modules in Ubuntu" data-listing-filename-sort="2024-05-19-manage-multiple-cuda.qmd">
-<td>
-<span class="listing-date">5/19/24</span>
-</td>
-<td>
-<a href="../posts/2024-05-19-manage-multiple-cuda.html" class="title listing-title">Managing multiple CUDA versions using environment modules in Ubuntu</a>
-</td>
-
-</tr>
-
-</tbody>
-</table>
 <div class="listing-no-matching d-none">No matching items</div>
-<nav id="blog-listings-pagination" class="listing-pagination" aria-label="Page Navigation">
-  <ul class="pagination"></ul>
-</nav>
+</div>
+<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-custom">
+<ol class="list post-rows">
+<li class="post-row" data-index="0" data-categories="VGltZSUyMFNlcmllcw==" data-listing-date-sort="1784073600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3157">
+<time class="post-date">15 Jul 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-07-15-kalman-filters-time-series/index.html" class="title-link no-arrow no-external">Kalman Filters and Smoothing for Time-Series Data</a></h3>
+<p class="post-desc">A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples</p>
+</div>
+<span class="post-cat">Time Series</span>
+<span class="post-read">16 min</span>
+</li>
+<li class="post-row" data-index="1" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1777420800000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1649">
+<time class="post-date">29 Apr 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-04-29-india-weather-with-claude/index.html" class="title-link no-arrow no-external">Building a Live India Weather Dashboard with Claude Code</a></h3>
+<p class="post-desc">A short reflection on prompting Claude Code in stages to build a live India weather and AQI dashboard for my portfolio site.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">9 min</span>
+</li>
+<li class="post-row" data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140">
+<time class="post-date">5 Apr 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-04-05-qwen35-vs-gemma4/index.html" class="title-link no-arrow no-external">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</a></h3>
+<p class="post-desc">Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.</p>
+</div>
+<span class="post-cat">Local LLMs</span>
+<span class="post-read">16 min</span>
+</li>
+<li class="post-row" data-index="3" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134">
+<time class="post-date">3 Apr 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-04-03-self-hosted-gemma4-chat/index.html" class="title-link no-arrow no-external">Self-Hosted Gemma 4 Chat with Web UI</a></h3>
+<p class="post-desc">Steps to set up a self-hosted Gemma 4 chat with llama.cpp's built-in web UI, web search via MCP, and access from any device over Tailscale.</p>
+</div>
+<span class="post-cat">Local LLMs</span>
+<span class="post-read">6 min</span>
+</li>
+<li class="post-row" data-index="4" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152">
+<time class="post-date">29 Mar 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-03-29-local-llm-opencode/index.html" class="title-link no-arrow no-external">Using a local LLM in OpenCode with llama.cpp</a></h3>
+<p class="post-desc">Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).</p>
+</div>
+<span class="post-cat">Local LLMs</span>
+<span class="post-read">11 min</span>
+</li>
+<li class="post-row" data-index="5" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1774569600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2971">
+<time class="post-date">27 Mar 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-03-27-flash-attention/index.html" class="title-link no-arrow no-external">FlashAttention: Making Attention I/O-Aware</a></h3>
+<p class="post-desc">Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware</p>
+</div>
+<span class="post-cat">Transformers</span>
+<span class="post-read">15 min</span>
+</li>
+<li class="post-row" data-index="6" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1773964800000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="817">
+<time class="post-date">20 Mar 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-03-20-browser-tools/index.html" class="title-link no-arrow no-external">Building Browser Tools with Claude Code</a></h3>
+<p class="post-desc">Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">5 min</span>
+</li>
+<li class="post-row" data-index="7" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1772064000000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2624">
+<time class="post-date">26 Feb 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-02-26-grpo-from-scratch/index.html" class="title-link no-arrow no-external">GRPO: Building Intuition Through Ablation Studies</a></h3>
+<p class="post-desc">My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.</p>
+</div>
+<span class="post-cat">RL &amp; Alignment</span>
+<span class="post-read">14 min</span>
+</li>
+<li class="post-row" data-index="8" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1770854400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1545">
+<time class="post-date">12 Feb 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-02-12-cc-tools/index.html" class="title-link no-arrow no-external">Tools for Better Claude Code and Terminal Experience</a></h3>
+<p class="post-desc">A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">8 min</span>
+</li>
+<li class="post-row" data-index="9" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQlMkNMTE0lMjBUcmFpbmluZw==" data-listing-date-sort="1769126400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2050">
+<time class="post-date">23 Jan 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-01-23-expert-iteration/index.html" class="title-link no-arrow no-external">Expert Iteration for Math Reasoning</a></h3>
+<p class="post-desc">Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.</p>
+</div>
+<span class="post-cat">RL &amp; Alignment, LLM Training</span>
+<span class="post-read">11 min</span>
+</li>
+<li class="post-row" data-index="10" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1768262400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1983">
+<time class="post-date">13 Jan 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-01-13-claude-skills/index.html" class="title-link no-arrow no-external">A Brief Introduction to Claude Agent Skills</a></h3>
+<p class="post-desc">A practical guide to Claude Skills, what they are, why they matter and how to build your own using a basic image editing skill as an example.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">10 min</span>
+</li>
+<li class="post-row" data-index="11" data-categories="UGFwZXIlMjBOb3Rlcw==" data-listing-date-sort="1767657600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179">
+<time class="post-date">6 Jan 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-01-06-review-deepseek-math.html" class="title-link no-arrow no-external">Key Insights from DeepSeekMath paper</a></h3>
+<p class="post-desc">Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline</p>
+</div>
+<span class="post-cat">Paper Notes</span>
+<span class="post-read">6 min</span>
+</li>
+<li class="post-row" data-index="12" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1767225600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2213">
+<time class="post-date">1 Jan 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2026-01-01-understanding-grpo.html" class="title-link no-arrow no-external">Understanding GRPO: PPO without the Critic</a></h3>
+<p class="post-desc">A blog post explaining the Group Relative Policy Optimization (GRPO) objective, showing how it simplifies PPO by replacing the learned critic with group sampling.</p>
+</div>
+<span class="post-cat">RL &amp; Alignment</span>
+<span class="post-read">12 min</span>
+</li>
+<li class="post-row" data-index="13" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1767052800000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="13" data-listing-word-count-sort="2409">
+<time class="post-date">30 Dec 2025</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2025-12-30-deriving-dpo-loss.html" class="title-link no-arrow no-external">Deriving the DPO Loss from First Principles</a></h3>
+<p class="post-desc">A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.</p>
+</div>
+<span class="post-cat">RL &amp; Alignment</span>
+<span class="post-read">13 min</span>
+</li>
+<li class="post-row" data-index="14" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1766620800000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="31" data-listing-word-count-sort="6096">
+<time class="post-date">25 Dec 2025</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2025-12-25-deriving-ppo-loss.html" class="title-link no-arrow no-external">Deriving the PPO Loss from First Principles</a></h3>
+<p class="post-desc">A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.</p>
+</div>
+<span class="post-cat">RL &amp; Alignment</span>
+<span class="post-read">31 min</span>
+</li>
+<li class="post-row" data-index="15" data-categories="TExNJTIwVHJhaW5pbmc=" data-listing-date-sort="1764720000000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1981">
+<time class="post-date">3 Dec 2025</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2025-12-28-sft-from-scratch.html" class="title-link no-arrow no-external">What I Learned Building SFT from the Ground Up</a></h3>
+<p class="post-desc">A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.</p>
+</div>
+<span class="post-cat">LLM Training</span>
+<span class="post-read">10 min</span>
+</li>
+<li class="post-row" data-index="16" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1757462400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1365">
+<time class="post-date">10 Sep 2025</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2025-09-10-build-custom-comfyui-node.html" class="title-link no-arrow no-external">A Guide to Building Custom Nodes in ComfyUI</a></h3>
+<p class="post-desc">A practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">7 min</span>
+</li>
+<li class="post-row" data-index="17" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1757289600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1179">
+<time class="post-date">8 Sep 2025</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2025-09-08-building-gpt-from-scratch.html" class="title-link no-arrow no-external">Building GPT from Scratch: Following Karpathy's Tutorial</a></h3>
+<p class="post-desc">This blog summarizes building the GPT architecture by following Andrej Karpathy's 'Let's Build GPT' tutorial.</p>
+</div>
+<span class="post-cat">Transformers</span>
+<span class="post-read">6 min</span>
+</li>
+<li class="post-row" data-index="18" data-categories="UGFwZXIlMjBOb3Rlcw==" data-listing-date-sort="1756771200000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1035">
+<time class="post-date">2 Sep 2025</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2025-09-02-llm-evaluation-lifecycle.html" class="title-link no-arrow no-external">Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</a></h3>
+<p class="post-desc">Here, I discuss the key ideas/takeaways around the systematic evaluation and metrics, "Three Gulfs" and effective prompting.</p>
+</div>
+<span class="post-cat">Paper Notes</span>
+<span class="post-read">6 min</span>
+</li>
+<li class="post-row" data-index="19" data-categories="TExNJTIwVHJhaW5pbmc=" data-listing-date-sort="1721001600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1299">
+<time class="post-date">15 Jul 2024</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2024-07-15-finetune-llama3-8B-predibase.html" class="title-link no-arrow no-external">Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction</a></h3>
+<p class="post-desc">Blog on fine-tuning a Llama-3-8B model on the Predibase platform for structured functional representation extraction, and compare its performance with GPT-4 and Claude 3.5 Sonnet.</p>
+</div>
+<span class="post-cat">LLM Training</span>
+<span class="post-read">7 min</span>
+</li>
+<li class="post-row" data-index="20" data-categories="TExNJTIwRXZhbHVhdGlvbg==" data-listing-date-sort="1720483200000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1288">
+<time class="post-date">9 Jul 2024</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2024-07-09-compare-models-structured-data.html" class="title-link no-arrow no-external">Part II: Comparison of Model Performances on Structured Functional Representation Extraction</a></h3>
+<p class="post-desc">This blog post compares the performance of various models in extracting structured functional representations from text.</p>
+</div>
+<span class="post-cat">LLM Evaluation</span>
+<span class="post-read">7 min</span>
+</li>
+<li class="post-row" data-index="21" data-categories="TExNJTIwRXZhbHVhdGlvbg==" data-listing-date-sort="1719964800000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1429">
+<time class="post-date">3 Jul 2024</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2024-07-03-baseline-gpt4o-structured-data.html" class="title-link no-arrow no-external">Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction</a></h3>
+<p class="post-desc">This blog gives a detailed walkthrough of structured data extraction using OpenAI's GPT-4o model.</p>
+</div>
+<span class="post-cat">LLM Evaluation</span>
+<span class="post-read">8 min</span>
+</li>
+<li class="post-row" data-index="22" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1719705600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1744">
+<time class="post-date">30 Jun 2024</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2024-06-30-remote-gpu-server.html" class="title-link no-arrow no-external">Step-by-Step Guide to Setup Your Personal GPU Server</a></h3>
+<p class="post-desc">Guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">9 min</span>
+</li>
+<li class="post-row" data-index="23" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1716076800000" data-listing-file-modified-sort="1792420636094" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1858">
+<time class="post-date">19 May 2024</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="../posts/2024-05-19-manage-multiple-cuda.html" class="title-link no-arrow no-external">Managing multiple CUDA versions using environment modules in Ubuntu</a></h3>
+<p class="post-desc">Guide to install CUDA locally and manage multiple cuda environments on Ubuntu GPU server.</p>
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">10 min</span>
+</li>
+</ol>
+<div class="listing-no-matching d-none">No matching items</div>
 </div>
 
 
@@ -943,35 +905,38 @@ Title
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../static/js/site.js"></script>
 
 
 

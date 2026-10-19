@@ -134,8 +134,8 @@
   .ctrl-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
 
   .zoom-slider {
-    width: 100px; height: 4px; border-radius: 2px; background: var(--bg-inset);
-    outline: none; -webkit-appearance: none; cursor: pointer;
+    width: 100px; height: 4px; border-radius: 2px; background: var(--bg-hover);
+    box-shadow: inset 0 0 0 1px var(--text-dim); outline: none; -webkit-appearance: none; cursor: pointer;
   }
   .zoom-slider::-webkit-slider-thumb {
     -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
@@ -241,8 +241,8 @@
   }
   .row-label { font-size: 14px; color: var(--text-content); font-weight: 500; white-space: nowrap; }
   .quality-slider {
-    flex: 1; height: 6px; border-radius: 3px; background: var(--bg-inset);
-    outline: none; -webkit-appearance: none; cursor: pointer;
+    flex: 1; height: 6px; border-radius: 3px; background: var(--bg-hover);
+    box-shadow: inset 0 0 0 1px var(--text-dim); outline: none; -webkit-appearance: none; cursor: pointer;
   }
   .quality-slider::-webkit-slider-thumb {
     -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
@@ -288,6 +288,8 @@
     .preview-controls { gap: 6px; }
     .zoom-slider { width: 80px; }
   }
+
+  input::placeholder { color: var(--text-muted); opacity: 1; }
 </style>
 </head>
 <body>

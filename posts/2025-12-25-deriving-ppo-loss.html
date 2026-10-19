@@ -37,17 +37,17 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8ba3ab1eef57a15509773c6ff8383788.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -85,6 +85,7 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -116,8 +117,12 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../static/fonts/fonts.css">
 <link rel="stylesheet" href="../static/design-tokens.css">
 <link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../static/css/home.css">
+<link rel="stylesheet" href="../static/css/article.css">
+<link rel="stylesheet" href="../static/css/pages.css">
 <meta property="og:title" content="Deriving the PPO Loss from First Principles – Aayush Garg">
 <meta property="og:description" content="A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.">
 <meta property="og:site_name" content="Aayush Garg">
@@ -126,82 +131,47 @@ window.Quarto = {
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed article-page quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#i-reinforcement-learning-core-definitions" id="toc-i-reinforcement-learning-core-definitions" class="nav-link active" data-scroll-target="#i-reinforcement-learning-core-definitions">I: Reinforcement Learning: Core Definitions</a></li>
@@ -242,43 +212,44 @@ window.Quarto = {
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Deriving the PPO Loss from First Principles</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">RL &amp; Alignment</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">December 25, 2025</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  <span class="quarto-category article-cat">RL &amp; Alignment</span>
+  <span class="article-date">25 Dec 2025</span>
+</p>
+<h1 class="title display-7">Deriving the PPO Loss from First Principles</h1>
+<div class="description">A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.</div>
+<p class="article-byline">
+  <span class="article-author">Aayush Garg</span>
+  <span>31 min read</span>
+  <span>11 sections</span>
+</p>
 </header>
 
 
+<nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
+<ul>
+<li><a href="#i-reinforcement-learning-core-definitions">I: Reinforcement Learning: Core Definitions</a></li>
+<li><a href="#ii-reward-model-in-rlhf-for-llms">II: Reward Model in RLHF for LLMs</a></li>
+<li><a href="#iii-trajectories-and-returns">III: Trajectories and Returns</a></li>
+<li><a href="#iv-policy-gradient-optimization-and-reinforce-algorithm">IV: Policy Gradient Optimization and REINFORCE Algorithm</a></li>
+<li><a href="#v-reducing-variance-and-the-advantage-function">V: Reducing Variance and the Advantage Function</a></li>
+<li><a href="#vi-importance-sampling-and-off-policy-policy-gradients">VI: Importance Sampling and Off-Policy Policy Gradients</a></li>
+<li><a href="#vii-trust-region-policy-optimization-trpo">VII: Trust Region Policy Optimization (TRPO)</a></li>
+<li><a href="#viii-proximal-policy-optimization-ppo">VIII: Proximal Policy Optimization (PPO)</a></li>
+<li><a href="#ix-complete-ppo-objective-with-kl-penalty">IX: Complete PPO Objective with KL Penalty</a></li>
+<li><a href="#finally-done">Finally done…</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</details></nav>
 <p>I have been trying to wrap my head around reinforcement learning methods like <a href="https://arxiv.org/abs/2305.18290">DPO</a>, <a href="https://arxiv.org/pdf/2402.03300">GRPO</a>, and <a href="https://arxiv.org/abs/2506.14245">RLVR</a> for a while now, especially with all the recent work showing how effective they can be for LLM post-training. Since I amm still pretty new to RL, I figured the best place to start was Proximal Policy Optimization (PPO), the algorithm OpenAI used to show how reinforcement learning could meaningfully improve LLM alignment (<a href="https://arxiv.org/pdf/2203.02155">InstructGPT</a> paper). My hope is that getting comfortable with PPO will give me the right mental model for the policy-gradient side of things and make it easier to understand the newer LLM-specific RL methods built on similar ideas.</p>
 <p>If you start learning RL, you quickly realize it involves a lot of math! So I decided to lean into that and do a few (possibly annoying) derivation sessions to really understand the PPO objective by building it up from first principles, similar to how Umar Jamil does in his video.</p>
 <blockquote class="blockquote">
@@ -822,6 +793,7 @@ J_{\text{c}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) \hat{A}_t, \text{
 </ul>
 
 
+<nav class="article-end" aria-label="All writing"><a class="link-back" href="../blog/">All writing</a></nav>
 </section>
 
 </main> <!-- /main -->
@@ -1234,35 +1206,38 @@ J_{\text{c}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) \hat{A}_t, \text{
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../static/js/site.js"></script>
 
 
 

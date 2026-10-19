@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-12-03">
 <meta name="description" content="A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.">
 
 <title>What I Learned Building SFT from the Ground Up – Aayush Garg</title>
@@ -72,17 +71,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8ba3ab1eef57a15509773c6ff8383788.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,10 +119,15 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
 
+<link rel="stylesheet" href="../static/fonts/fonts.css">
 <link rel="stylesheet" href="../static/design-tokens.css">
 <link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../static/css/home.css">
+<link rel="stylesheet" href="../static/css/article.css">
+<link rel="stylesheet" href="../static/css/pages.css">
 <meta property="og:title" content="What I Learned Building SFT from the Ground Up – Aayush Garg">
 <meta property="og:description" content="A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.">
 <meta property="og:site_name" content="Aayush Garg">
@@ -132,82 +136,47 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed article-page quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#what-i-built" id="toc-what-i-built" class="nav-link active" data-scroll-target="#what-i-built">What I Built</a></li>
@@ -228,43 +197,38 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
   <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">What I Learned Building SFT from the Ground Up</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">LLM Training</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">December 3, 2025</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  <span class="quarto-category article-cat">LLM Training</span>
+  <span class="article-date">3 Dec 2025</span>
+</p>
+<h1 class="title display-7">What I Learned Building SFT from the Ground Up</h1>
+<div class="description">A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.</div>
+<p class="article-byline">
+  <span class="article-author">Aayush Garg</span>
+  <span>10 min read</span>
+  <span>5 sections</span>
+</p>
 </header>
 
 
+<nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
+<ul>
+<li><a href="#what-i-built">What I Built</a></li>
+<li><a href="#part-1-reasoning-sft-with-qwen2.5-math-1.5b">Part 1: Reasoning SFT with Qwen2.5-Math-1.5B</a></li>
+<li><a href="#part-2-instruction-sft-with-llama-3.1-8b">Part 2: Instruction SFT with Llama-3.1-8B</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</details></nav>
 <p>Over the past few weeks, I implemented supervised fine-tuning (SFT) from scratch, continuing a series of projects where I’m building foundational LLM components as a learning exercise from the ground up. Previously, I’ve worked through <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/gpt-2">implementing GPT-2 from scratch</a> and <a href="https://github.com/garg-aayush/building-from-scratch/tree/main/llm-inference">writing LLM inference scripts from the ground up</a>. Naturally, SFT was the next step in this series.</p>
 <p>One thing I realized pretty quickly, writing the training scripts from scratch is not the most difficult part. However, making it actually work, producing results that seems reasonable is where the real challenge begins 😅. You run into all sorts of difficulties: debugging annoying errors, dealing with gradient instabilities, getting vLLM to cooperate for intermediate evaluation (especially with limited GPU memory) etc. <strong>These are the things that eat up your time but teach you the most</strong>.</p>
 <p>In this post, I want to share not just what I built, but the building and debugging journey that got me there.</p>
@@ -527,6 +491,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </ul>
 
 
+<nav class="article-end" aria-label="All writing"><a class="link-back" href="../blog/">All writing</a></nav>
 </section>
 
 </main> <!-- /main -->
@@ -939,35 +904,38 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../static/js/site.js"></script>
 
 
 

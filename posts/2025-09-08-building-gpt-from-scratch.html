@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-09-08">
 <meta name="description" content="This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.">
 
 <title>Building GPT from Scratch: Following Karpathy’s Tutorial – Aayush Garg</title>
@@ -37,17 +36,17 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="../static/img/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8466e7461a398dc7d6864f225b909429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8ba3ab1eef57a15509773c6ff8383788.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -85,10 +84,15 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
 
+<link rel="stylesheet" href="../static/fonts/fonts.css">
 <link rel="stylesheet" href="../static/design-tokens.css">
 <link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../static/css/home.css">
+<link rel="stylesheet" href="../static/css/article.css">
+<link rel="stylesheet" href="../static/css/pages.css">
 <meta property="og:title" content="Building GPT from Scratch: Following Karpathy’s Tutorial – Aayush Garg">
 <meta property="og:description" content="This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.">
 <meta property="og:site_name" content="Aayush Garg">
@@ -97,82 +101,47 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed article-page quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="../blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#baseline-bigram-model-e0b5864" id="toc-baseline-bigram-model-e0b5864" class="nav-link active" data-scroll-target="#baseline-bigram-model-e0b5864">Baseline: Bigram Model (<code>e0b5864</code>)</a></li>
@@ -186,43 +155,42 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
   <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Building GPT from Scratch: Following Karpathy’s Tutorial</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">Transformers</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">September 8, 2025</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  <span class="quarto-category article-cat">Transformers</span>
+  <span class="article-date">8 Sep 2025</span>
+</p>
+<h1 class="title display-7">Building GPT from Scratch: Following Karpathy’s Tutorial</h1>
+<div class="description">This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.</div>
+<p class="article-byline">
+  <span class="article-author">Aayush Garg</span>
+  <span>6 min read</span>
+  <span>9 sections</span>
+</p>
 </header>
 
 
+<nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
+<ul>
+<li><a href="#baseline-bigram-model-e0b5864">Baseline: Bigram Model (<span><code>e0b5864</code></span>)</a></li>
+<li><a href="#update-1-self-attention-7b0e03a">Update 1: Self-Attention (<span><code>7b0e03a</code></span>)</a></li>
+<li><a href="#update-2-multi-head-attention-9d2a7b5">Update 2: Multi-Head Attention (<span><code>9d2a7b5</code></span>)</a></li>
+<li><a href="#update-3-feed-forward-network-c4c46ff">Update 3: Feed-Forward Network (<span><code>c4c46ff</code></span>)</a></li>
+<li><a href="#update-4-residual-connections-0239c07">Update 4: Residual Connections (<span><code>0239c07</code></span>)</a></li>
+<li><a href="#update-5-6-layer-normalization-63ef5f8-4f5bef8">Update 5 &amp; 6: Layer Normalization (<span><code>63ef5f8</code></span>, <span><code>4f5bef8</code></span>)</a></li>
+<li><a href="#update-7-scaling-up-d4141d7">Update 7: Scaling Up (<span><code>d4141d7</code></span>)</a></li>
+<li><a href="#how-this-compares-to-gpt-3">How This Compares to GPT-3</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</details></nav>
 <p>The Transformer architecture has become the workhorse behind modern LLMs. GPT-2/3/4/5, Llama, Claude, Gemini: they all are built on top of the same core architecture or its variants from the 2017 “Attention Is All You Need” paper. I wanted to understand this architecture properly, so I followed Andrej Karpathy’s <a href="https://www.youtube.com/watch?v=kCc8FmEb1nY">“Let’s Build GPT from Scratch”</a> video. It’s a 2-hour walkthrough where you start from an empty file and end up with a working Transformer.</p>
 <p>I followed Karpathy’s video and captured each architectural addition as a separate commit. This let me see exactly how each component pulled down the validation loss. In this walkthrough, the training data is ~1M characters of Shakespeare and the goal is to generate Shakespeare-like text.</p>
 <table class="caption-top table">
@@ -434,6 +402,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </ul>
 
 
+<nav class="article-end" aria-label="All writing"><a class="link-back" href="../blog/">All writing</a></nav>
 </section>
 
 </main> <!-- /main -->
@@ -846,35 +815,38 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="../static/js/site.js"></script>
 
 
 

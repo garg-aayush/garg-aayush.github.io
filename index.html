@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./static/img/aayush_cropped.jpg" rel="icon" type="image/jpeg">
+<link href="./static/img/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-listing/list.min.js"></script>
 <script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
@@ -45,10 +45,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-3952ace34293c15347894a1b40e6f7bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-476d14a836ca98a17e4f5fe221dedc89.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,6 +79,90 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-now-rows .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-label','listing-text','listing-sub','listing-href','listing-live',{ data: ['index'] },{ data: ['categories'] }],
+      
+      searchColumns: ["listing-label","listing-text","listing-sub","listing-href","listing-live"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-now-rows'] = new List('listing-now-rows', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-latest-post .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
+      
+      searchColumns: ["listing-project","listing-website","listing-format","listing-resources","listing-engines","listing-language","listing-page-layout","listing-toc-location","listing-toc-title","listing-back-link-text","listing-back-link-href","listing-byline","listing-execute","listing-title","listing-tags","listing-categories","listing-mathjax","listing-description","listing-date","listing-permalink","listing-path","listing-outputHref","listing-date-modified","listing-author","listing-filename","listing-file-modified","listing-reading-time","listing-word-count"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-latest-post'] = new List('listing-latest-post', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-path .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-dates','listing-title','listing-description','listing-badge',{ data: ['index'] },{ data: ['categories'] }],
+      
+      searchColumns: ["listing-dates","listing-title","listing-description","listing-badge"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-path'] = new List('listing-path', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
     const listingTargetEl = window.document.querySelector('#listing-blog-listings .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
@@ -86,13 +170,41 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-categories','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author"],
+      searchColumns: ["listing-project","listing-website","listing-format","listing-resources","listing-engines","listing-language","listing-page-layout","listing-toc-location","listing-toc-title","listing-back-link-text","listing-back-link-href","listing-byline","listing-execute","listing-title","listing-tags","listing-categories","listing-mathjax","listing-description","listing-date","listing-permalink","listing-path","listing-outputHref","listing-date-modified","listing-author","listing-filename","listing-file-modified","listing-reading-time","listing-word-count"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
     window['quarto-listings']['listing-blog-listings'] = new List('listing-blog-listings', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-featured .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-href','listing-description',{ data: ['index'] },{ data: ['categories'] }],
+      
+      searchColumns: ["listing-title","listing-href","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-featured'] = new List('listing-featured', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -115,6 +227,7 @@ gtag('js', new Date());
 gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="./static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -146,277 +259,259 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="static/fonts/fonts.css">
 <link rel="stylesheet" href="static/design-tokens.css">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="static/css/home.css">
+<link rel="stylesheet" href="static/css/article.css">
+<link rel="stylesheet" href="static/css/pages.css">
 <link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="index.xml" data-external="1"><meta property="og:title" content="Aayush Garg">
 <meta property="og:description" content="Forward Deployed ML Engineer building production AI systems for refineries and energy operations.">
-<meta property="og:image" content="https://aayushgarg.dev/static/img/aayush_cropped.jpg">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/aayush-avatar.jpg">
 <meta property="og:site_name" content="Aayush Garg">
-<meta property="og:image:alt" content="Aayush Garg">
+<meta property="og:image:alt" content="Portrait of Aayush Garg">
 <meta name="twitter:title" content="Aayush Garg">
 <meta name="twitter:description" content="Forward Deployed ML Engineer building production AI systems for refineries and energy operations.">
-<meta name="twitter:image" content="https://aayushgarg.dev/static/img/aayush_cropped.jpg">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/aayush-avatar.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image:alt" content="Aayush Garg">
+<meta name="twitter:image:alt" content="Portrait of Aayush Garg">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed home quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
-<span class="menu-text">Home</span></a>
-  </li>  
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
     <a class="nav-link" href="./blog/"> 
-<span class="menu-text">Blogs</span></a>
+<span class="menu-text">Writing</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./projects.html"> 
-<span class="menu-text">Projects</span></a>
+<span class="menu-text">Work</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./tools/"> 
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./india-weather.html"> 
-<span class="menu-text">Weather</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./publications.html"> 
-<span class="menu-text">Publications</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/garg-aayush"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734"> <i class="bi bi-linkedin" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/Aayush_ander"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml"> <i class="bi bi-rss" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+          <div class="quarto-navbar-tools">
 </div>
+            <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#current-work" id="toc-current-work" class="nav-link active" data-scroll-target="#current-work">💼 Current Work</a></li>
-  <li><a href="#blog" id="toc-blog" class="nav-link" data-scroll-target="#blog">📮 Blog</a></li>
-  <li><a href="#reach-out" id="toc-reach-out" class="nav-link" data-scroll-target="#reach-out">📬 Reach Out</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><h1 class="title display-7">Aayush Garg</h1></header>
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Aayush Garg</h1>
-</div>
-
-<div>
-  <div class="description">
-    Forward Deployed ML Engineer building production AI systems for refineries and energy operations.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
+<header id="title-block-header">
 
 
 </header>
 
 
-<div class="profile-header quarto-layout-panel" data-layout="[21,79]">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 21.0%;justify-content: center;">
-<p><img src="static/img/aayush_cropped.jpg" class="profile-pic img-fluid" alt="Aayush Garg"></p>
+<div class="hero">
+<div class="hero-copy">
+<div class="hero-id">
+<p><img src="static/img/aayush-avatar.jpg" class="avatar" loading="eager" alt="Portrait of Aayush Garg" width="72" height="72"></p>
+<section id="aayush-garg" class="level1 no-anchor hero-name">
+<h1 class="no-anchor">Aayush Garg</h1>
+<div class="hero-role">
+<p>Forward deployed ML engineer at Applied Computing</p>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 79.0%;justify-content: flex-start;">
-<p>I am a Forward Deployed ML Engineer at Applied Computing, where I build and deliver production AI systems for refineries and energy operations. I work with process engineers and operators to turn plant data, physics, and operating constraints into forecasting, anomaly detection, and optimisation tools they can understand, trust, and act on. Previously at Jiffy, I built the AI image enhancement pipeline powering a $100M+ DTF printing business and Smart Redraw, a multi-agent image editing system. Outside work, I rebuild modern language models from first principles and write about what I learn.</p>
-</div>
-</div>
-</div>
-<section id="current-work" class="level2">
-<h2 class="anchored" data-anchor-id="current-work">💼 Current Work</h2>
-<p>At Applied Computing, my work spans the full lifecycle of industrial AI delivery. I frame operational problems with customers, integrate historian and engineering data, build and validate models, translate operator feedback into product improvements, and deploy reliable systems into customer-controlled environments. The role sits at the intersection of machine learning, product engineering, process understanding, and technical customer delivery.</p>
-<p>If you are interested in my work or want to collaborate, feel free to reach out via <a href="mailto:aayushgargiitr@gmail.com">email</a> or connect on <a href="https://www.linkedin.com/in/aayush-garg-8b26a734">LinkedIn</a> or <a href="https://twitter.com/Aayush_ander">Twitter</a>.</p>
-<hr>
 </section>
-<section id="blog" class="level2">
-<h2 class="anchored" data-anchor-id="blog">📮 Blog</h2>
-<p>I write about LLMs, concepts deep-dives and practical AI engineering. Below are my recent posts.</p>
-<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-table">
-<table class="quarto-listing-table table">
-<thead>
-<tr>
+</div>
+<div class="hero-statement">
+<p>I build and deploy AI systems, from first principles to production.</p>
+</div>
+<div class="hero-lede">
+<p>Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock. Outside work, I rebuild language models from scratch and write about what I learn.</p>
+</div>
+<div class="hero-actions">
+<p><a href="blog/" class="btn-solid">Read the writing</a> <a href="./about.html" class="link-arrow">About me</a></p>
+</div>
+</div>
+<div class="now-panel">
+<div class="now-head">
+<p><strong>Now</strong> <span class="build-month">October 2026</span></p>
+</div>
+<div class="now-list">
+<div id="listing-now-rows" class="quarto-listing quarto-listing-container-custom">
+<div class="list now-rows">
+<div class="now-row">
+<p class="now-label">Working on</p>
+<div class="now-body">
+<p class="now-text"><a href="https://appliedcomputing.com/" class="title-link" target="_blank" rel="noopener">Forecasting and anomaly detection for refinery operations</a></p>
+<p class="now-sub">Applied Computing</p>
+</div>
+</div>
+<div class="now-row">
+<p class="now-label">Building</p>
+<div class="now-body">
+<p class="now-text"><a href="https://github.com/garg-aayush/building-from-scratch" class="title-link" target="_blank" rel="noopener">FlashAttention2 from first principles</a></p>
+<p class="now-sub">building-from-scratch</p>
+</div>
+</div>
+<div class="now-row">
+<p class="now-label">Live</p>
+<div class="now-body">
+<p class="now-text"><span class="live-dot" aria-hidden="true"></span><a href="india-weather.html" class="title-link no-external">India weather and air quality</a></p>
+<p class="now-sub">Updated every 15 minutes</p>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+<div id="listing-latest-post" class="quarto-listing quarto-listing-container-custom">
+<div class="list now-rows">
+<div class="now-row is-post">
+<p class="now-label">Latest post</p>
+<div class="now-body">
+<p class="now-text"><a href="posts/2026-07-15-kalman-filters-time-series/index.html" class="title-link no-external">Kalman Filters and Smoothing for Time-Series Data</a></p>
+<p class="now-sub">15 Jul 2026 · 16 min</p>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+</div>
+</div>
+</div>
+<section id="path" class="level2 no-anchor">
+<h2 class="no-anchor" data-anchor-id="path"><span class="sec-head">Path</span></h2>
+<div id="listing-path" class="quarto-listing quarto-listing-container-custom">
+<ol class="timeline">
+<li class="tl-row">
+<p class="tl-dates">2015 to 2022</p>
+<div class="tl-body">
+<h3 class="tl-title no-anchor">Research</h3>
 
-<th>
-Date
-</th>
+<p class="tl-text">PhD at TU Delft, then research geophysicist at Shell, applying deep learning to imaging and inversion problems.</p>
+</div>
+</li>
+<li class="tl-row">
+<p class="tl-dates">2022 to 2026</p>
+<div class="tl-body">
+<h3 class="tl-title no-anchor">ML development</h3>
 
-<th>
-Title
-</th>
+<p class="tl-text">Diffusion pipelines at Flixstock. The image enhancement pipeline and Smart Redraw at Jiffy.</p>
+</div>
+</li>
+<li class="tl-row is-current">
+<p class="tl-dates">2026 onward <span class="tl-badge">Now</span></p>
+<div class="tl-body">
+<h3 class="tl-title no-anchor">Applied ML in the field</h3>
 
-</tr>
-</thead>
-<tbody class="list">
-
-<tr data-index="0" data-categories="VGltZSUyMFNlcmllcw==" data-listing-date-sort="1784073600000" data-listing-file-modified-sort="1792401967256" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3157" data-listing-title-sort="Kalman Filters and Smoothing for Time-Series Data" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">7/15/26</span>
-</td>
-<td>
-<a href="./posts/2026-07-15-kalman-filters-time-series/index.html" class="title listing-title">Kalman Filters and Smoothing for Time-Series Data</a>
-</td>
-
-</tr>
-
-<tr data-index="1" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1777420800000" data-listing-file-modified-sort="1792401967256" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1649" data-listing-title-sort="Building a Live India Weather Dashboard with Claude Code" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/29/26</span>
-</td>
-<td>
-<a href="./posts/2026-04-29-india-weather-with-claude/index.html" class="title listing-title">Building a Live India Weather Dashboard with Claude Code</a>
-</td>
-
-</tr>
-
-<tr data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1792401967256" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140" data-listing-title-sort="Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/5/26</span>
-</td>
-<td>
-<a href="./posts/2026-04-05-qwen35-vs-gemma4/index.html" class="title listing-title">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</a>
-</td>
-
-</tr>
-
-<tr data-index="3" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134" data-listing-title-sort="Self-Hosted Gemma 4 Chat with Web UI" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">4/3/26</span>
-</td>
-<td>
-<a href="./posts/2026-04-03-self-hosted-gemma4-chat/index.html" class="title listing-title">Self-Hosted Gemma 4 Chat with Web UI</a>
-</td>
-
-</tr>
-
-<tr data-index="4" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152" data-listing-title-sort="Using a local LLM in OpenCode with llama.cpp" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/29/26</span>
-</td>
-<td>
-<a href="./posts/2026-03-29-local-llm-opencode/index.html" class="title listing-title">Using a local LLM in OpenCode with llama.cpp</a>
-</td>
-
-</tr>
-
-<tr data-index="5" data-categories="VHJhbnNmb3JtZXJz" data-listing-date-sort="1774569600000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2971" data-listing-title-sort="FlashAttention: Making Attention I/O-Aware" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/27/26</span>
-</td>
-<td>
-<a href="./posts/2026-03-27-flash-attention/index.html" class="title listing-title">FlashAttention: Making Attention I/O-Aware</a>
-</td>
-
-</tr>
-
-<tr data-index="6" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1773964800000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="817" data-listing-title-sort="Building Browser Tools with Claude Code" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">3/20/26</span>
-</td>
-<td>
-<a href="./posts/2026-03-20-browser-tools/index.html" class="title listing-title">Building Browser Tools with Claude Code</a>
-</td>
-
-</tr>
-
-<tr data-index="7" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQ=" data-listing-date-sort="1772064000000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2624" data-listing-title-sort="GRPO: Building Intuition Through Ablation Studies" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/26/26</span>
-</td>
-<td>
-<a href="./posts/2026-02-26-grpo-from-scratch/index.html" class="title listing-title">GRPO: Building Intuition Through Ablation Studies</a>
-</td>
-
-</tr>
-
-<tr data-index="8" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1770854400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1545" data-listing-title-sort="Tools for Better Claude Code and Terminal Experience" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">2/12/26</span>
-</td>
-<td>
-<a href="./posts/2026-02-12-cc-tools/index.html" class="title listing-title">Tools for Better Claude Code and Terminal Experience</a>
-</td>
-
-</tr>
-
-<tr data-index="9" data-categories="UkwlMjAlMjYlMjBBbGlnbm1lbnQlMkNMTE0lMjBUcmFpbmluZw==" data-listing-date-sort="1769126400000" data-listing-file-modified-sort="1792401967255" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2050" data-listing-title-sort="Expert Iteration for Math Reasoning" data-listing-filename-sort="index.qmd">
-<td>
-<span class="listing-date">1/23/26</span>
-</td>
-<td>
-<a href="./posts/2026-01-23-expert-iteration/index.html" class="title listing-title">Expert Iteration for Math Reasoning</a>
-</td>
-
-</tr>
-
-</tbody>
-</table>
+<p class="tl-text">Production AI for refineries and energy operations at Applied Computing.</p>
+</div>
+</li>
+</ol>
 <div class="listing-no-matching d-none">No matching items</div>
 </div>
 </section>
-<section id="reach-out" class="level2">
-<h2 class="anchored" data-anchor-id="reach-out">📬 Reach Out</h2>
-<p>The best way to follow my work is on <a href="https://github.com/garg-aayush">GitHub</a>, <a href="https://twitter.com/Aayush_ander">Twitter</a>, or <a href="https://www.linkedin.com/in/aayush-garg-8b26a734">LinkedIn</a>.</p>
-<div class="template-credit">
-<p><em>Template inspired by <a href="https://hamel.dev/">hamel.dev</a> and <a href="https://lilianweng.github.io/">Lil’Log</a>.</em></p>
+<section id="writing-all-writing" class="level2 no-anchor">
+<h2 class="no-anchor" data-anchor-id="writing-all-writing"><span class="sec-head">Writing <a href="blog/">All writing</a></span></h2>
+<div id="listing-blog-listings" class="quarto-listing quarto-listing-container-custom">
+<ol class="list post-rows">
+<li class="post-row" data-index="0" data-categories="VGltZSUyMFNlcmllcw==" data-listing-date-sort="1784073600000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3157">
+<time class="post-date">15 Jul 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="posts/2026-07-15-kalman-filters-time-series/index.html" class="title-link no-arrow no-external">Kalman Filters and Smoothing for Time-Series Data</a></h3>
+
+</div>
+<span class="post-cat">Time Series</span>
+<span class="post-read">16 min</span>
+</li>
+<li class="post-row" data-index="1" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1777420800000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1649">
+<time class="post-date">29 Apr 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="posts/2026-04-29-india-weather-with-claude/index.html" class="title-link no-arrow no-external">Building a Live India Weather Dashboard with Claude Code</a></h3>
+
+</div>
+<span class="post-cat">Tools &amp; Infra</span>
+<span class="post-read">9 min</span>
+</li>
+<li class="post-row" data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140">
+<time class="post-date">5 Apr 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="posts/2026-04-05-qwen35-vs-gemma4/index.html" class="title-link no-arrow no-external">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</a></h3>
+
+</div>
+<span class="post-cat">Local LLMs</span>
+<span class="post-read">16 min</span>
+</li>
+<li class="post-row" data-index="3" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134">
+<time class="post-date">3 Apr 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="posts/2026-04-03-self-hosted-gemma4-chat/index.html" class="title-link no-arrow no-external">Self-Hosted Gemma 4 Chat with Web UI</a></h3>
+
+</div>
+<span class="post-cat">Local LLMs</span>
+<span class="post-read">6 min</span>
+</li>
+<li class="post-row" data-index="4" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1792420636095" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152">
+<time class="post-date">29 Mar 2026</time>
+<div class="post-main">
+<h3 class="post-title no-anchor"><a href="posts/2026-03-29-local-llm-opencode/index.html" class="title-link no-arrow no-external">Using a local LLM in OpenCode with llama.cpp</a></h3>
+
+</div>
+<span class="post-cat">Local LLMs</span>
+<span class="post-read">11 min</span>
+</li>
+</ol>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+</section>
+<section id="built-all-work" class="level2 no-anchor">
+<h2 class="no-anchor" data-anchor-id="built-all-work"><span class="sec-head">Built <a href="./projects.html">All work</a></span></h2>
+<div id="listing-featured" class="quarto-listing quarto-listing-container-custom">
+<ul class="work-rows">
+<li class="work-row">
+<h3 class="work-name no-anchor"><a href="https://github.com/garg-aayush/building-from-scratch" class="title-link" target="_blank" rel="noopener">building-from-scratch</a></h3>
+<div class="work-body">
+<p>Language models from first principles: GPT-2, a BPE tokenizer with a Rust encoder, KV cache, SFT and GRPO.</p>
+</div>
+</li>
+<li class="work-row">
+<h3 class="work-name no-anchor"><a href="india-weather.html" class="title-link no-external">India Weather</a></h3>
+<div class="work-body">
+<p>Weather and air quality across Indian cities on one map, with 24-hour history.</p>
+</div>
+</li>
+<li class="work-row">
+<h3 class="work-name no-anchor"><a href="tools/" class="title-link no-external">Browser tools</a></h3>
+<div class="work-body">
+<p>Image, JSON, YAML, LaTeX and diff utilities that run entirely in your browser.</p>
+</div>
+</li>
+</ul>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+</section>
+<section id="contact" class="level2 no-anchor">
+<h2 class="no-anchor" data-anchor-id="contact"><span class="sec-head">Contact</span></h2>
+<div class="contact">
+<ul>
+<li><a href="mailto:aayushgargiitr@gmail.com" class="title-link">Email</a></li>
+<li><a href="https://www.linkedin.com/in/aayush-garg-8b26a734" class="title-link">LinkedIn</a></li>
+<li><a href="https://github.com/garg-aayush" class="title-link">GitHub</a></li>
+</ul>
 </div>
 
 
@@ -833,35 +928,38 @@ Title
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-      &nbsp;
-    </div>   
+<p>© 2026 Aayush Garg</p>
+</div>   
     <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
       <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://github.com/garg-aayush">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
+<p>GitHub</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
-      <i class="bi bi-linkedin" role="img">
-</i> 
-    </a>
+<p>LinkedIn</p>
+</a>
   </li>  
-    <li class="nav-item compact">
+    <li class="nav-item">
     <a class="nav-link" href="https://twitter.com/Aayush_ander">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
   </li>  
 </ul>
     </div>
-    <div class="nav-footer-right">
-      &nbsp;
-    </div>
   </div>
 </footer>
+<script src="./static/js/site.js"></script>
 
 
 

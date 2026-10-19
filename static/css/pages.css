@@ -1,0 +1,278 @@
+/* Owns the Work page (projects.qmd), About, Publications and the tools catalog (tools/index.qmd). These pages set body-classes: pg. The item rows and the type of the timeline are in styles.css. */
+
+/* Page shell: full-width layout, content held to the site container */
+.pg main.content {
+  grid-column: screen-start / screen-end;
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--space-48) var(--gutter) 0;
+  box-sizing: border-box;
+}
+
+.pg .quarto-title-block {
+  margin-bottom: 0;
+}
+
+.pg .quarto-title-block .description {
+  max-width: 38em;
+}
+
+/* Quarto's hidden attribute loses to the display rules below, so restore it for rows the script hides */
+.pg [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .pg main.content {
+    padding-top: var(--space-32);
+  }
+}
+
+/* Publications: rows grouped under a year header */
+.pub-year:first-child {
+  --sec-before: var(--space-32);
+}
+
+.pub-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pub {
+  padding: var(--space-24) 0;
+}
+
+.pub + .pub {
+  border-top: 1px solid var(--border);
+}
+
+.pub-list > .pub:first-child {
+  padding-top: 0;
+}
+
+.pub-list > .pub:last-child {
+  padding-bottom: 0;
+}
+
+.pub > * {
+  max-width: 52em;
+  margin: 0;
+}
+
+.pub-title {
+  font-size: var(--fs-item);
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.pub-authors,
+.pub-venue {
+  margin-top: var(--space-8);
+  line-height: var(--lh-body);
+}
+
+.pub-authors {
+  color: var(--text-content);
+}
+
+.pub-authors strong {
+  font-weight: 600;
+}
+
+.pub-venue {
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+}
+
+/* About: intro prose held to 68 characters */
+.about-intro {
+  margin-top: var(--space-32);
+}
+
+.about-intro p {
+  max-width: 68ch;
+  margin: 0 0 1.1em;
+  font-size: var(--fs-article);
+  line-height: var(--lh-article);
+}
+
+.about-intro p:first-child {
+  font-size: var(--fs-dek);
+  line-height: var(--lh-dek);
+  color: var(--text-primary);
+}
+
+/* About: the experience list, dates on the left and the title with its text on the right */
+.pg .tl-row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: var(--space-24);
+  align-items: baseline;
+  padding: var(--space-24) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pg .tl-row:first-child {
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 600px) {
+  .pg .tl-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-16) 0;
+  }
+}
+
+/* Tools catalog: filter, category lists and tool rows */
+.tools-filter {
+  margin-top: var(--space-32);
+}
+
+.tools-filter-input {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  min-height: var(--touch-target);
+  padding: var(--space-12) 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-inset);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tools-filter-input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.tools-filter-input:focus {
+  border-color: var(--accent);
+}
+
+.tools-empty {
+  padding: var(--space-24) 0;
+  color: var(--text-muted);
+}
+
+.tools-empty p {
+  margin: 0;
+}
+
+.tools-list {
+  margin: 0;
+}
+
+.tool-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.tool-item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.tool-item > p {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) auto;
+  column-gap: var(--space-24);
+  align-items: center;
+  min-height: 56px;
+  margin: 0;
+}
+
+.tool-link {
+  justify-self: start;
+  font-family: var(--font-serif);
+  font-size: var(--fs-item);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: var(--tracking-heading);
+}
+
+.tool-tagline {
+  color: var(--text-muted);
+}
+
+.tool-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  margin-right: calc(-1 * var(--space-8));
+  padding: 0 var(--space-8);
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tool-toggle:hover {
+  color: var(--text-primary);
+}
+
+.tool-toggle::after {
+  content: "\25BE";
+  content: "\25BE" / "";
+}
+
+.tool-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.tool-desc {
+  max-width: 62em;
+  margin-left: calc(300px + var(--space-24));
+  padding: 0 0 var(--space-16);
+  line-height: var(--lh-body);
+  color: var(--text-content);
+}
+
+.tool-desc p {
+  margin: 0;
+}
+
+.tools-note {
+  margin-top: var(--space-48);
+  color: var(--text-muted);
+}
+
+.tools-note p {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .tool-item > p {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-12);
+    padding: var(--space-12) 0;
+  }
+
+  .tool-tagline {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .tool-toggle {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .tool-desc {
+    margin-left: 0;
+  }
+}
+
+/* Project pages in pages/ (full layout, no pg class): their titles are long sentences, so scale them down from the page title size */
+body:not(.pg) .page-layout-full .quarto-title-block h1.title {
+  font-size: calc(var(--fs-title) * 0.85);
+  line-height: var(--lh-heading);
+}
