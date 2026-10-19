@@ -4,14 +4,14 @@ Source for [aayushgarg.dev](https://aayushgarg.dev/), built with [Quarto](https:
 
 ## Local development
 
-Install the Quarto CLI, then run these commands from the repository root:
+Install [Quarto 1.10.18](https://github.com/quarto-dev/quarto-cli/releases/tag/v1.10.18), matching the version pinned in the publishing workflow. For site maintenance, use [Node 24.22.0 LTS](https://nodejs.org/en/blog/release/v24.22.0), pinned in `.node-version`; select that version with your Node version manager. These pins apply to site maintenance and do not change the separate Worker toolchain. Run these commands from the repository root:
 
 ```bash
 quarto preview
 quarto render
 ```
 
-`quarto preview` starts the development server. `quarto render` builds the site into the untracked `_site/` directory. The current site does not require a root Node package installation. Posts inherit `execute.freeze: true` from `posts/_metadata.yml`; frozen execution is not a guarantee that a fresh checkout has every execution dependency or cached result.
+`quarto preview` starts the development server. `quarto render` builds the site into the untracked `_site/` directory. The current site does not require a root Node package installation. A full render with Quarto 1.10.18 succeeds without additional execution dependencies. Posts inherit `execute.freeze: true` from `posts/_metadata.yml`; if you add executable cells, verify their dependencies in a clean checkout rather than relying on local cached results.
 
 To render one page or the tool catalog:
 
@@ -36,6 +36,8 @@ quarto render tools/index.qmd
 Quarto copies the standalone tool HTML files, `tools/analytics.js`, `static/`, and `CNAME` through the `resources` list in `_quarto.yml`. Tool HTML does not pass through Quarto rendering or automatically inherit the Quarto theme. When adding shared tool assets, include them in the copied resources and preserve direct URLs such as `/tools/image-converter.html`.
 
 Keep site layout and Bootstrap settings in the Quarto styles, common tool presentation in explicitly shared browser assets, and each tool's processing and state close to that tool. Shared code should cover repeated behavior with matching semantics, such as file formatting or downloads, while preserving each tool's input limits, output formats, transparency handling, and interactions. The browser tools process their inputs locally.
+
+Browser CDN dependencies use exact versions in the HTML and are listed in [.claude/rules/tools-catalog.md](.claude/rules/tools-catalog.md). When updating a dependency, check its browser bundle URL and exercise the affected tool, including Markdown highlighting and math rendering. Quarto supplies its own generated page libraries separately.
 
 Both `index.qmd` and `blog/index.qmd` generate RSS feeds. Existing post `permalink` metadata is historical and does not determine Quarto's rendered paths; inspect rendered links and feed item identities before changing domain or route settings.
 

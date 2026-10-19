@@ -7,14 +7,14 @@
     <title>Markdown Viewer</title>
 
     <!-- Marked.js for Markdown parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@18.1.1/lib/marked.umd.min.js"></script>
     <!-- highlight.js for code syntax highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/atom-one-dark.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.12.0/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.12.0/highlight.min.js"></script>
     <!-- KaTeX for LaTeX math -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/contrib/auto-render.min.js"></script>
 
     <style>
         :root {
@@ -417,20 +417,7 @@
             try {
                 marked.setOptions({
                     gfm: true,
-                    breaks: false,
-                    highlight: function(code, lang) {
-                        try {
-                            if (lang && hljs && hljs.getLanguage(lang)) {
-                                return hljs.highlight(code, { language: lang }).value;
-                            }
-                            if (hljs) {
-                                return hljs.highlightAuto(code).value;
-                            }
-                        } catch (e) {
-                            // Fall through to return plain code
-                        }
-                        return code;
-                    }
+                    breaks: false
                 });
             } catch (e) {
                 console.warn('Marked.js configuration failed:', e);
@@ -476,7 +463,7 @@
 
                 // Restore math blocks
                 for (var i = 0; i < mathBlocks.length; i++) {
-                    html = html.replace('%%MATH_BLOCK_' + i + '%%', mathBlocks[i]);
+                    html = html.replace('%%MATH_BLOCK_' + i + '%%', function() { return mathBlocks[i]; });
                 }
 
                 return html;
@@ -515,6 +502,21 @@
                     var text = editor.value;
                     var html = renderMarkdown(text);
                     preview.innerHTML = html;
+                    if (typeof hljs !== 'undefined') {
+                        preview.querySelectorAll('pre code').forEach(function(block) {
+                            const languageClass = Array.from(block.classList).find(name => name.startsWith('language-'));
+                            const language = languageClass ? languageClass.slice(9) : '';
+                            try {
+                                const highlighted = language && hljs.getLanguage(language)
+                                    ? hljs.highlight(block.textContent, { language: language })
+                                    : hljs.highlightAuto(block.textContent);
+                                block.innerHTML = highlighted.value;
+                                block.classList.add('hljs');
+                            } catch (e) {
+                                console.warn('Code highlighting failed:', e);
+                            }
+                        });
+                    }
                     renderMath(preview);
                     updateStatusBar();
                 }, 300);
