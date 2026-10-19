@@ -11,7 +11,7 @@ quarto preview
 quarto render
 ```
 
-`quarto preview` starts the development server. `quarto render` builds the site into the untracked `_site/` directory. The current site does not require a root Node package installation. A full render with Quarto 1.10.18 succeeds without additional execution dependencies. Posts inherit `execute.freeze: true` from `posts/_metadata.yml`; if you add executable cells, verify their dependencies in a clean checkout rather than relying on local cached results.
+`quarto preview` starts the development server. `quarto render` builds the site into the untracked `_site/` directory and runs the RSS compatibility script using Node from `PATH`. No root Node package installation is required. A full render with Quarto 1.10.18 succeeds without additional execution dependencies. Posts inherit `execute.freeze: true` from `posts/_metadata.yml`; if you add executable cells, verify their dependencies in a clean checkout rather than relying on local cached results.
 
 To render one page or the tool catalog:
 
@@ -40,6 +40,14 @@ Keep site layout and Bootstrap settings in the Quarto styles, common tool presen
 Browser CDN dependencies use exact versions in the HTML and are listed in [.claude/rules/tools-catalog.md](.claude/rules/tools-catalog.md). When updating a dependency, check its browser bundle URL and exercise the affected tool, including Markdown highlighting and math rendering. Quarto supplies its own generated page libraries separately.
 
 Both `index.qmd` and `blog/index.qmd` generate RSS feeds. Existing post `permalink` metadata is historical and does not determine Quarto's rendered paths; inspect rendered links and feed item identities before changing domain or route settings.
+
+`aayushgarg.dev` is the canonical hostname for generated metadata, RSS links, and RSS images. The post-render script `scripts/preserve-feed-guids.mjs` preserves the exact published GUIDs of existing articles in both feeds, marked as opaque identities with `isPermaLink="false"`, so subscribers do not receive them as new articles after the hostname change. `scripts/legacy-feed-guids.json` records the IDs verified in both live feeds before the change, plus older entries verified in the published feeds at commit `6122c37`. Keep this compatibility list fixed for previously published articles; new articles retain Quarto's canonical GUIDs. The script leaves feed links and content unchanged, honors Quarto's output directory, and permits absent feeds during partial renders.
+
+Run the compatibility checks with the pinned Node version:
+
+```bash
+node --test scripts/preserve-feed-guids.test.mjs
+```
 
 ## Publication and weather data
 
