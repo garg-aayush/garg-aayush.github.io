@@ -29,17 +29,20 @@ quarto render tools/index.qmd
 - `tools/index.qmd`: browser tool catalog.
 - `tools/*.html`: standalone browser tools with their own markup, styles, and behavior.
 - `tools/analytics.js`: shared analytics loader for standalone tools.
+- `tools/file-utils.js`: matching file labels and blob download behavior shared by the image tools and SVG viewer.
 - `static/design-tokens.css`: shared browser colors, system font, and site color aliases.
 - `tools/common.css`: shared presentation for image tools that use the same layout and controls.
 - `styles.css` and `theme-dark.scss`: Quarto page styles and Bootstrap theme settings.
 - `static/`: images and other static assets, including weather page assets and fallback data.
 - `worker/`: separate Node project for the Cloudflare weather Worker.
 
-Quarto copies the standalone tool HTML files, `tools/analytics.js`, `tools/common.css`, `static/`, and `CNAME` through the `resources` list in `_quarto.yml`. Tool HTML does not pass through Quarto rendering or automatically inherit the Quarto theme. When adding shared tool assets, include them in the copied resources and preserve direct URLs such as `/tools/image-converter.html`.
+Quarto copies the standalone tool HTML files, `tools/analytics.js`, `tools/file-utils.js`, `tools/common.css`, `static/`, and `CNAME` through the `resources` list in `_quarto.yml`. Tool HTML does not pass through Quarto rendering or automatically inherit the Quarto theme. When adding shared tool assets, include them in the copied resources and preserve direct URLs such as `/tools/image-converter.html`.
 
 Quarto pages load `static/design-tokens.css` before `styles.css`. All standalone tools use the same browser palette; syntax, search, and diff tokens remain local to the tools that need them. The image converter, resizer, and cropper also load `tools/common.css`, with specialized control styles kept in each HTML file. Other tools retain their own layouts, control styles, and font fallback lists. The common tool stylesheet is loaded only by standalone tools. `theme-dark.scss` remains the Bootstrap compile-time theme: Sass color functions require literal Sass values, so keep its palette and system font aligned with the browser tokens when changing the theme. There is no generated token synchronization step.
 
 Keep site layout and Bootstrap settings in the Quarto styles, common tool presentation in explicitly shared browser assets, and each tool's processing and state close to that tool. Shared code should cover repeated behavior with matching semantics, such as file formatting or downloads, while preserving each tool's input limits, output formats, transparency handling, and interactions. The browser tools process their inputs locally.
+
+`tools/file-utils.js` exposes the `ToolFiles` namespace to its standalone consumers. It formats byte counts, supplies matching image type labels, and starts blob downloads with the caller's exact filename, revoking each download URL after one second. File validation, canvas processing, preview URLs, and application state stay local to each tool. Tools with different MIME label contracts keep those labels local. Run its contract checks with `node --test scripts/file-utils.test.mjs`.
 
 Browser CDN dependencies use exact versions in the HTML and are listed in [.claude/rules/tools-catalog.md](.claude/rules/tools-catalog.md). When updating a dependency, check its browser bundle URL and exercise the affected tool, including Markdown highlighting and math rendering. Quarto supplies its own generated page libraries separately.
 

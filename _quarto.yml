@@ -77,5 +77,6 @@ resources:
   - static
   - tools/*.html
   - tools/common.css
+  - tools/file-utils.js
   - tools/analytics.js
   - CNAME

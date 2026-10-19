@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="analytics.js"></script>
+<script src="file-utils.js"></script>
 <title>SVG Viewer & Converter</title>
 <link rel="stylesheet" href="../static/design-tokens.css">
 <style>
@@ -441,6 +442,8 @@
 (function() {
   'use strict';
 
+  const { formatBytes, downloadBlob } = ToolFiles;
+
   // Elements
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
@@ -489,12 +492,6 @@
   let zoomMode = 'fit'; // 'fit' or 'manual'
 
   // Utilities
-  function formatBytes(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / 1048576).toFixed(1) + ' MB';
-  }
-
   function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.add('visible'); }
   function clearError() { errorMsg.classList.remove('visible'); }
 
@@ -912,11 +909,7 @@
         if (!blob) { showError('Export failed.'); return; }
         const baseName = svgName.replace(/\.svg$/i, '');
         const dlName = baseName + '-' + w + 'x' + h + '.' + (selectedFormat === 'jpeg' ? 'jpg' : selectedFormat);
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = dlName;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        downloadBlob(blob, dlName);
       }, mime, quality);
     };
     img.onerror = () => showError('Failed to render SVG to canvas.');

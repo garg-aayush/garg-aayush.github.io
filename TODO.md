@@ -2,6 +2,12 @@
 
 Deferred work that is not blocking but worth picking up if the relevant area is touched again.
 
+## Browser tools
+
+### Snapshot the SVG export format before asynchronous rendering
+
+The SVG viewer captures the encoding MIME type before rendering but reads the selected format again when naming the file inside the asynchronous `canvas.toBlob` callback. Changing the format while an export is pending can give encoded bytes a different extension. Capture the format and filename together before rendering, and cover delayed image loading and blob callbacks in a focused test. The shared download helper preserves the caller's filename and does not manage export state.
+
 ## India Weather
 
 ### Bring back WAQI dominant-pollutant in the popup

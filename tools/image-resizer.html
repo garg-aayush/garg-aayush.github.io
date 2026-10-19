@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="analytics.js"></script>
+  <script src="file-utils.js"></script>
   <title>Image Resizer — Aayush Garg</title>
   <link rel="stylesheet" href="../static/design-tokens.css">
   <link rel="stylesheet" href="common.css">
@@ -216,6 +217,8 @@
   </div>
 
   <script>
+    const { formatBytes, friendlyType, downloadBlob } = ToolFiles;
+
     const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
     const MAX_DIMENSION = 8192; // px
 
@@ -561,28 +564,8 @@
     // Download
     downloadBtn.addEventListener('click', () => {
       if (!resizedBlob) return;
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(resizedBlob);
-      a.download = downloadBtn.dataset.filename || 'resized';
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      downloadBlob(resizedBlob, downloadBtn.dataset.filename || 'resized');
     });
-
-    // Helpers
-    function formatBytes(bytes) {
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / 1048576).toFixed(1) + ' MB';
-    }
-
-    function friendlyType(mime) {
-      const map = {
-        'image/png': 'PNG', 'image/jpeg': 'JPEG', 'image/webp': 'WebP',
-        'image/gif': 'GIF', 'image/bmp': 'BMP', 'image/svg+xml': 'SVG',
-        'image/avif': 'AVIF', 'image/heic': 'HEIC', 'image/heif': 'HEIF',
-      };
-      return map[mime] || mime.replace('image/', '').toUpperCase();
-    }
   </script>
 </body>
 </html>

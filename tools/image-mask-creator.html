@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="analytics.js"></script>
+  <script src="file-utils.js"></script>
   <title>Binary Mask Creator — Aayush Garg</title>
   <link rel="stylesheet" href="../static/design-tokens.css">
   <style>
@@ -458,6 +459,8 @@
   </div>
 
   <script>
+    const { formatBytes, downloadBlob } = ToolFiles;
+
     /* ── Constants ── */
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
     const MAX_DIMENSION = 8192;
@@ -893,11 +896,7 @@
       exportCanvas.toBlob((blob) => {
         if (!blob) return;
         const baseName = originalFile.name.replace(/\.[^.]+$/, '');
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${baseName}-mask.jpg`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        downloadBlob(blob, `${baseName}-mask.jpg`);
       }, 'image/jpeg', 0.95);
     });
 
@@ -951,12 +950,6 @@
     }
 
     /* ── Formatting helpers ── */
-    function formatBytes(bytes) {
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / 1048576).toFixed(1) + ' MB';
-    }
-
     function friendlyType(mime) {
       const map = {
         'image/png': 'PNG', 'image/jpeg': 'JPEG', 'image/webp': 'WebP',
