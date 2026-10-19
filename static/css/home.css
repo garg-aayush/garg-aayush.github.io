@@ -1,0 +1,158 @@
+/* Owns the homepage (index.qmd), the blog listing (blog/index.qmd) and the template credit that tools/index.qmd also uses. */
+
+/* Profile section */
+.profile-pic {
+  border-radius: 50%;
+  max-width: 100px;
+  height: auto;
+}
+
+.profile-header .quarto-layout-row {
+  align-items: flex-start;
+}
+
+/* Reset all margins inside profile header cells for top alignment */
+.profile-header .quarto-layout-cell {
+  padding-top: 0;
+}
+
+.profile-header .quarto-layout-cell p,
+.profile-header .quarto-layout-cell figure {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.profile-header .profile-pic {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  /* Higher specificity than `.content img` in article.css so the hide actually wins. */
+  .profile-header .quarto-figure,
+  .profile-header .profile-pic {
+    display: none;
+  }
+}
+
+@media (min-width: 600px) {
+  .profile-header .quarto-layout-row {
+    flex-direction: row;
+  }
+}
+
+/* Blog listings - table style.
+   Quarto renders the listing into #listing-<id> (e.g. #listing-blog-listings),
+   not the raw id used in the page frontmatter, so we target the table class
+   directly. */
+.quarto-listing-container-table {
+  margin-top: 1.5rem;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.quarto-listing-table {
+  width: 100%;
+}
+
+.quarto-listing-table th {
+  border-bottom: 2px solid var(--border-color);
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quarto-listing-table td {
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.quarto-listing-table tr:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Links in table */
+.quarto-listing-table a {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.quarto-listing-table a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive table for mobile */
+@media (max-width: 768px) {
+  .quarto-listing-table {
+    font-size: 0.9rem;
+  }
+
+  .quarto-listing-table th,
+  .quarto-listing-table td {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .quarto-listing-table,
+  .quarto-listing-table thead,
+  .quarto-listing-table tbody,
+  .quarto-listing-table th,
+  .quarto-listing-table td,
+  .quarto-listing-table tr {
+    display: block;
+  }
+
+  .quarto-listing-table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .quarto-listing-table tr {
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .quarto-listing-table td {
+    border: none;
+    padding: 0.15rem 0;
+    text-align: left;
+  }
+
+  .quarto-listing-table td:nth-of-type(1) {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .quarto-listing-table td:nth-of-type(2) a {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+}
+
+/* Template credit */
+.template-credit {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.template-credit p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.template-credit a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.template-credit a:hover {
+  color: var(--accent);
+}

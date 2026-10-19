@@ -1,157 +1,86 @@
 /*-- scss:defaults --*/
 
-// Bootstrap needs compile-time Sass colors and fonts. Keep these defaults aligned with static/design-tokens.css; browser components consume its CSS variables directly.
+// Sass needs literal values for its color math and cannot read CSS variables. These mirror static/design-tokens.css, which is the source: change a value there first, then keep this block in sync.
+$tok-ground: #0A0D11;
+$tok-surface: #10161D;
+$tok-inset: #151C24;
+$tok-hover: #1A222B;
+$tok-line: #1E2730;
+$tok-heading: #E7EDF2;
+$tok-body: #B4BFCA;
+$tok-muted: #8A97A5;
+$tok-dim: #6E7C8A;
+$tok-accent: #7AAAFF;
+$tok-accent-hover: #9CC0FF;
+$tok-green: #72994E;
+$tok-orange: #EE6331;
+$tok-red: #D44000;
+$tok-yellow: #E7B10A;
+$font-family-sans-serif: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-// Typography - Pure system fonts like Lil'Log (PaperMod)
-$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
-                         Oxygen, Ubuntu, Cantarell, "Open Sans", 
-                         "Helvetica Neue", sans-serif;
+// Everything below derives from the mirror above. Page styling belongs in styles.css and static/css/, not in Sass rules.
 
-// Color palette inspired by Lil'Log (PaperMod) - softer dark theme
-$blue: #447099;
-$red: #D44000;
-$orange: #EE6331;
-$yellow: #E7B10A;
-$green: #72994E;
-$teal: #419599;
-$cyan: #75A8D9;
-$black: #000;
-$white: #fff;
+// Fonts are self-hosted from static/fonts/, so skip the Google Fonts import that the cosmo theme adds
+$web-font-path: false;
 
-// Lil'Log inspired grays - softer contrast
-$gray: #404041;
-$gray-dark: #343a40;
-$gray-100: #dadada;      // Primary text (softer than #f8f8f8)
-$gray-200: #c4c4c5;      // Content text
-$gray-300: #9b9c9d;      // Secondary text
-$gray-400: #707073;
-$gray-500: #495057;
-$gray-600: #414244;      // Tertiary
-$gray-700: #333333;      // Borders
-$gray-800: #2e2e33;      // Card/entry background
-$gray-900: #1d1e20;      // Main background (warmer than #151515)
+$gray: $tok-hover;
+$gray-dark: $tok-surface;
+$gray-100: $tok-heading;
+$gray-200: $tok-body;
+$gray-300: $tok-muted;
+$gray-400: $tok-dim;
+$gray-500: mix($tok-hover, $tok-dim);
+$gray-600: $tok-hover;
+$gray-700: $tok-line;
+$gray-800: $tok-surface;
+$gray-900: $tok-ground;
 
-$default: $gray-900;
-$primary: $cyan;
-$secondary: $gray-400;
-$success: $green;
-$info: $yellow;
-$warning: $orange;
-$danger: $red;
+$green: $tok-green;
+$orange: $tok-orange;
+$red: $tok-red;
+$yellow: $tok-yellow;
 
-// Base document colors - Lil'Log style
-$body-bg: $gray-900;
-$body-color: $gray-100;
-$link-color: $cyan;
+$default: $tok-ground;
+$primary: $tok-accent;
+$secondary: $tok-dim;
+$success: $tok-green;
+$info: $tok-yellow;
+$warning: $tok-orange;
+$danger: $tok-red;
 
-$light: $gray-800;
+$body-bg: $tok-ground;
+$body-color: $tok-body;
+$link-color: $tok-accent;
+$link-hover-color: $tok-accent-hover;
+$headings-color: $tok-heading;
+$headings-font-weight: 600;
+$text-muted: $tok-muted;
+$border-color: $tok-line;
+$light: $tok-surface;
 
-// Navigation element colors
-$footer-bg: $gray-900;
-$navbar-bg: $gray-800;
+$navbar-bg: $tok-ground;
+$navbar-fg: $tok-muted;
+$navbar-hl: $tok-heading;
+$footer-bg: $tok-ground;
+$footer-fg: $tok-dim;
 
-// Code blocks
-$code-block-bg-alpha: -.9;
+$code-color: $tok-heading;
+$code-bg: $tok-inset;
+$code-block-bg: $tok-surface;
+$code-block-border-color: $tok-line;
+$mono-background-color: transparent;
 
-// Bootstrap popovers
-$popover-bg: $gray-800;
-
-// Bootstrap inputs
-$input-bg: $gray-800;
-$dropdown-bg: $body-bg;
-$dropdown-color: $body-color;
-$dropdown-link-color: $body-color;
-$dropdown-link-hover-bg: $gray-600;
-$dropdown-link-hover-color: #eee;
-$nav-tabs-link-hover-border-color: $gray-600;
-
-$border-color: $gray-700;
-
-$mono-background-color: rgba(0,0,0,0);
-$code-color: #c792ea;
-$code-bg: #37383e;
-$nav-tabs-link-active-color: $body-color;
-$toc-inactive-border: $gray-700;
-$input-text-background-color: $gray-800;
-$input-group-addon-bg: $gray-800;
-$pagination-disabled-bg: $gray-800;
-
-$text-muted: $gray-300;
-
-/*-- scss:rules --*/
-
-// Navbar styling - slightly lighter than body
-.navbar-dark {
-  background-color: $gray-800 !important;
-}
-
-// Code styling
-pre code {
-  color: $gray-200;
-}
-
-pre {
-  background-color: $gray-800 !important;
-}
-
-code {
-  background-color: $code-bg;
-  padding: 0.125rem 0.25rem;
-  border-radius: 3px;
-}
-
-figcaption code,
-dl code,
-h1 code,
-h2 code,
-h3 code,
-h4 code,
-h5 code,
-h6 code {
-  background-color: $mono-background-color;
-}
-
-details > summary {
-  color: $text-muted;
-}
-
-// Cell output styling
-.cell-output {
-  margin-left: 20px;
-  border-left: 2px solid $gray-600;
-  background-color: $gray-800;
-}
-
-// Blockquote styling
-blockquote {
-  border-left-color: $cyan;
-}
-
-blockquote p {
-  color: $gray-200;
-  background-color: $gray-800;
-}
-
-// Layout helpers
-.bg-color {
-  background-color: $body-bg;
-}
-
-// Softer headings
-h1, h2, h3, h4, h5, h6 {
-  color: $gray-100;
-}
-
-// Body text - slightly muted for comfort
-p, li {
-  color: $gray-200;
-}
-
-// Links - cyan accent
-a {
-  color: $cyan;
-}
-
-a:hover {
-  color: lighten($cyan, 10%);
-}
+$popover-bg: $tok-surface;
+$input-bg: $tok-inset;
+$input-text-background-color: $tok-inset;
+$input-group-addon-bg: $tok-inset;
+$dropdown-bg: $tok-surface;
+$dropdown-color: $tok-body;
+$dropdown-link-color: $tok-body;
+$dropdown-link-hover-bg: $tok-hover;
+$dropdown-link-hover-color: $tok-heading;
+$nav-tabs-link-hover-border-color: $tok-hover;
+$nav-tabs-link-active-color: $tok-heading;
+$toc-inactive-border: $tok-line;
+$pagination-disabled-bg: $tok-surface;

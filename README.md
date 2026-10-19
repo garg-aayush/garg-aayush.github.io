@@ -22,7 +22,7 @@ quarto render tools/index.qmd
 
 ## Source and styling boundaries
 
-- `_quarto.yml`: render inputs, navigation, website metadata, theme, and copied resources.
+- `_quarto.yml`: render inputs, navigation, footer, website metadata, theme, the ordered CSS list, the font preload, and copied resources.
 - Top-level `.qmd` files and `blog/index.qmd`: main pages and blog listings.
 - `posts/`: technical articles, including older single-file posts and newer dated directories.
 - `pages/`: project pages.
@@ -30,15 +30,23 @@ quarto render tools/index.qmd
 - `tools/*.html`: standalone browser tools with their own markup, styles, and behavior.
 - `tools/analytics.js`: shared analytics loader for standalone tools.
 - `tools/file-utils.js`: matching file labels and blob download behavior shared by the image tools and SVG viewer.
-- `static/design-tokens.css`: shared browser colors, system font, and site color aliases.
+- `static/design-tokens.css`: the single source for colors (including code syntax colors), font stacks, type, spacing and radius scales, component sizes, and site color aliases.
+- `static/fonts/`: self-hosted Geist and Geist Mono variable WOFF2 files (Latin subset, from `@fontsource-variable` 5.3.0), `fonts.css` with their `@font-face` rules, and the SIL Open Font License in `OFL.txt`.
 - `tools/common.css`: shared presentation for image tools that use the same layout and controls.
-- `styles.css` and `theme-dark.scss`: Quarto page styles and Bootstrap theme settings.
+- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow` and `.live-dot` classes).
+- `static/css/home.css`, `static/css/article.css`, `static/css/pages.css`: homepage and blog listing, article, and about, publications, projects and tools catalog rules.
+- `theme-dark.scss`: Bootstrap compile-time theme settings.
+- `static/js/site.js`: the only site-wide script, loaded from `include-after-body` in `_quarto.yml`.
 - `static/`: images and other static assets, including weather page assets and fallback data.
 - `worker/`: separate Node project for the Cloudflare weather Worker.
 
 Quarto copies the standalone tool HTML files, `tools/analytics.js`, `tools/file-utils.js`, `tools/common.css`, `static/`, and `CNAME` through the `resources` list in `_quarto.yml`. Tool HTML does not pass through Quarto rendering or automatically inherit the Quarto theme. When adding shared tool assets, include them in the copied resources and preserve direct URLs such as `/tools/image-converter.html`.
 
-Quarto pages load `static/design-tokens.css` before `styles.css`. All standalone tools use the same browser palette; syntax, search, and diff tokens remain local to the tools that need them. The image converter, resizer, and cropper also load `tools/common.css`, with specialized control styles kept in each HTML file. Other tools retain their own layouts, control styles, and font fallback lists. The common tool stylesheet is loaded only by standalone tools. `theme-dark.scss` remains the Bootstrap compile-time theme: Sass color functions require literal Sass values, so keep its palette and system font aligned with the browser tokens when changing the theme. There is no generated token synchronization step.
+Quarto pages load, in order, `static/fonts/fonts.css`, `static/design-tokens.css`, `styles.css`, `static/css/home.css`, `static/css/article.css`, and `static/css/pages.css`. Every stylesheet loads on every page, so page rules stay scoped by class. `_quarto.yml` also preloads only the Geist sans file from every Quarto page and loads `static/js/site.js`, which adds the skip link and honors reduced motion for Quarto's scripted smooth scrolling. Fonts are self-hosted, so `theme-dark.scss` turns off the Google Fonts import that the cosmo theme would otherwise add.
+
+All standalone tools use the same browser palette; syntax, search, and diff tokens remain local to the tools that need them. Tools keep the system font stack through `--font-system` and do not load `fonts.css`. The image converter, resizer, and cropper also load `tools/common.css`, with specialized control styles kept in each HTML file. Other tools retain their own layouts, control styles, and font fallback lists. The common tool stylesheet is loaded only by standalone tools. `theme-dark.scss` remains the Bootstrap compile-time theme: Sass color functions require literal Sass values, so keep its palette and font stacks aligned with the browser tokens when changing the theme. There is no generated token synchronization step.
+
+Styling conventions: add or change a color, font, size, spacing step or radius in `static/design-tokens.css` and reference it with `var()`; the site stylesheets contain no literal colors. Mirror a changed palette value in the `$tok-` block at the top of `theme-dark.scss`, and keep other Sass limited to values derived from that block. Keep selectors at class level, avoid IDs, and use `!important` only where Quarto or Bootstrap leave no other way, with a comment saying what it overrides. Navigation items and social links are defined once in `_quarto.yml`.
 
 Keep site layout and Bootstrap settings in the Quarto styles, common tool presentation in explicitly shared browser assets, and each tool's processing and state close to that tool. Shared code should cover repeated behavior with matching semantics, such as file formatting or downloads, while preserving each tool's input limits, output formats, transparency handling, and interactions. The browser tools process their inputs locally.
 

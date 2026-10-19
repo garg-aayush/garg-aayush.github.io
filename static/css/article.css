@@ -1,0 +1,55 @@
+/* Owns articles (posts/) and the content rules shared by every page: contents rail, images, code block padding, wide tables and equations. */
+
+/* Contents rail. Quarto colors the rail links through .sidebar selectors, so these match their specificity. */
+.sidebar nav[role="doc-toc"] {
+  padding-top: var(--space-16);
+}
+
+.sidebar nav[role="doc-toc"] > ul li a {
+  color: var(--text-muted);
+}
+
+.sidebar nav[role="doc-toc"] a.active {
+  font-weight: 600;
+}
+
+/* Content images */
+.content img,
+.quarto-figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: var(--radius-md);
+}
+
+/* Code block padding */
+pre {
+  padding: 1rem;
+}
+
+/* Wide tables in posts: scroll horizontally on phones instead of squeezing
+   columns into 3-letter slivers. Excludes the blog listing (which is its own
+   styled card layout on mobile). */
+@media (max-width: 768px) {
+  main table:not(.quarto-listing-table) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+}
+
+/* Output under a code cell */
+.cell-output {
+  margin-left: var(--space-24);
+  border-left: 2px solid var(--border);
+  background-color: var(--bg-card);
+}
+
+/* Long display equations scroll inside the column instead of widening the page */
+mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

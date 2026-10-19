@@ -1,5 +1,5 @@
 ---
-title: "Blogs"
+title: "Writing"
 description: "From-scratch LLM builds, deep-dives and practical AI engineering."
 sidebar: false
 toc: false

@@ -25,50 +25,47 @@ website:
   twitter-card:
     card-style: summary_large_image
   navbar:
-    title: false
     background: dark
     pinned: true
-    collapse: true
-    left:
-      - text: Home
-        href: index.qmd
-      - text: Blogs
+    collapse: false
+    right:
+      - text: Writing
         href: blog/
-      - text: Projects
+      - text: Work
         href: projects.qmd
       - text: Tools
         href: tools/
-      - text: Weather
-        href: india-weather.qmd
-      - text: Publications
-        href: publications.qmd
       - text: About
         href: about.qmd
-    right:
-      - icon: github
-        href: "https://github.com/garg-aayush"
-      - icon: linkedin
-        href: "https://www.linkedin.com/in/aayush-garg-8b26a734"
-      - icon: twitter
-        href: "https://twitter.com/Aayush_ander"
-      - icon: rss
-        href: "https://aayushgarg.dev/blog/index.xml"
   page-footer:
-    center:
-      - icon: github
+    left: "© 2026 Aayush Garg"
+    right:
+      - text: GitHub
         href: "https://github.com/garg-aayush"
-      - icon: linkedin
+      - text: LinkedIn
         href: "https://www.linkedin.com/in/aayush-garg-8b26a734"
-      - icon: twitter
+      - text: X
         href: "https://twitter.com/Aayush_ander"
+      - text: RSS
+        href: "https://aayushgarg.dev/blog/index.xml"
 
 format:
   html:
     from: markdown+raw_html
     theme: [cosmo, theme-dark.scss]
     css:
+      - static/fonts/fonts.css
       - static/design-tokens.css
       - styles.css
+      - static/css/home.css
+      - static/css/article.css
+      - static/css/pages.css
+    include-in-header:
+      - text: |
+          <link rel="preload" href="/static/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    include-after-body:
+      - text: |
+          <script src="/static/js/site.js"></script>
     toc: true
     smooth-scroll: true
     link-external-newwindow: true

@@ -23,11 +23,11 @@ paths:
 - After merging, clean up leftover worktrees with `git worktree remove`
 
 ## Design Conventions
-- **Theme**: Match the site's dark theme using `static/design-tokens.css` (background `#1d1e20`, card `#2e2e33`, inset `#37383e`, border `#333333`, accent `#75A8D9`).
+- **Theme**: Match the site's dark theme using `static/design-tokens.css` (background `#0A0D11`, card `#10161D`, inset `#151C24`, border `#1E2730`, accent `#7AAAFF`).
 - **Shared styles**: Browser token values live in `static/design-tokens.css`; `theme-dark.scss` keeps aligned compile-time Bootstrap defaults. Load tool styles after the tokens. Keep tool-only CSS out of Quarto page styles, and include new shared assets in `_quarto.yml` resources.
 - **Common CSS adoption**: `common.css` is used by the image converter, resizer, and cropper. Opt in only when its full selector set matches the tool's existing presentation; do not apply the image layout to wider editors or canvas tools. Keep specialized tokens and layout overrides local, and check desktop and mobile states when extracting existing rules.
 - **Shared file helpers**: Load `file-utils.js` before the tool's inline script when reusing `ToolFiles` byte labels, matching image type labels, or blob downloads. Pass the exact desired filename to `downloadBlob`; it owns only its download URL and revokes it after one second. Keep input validation, processing state, preview URLs, and differing MIME label contracts local.
-- **Fonts**: Use the site's system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`), not external fonts
+- **Fonts**: Use the system font stack through `--font-system` (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`), not external fonts and not the site's self-hosted Geist fonts
 - **Analytics**: Include `<script src="analytics.js"></script>` in `<head>` (after viewport meta) — this loads shared Google Analytics tracking
 - **Back link**: Include a `<- Back to Tools` link pointing to `./`
 - **Validation**: Validate input files (type, size, dimensions) with user-visible error messages
