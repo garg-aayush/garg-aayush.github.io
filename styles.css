@@ -170,8 +170,11 @@ body.nav-fixed {
   color: var(--accent);
 }
 
-/* Link list: Quarto places the search icon after it */
+/* Link list. Below 992 px Quarto orders it after the search icon, so it takes an earlier slot to keep the icon at the right end of the bar. It grows to fill the row so that the auto margins Quarto gives the list and the icon get no space to split. */
 .navbar .navbar-container > .navbar-nav {
+  order: 3;
+  flex-grow: 1;
+  justify-content: flex-end;
   gap: var(--space-16);
   margin-right: calc(-1 * var(--space-8));
 }
@@ -427,35 +430,47 @@ pre code {
   color: var(--text-primary);
 }
 
-/* Pandoc token classes: keyword, function, number, string and comment get a color, the rest stay plain */
+/* Pandoc token classes. Keyword, function, number, string and comment get a color and every other class stays plain text. Alert, warning and error reuse the number color, bold. */
 code span,
 pre > code.sourceCode > span,
 code.sourceCode > span {
   color: var(--text-primary);
 }
 
+/* kw keyword, cf control flow, im import */
 code span.kw, code span.cf, code span.im {
   color: var(--code-keyword);
   font-weight: 400;
 }
 
+/* fu function, bu built-in */
 code span.fu, code span.bu {
   color: var(--code-function);
 }
 
+/* dv decimal, bn base-n, fl float, cn constant */
 code span.dv, code span.bn, code span.fl, code span.cn {
   color: var(--code-number);
 }
 
+/* st string, ch char, ss special string, sc special char, vs verbatim string */
 code span.st, code span.ch, code span.ss, code span.sc, code span.vs {
   color: var(--code-string);
 }
 
+/* co comment, do documentation, an annotation, cv comment variable, in information */
 code span.co, code span.do, code span.an, code span.cv, code span.in {
   color: var(--code-comment);
   font-style: normal;
 }
 
+/* al alert, wa warning, er error */
+code span.al, code span.wa, code span.er {
+  color: var(--code-number);
+  font-weight: 600;
+}
+
+/* op operator, dt data type, at attribute, va variable, ot other, pp preprocessor, ex extension */
 code span.op, code span.dt, code span.at, code span.va, code span.ot, code span.pp, code span.ex {
   color: var(--text-primary);
   font-weight: 400;
@@ -512,14 +527,17 @@ table td {
   color: var(--text-dim);
 }
 
-/* Reusable: section header made of label text, a .rule element that fills the row, then an optional link */
+/* Reusable: section header. A real h2 holding one .sec-head span: label text, a .rule element that fills the row, then an optional link. Written as
+   ## [Label []{.rule} [link](url)]{.sec-head} {.no-anchor}
+   The class sits on the span because on the ## itself it would also land on Quarto's section wrapper. */
 .sec-head {
   display: flex;
   align-items: center;
   gap: var(--space-16);
-  margin-bottom: var(--space-32);
   font-family: var(--font-mono);
   font-size: var(--fs-label);
+  font-weight: 400;
+  line-height: var(--lh-heading);
   letter-spacing: var(--tracking-label-wide);
   text-transform: uppercase;
   color: var(--text-dim);
@@ -536,6 +554,7 @@ table td {
   font-size: var(--fs-small);
   letter-spacing: 0.04em;
   text-transform: none;
+  text-decoration: none;
   color: var(--text-primary);
 }
 
@@ -543,9 +562,15 @@ table td {
   color: var(--accent-hover);
 }
 
+/* Space around the heading. A page changes it by setting --sec-before and --sec-after. */
+h2:has(> .sec-head) {
+  /* !important beats Quarto's first-of-type h2 margin, which has ID-level specificity */
+  margin: var(--sec-before, var(--space-64)) 0 var(--sec-after, var(--space-24)) !important;
+}
+
 @media (max-width: 600px) {
-  .sec-head {
-    margin-bottom: var(--space-24);
+  h2:has(> .sec-head) {
+    margin: var(--sec-before, var(--space-48)) 0 var(--sec-after, var(--space-16)) !important;
   }
 }
 
