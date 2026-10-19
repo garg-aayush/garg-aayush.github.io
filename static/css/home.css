@@ -39,8 +39,12 @@
   margin: 0;
 }
 
-/* Hero: one column. Name, role, statement, lede, actions. */
+/* Hero: the copy on the left, the Now box on the right and centered against it. Below 1080px the box sits under the actions. */
 .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  gap: var(--space-48) var(--space-64);
+  align-items: center;
   padding: var(--space-64) 0 0;
 }
 
@@ -92,8 +96,15 @@
   margin: 0;
 }
 
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 600px) {
   .hero {
+    gap: var(--space-32);
     padding-top: var(--space-32);
   }
 
@@ -106,33 +117,51 @@
   }
 }
 
-/* Now. The updated label sits next to the heading. The Latest post row is a second listing, so the two listings dissolve into one column and the post takes second place. */
-.sec-head .now-updated {
-  margin-right: auto;
-  font-family: var(--font-sans);
+/* Now box. A header row, then one hairline-separated row each. The Latest post row is a second listing, so the two listings dissolve into one column and the post takes second place. */
+.now-panel {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--bg-card);
+}
+
+.now-head p {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-16);
+  margin: 0;
+  padding: var(--space-16) var(--space-24);
   font-size: var(--fs-label);
-  font-weight: 400;
+  font-variant-numeric: tabular-nums;
   color: var(--text-muted);
+}
+
+.now-head strong {
+  font-family: var(--font-serif);
+  font-size: var(--fs-item);
+  font-weight: 600;
+  letter-spacing: var(--tracking-heading);
 }
 
 .now-list {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--border);
 }
 
 .now-list :is(.quarto-listing, .now-rows) {
   display: contents;
 }
 
+/* Each row carries the hairline above it, so the first row also closes the header */
 .now-row {
   position: relative;
   display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
-  gap: var(--space-24);
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: var(--space-16);
   align-items: baseline;
-  padding: var(--space-16) 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-16) var(--space-24);
+  border-top: 1px solid var(--border);
 }
 
 /* Order: the first YAML row, then the latest post, then the remaining YAML rows */
@@ -149,9 +178,16 @@
   color: var(--text-muted);
 }
 
+/* A flex row keeps the status dot beside the first line of the text, where an inline dot would wrap above a long title on a phone */
 .now-text {
+  display: flex;
+  align-items: baseline;
   line-height: 1.45;
   color: var(--text-content);
+}
+
+.now-text .live-dot {
+  margin: 0 var(--space-8) 2px 0;
 }
 
 .now-sub {
@@ -162,9 +198,89 @@
 }
 
 @media (max-width: 600px) {
+  .now-head p {
+    padding: var(--space-12) var(--space-16);
+  }
+
   .now-row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: var(--space-12);
+    padding: var(--space-12) var(--space-16);
+  }
+}
+
+/* Path: the stages sit in columns under one rule. A dot marks each stage on the rule, and the current stage (the one with a badge) takes the Accent. Below 800px the rule runs down the left side. */
+.home .timeline {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+.home .tl-row {
+  position: relative;
+  padding: var(--space-32) var(--space-32) 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.home .tl-row::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  box-sizing: border-box;
+  border: 1px solid var(--text-dim);
+  border-radius: 50%;
+  background-color: var(--bg-body);
+}
+
+.home .tl-row.is-current {
+  border-top-color: var(--accent);
+}
+
+.home .tl-row.is-current::before {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-dim);
+}
+
+.home .tl-dates {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.home .tl-title {
+  margin-top: var(--space-12);
+}
+
+@media (max-width: 800px) {
+  .home .timeline {
+    grid-auto-flow: row;
+  }
+
+  .home .tl-row {
+    padding: 0 0 var(--space-32) var(--space-24);
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+
+  .home .tl-row:last-child {
+    padding-bottom: var(--space-4);
+  }
+
+  .home .tl-row::before {
+    top: var(--space-4);
+    left: -5px;
+  }
+
+  .home .tl-row.is-current {
+    border-left-color: var(--accent);
+  }
+
+  .home .tl-title {
+    margin-top: var(--space-4);
   }
 }
 
@@ -213,6 +329,11 @@
   outline-offset: 2px;
 }
 
+/* The Now box clips what is outside it, so its focus ring is drawn inside the row */
+.now-text a:focus-visible::before {
+  outline-offset: -2px;
+}
+
 .post-desc {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -253,18 +374,6 @@
   .post-cat {
     grid-area: cat;
   }
-}
-
-/* Contact */
-.contact {
-  max-width: 34em;
-  font-size: var(--fs-article);
-  line-height: var(--lh-dek);
-  color: var(--text-content);
-}
-
-.contact p {
-  margin: 0;
 }
 
 /* Writing index: category chips. Quarto's script wires the click, the active state and the #category= hash. */

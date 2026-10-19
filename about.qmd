@@ -53,10 +53,4 @@ I love connecting and collaborating with new people. Please don't hesitate to re
 ::: {#experience}
 :::
 
-## [Contact]{.sec-head} {.no-anchor}
-
-::: {.about-contact}
-- [aayushgargiitr@gmail.com](mailto:aayushgargiitr@gmail.com)
-- [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734)
-- [GitHub](https://github.com/garg-aayush)
-:::
+{{< include _contact.qmd >}}

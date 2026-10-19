@@ -1,7 +1,7 @@
 <%
-// One row per item in the Now list.
+// One row per item in the Now box.
 // Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
-// A YAML item gives label, text, href and sub. A post item gives title, date and reading-time, and takes its label from template-params.label.
+// A YAML item gives label, text, href and sub, plus live to put the green status dot before the text. A post item gives title, date and reading-time, and takes its label from template-params.label.
 const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const rows = items.map((item) => {
   const label = item.label ?? templateParams?.label;
@@ -9,11 +9,12 @@ const rows = items.map((item) => {
   const href = item.href ?? (item.outputHref ? `${templateParams?.root ?? ""}${item.outputHref}` : "");
   const link = /^https?:/.test(href) ? ` class="title-link" target="_blank" rel="noopener"` : ` class="title-link no-external"`;
   const sub = item.sub ?? [item.date, item["reading-time"]].filter(Boolean).join(" · ");
+  const dot = item.live ? `<span class="live-dot" aria-hidden="true"></span>` : "";
   const body = href ? `<a href="${esc(href)}"${link}>${text}</a>` : text;
   return `<div class="now-row${item.outputHref ? " is-post" : ""}">
 <p class="now-label">${esc(label)}</p>
 <div class="now-body">
-<p class="now-text">${body}</p>
+<p class="now-text">${dot}${body}</p>
 ${sub ? `<p class="now-sub">${esc(sub)}</p>` : ""}
 </div>
 </div>`;

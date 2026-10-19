@@ -1,4 +1,4 @@
-/* Global base for every Quarto page: type, links, navigation, footer, focus, search, code and the shared UI classes (labels, section headers, buttons, item rows and the dated timeline). Page rules live in static/css/. Every color, font, size and scale value comes from static/design-tokens.css. */
+/* Global base for every Quarto page: type, links, navigation, footer, focus, search, code and the shared UI classes (labels, section headers, buttons, item rows, the dated timeline, the live dot and the contact list). Page rules live in static/css/. Every color, font, size and scale value comes from static/design-tokens.css. */
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -661,24 +661,11 @@ h2:has(> .sec-head) {
   }
 }
 
-/* Reusable: compact list of dated stages, dates on the left and a serif title with its text on the right. Rendered by _templates/timeline.ejs for the homepage path and the About experience. */
+/* Reusable: dated stages, each with dates, a serif title and text. Rendered by _templates/timeline.ejs for the homepage path and the About experience. The type is shared here and each page sets the layout: columns under a rule in home.css, a compact list in pages.css. */
 .timeline {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.tl-row {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  gap: var(--space-24);
-  align-items: baseline;
-  padding: var(--space-24) 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.tl-row:first-child {
-  border-top: 1px solid var(--border);
 }
 
 .tl-row p {
@@ -708,12 +695,13 @@ h2:has(> .sec-head) {
   line-height: var(--lh-body);
 }
 
-@media (max-width: 600px) {
-  .tl-row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
-    padding: var(--space-16) 0;
-  }
+/* The pill that marks the current stage, set by a badge in the list */
+.tl-badge {
+  padding: 0 var(--space-8);
+  line-height: 1.4;
+  border: 1px solid var(--accent-line);
+  border-radius: 999px;
+  color: var(--accent);
 }
 
 /* Reusable: primary button, heading color on ground */
@@ -732,6 +720,28 @@ h2:has(> .sec-head) {
 .btn-solid:hover {
   color: var(--bg-body);
   filter: brightness(1.08);
+}
+
+/* Reusable: green status dot for live data */
+.live-dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--live);
+  box-shadow: 0 0 0 3px var(--live-dim);
+}
+
+/* Contact: one title link per line, from _contact.qmd on the homepage and About. The title link's padding is the tap target, so the negative margin that keeps its line height elsewhere goes. */
+.contact ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact .title-link {
+  margin-block: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

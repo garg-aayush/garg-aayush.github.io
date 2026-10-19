@@ -20,6 +20,10 @@
   --orange-dim: rgba(238, 99, 49, 0.12);
   --code-bg: var(--bg-inset);
 
+  /* The green status dot for live data. Not a semantic color, so it stays apart from --green. */
+  --live: #30D158;
+  --live-dim: rgba(48, 209, 88, 0.16);
+
   /* RGB triple of --bg-body, for libraries that build their own rgba() values */
   --bg-body-rgb: 22, 22, 24;
   --nav-bg: rgba(var(--bg-body-rgb), 0.8);
@@ -73,10 +77,11 @@
   --space-64: 64px;
   --space-88: 88px;
 
-  /* Radii: small controls, buttons, code and figures */
+  /* Radii: small controls, buttons, code and figures, panels */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 14px;
 
   /* Layout and component sizes */
   --container: 1184px;

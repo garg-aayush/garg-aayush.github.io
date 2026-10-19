@@ -33,9 +33,10 @@ quarto render tools/index.qmd
 - `static/design-tokens.css`: the single source for colors (including code syntax colors), font stacks, type, spacing and radius scales, component sizes, and site color aliases.
 - `static/fonts/`: the self-hosted Source Serif 4 variable WOFF2 (Latin subset, weight axis, from `@fontsource-variable/source-serif-4` 5.3.1), `fonts.css` with its `@font-face` rule, and the SIL Open Font License in `OFL.txt`. It is the heading font in browsers without `ui-serif` (Safari uses Apple's New York); body text uses the system sans stack and code the system mono stack, with no web font for either.
 - `tools/common.css`: shared presentation for image tools that use the same layout and controls.
-- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow`, `.title-link`, `.work-rows` and `.timeline` classes).
-- `static/css/home.css`, `static/css/article.css`, `static/css/pages.css`: homepage and blog listing, article, and about, publications, projects and tools catalog rules.
+- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow`, `.title-link`, `.live-dot`, `.work-rows`, `.timeline` and `.contact` classes).
+- `static/css/home.css`, `static/css/article.css`, `static/css/pages.css`: homepage and blog listing, article, and about, publications, projects and tools catalog rules. The `.timeline` markup is shared: the type is in `styles.css`, the homepage Path lays the stages out as dotted columns in `home.css`, and the About experience as a compact list in `pages.css`.
 - Page body classes: each page sets `body-classes` in its front matter and its CSS is scoped to that class. `home` is the homepage and `writing` the Writing index (both in `home.css`), `pg` is Work, About, Publications, the Tools catalog and the weather page (`pages.css`), and `article-page` is every post (`article.css`, set once in `posts/_metadata.yml`).
+- `_contact.qmd`: the Contact section, included by `index.qmd` and `about.qmd`. Quarto does not render underscore files.
 - `_templates/`: EJS listing templates that turn the lists in a page's front matter, and the post listings, into markup. They hold markup and no page copy. Quarto does not render underscore paths.
 - `_partials/title-block.html` and `_filters/article.lua`: the article header and the Pandoc filter for posts, both wired in through `posts/_metadata.yml`. The filter computes the reading time with Quarto's own listing formula so the header matches the post rows, counts the sections, adds the contents list for phones and appends the "All writing" link. Quarto adds the references and footnotes after every filter has run, so the post-render step `scripts/place-article-end.mjs` moves that link behind them on posts that have them (check it with `node --test scripts/place-article-end.test.mjs`). The step does not run under `quarto preview`, where the link stays before the footnotes.
 - `static/js/tools-catalog.js`: adds the filter box and the Details buttons to the tools catalog. Without it every tool description stays visible.
@@ -72,13 +73,14 @@ node --test scripts/preserve-feed-guids.test.mjs
 
 Every visible word is text in a `.qmd` file or in `_quarto.yml`, so no HTML is needed. Repeated items live in lists at the top of the page's file, and the templates in `_templates/` turn them into markup. Run `quarto preview` while editing to see the result.
 
-- **Homepage (`index.qmd`)**: the hero text, the section labels, the Now header with its date label and the contact sentence are Markdown in the body. The hero is the name, the role line, the statement, the lede and the two actions, all Markdown. The Now rows (`label`, `text`, `sub`, `href`) are a list at the top of the file, and the Latest post row is added automatically. The career path stages (`dates`, `title`, `description`) and the Built rows (`title`, `href`, `description`) are lists too. `max-items` on `blog-listings` sets how many recent posts show.
+- **Homepage (`index.qmd`)**: the hero text, the section labels and the Now box header with its date label are Markdown in the body. The hero is the name, the role line, the statement, the lede and the two actions, with the Now box beside them. The Now rows (`label`, `text`, `sub`, `href`, and `live: true` for the green status dot) are a list at the top of the file, and the Latest post row is added automatically after the first row. The career path stages (`dates`, `title`, `description`, and `badge`, whose text shows as a pill, to mark the current stage) and the Built rows (`title`, `href`, `description`) are lists too. `max-items` on `blog-listings` sets how many recent posts show.
 - **Writing index (`blog/index.qmd`)**: the rows and the category chips are generated from the posts, so a new post or a new category shows up on its own.
 - **Posts**: written as before. The interface words (`toc-title`, `back-link-text`, `byline`) are in `posts/_metadata.yml`. The filter computes the reading time and the section count.
 - **Work (`projects.qmd`)**: the live items, the open source projects and the gists are lists with `title`, `href`, `description` and optional `list` and `note`. The order written is the order shown.
 - **Publications (`publications.qmd`)**: one item per paper with `year` as a string, `title`, `subtitle` for the authors (wrap the author's own name in `**`) and `description` for the venue (add a Markdown link). Keep the newest year first.
 - **About (`about.qmd`)**: the intro is Markdown. The roles are a list with `dates`, `title`, `role`, `description` and an optional `href` that links the title.
 - **Tools catalog (`tools/index.qmd`)**: the authoring pattern is unchanged, see [.claude/rules/tools-workflow.md](.claude/rules/tools-workflow.md).
+- **Contact**: the email and the LinkedIn and GitHub links are in `_contact.qmd`, which the homepage and About both include with `{{< include _contact.qmd >}}`, so edit them once there. The underscore keeps Quarto from rendering it as a page.
 - **Navigation and footer**: `_quarto.yml`.
 
 Section headers are written the same way on every page, as `## [Label [link text](url)]{.sec-head} {.no-anchor}`, a serif heading in sentence case with the link, if any, at the right edge. Leave out the link part when a header has no link.
@@ -89,7 +91,7 @@ Quarto listing quirks to know when editing these lists:
 
 - Write any `date` field in a list as a quoted string. Dates show as `15 Jul 2026`, set by `date-format` in `posts/_metadata.yml` and on each post listing.
 - Lists use `sort: false` to keep the written order.
-- Markdown works in `title`, `subtitle` and `description`, but not in custom fields such as `sub`, `text` or `role`.
+- Markdown works in `title`, `subtitle` and `description`, but not in custom fields such as `sub`, `text`, `role` or `badge`.
 
 ## Local checks
 

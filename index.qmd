@@ -7,7 +7,7 @@ body-classes: home
 toc: false
 sidebar: false
 listing:
-  # The Now rows. Edit text, link and sub-line here. The Latest post row is added automatically after the first row.
+  # The Now rows. Edit text, link and sub-line here. Add live: true for the green status dot. The Latest post row is added automatically after the first row.
   - id: now-rows
     template: _templates/now.ejs
     contents:
@@ -23,7 +23,8 @@ listing:
         text: India weather and air quality
         sub: Updated every 15 minutes
         href: india-weather.html
-  # The newest post, shown with the Now rows. Only the row label is set here.
+        live: true
+  # The newest post, shown in the Now box. Only the row label is set here.
   - id: latest-post
     template: _templates/now.ejs
     template-params:
@@ -35,7 +36,7 @@ listing:
     contents:
       - posts/20*.qmd
       - posts/20*/index.qmd
-  # The career path, one entry per stage. Fields: dates, title, description.
+  # The career path, one entry per stage. Fields: dates, title, description. Add badge (the pill text) to mark the current stage.
   - id: path
     template: _templates/timeline.ejs
     sort: false
@@ -49,6 +50,7 @@ listing:
       - dates: 2026 onward
         title: Applied ML in the field
         description: Production AI for refineries and energy operations at Applied Computing.
+        badge: Now
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
@@ -78,6 +80,8 @@ listing:
 
 ::: {.hero}
 
+::: {.hero-copy}
+
 # Aayush Garg {.no-anchor}
 
 ::: {.hero-role}
@@ -98,7 +102,11 @@ Right now that means forecasting, anomaly detection and optimisation for energy 
 
 :::
 
-## [Now [October 2026]{.now-updated}]{.sec-head} {.no-anchor}
+::: {.now-panel}
+
+::: {.now-head}
+**Now** October 2026
+:::
 
 ::: {.now-list}
 
@@ -106,6 +114,10 @@ Right now that means forecasting, anomaly detection and optimisation for energy 
 :::
 
 ::: {#latest-post}
+:::
+
+:::
+
 :::
 
 :::
@@ -125,8 +137,4 @@ Right now that means forecasting, anomaly detection and optimisation for energy 
 ::: {#featured}
 :::
 
-## [Contact]{.sec-head} {.no-anchor}
-
-::: {.contact}
-Email me at [aayushgargiitr@gmail.com](mailto:aayushgargiitr@gmail.com), or find me on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) and [GitHub](https://github.com/garg-aayush).
-:::
+{{< include _contact.qmd >}}
