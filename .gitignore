@@ -1,12 +1,11 @@
 _site/
 .quarto/
-.jekyll-cache/
 .DS_Store
-.cursorindexingignore
-.specstory/
-
-/.quarto/
 
 /node_modules/
 /test-results/
 /playwright-report/
+
+**/*.quarto_ipynb
+
+/.quarto/

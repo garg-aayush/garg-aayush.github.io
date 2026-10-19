@@ -1,6 +1,6 @@
 # Repository guidance
 
-Aayush Garg's personal site, aayushgarg.dev: a Quarto website (Quarto 1.10.18, Node 24.22.0 from `.node-version` for the checks) published to GitHub Pages. `README.md` is the full reference for the file map, styling boundaries, content editing and checks; read the section you need instead of guessing.
+Aayush Garg's personal site, aayushgarg.dev: a Quarto website (Quarto 1.10.18, Node 24.22.0 from `.node-version` for the checks) published to GitHub Pages. `README.md` covers running the site, editing content by hand, the checks and publishing; `.claude/rules/site-styling.md` covers how the styles, templates, filters and feeds fit together.
 
 ## Orientation
 
@@ -14,7 +14,7 @@ Aayush Garg's personal site, aayushgarg.dev: a Quarto website (Quarto 1.10.18, N
 
 ## Content
 
-- Read `.claude/rules/` before changing `posts/` (writing style) or `tools/` (design conventions, catalog and CDN versions).
+- Read `.claude/rules/` before changing `posts/` (writing style), `tools/` (design conventions, catalog and CDN versions), or the site's styles, templates, filters and feeds (`site-styling.md`).
 - Post front matter uses `title`, `tags`, `categories`, `date`, `permalink` and `description`. Use an existing category; add one only when it fits at least two posts.
 - In front matter lists, quote `date` values, keep `sort: false` and use `href` for links. Markdown renders only in `title`, `subtitle` and `description`.
 - Update `TODO.md` when a change leaves a useful improvement for later, and remove items once they are done.
