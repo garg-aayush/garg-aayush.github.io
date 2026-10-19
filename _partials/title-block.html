@@ -1,0 +1,21 @@
+<header id="title-block-header" class="quarto-title-block article-head">
+<p class="article-kicker ui-label">
+  $for(categories)$<span class="quarto-category article-cat">$categories$</span>$endfor$
+  $if(date)$<span class="article-date">$date$</span>$endif$
+</p>
+$if(title)$
+<h1 class="title">$title$</h1>
+$endif$
+$if(subtitle)$
+<p class="subtitle lead">$subtitle$</p>
+$endif$
+$if(hide-description)$
+$elseif(description)$
+<div class="description">$description$</div>
+$endif$
+<p class="article-byline">
+  $if(byline)$<span class="article-author">$byline$</span>$endif$
+  $if(reading-time-text)$<span>$reading-time-text$</span>$endif$
+  $if(section-count-text)$<span>$section-count-text$</span>$endif$
+</p>
+</header>
