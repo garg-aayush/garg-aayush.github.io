@@ -1,5 +1,6 @@
 -- Article filter for posts (loaded from posts/_metadata.yml). Computes reading time and section count, adds the phone contents list, and appends the "all writing" link.
 -- The two added blocks sit inside <nav> elements because Quarto removes every <nav> from RSS feed content, so feed readers do not see them.
+-- Quarto builds the appendix (references, footnotes, appendix sections) after every filter has run, so on a page with an appendix the end link is moved behind it by scripts/place-article-end.mjs, a project post-render step.
 local WORDS_PER_MINUTE = 200 -- same rate Quarto uses for listing reading times
 
 local function esc(s)

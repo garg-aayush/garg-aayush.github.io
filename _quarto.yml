@@ -3,6 +3,7 @@ project:
   output-dir: _site
   post-render:
     - node scripts/preserve-feed-guids.mjs
+    - node scripts/place-article-end.mjs
   render:
     - index.qmd
     - about.qmd
