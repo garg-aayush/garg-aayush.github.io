@@ -25,6 +25,7 @@ paths:
 ## Design Conventions
 - **Theme**: Match the site's dark theme using `static/design-tokens.css` (background `#1d1e20`, card `#2e2e33`, inset `#37383e`, border `#333333`, accent `#75A8D9`).
 - **Shared styles**: Browser token values live in `static/design-tokens.css`; `theme-dark.scss` keeps aligned compile-time Bootstrap defaults. Load tool styles after the tokens. Keep tool-only CSS out of Quarto page styles, and include new shared assets in `_quarto.yml` resources.
+- **Common CSS adoption**: `common.css` is used by the image converter, resizer, and cropper. Opt in only when its full selector set matches the tool's existing presentation; do not apply the image layout to wider editors or canvas tools. Keep specialized tokens and layout overrides local, and check desktop and mobile states when extracting existing rules.
 - **Fonts**: Use the site's system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`), not external fonts
 - **Analytics**: Include `<script src="analytics.js"></script>` in `<head>` (after viewport meta) — this loads shared Google Analytics tracking
 - **Back link**: Include a `<- Back to Tools` link pointing to `./`

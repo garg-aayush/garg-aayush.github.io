@@ -7,6 +7,10 @@ paths:
 
 Inventory of all browser-based tools. Check here before building a new tool to reuse existing CDN libraries and avoid duplicating functionality.
 
+## Shared browser assets
+
+All tools load `../static/design-tokens.css` for the common palette. The image converter, resizer, and cropper also load `common.css` before their specialized local styles. Other tools keep their existing layouts and controls. Syntax colors, search highlights, and diff colors remain local to their tools. `analytics.js` is shared by every tool. Quarto copies the static directory, standalone HTML files, `common.css`, and `analytics.js` explicitly through `_quarto.yml`; add any new shared asset there before relying on it in a standalone tool.
+
 ## Image Tools
 
 | Tool | File | Description | Dependencies |
