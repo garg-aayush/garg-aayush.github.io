@@ -80,7 +80,7 @@ Every visible word is text in a `.qmd` file or in `_quarto.yml`, so no HTML is n
 - **Work (`projects.qmd`)**: the live items, the open source projects and the gists are lists with `title`, `href`, `description` and optional `list` and `note`. The order written is the order shown.
 - **Publications (`publications.qmd`)**: one item per paper with `year` as a string, `title`, `subtitle` for the authors (wrap the author's own name in `**`) and `description` for the venue (add a Markdown link). Keep the newest year first.
 - **About (`about.qmd`)**: the intro is Markdown. The roles are a list with `dates`, `title`, `role`, `description` and an optional `href` that links the title.
-- **Tools catalog (`tools/index.qmd`)**: the authoring pattern is unchanged, see [.claude/rules/tools-workflow.md](.claude/rules/tools-workflow.md).
+- **Tools catalog (`tools/index.qmd`)**: each tool is a `.tool-item` entry under its category heading; copy a neighbouring entry. The conventions are in [.claude/rules/tools-design.md](.claude/rules/tools-design.md).
 - **Contact**: the email and the LinkedIn and GitHub links are in `_contact.qmd`, which the homepage and About both include with `{{< include _contact.qmd >}}`, so edit them once there. The underscore keeps Quarto from rendering it as a page.
 - **Navigation and footer**: `_quarto.yml`.
 
@@ -101,6 +101,7 @@ Use Node 24.22.0 and its npm 11.19.1, then run these commands from the repositor
 ```bash
 npm ci --ignore-scripts
 npx playwright install chromium
+npm run check:secrets
 npm run check:posts
 npm test
 quarto render --clean
@@ -108,13 +109,17 @@ npm run check:site
 npm run test:browser
 ```
 
-`check:posts` validates the six required metadata fields and unique historical permalinks without changing existing routes. `npm test` covers malformed metadata, deliberate missing links and assets, fragment and RSS handling, download helper contracts, and feed identity compatibility. `check:site` parses rendered HTML, CSS, RSS descriptions, and sitemap URLs. It resolves relative, canonical-host, and legacy-host references against actual output files, checks HTML fragments, and treats RSS GUIDs as opaque identities. Static validation makes no network requests.
+`check:secrets` scans every tracked file for credential shaped values (Mapbox, GitHub and common API tokens, private keys) and prints only the path, line and kind. `check:posts` validates the six required metadata fields and unique historical permalinks without changing existing routes. `npm test` covers malformed metadata, deliberate missing links and assets, fragment and RSS handling, download helper contracts, and feed identity compatibility. `check:site` parses rendered HTML, CSS, RSS descriptions, and sitemap URLs. It resolves relative, canonical-host, and legacy-host references against actual output files, checks HTML fragments, and treats RSS GUIDs as opaque identities. Static validation makes no network requests.
 
-The browser suite starts a local server for `_site/` and checks mobile navigation, visible article math, and decoded converter/resizer downloads, including dimensions, filenames, and transparency. It rejects missing local requests and uncaught browser errors. The math check requires the public MathJax CDN used by the rendered article; it fails if math does not typeset. Browser checks suppress analytics requests and do not run weather fetchers or publishers. Chromium installation on Linux may need `npx playwright install --with-deps chromium`, as used in CI.
+The browser suite starts a local server for `_site/` and checks mobile navigation, visible article math, decoded converter/resizer downloads (including dimensions, filenames, and transparency), and that no page scrolls sideways at 390 or 1280 px. The functional checks reject missing local requests and uncaught browser errors. The math check requires the public MathJax CDN used by the rendered article; it fails if math does not typeset. Browser checks suppress analytics requests and do not run weather fetchers or publishers. Chromium installation on Linux may need `npx playwright install --with-deps chromium`, as used in CI.
 
 For another output directory, use `npm run check:site -- path/to/output` and `SITE_OUTPUT_DIR=path/to/output npm run test:browser`. Paths resolve from the project root. Set `SITE_TEST_PORT` if the default local port 4173 is occupied. Test artifacts are written under the ignored `test-results/` directory.
 
+For a visual review, `node scripts/screenshots.mjs [page ...]` saves full-page screenshots at 390 and 1280 px to `test-results/screenshots/`. With no pages it shoots the main pages and the newest post. It also honors `SITE_OUTPUT_DIR`.
+
 `.github/workflows/site-checks.yml` runs these checks for pull requests to `master`, pushes to `master`, and manual runs. Its token has read-only contents permission; it does not publish, inject secrets, or run weather jobs. The publishing workflow remains separate.
+
+The git hooks in `.agent_hooks/git/` refuse commits on `master`, scan staged files for secrets and reject em and en dashes and attribution lines (`Co-Authored-By`, "Generated with") in commit messages. Enable them once per clone with `git config core.hooksPath .agent_hooks/git`. The rest of `.agent_hooks/` holds the coding agent hooks described in [AGENTS.md](AGENTS.md).
 
 ## Publication and weather data
 

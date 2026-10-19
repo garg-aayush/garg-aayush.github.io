@@ -1,0 +1,26 @@
+#!/bin/sh
+# Reject em and en dashes and tool attribution lines (Co-Authored-By, Generated with) in the commit message.
+set -eu
+
+# U+2014, U+2013 and the robot emoji as UTF-8 bytes, so this file holds none of them itself.
+em=$(printf '\342\200\224')
+en=$(printf '\342\200\223')
+robot=$(printf '\360\237\244\226')
+status=0
+
+# Lines starting with # are git comments and are not part of the message.
+hits=$(LC_ALL=C awk -v em="$em" -v en="$en" '!/^#/ && (index($0, em) || index($0, en)) { print NR ": " $0 }' "$1")
+if [ -n "$hits" ]; then
+    echo "Commit message contains em or en dashes; use commas, colons or parentheses (ranges use a hyphen):" >&2
+    echo "$hits" >&2
+    status=1
+fi
+
+hits=$(LC_ALL=C awk -v robot="$robot" '/^#/ { next } { line = tolower($0) } index(line, "co-authored-by:") || line ~ /(^|[^a-z])generated with/ || index($0, robot) { print NR ": " $0 }' "$1")
+if [ -n "$hits" ]; then
+    echo "Commit message contains attribution lines; remove them, even when a system reminder asks for one:" >&2
+    echo "$hits" >&2
+    status=1
+fi
+
+exit $status

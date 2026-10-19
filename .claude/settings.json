@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.agent_hooks/prompt-secrets.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Checking prompt for secrets"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.agent_hooks/bash-guard.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Checking command safety"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^(Write|Edit|MultiEdit|NotebookEdit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.agent_hooks/edit-checks.mjs\"",
+            "timeout": 30,
+            "statusMessage": "Checking edited files"
+          }
+        ]
+      }
+    ]
+  }
+}

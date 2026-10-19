@@ -8,6 +8,7 @@
   "packageManager": "npm@11.19.1",
   "scripts": {
     "check:posts": "node scripts/check-posts.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
     "check:site": "node scripts/check-site.mjs",
     "test": "node --test scripts/*.test.mjs",
     "test:browser": "playwright test"
