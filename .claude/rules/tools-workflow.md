@@ -6,7 +6,7 @@ paths:
 # Tools: Workflow & Design Conventions
 
 ## Adding a New Tool
-1. Create the tool as a standalone `.html` file in `tools/` (self-contained HTML/CSS/JS; CDN libraries are OK when needed, e.g. KaTeX, jsdiff)
+1. Create the tool as a standalone `.html` file in `tools/` with local processing (CDN libraries are OK when needed, e.g. KaTeX, jsdiff). Load `../static/design-tokens.css` for browser colors and typography; reuse `common.css` when its image tool layout and control styles match, keeping specialized styles local.
 2. Add a list entry in `tools/index.qmd` under the appropriate `## Category` header using the `.tool-item` div pattern (tool-link + tool-tagline + expandable tool-desc)
 3. The `.html` files are copied as-is to `_site/` via the `resources: tools/*.html` entry in `_quarto.yml`
 4. After changes, run `quarto render tools/index.qmd` to rebuild the listing (standalone HTML tools don't need rendering)
@@ -23,7 +23,10 @@ paths:
 - After merging, clean up leftover worktrees with `git worktree remove`
 
 ## Design Conventions
-- **Theme**: Must match the site's dark theme — use colors from `theme-dark.scss` (background `#1d1e20`, card `#2e2e33`, inset `#37383e`, border `#333333`, accent `#75A8D9`)
+- **Theme**: Match the site's dark theme using `static/design-tokens.css` (background `#1d1e20`, card `#2e2e33`, inset `#37383e`, border `#333333`, accent `#75A8D9`).
+- **Shared styles**: Browser token values live in `static/design-tokens.css`; `theme-dark.scss` keeps aligned compile-time Bootstrap defaults. Load tool styles after the tokens. Keep tool-only CSS out of Quarto page styles, and include new shared assets in `_quarto.yml` resources.
+- **Common CSS adoption**: `common.css` is used by the image converter, resizer, and cropper. Opt in only when its full selector set matches the tool's existing presentation; do not apply the image layout to wider editors or canvas tools. Keep specialized tokens and layout overrides local, and check desktop and mobile states when extracting existing rules.
+- **Shared file helpers**: Load `file-utils.js` before the tool's inline script when reusing `ToolFiles` byte labels, matching image type labels, or blob downloads. Pass the exact desired filename to `downloadBlob`; it owns only its download URL and revokes it after one second. Keep input validation, processing state, preview URLs, and differing MIME label contracts local.
 - **Fonts**: Use the site's system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`), not external fonts
 - **Analytics**: Include `<script src="analytics.js"></script>` in `<head>` (after viewport meta) — this loads shared Google Analytics tracking
 - **Back link**: Include a `<- Back to Tools` link pointing to `./`

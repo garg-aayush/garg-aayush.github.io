@@ -1,5 +1,7 @@
 /*-- scss:defaults --*/
 
+// Bootstrap needs compile-time Sass colors and fonts. Keep these defaults aligned with static/design-tokens.css; browser components consume its CSS variables directly.
+
 // Typography - Pure system fonts like Lil'Log (PaperMod)
 $font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
                          Oxygen, Ubuntu, Cantarell, "Open Sans", 

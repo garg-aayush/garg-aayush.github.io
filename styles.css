@@ -1,16 +1,6 @@
 /* Lil'Log-inspired soft dark theme styles */
 
-/* Color variables matching theme-dark.scss */
-:root {
-  --bg-primary: #1d1e20;
-  --bg-secondary: #2e2e33;
-  --bg-tertiary: #37383e;
-  --text-primary: #dadada;
-  --text-secondary: #c4c4c5;
-  --text-muted: #9b9c9d;
-  --border-color: #333333;
-  --accent: #75A8D9;
-}
+/* Browser color variables are supplied by static/design-tokens.css. */
 
 /* Profile section */
 .profile-pic {
@@ -511,7 +501,7 @@ h2 {
 
 .tool-desc p {
   font-size: 0.85rem;
-  color: var(--text-dim);
+  color: inherit;
   font-weight: 400;
   line-height: 1.5;
 }

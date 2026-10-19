@@ -5,26 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="analytics.js"></script>
     <title>YAML ↔ JSON Converter</title>
+    <link rel="stylesheet" href="../static/design-tokens.css">
     <style>
         :root {
-            --bg-body: #1d1e20;
-            --bg-card: #2e2e33;
-            --bg-inset: #37383e;
-            --bg-hover: #414244;
-            --border: #333333;
-            --text-primary: #dadada;
-            --text-content: #c4c4c5;
-            --text-muted: #9b9c9d;
-            --text-dim: #707073;
-            --accent: #75A8D9;
-            --accent-hover: #8fbce5;
-            --accent-dim: rgba(117, 168, 217, 0.15);
-            --green: #72994E;
-            --green-dim: rgba(114, 153, 78, 0.15);
-            --orange: #EE6331;
-            --orange-dim: rgba(238, 99, 49, 0.12);
-            --code-bg: #37383e;
-
             --syn-key: #75A8D9;
             --syn-string: #C3E88D;
             --syn-number: #F78C6C;
@@ -300,7 +283,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.3.2/dist/js-yaml.min.js"></script>
     <script>
         const yamlInput = document.getElementById('yamlInput');
         const jsonInput = document.getElementById('jsonInput');

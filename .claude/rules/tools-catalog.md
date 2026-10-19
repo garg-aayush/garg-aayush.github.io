@@ -7,6 +7,10 @@ paths:
 
 Inventory of all browser-based tools. Check here before building a new tool to reuse existing CDN libraries and avoid duplicating functionality.
 
+## Shared browser assets
+
+All tools load `../static/design-tokens.css` for the common palette. The image converter, resizer, and cropper also load `common.css` before their specialized local styles. Other tools keep their existing layouts and controls. Syntax colors, search highlights, and diff colors remain local to their tools. `analytics.js` is shared by every tool. The image tools and SVG viewer load `file-utils.js` for matching file labels and blob downloads. Quarto copies the static directory, standalone HTML files, `common.css`, `file-utils.js`, and `analytics.js` explicitly through `_quarto.yml`; add any new shared asset there before relying on it in a standalone tool.
+
 ## Image Tools
 
 | Tool | File | Description | Dependencies |
@@ -40,9 +44,9 @@ Inventory of all browser-based tools. Check here before building a new tool to r
 
 | Library | CDN URL | Used By |
 |---------|---------|---------|
-| marked.js | `cdn.jsdelivr.net/npm/marked` | Markdown Viewer |
-| highlight.js | `cdn.jsdelivr.net/npm/highlight.js@11` | Markdown Viewer |
-| KaTeX | `cdn.jsdelivr.net/npm/katex@0.16` | Markdown Viewer, LaTeX Math Preview |
-| KaTeX auto-render | `cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js` | Markdown Viewer |
-| jsdiff | `cdn.jsdelivr.net/npm/diff` | Diff Viewer |
-| js-yaml | `cdn.jsdelivr.net/npm/js-yaml@4` | YAML ↔ JSON Converter |
+| marked.js | `cdn.jsdelivr.net/npm/marked@18.1.1/lib/marked.umd.min.js` | Markdown Viewer |
+| highlight.js | `cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.12.0/highlight.min.js` | Markdown Viewer |
+| KaTeX | `cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js` | Markdown Viewer, LaTeX Math Preview |
+| KaTeX auto-render | `cdn.jsdelivr.net/npm/katex@0.16.47/dist/contrib/auto-render.min.js` | Markdown Viewer |
+| jsdiff | `cdn.jsdelivr.net/npm/diff@9.0.0/dist/diff.min.js` | Diff Viewer |
+| js-yaml | `cdn.jsdelivr.net/npm/js-yaml@4.3.2/dist/js-yaml.min.js` | YAML ↔ JSON Converter |

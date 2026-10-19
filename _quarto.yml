@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: _site
+  post-render:
+    - node scripts/preserve-feed-guids.mjs
   render:
     - index.qmd
     - about.qmd
@@ -16,7 +18,7 @@ project:
 website:
   title: "Aayush Garg"
   description: "Personal website"
-  site-url: "https://garg-aayush.github.io"
+  site-url: "https://aayushgarg.dev"
   google-analytics: "G-16JWTLXJNG"
   favicon: "static/img/aayush_cropped.jpg"
   open-graph: true
@@ -50,7 +52,7 @@ website:
       - icon: twitter
         href: "https://twitter.com/Aayush_ander"
       - icon: rss
-        href: "https://garg-aayush.github.io/blog/index.xml"
+        href: "https://aayushgarg.dev/blog/index.xml"
   page-footer:
     center:
       - icon: github
@@ -64,7 +66,9 @@ format:
   html:
     from: markdown+raw_html
     theme: [cosmo, theme-dark.scss]
-    css: styles.css
+    css:
+      - static/design-tokens.css
+      - styles.css
     toc: true
     smooth-scroll: true
     link-external-newwindow: true
@@ -72,5 +76,7 @@ format:
 resources:
   - static
   - tools/*.html
+  - tools/common.css
+  - tools/file-utils.js
   - tools/analytics.js
   - CNAME

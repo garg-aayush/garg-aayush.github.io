@@ -6,3 +6,7 @@ _site/
 .specstory/
 
 /.quarto/
+
+/node_modules/
+/test-results/
+/playwright-report/

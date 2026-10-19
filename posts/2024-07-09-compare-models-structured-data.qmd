@@ -10,7 +10,7 @@ permalink: /2024-07-09-compare-models-structured-data/
 
 ### Introduction
 
-In the [previous blog post](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/), I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo).
+In the [previous blog post](2024-07-03-baseline-gpt4o-structured-data.qmd), I established a performance baseline using GPT-4o for generating structured data, particularly functional representations, from text using the [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo).
 
 Building on that foundation, I expand the experiment to include a broader range of models, both open-source and proprietary. This comparison aims to provide insights on how well these models perform out of the box in structured data extraction tasks, which is quite crucial for RAG applications, knowledge base construction, and reasoning systems.
 
@@ -105,7 +105,7 @@ _*for limited usage_
 
 ### Evaluation Strategy
 
-To assess the models' performance, I used the same evaluation criteria as in the [previous post](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/):
+To assess the models' performance, I used the same evaluation criteria as in the [previous post](2024-07-03-baseline-gpt4o-structured-data.qmd):
 
 1. **Function Name Match**: The function name must match the ground truth function name.
 2. **Function and Attributes Match**: The generated function name and attributes must match the ground truth function attributes. However, the order of the attributes does not matter.
@@ -153,7 +153,7 @@ One can argue that these results may not fully represent the models' maximum cap
 
 ## References
 
-- [Part I blog post of series](https://aayushgarg.dev/2024-07-03-baseline-gpt4o-structured-data/)
+- [Part I blog post of series](2024-07-03-baseline-gpt4o-structured-data.qmd)
 - [ViGGO Dataset](https://huggingface.co/datasets/GEM/viggo)
 - [Notebook I: Generate_responses_all_llms.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Generate_responses_all_llms.ipynb)
 - [Notebook II: Compare_models_performances.ipynb](https://github.com/garg-aayush/llm-warehouse/blob/main/tutorials/Compare_model_performances.ipynb)
