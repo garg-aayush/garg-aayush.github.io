@@ -23,7 +23,7 @@ listing:
       root: ../
     feed: true
     fields: [date, title, description, categories, reading-time]
-    date-format: "YYYY-MM-DD"
+    date-format: "D MMM YYYY"
     sort: "date desc"
     contents: *posts
 ---

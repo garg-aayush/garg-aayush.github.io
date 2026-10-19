@@ -7,7 +7,7 @@ body-classes: home
 toc: false
 sidebar: false
 listing:
-  # The Now panel rows. Edit text, link and sub-line here. The Latest post row is added automatically after the first row.
+  # The Now rows. Edit text, link and sub-line here. The Latest post row is added automatically after the first row.
   - id: now-rows
     template: _templates/now.ejs
     contents:
@@ -23,75 +23,70 @@ listing:
         text: India weather and air quality
         sub: Updated every 15 minutes
         href: india-weather.html
-        live: true
-  # The newest post, shown in the Now panel. Only the row label is set here.
+  # The newest post, shown with the Now rows. Only the row label is set here.
   - id: latest-post
     template: _templates/now.ejs
     template-params:
       label: Latest post
     fields: [date, title, reading-time]
-    date-format: "YYYY-MM-DD"
+    date-format: "D MMM YYYY"
     sort: "date desc"
     max-items: 1
     contents:
       - posts/20*.qmd
       - posts/20*/index.qmd
-  # The career path, one entry per stage. Add badge to mark the current stage.
+  # The career path, one entry per stage. Fields: dates, title, description.
   - id: path
-    template: _templates/path.ejs
+    template: _templates/timeline.ejs
+    sort: false
     contents:
-      - years: 2015 to 2022
+      - dates: 2015 to 2022
         title: Research
-        text: PhD at TU Delft, then research geophysicist at Shell, applying deep learning to imaging and inversion problems.
-      - years: 2022 to 2026
+        description: PhD at TU Delft, then research geophysicist at Shell, applying deep learning to imaging and inversion problems.
+      - dates: 2022 to 2026
         title: ML development
-        text: Diffusion pipelines at Flixstock. The image enhancement pipeline and Smart Redraw at Jiffy.
-      - years: 2026 onward
+        description: Diffusion pipelines at Flixstock. The image enhancement pipeline and Smart Redraw at Jiffy.
+      - dates: 2026 onward
         title: Applied ML in the field
-        text: Production AI for refineries and energy operations at Applied Computing.
-        badge: Now
+        description: Production AI for refineries and energy operations at Applied Computing.
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
     feed: true
     fields: [date, title, categories, reading-time]
-    date-format: "YYYY-MM-DD"
+    date-format: "D MMM YYYY"
     sort: "date desc"
     max-items: 5
     contents:
       - posts/20*.qmd
       - posts/20*/index.qmd
-  # The featured tiles. Add live: true for the green status dot. meta is the mono footer line.
+  # What I have built, as rows. Fields: title, href, description.
   - id: featured
-    template: _templates/featured.ejs
+    template: _templates/work-rows.ejs
+    sort: false
     contents:
-      - label: Open source
-        title: building-from-scratch
-        text: "Language models from first principles: GPT-2, a BPE tokenizer with a Rust encoder, KV cache, SFT and GRPO."
+      - title: building-from-scratch
         href: https://github.com/garg-aayush/building-from-scratch
-        meta: [PyTorch, Rust]
-      - label: Live
-        live: true
-        title: India Weather
-        text: Weather and air quality across Indian cities on one map, with 24-hour history.
+        description: "Language models from first principles: GPT-2, a BPE tokenizer with a Rust encoder, KV cache, SFT and GRPO."
+      - title: India Weather
         href: india-weather.html
-        meta: [Every 15 minutes, 24-hour history]
-      - label: Tools
-        title: Browser tools
-        text: Image, JSON, YAML, LaTeX and diff utilities that run entirely in your browser.
+        description: Weather and air quality across Indian cities on one map, with 24-hour history.
+      - title: Browser tools
         href: tools/
-        meta: [Client-side, No uploads]
+        description: Image, JSON, YAML, LaTeX and diff utilities that run entirely in your browser.
 ---
 
 ::: {.hero}
 
-::: {.hero-copy}
+# Aayush Garg {.no-anchor}
 
-::: {.hero-tag}
-Forward deployed ML engineer · Applied Computing
+::: {.hero-role}
+Forward deployed ML engineer at Applied Computing
 :::
 
-# I build and deploy AI&nbsp;systems, [from first principles to production.]{.dim} {#headline .no-anchor}
+::: {.hero-statement}
+I build and deploy AI systems, from first principles to production.
+:::
 
 ::: {.hero-lede}
 Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock. Outside work, I rebuild language models from scratch and write about what I learn.
@@ -103,11 +98,7 @@ Right now that means forecasting, anomaly detection and optimisation for energy 
 
 :::
 
-::: {.now-panel}
-
-::: {.now-head}
-**Now** [October 2026]{.now-updated}
-:::
+## [Now [October 2026]{.now-updated}]{.sec-head} {.no-anchor}
 
 ::: {.now-list}
 
@@ -119,26 +110,22 @@ Right now that means forecasting, anomaly detection and optimisation for energy 
 
 :::
 
-:::
-
-:::
-
-## [Path []{.rule}]{.sec-head} {.no-anchor}
+## [Path]{.sec-head} {.no-anchor}
 
 ::: {#path}
 :::
 
-## [Writing []{.rule} [All writing](blog/)]{.sec-head} {.no-anchor}
+## [Writing [All writing](blog/)]{.sec-head} {.no-anchor}
 
 ::: {#blog-listings}
 :::
 
-## [Built []{.rule} [All work](projects.qmd)]{.sec-head} {.no-anchor}
+## [Built [All work](projects.qmd)]{.sec-head} {.no-anchor}
 
 ::: {#featured}
 :::
 
-## [Contact []{.rule}]{.sec-head} {.no-anchor}
+## [Contact]{.sec-head} {.no-anchor}
 
 ::: {.contact}
 Email me at [aayushgargiitr@gmail.com](mailto:aayushgargiitr@gmail.com), or find me on [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734) and [GitHub](https://github.com/garg-aayush).

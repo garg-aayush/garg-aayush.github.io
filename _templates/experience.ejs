@@ -1,8 +1,0 @@
-<ol class="xp-path"><% for (const item of items) { %>
-<li class="xp-stage<%= item.now ? ' is-now' : '' %>">
-<p class="xp-dates"><%= item.dates %></p>
-<h3 class="xp-company no-anchor"><% if (item.path) { %><a class="title-link" href="<%- item.path %>"><%- item.title %></a><% } else { %><%- item.title %><% } %></h3>
-<p class="xp-role"><%= item.role %></p>
-<p class="xp-desc"><%- item.description %></p>
-</li><% } %>
-</ol>

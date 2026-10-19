@@ -1,4 +1,4 @@
-/* Global base for every Quarto page: type, links, navigation, footer, focus, search, code and the shared UI classes. Page rules live in static/css/. Every color, font, size and scale value comes from static/design-tokens.css. */
+/* Global base for every Quarto page: type, links, navigation, footer, focus, search, code and the shared UI classes (labels, section headers, buttons, item rows and the dated timeline). Page rules live in static/css/. Every color, font, size and scale value comes from static/design-tokens.css. */
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -6,12 +6,10 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: var(--fs-body);
+  font-size: var(--fs-ui);
   line-height: var(--lh-body);
   color: var(--text-content);
   background-color: var(--bg-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
@@ -22,16 +20,16 @@ body {
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-weight: 600;
   color: var(--text-primary);
+  letter-spacing: var(--tracking-heading);
   text-wrap: balance;
 }
 
 h2 {
   font-size: var(--fs-h2);
   line-height: var(--lh-heading);
-  letter-spacing: var(--tracking-h2);
   margin-top: var(--space-32);
   margin-bottom: var(--space-16);
   padding-bottom: 0;
@@ -41,7 +39,6 @@ h2 {
 h3 {
   font-size: var(--fs-h3);
   line-height: 1.3;
-  letter-spacing: var(--tracking-h3);
 }
 
 strong, b {
@@ -73,17 +70,18 @@ a:hover {
 
 /* Link kinds. Prose links, above, are Accent and underlined. Every kind below shows what it is without hover, because phones have no hover. */
 
-/* Arrow on title links, card links and secondary actions: → stays on the site, ↗ leaves it. Decorative, so the alternative text is empty; the first content line is the fallback for browsers without alternative text. */
-:is(.title-link, .card-link, .link-arrow, .sec-head a)::after {
+/* Arrow on title links and secondary actions: → stays on the site, ↗ leaves it. The arrow is always sans, even after a serif title. Decorative, so the alternative text is empty; the first content line is the fallback for browsers without alternative text. */
+:is(.title-link, .link-arrow, .sec-head a)::after {
   content: "\00a0\2192";
   content: "\00a0\2192" / "";
+  font-family: var(--font-sans);
   font-size: 0.9em;
   font-weight: 400;
   color: var(--accent);
 }
 
 /* A link to another host takes ↗. Quarto rewrites every href to a full URL on load, so internal links read as aayushgarg.dev, localhost or 127.0.0.1, and all three count as the site. */
-:is(.title-link, .card-link, .link-arrow, .sec-head a):where([href^="http://"], [href^="https://"]):where(:not([href*="aayushgarg.dev"], [href*="//localhost"], [href*="//127.0.0.1"]))::after {
+:is(.title-link, .link-arrow, .sec-head a):where([href^="http://"], [href^="https://"]):where(:not([href*="aayushgarg.dev"], [href*="//localhost"], [href*="//127.0.0.1"]))::after {
   content: "\00a0\2197";
   content: "\00a0\2197" / "";
 }
@@ -91,6 +89,8 @@ a:hover {
 /* Title links: an item's name in a list or row. Heading color with the arrow, Accent on hover and focus. The padding grows the tap area to the touch target and the negative margin keeps the line height. */
 .title-link {
   display: inline-block;
+  /* An inline-block takes its last line as the baseline, so top alignment keeps the first line of a wrapped title level with the date or description beside it */
+  vertical-align: top;
   padding-block: var(--space-12);
   margin-block: calc(-1 * var(--space-12));
   color: var(--text-primary);
@@ -106,45 +106,6 @@ a:hover {
   content: none;
 }
 
-/* Card links: the title link covers its card, so the card is the target. ::before draws the border that turns Accent on hover and focus, plus the focus ring; ::after is the arrow at the top right, placed by the card's --card-pad. */
-.card-link {
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.card-link::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-lg);
-}
-
-.card-link::after {
-  position: absolute;
-  top: var(--card-pad, var(--space-24));
-  right: var(--card-pad, var(--space-24));
-  font-size: var(--fs-ui);
-  line-height: 1;
-}
-
-.card-link:is(:hover, :focus-visible) {
-  color: var(--accent);
-}
-
-.card-link:is(:hover, :focus-visible)::before {
-  border-color: var(--accent);
-}
-
-.card-link:focus-visible {
-  outline: none;
-}
-
-.card-link:focus-visible::before {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
 /* Secondary actions: the link in a section header, standalone actions such as "About me", and the back link that ends an article (which has its own ← arrow). Accent. */
 :is(.link-arrow, .sec-head a, .link-back) {
   color: var(--accent);
@@ -157,10 +118,10 @@ a:hover {
 }
 
 .link-arrow {
-  font-size: var(--fs-control);
+  font-size: var(--fs-ui);
 }
 
-/* Underline on hover and focus, the same 1px line as prose links. Cards show their state with the border instead. */
+/* Underline on hover and focus, the same 1px line as prose links */
 :is(.title-link, .link-arrow, .sec-head a, .link-back, footer.footer a):is(:hover, :focus-visible) {
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -196,7 +157,7 @@ time, .date, td, th {
   border-radius: var(--radius-md);
   background-color: var(--text-primary);
   color: var(--bg-body);
-  font-size: var(--fs-control);
+  font-size: var(--fs-ui);
   font-weight: 500;
   transform: translateY(-200%);
 }
@@ -236,36 +197,19 @@ body.nav-fixed {
 .navbar-brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-12);
   min-height: var(--touch-target);
   margin: 0;
   padding: 0;
   overflow: visible;
-  font-size: var(--fs-control);
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
   font-weight: 600;
-  letter-spacing: var(--tracking-brand);
+  letter-spacing: var(--tracking-heading);
   color: var(--text-primary);
 }
 
 .navbar-brand:hover {
   color: var(--text-primary);
-}
-
-.navbar-brand::before {
-  content: "AG";
-  content: "AG" / "";
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: var(--mark-size);
-  height: var(--mark-size);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: var(--fs-mark);
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--accent);
 }
 
 /* Link list. Below 992 px Quarto orders it after the search icon, so it takes an earlier slot to keep the icon at the right end of the bar. It grows to fill the row so that the auto margins Quarto gives the list and the icon get no space to split. */
@@ -286,7 +230,7 @@ body.nav-fixed {
   align-items: center;
   min-height: var(--touch-target);
   padding: 0 var(--space-8);
-  font-size: var(--fs-control);
+  font-size: var(--fs-ui);
   color: var(--text-muted);
   transition: color 0.15s ease;
 }
@@ -300,15 +244,14 @@ body.nav-fixed {
   position: relative;
 }
 
+/* The active page: Heading color and a 2px Accent underline */
 .navbar .navbar-nav .nav-link.active .menu-text::after {
   content: "";
   position: absolute;
-  left: 50%;
-  top: calc(100% + var(--space-8));
-  width: var(--space-4);
-  height: var(--space-4);
-  margin-left: calc(var(--space-4) / -2);
-  border-radius: 50%;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--space-4));
+  height: 2px;
   background-color: var(--accent);
 }
 
@@ -328,15 +271,24 @@ body.nav-fixed {
   }
 }
 
-/* On the narrowest phones only the AG mark stays visible, so the four links keep one row */
+/* The narrowest phones: the brand and the four links still share one row */
 @media (max-width: 380px) {
-  .navbar-title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  .navbar-brand {
+    font-size: var(--fs-ui);
+  }
+
+  .navbar .navbar-container > .navbar-nav {
+    gap: 0;
+  }
+
+  .navbar .navbar-nav .nav-link {
+    padding: 0 var(--space-4);
+  }
+}
+
+@media (max-width: 340px) {
+  .navbar .navbar-nav .nav-link {
+    font-size: var(--fs-label);
   }
 }
 
@@ -408,8 +360,7 @@ footer.footer .nav-footer {
   align-items: center;
   border-top: 1px solid var(--border);
   background-color: transparent;
-  font-family: var(--font-mono);
-  color: var(--text-dim);
+  color: var(--text-muted);
   text-align: left;
 }
 
@@ -428,7 +379,7 @@ footer.footer .nav-footer p {
   margin: 0;
 }
 
-/* Links sit one step above the Dim copyright text and underline on hover and focus (see "Link kinds") */
+/* Links share the footer's Muted color, turn Heading on hover and underline on hover and focus (see "Link kinds") */
 footer.footer .nav-footer a {
   color: var(--text-muted);
 }
@@ -463,7 +414,6 @@ footer.footer .footer-items .nav-link {
   font-size: var(--fs-title);
   font-weight: 600;
   line-height: var(--lh-title);
-  letter-spacing: var(--tracking-title);
   color: var(--text-primary);
   margin-bottom: 0;
 }
@@ -489,17 +439,7 @@ footer.footer .footer-items .nav-link {
 .quarto-title-meta-heading,
 .quarto-title-meta-contents,
 .quarto-title-meta .date {
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  color: var(--text-dim);
-}
-
-.quarto-title-meta-heading {
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
-.quarto-title-meta-contents p {
   color: var(--text-muted);
 }
 
@@ -601,7 +541,7 @@ blockquote p {
 blockquote {
   margin-left: 0;
   padding: var(--space-4) 0 var(--space-4) var(--space-24);
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--text-dim);
 }
 
 details > summary {
@@ -627,43 +567,28 @@ table td {
   border-color: var(--border);
 }
 
-/* Reusable: mono uppercase metadata label */
+/* Reusable: metadata label. Sans in Muted at label size, sentence case. */
 .ui-label {
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 
-/* Reusable: section header. A real h2 holding one .sec-head span: label text, a .rule element that fills the row, then an optional link. Written as
-   ## [Label []{.rule} [link](url)]{.sec-head} {.no-anchor}
+/* Reusable: section header. A real h2 holding one .sec-head span: the label text, then an optional link pushed to the right edge. Written as
+   ## [Label [link](url)]{.sec-head} {.no-anchor}
    The class sits on the span because on the ## itself it would also land on Quarto's section wrapper. */
 .sec-head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  justify-content: space-between;
   gap: var(--space-16);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  font-weight: 400;
-  line-height: var(--lh-heading);
-  letter-spacing: var(--tracking-label-wide);
-  text-transform: uppercase;
-  color: var(--text-dim);
 }
 
-.sec-head .rule {
-  flex: 1;
-  height: 1px;
-  background-color: var(--border);
-}
-
-/* The link takes the secondary action style under "Link kinds" and drops the label's mono uppercase */
+/* The link takes the secondary action style under "Link kinds" in the sans */
 .sec-head a {
   font-family: var(--font-sans);
-  font-size: var(--fs-small);
-  letter-spacing: 0.04em;
-  text-transform: none;
+  font-size: var(--fs-ui);
+  letter-spacing: normal;
 }
 
 /* Space around the heading. A page changes it by setting --sec-before and --sec-after. */
@@ -678,6 +603,119 @@ h2:has(> .sec-head) {
   }
 }
 
+/* Reusable: rows of items with a serif title link and a description. Rendered by _templates/work-rows.ejs on the Work page and the homepage. */
+.work-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.work-row {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: var(--space-24);
+  align-items: baseline;
+  padding: var(--space-24) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.work-row:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.work-name {
+  margin: 0;
+  font-size: var(--fs-item);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.work-body {
+  max-width: 62em;
+  line-height: var(--lh-body);
+}
+
+.work-body p {
+  margin: 0;
+}
+
+.work-body p + p,
+.work-body ul + p {
+  margin-top: var(--space-12);
+}
+
+.work-body ul {
+  margin: var(--space-12) 0 0;
+  padding-left: var(--space-24);
+}
+
+.work-body li::marker {
+  color: var(--text-dim);
+}
+
+@media (max-width: 600px) {
+  .work-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+    padding: var(--space-16) 0;
+  }
+}
+
+/* Reusable: compact list of dated stages, dates on the left and a serif title with its text on the right. Rendered by _templates/timeline.ejs for the homepage path and the About experience. */
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tl-row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: var(--space-24);
+  align-items: baseline;
+  padding: var(--space-24) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tl-row:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.tl-row p {
+  margin: 0;
+}
+
+.tl-dates {
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.tl-title {
+  margin: 0;
+  font-size: var(--fs-item);
+  line-height: 1.35;
+}
+
+.tl-role {
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+}
+
+.tl-text {
+  max-width: 62ch;
+  margin-top: var(--space-8);
+  line-height: var(--lh-body);
+}
+
+@media (max-width: 600px) {
+  .tl-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-16) 0;
+  }
+}
+
 /* Reusable: primary button, heading color on ground */
 .btn-solid {
   display: inline-block;
@@ -685,7 +723,7 @@ h2:has(> .sec-head) {
   border-radius: var(--radius-md);
   background-color: var(--text-primary);
   color: var(--bg-body);
-  font-size: var(--fs-control);
+  font-size: var(--fs-ui);
   font-weight: 500;
   line-height: 1.4;
   text-decoration: none;
@@ -694,17 +732,6 @@ h2:has(> .sec-head) {
 .btn-solid:hover {
   color: var(--bg-body);
   filter: brightness(1.08);
-}
-
-/* Reusable: green status dot for live data */
-.live-dot {
-  display: inline-block;
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--live);
-  box-shadow: 0 0 0 3px var(--live-dim);
 }
 
 @media (prefers-reduced-motion: reduce) {

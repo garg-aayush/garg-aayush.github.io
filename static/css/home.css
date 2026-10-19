@@ -10,7 +10,7 @@
   box-sizing: border-box;
 }
 
-/* The homepage headline is the page heading, so Quarto's own title block stays hidden */
+/* The homepage name is the page heading, so Quarto's own title block stays hidden */
 .home .quarto-title-block {
   display: none;
 }
@@ -24,84 +24,64 @@
   max-width: 34em;
 }
 
-/* Homepage sections are spaced by the listing blocks, so a section header takes no top margin and a wider gap below */
-.home {
-  --sec-before: 0;
-  --sec-after: var(--space-32);
-}
-
-@media (max-width: 600px) {
-  .home {
-    --sec-after: var(--space-24);
-  }
-}
-
-/* Rows, steps and tiles come from listing templates as plain lists */
-:is(.post-rows, .path-stages, .tiles) {
+/* Rows come from listing templates as plain lists */
+.post-rows {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-:is(.post-rows, .path-stages, .tiles) > li {
+.post-rows > li {
   margin: 0;
 }
 
-:is(.now-row, .path-stage, .tile, .post-row) p {
+:is(.now-row, .post-row) p {
   margin: 0;
 }
 
-/* Every listing block on the homepage is followed by the same space */
-.home .level2 > .quarto-listing {
-  margin-bottom: var(--space-88);
-}
-
-/* Hero */
+/* Hero: one column. Name, role, statement, lede, actions. */
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
-  gap: var(--space-64) var(--space-64);
-  align-items: center;
-  padding-block: var(--space-88);
-}
-
-.hero-tag {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: var(--tracking-label-wide);
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.hero-tag p {
-  margin: 0;
+  padding: var(--space-64) 0 0;
 }
 
 .hero h1 {
-  margin: var(--space-24) 0 0;
-  font-size: var(--fs-display);
+  margin: 0;
+  font-size: var(--fs-title);
   line-height: var(--lh-title);
-  letter-spacing: var(--tracking-display);
 }
 
-.hero h1 .dim {
-  color: var(--text-dim);
+.hero-role {
+  margin-top: var(--space-12);
+  font-size: var(--fs-role);
+  color: var(--text-muted);
+}
+
+.hero-statement {
+  max-width: 30em;
+  margin-top: var(--space-32);
+  font-family: var(--font-serif);
+  font-size: var(--fs-statement);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: var(--tracking-heading);
+  color: var(--text-primary);
+  text-wrap: balance;
 }
 
 .hero-lede {
-  max-width: 31em;
+  max-width: 36em;
   margin-top: var(--space-24);
-  font-size: var(--fs-dek);
-  line-height: var(--lh-dek);
+  font-size: var(--fs-article);
+  line-height: var(--lh-article);
   color: var(--text-content);
-}
-
-.hero-lede p {
-  margin: 0;
 }
 
 .hero-actions {
   margin-top: var(--space-32);
+}
+
+:is(.hero-role, .hero-statement, .hero-lede) p {
+  margin: 0;
 }
 
 .hero-actions p {
@@ -112,40 +92,33 @@
   margin: 0;
 }
 
-/* Now panel. The Latest post row is a second listing, so the two listings dissolve into one column and the post takes second place. */
-.now-panel {
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  background-color: var(--bg-card);
+@media (max-width: 600px) {
+  .hero {
+    padding-top: var(--space-32);
+  }
+
+  .hero-statement {
+    margin-top: var(--space-24);
+  }
+
+  .hero-actions {
+    margin-top: var(--space-24);
+  }
 }
 
-.now-head {
-  border-bottom: 1px solid var(--border);
-}
-
-.now-head p {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-16);
-  margin: 0;
-  padding: var(--space-16) var(--space-24);
-  font-family: var(--font-mono);
+/* Now. The updated label sits next to the heading. The Latest post row is a second listing, so the two listings dissolve into one column and the post takes second place. */
+.sec-head .now-updated {
+  margin-right: auto;
+  font-family: var(--font-sans);
   font-size: var(--fs-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  font-weight: 400;
   color: var(--text-muted);
-}
-
-.now-head strong {
-  font-weight: 500;
-  color: var(--text-primary);
 }
 
 .now-list {
   display: flex;
   flex-direction: column;
+  border-top: 1px solid var(--border);
 }
 
 .now-list :is(.quarto-listing, .now-rows) {
@@ -155,14 +128,11 @@
 .now-row {
   position: relative;
   display: grid;
-  grid-template-columns: 100px minmax(0, 1fr);
-  gap: var(--space-16);
-  padding: var(--space-16) var(--space-24);
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: var(--space-24);
+  align-items: baseline;
+  padding: var(--space-16) 0;
   border-bottom: 1px solid var(--border);
-}
-
-.now-row:last-child {
-  border-bottom: 0;
 }
 
 /* Order: the first YAML row, then the latest post, then the remaining YAML rows */
@@ -175,154 +145,26 @@
 }
 
 .now-label {
-  padding-top: var(--space-4);
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .now-text {
-  font-size: var(--fs-control);
   line-height: 1.45;
-  color: var(--text-primary);
-}
-
-.now-text .live-dot {
-  margin-right: var(--space-8);
-  vertical-align: 2px;
+  color: var(--text-content);
 }
 
 .now-sub {
   margin-top: var(--space-4);
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  color: var(--text-dim);
-}
-
-/* Path */
-.path-stages {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-}
-
-.path-stage {
-  position: relative;
-  padding: var(--space-32) var(--space-32) 0 0;
-  border-top: 1px solid var(--border);
-}
-
-.path-stage::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: 0;
-  width: 9px;
-  height: 9px;
-  box-sizing: border-box;
-  border: 1px solid var(--text-dim);
-  border-radius: 50%;
-  background-color: var(--bg-body);
-}
-
-.path-stage.is-current {
-  border-top-color: var(--accent);
-}
-
-.path-stage.is-current::before {
-  border-color: var(--accent);
-  background-color: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-dim);
-}
-
-.path-years {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  color: var(--text-dim);
-}
-
-.path-badge {
-  padding: 1px var(--space-8);
-  border: 1px solid var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 999px;
-  font-size: var(--fs-label);
-  color: var(--accent);
-}
-
-.path-title {
-  margin: var(--space-12) 0 0;
-  font-size: var(--fs-h3);
-}
-
-.path-text {
-  max-width: 24em;
-  margin-top: var(--space-8);
-  font-size: var(--fs-control);
-  line-height: var(--lh-body);
-  color: var(--text-content);
-}
-
-@media (max-width: 800px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-48);
-    padding-block: var(--space-48);
-  }
-
-  .home .level2 > .quarto-listing {
-    margin-bottom: var(--space-64);
-  }
-
-  .path-stages {
-    grid-auto-flow: row;
-  }
-
-  .path-stage {
-    padding: 0 0 var(--space-32) var(--space-24);
-    border-top: 0;
-    border-left: 1px solid var(--border);
-  }
-
-  .path-stage::before {
-    top: var(--space-4);
-    left: -5px;
-  }
-
-  .path-stage.is-current {
-    padding-bottom: var(--space-4);
-    border-left-color: var(--accent);
-  }
-
-  .path-title {
-    margin-top: var(--space-4);
-  }
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 
 @media (max-width: 600px) {
-  .hero h1 {
-    margin-top: var(--space-16);
-  }
-
-  .hero-lede {
-    margin-top: var(--space-16);
-  }
-
-  .hero-actions {
-    margin-top: var(--space-24);
-  }
-
-  .now-head p {
-    padding: var(--space-12) var(--space-16);
-  }
-
   .now-row {
-    grid-template-columns: 84px minmax(0, 1fr);
-    gap: var(--space-12);
-    padding: var(--space-12) var(--space-16);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
   }
 }
 
@@ -330,7 +172,7 @@
 .post-row {
   position: relative;
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr) 160px 56px;
+  grid-template-columns: 112px minmax(0, 1fr) 160px 72px;
   gap: var(--space-24);
   align-items: baseline;
   padding: var(--space-16) 0;
@@ -344,20 +186,18 @@
 .post-date,
 .post-cat,
 .post-read {
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 
 .post-title {
   margin: 0;
-  font-size: var(--fs-article);
-  font-weight: 500;
+  font-size: var(--fs-item);
   line-height: 1.35;
-  letter-spacing: -0.012em;
 }
 
-/* The title link covers the whole row, so the row is the target, and its ::before carries the focus ring. Used by post rows and Now panel rows. */
+/* The title link covers the whole row, so the row is the target, and its ::before carries the focus ring. Used by post rows and Now rows. */
 :is(.post-title, .now-text) a::before {
   content: "";
   position: absolute;
@@ -373,11 +213,6 @@
   outline-offset: 2px;
 }
 
-/* The Now panel clips what is outside it, so its focus ring is drawn inside the row */
-.now-text a:focus-visible::before {
-  outline-offset: -2px;
-}
-
 .post-desc {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -385,20 +220,8 @@
   line-clamp: 2;
   overflow: hidden;
   margin-top: var(--space-4);
-  font-size: var(--fs-control);
   line-height: 1.5;
-  color: var(--text-muted);
-}
-
-.post-cat::before {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-right: var(--space-8);
-  border-radius: 50%;
-  background-color: var(--accent);
-  vertical-align: 1px;
+  color: var(--text-content);
 }
 
 .post-read {
@@ -432,67 +255,10 @@
   }
 }
 
-/* Tiles */
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-16);
-}
-
-/* The tile title is a card link (see styles.css), which covers the tile and adds the hover border and the arrow */
-.tile {
-  --card-pad: var(--space-24);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-  padding: var(--card-pad);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background-color: var(--bg-card);
-}
-
-.tile-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-}
-
-.tile-title {
-  margin: 0;
-  font-size: var(--fs-h3);
-  letter-spacing: -0.015em;
-}
-
-.tile-text {
-  font-size: var(--fs-control);
-  line-height: var(--lh-body);
-  color: var(--text-content);
-}
-
-.tile-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-12);
-  margin-top: auto;
-  padding-top: var(--space-16);
-  border-top: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  color: var(--text-dim);
-}
-
-@media (max-width: 800px) {
-  .tiles {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-12);
-  }
-}
-
 /* Contact */
 .contact {
   max-width: 34em;
-  font-size: var(--fs-dek);
+  font-size: var(--fs-article);
   line-height: var(--lh-dek);
   color: var(--text-content);
 }
@@ -517,8 +283,7 @@
   padding: 0 var(--space-16);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  font-size: var(--fs-control);
-  font-weight: 500;
+  font-size: var(--fs-ui);
   color: var(--text-muted);
   text-decoration: none;
   cursor: pointer;
@@ -536,10 +301,9 @@
 }
 
 .chip-count {
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 
 /* The chips need script to filter, so visitors without it only see the full list */

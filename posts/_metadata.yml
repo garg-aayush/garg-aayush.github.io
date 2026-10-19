@@ -11,7 +11,7 @@ format:
     toc-depth: 3
     code-copy: true
     body-classes: article-page
-    date-format: YYYY-MM-DD
+    date-format: D MMM YYYY
     template-partials:
       - ../_partials/title-block.html
     filters:

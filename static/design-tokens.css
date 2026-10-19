@@ -1,74 +1,66 @@
-/* Single source for every design value on the site: colors, fonts, scales and component sizes. Quarto pages, page stylesheets and standalone tools read these variables. Sass cannot, so theme-dark.scss mirrors the palette; keep both in sync. Font files are declared in static/fonts/fonts.css. */
+/* Single source for every design value on the site: colors, fonts, scales and component sizes. Quarto pages, page stylesheets and standalone tools read these variables. Sass cannot, so theme-dark.scss mirrors the palette; keep both in sync. The font file is declared in static/fonts/fonts.css. */
 :root {
-  /* Palette */
-  --bg-body: #0A0D11;
-  --bg-card: #10161D;
-  --bg-inset: #151C24;
-  --bg-hover: #1A222B;
-  --border: #1E2730;
-  --text-primary: #E7EDF2;
-  --text-content: #B4BFCA;
-  --text-muted: #8A97A5;
-  --text-dim: #6E7C8A;
-  --accent: #7AAAFF;
-  --accent-hover: #9CC0FF;
-  --accent-dim: rgba(122, 170, 255, 0.14);
-  --accent-line: rgba(122, 170, 255, 0.6);
+  /* Palette: neutral charcoal, brighter text, blue only for links and the active state */
+  --bg-body: #161618;
+  --bg-card: #1E1E21;
+  --bg-inset: #242428;
+  --bg-hover: #2A2A2F;
+  --border: #2E2E33;
+  --text-primary: #F5F5F7;
+  --text-content: #DADADF;
+  --text-muted: #A6A6AB;
+  --text-dim: #86868B;
+  --accent: #2997FF;
+  --accent-hover: #5AB1FF;
+  --accent-dim: rgba(41, 151, 255, 0.16);
+  --accent-line: rgba(41, 151, 255, 0.65);
   --green: #72994E;
   --green-dim: rgba(114, 153, 78, 0.15);
   --orange: #EE6331;
   --orange-dim: rgba(238, 99, 49, 0.12);
-  --live: #5AD19A;
-  --live-dim: rgba(90, 209, 154, 0.18);
   --code-bg: var(--bg-inset);
 
   /* RGB triple of --bg-body, for libraries that build their own rgba() values */
-  --bg-body-rgb: 10, 13, 17;
-  --nav-bg: rgba(var(--bg-body-rgb), 0.78);
-  --overlay-bg: rgba(var(--bg-body-rgb), 0.72);
+  --bg-body-rgb: 22, 22, 24;
+  --nav-bg: rgba(var(--bg-body-rgb), 0.8);
+  --overlay-bg: rgba(var(--bg-body-rgb), 0.76);
 
-  /* Code syntax colors */
-  --code-keyword: #7AAAFF;
-  --code-function: #C5B3FF;
-  --code-number: #FFB38A;
-  --code-string: #9FD8B5;
-  --code-comment: #6E7C8A;
+  /* Code syntax colors, each at 4.5:1 or better on --bg-card */
+  --code-keyword: #5AB1FF;
+  --code-function: #C8AEFF;
+  --code-number: #FFB082;
+  --code-string: #8ED9A8;
+  --code-comment: #8E8E93;
 
-  /* Font stacks. --font-system is the stack for the standalone tools. */
+  /* Font stacks. Body text uses the system sans, headings use the serif, code uses the system mono. --font-system is the stack for the standalone tools. */
   --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: ui-serif, "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
   /* Type sizes: desktop value at 1200px and wider, phone value at 600px and narrower, interpolated in between. */
-  --fs-display: clamp(40px, calc(40px + 22 * (100vw - 600px) / 600), 62px);
-  --fs-title: clamp(34px, calc(34px + 20 * (100vw - 600px) / 600), 54px);
-  --fs-h2: clamp(23px, calc(23px + 5 * (100vw - 600px) / 600), 28px);
-  --fs-h3: clamp(19px, calc(19px + 2 * (100vw - 600px) / 600), 21px);
-  --fs-dek: clamp(18px, calc(18px + 3 * (100vw - 600px) / 600), 21px);
-  --fs-article: clamp(17px, calc(17px + 1.5 * (100vw - 600px) / 600), 18.5px);
-  --fs-body: clamp(16px, calc(17px - 1 * (100vw - 600px) / 600), 17px);
-  --fs-ui: clamp(15px, calc(17px - 2 * (100vw - 600px) / 600), 17px);
-  --fs-label: clamp(12px, calc(12.5px - 0.5 * (100vw - 600px) / 600), 12.5px);
-  --fs-control: 15px;
-  --fs-small: 13px;
-  --fs-mark: 10.5px;
+  --fs-title: clamp(32px, calc(32px + 8 * (100vw - 600px) / 600), 40px);
+  --fs-h2: clamp(22px, calc(22px + 4 * (100vw - 600px) / 600), 26px);
+  --fs-h3: clamp(18px, calc(18px + 2 * (100vw - 600px) / 600), 20px);
+  --fs-statement: clamp(21px, calc(21px + 5 * (100vw - 600px) / 600), 26px);
+  --fs-item: clamp(18px, calc(18px + 1 * (100vw - 600px) / 600), 19px);
+  --fs-dek: clamp(18px, calc(18px + 2 * (100vw - 600px) / 600), 20px);
+  --fs-article: clamp(17px, calc(17px + 1 * (100vw - 600px) / 600), 18px);
+  --fs-role: 17px;
+  --fs-ui: 16px;
+  --fs-label: clamp(13px, calc(13px + 1 * (100vw - 600px) / 600), 14px);
   --fs-code: 0.875em;
+  --fs-pre: clamp(13px, calc(13px + 1.5 * (100vw - 600px) / 600), 14.5px);
 
   /* Line heights */
   --lh-body: 1.6;
-  --lh-article: 1.72;
+  --lh-article: 1.7;
   --lh-dek: 1.5;
-  --lh-heading: 1.2;
-  --lh-title: 1.04;
+  --lh-heading: 1.25;
+  --lh-title: 1.15;
 
-  /* Letter spacing */
-  --tracking-display: -0.045em;
-  --tracking-title: -0.04em;
-  --tracking-h2: -0.025em;
-  --tracking-h3: -0.02em;
-  --tracking-brand: -0.01em;
-  --tracking-label: 0.12em;
-  --tracking-label-wide: 0.14em;
+  /* Letter spacing: headings only, labels and body text stay at normal */
+  --tracking-heading: -0.01em;
 
   /* Spacing scale */
   --space-4: 4px;
@@ -81,18 +73,16 @@
   --space-64: 64px;
   --space-88: 88px;
 
-  /* Radii: small controls, buttons, cards and code, panels */
+  /* Radii: small controls, buttons, code and figures */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 14px;
 
   /* Layout and component sizes */
   --container: 1184px;
   --gutter: clamp(20px, calc(20px + 28 * (100vw - 600px) / 600), 48px);
   --nav-height: 56px;
   --touch-target: 44px;
-  --mark-size: 24px;
   --btn-padding: 12px 18px;
 
   /* Aliases kept for the tools and older rules */
@@ -101,10 +91,4 @@
   --bg-tertiary: var(--bg-inset);
   --text-secondary: var(--text-content);
   --border-color: var(--border);
-}
-
-@media (max-width: 600px) {
-  :root {
-    --lh-article: 1.68;
-  }
 }

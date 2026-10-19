@@ -6,13 +6,24 @@ body-classes: pg
 sidebar: false
 toc: false
 listing:
+  - id: work-live
+    template: _templates/work-rows.ejs
+    sort: false
+    # Things that run live on this site. Same fields as the projects below.
+    contents:
+      - title: India Weather
+        href: india-weather.html
+        description: Live temperature, humidity, and air quality across India's major metropolitan cities.
+      - title: Browser tools
+        href: tools/
+        description: Image, viewer and data utilities that run entirely in your browser.
   - id: work-projects
     template: _templates/work-rows.ejs
     sort: false
-    # Open source projects. Fields: title (repo name), path (repo URL), description, and optional list (bullets) and note (closing line).
+    # Open source projects. Fields: title (repo name), href (repo URL), description, and optional list (bullets) and note (closing line).
     contents:
       - title: building-from-scratch
-        path: https://github.com/garg-aayush/building-from-scratch
+        href: https://github.com/garg-aayush/building-from-scratch
         description: "My ongoing repo where I build language models and related concepts from first principles. I’ve worked through multiple sub-projects so far:"
         list:
           - Character-level GPT
@@ -24,28 +35,28 @@ listing:
           - Group Relative Policy Optimization (GRPO)
         note: Currently working on a FlashAttention2 implementation from first principles.
       - title: cv-skills
-        path: https://github.com/garg-aayush/cv-skills
+        href: https://github.com/garg-aayush/cv-skills
         description: "I built this as a Claude Code plugin that provides multiple skills for classical image processing: format conversion, SVG-to-raster, resize/crop/rotate, color adjustments, blur/sharpen/denoise, edge detection and segmentation, and image compositing with background removal."
       - title: ComfyUI-Svg2Raster
-        path: https://github.com/garg-aayush/ComfyUI-Svg2Raster
+        href: https://github.com/garg-aayush/ComfyUI-Svg2Raster
         description: "I wrote this ComfyUI custom node package for loading SVG files and rasterizing them into images with configurable width, scale, background color, and border. Uses CairoSVG under the hood."
       - title: tutorials
-        path: https://github.com/garg-aayush/tutorials
+        href: https://github.com/garg-aayush/tutorials
         description: "A collection of various tutorials I wrote for my own use and to share with others."
       - title: spatial-alias-removal
-        path: https://github.com/garg-aayush/spatial-alias-removal
+        href: https://github.com/garg-aayush/spatial-alias-removal
         description: "I used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data by 2x in the spatial direction and remove spatial aliasing. This work was published as a paper back in 2019, built during my time at TU Delft and University of Amsterdam."
       - title: research-papers
-        path: https://github.com/garg-aayush/research-papers
+        href: https://github.com/garg-aayush/research-papers
         description: "My reading notes and summaries for deep learning papers organized by category. Covers diffusion models (DDPM, DDIM, ControlNet, SDXL, and more), Transformers (Attention Is All You Need), and GANs."
       - title: pytorch-pl-hydra-templates
-        path: https://github.com/garg-aayush/pytorch-pl-hydra-templates
+        href: https://github.com/garg-aayush/pytorch-pl-hydra-templates
         description: "I put together four progressively more sophisticated PyTorch training templates using CIFAR-10: vanilla single-GPU, multi-GPU with DistributedDataParallel, PyTorch Lightning with TensorBoard, and PyTorch Lightning + Hydra for rapid experimentation with swappable models, optimizers, and configs."
       - title: model-parallelism
-        path: https://github.com/garg-aayush/model-parallelism
+        href: https://github.com/garg-aayush/model-parallelism
         description: "I explored how to pipeline models with skip connections (ResNets, UNets) across multiple GPUs using torchgpipe."
       - title: finance_dashboard_example
-        path: https://github.com/garg-aayush/finance_dashboard_example
+        href: https://github.com/garg-aayush/finance_dashboard_example
         description: "A sample Plotly Dash interactive dashboard I built for tracking stock price movement with simple moving average and candlestick pattern charts."
   - id: work-gists
     template: _templates/work-rows.ejs
@@ -53,45 +64,28 @@ listing:
     # GitHub gists. Same fields as the projects above.
     contents:
       - title: Step-by-Step Guide to setup your own personal GPU server
-        path: https://gist.github.com/garg-aayush/d377557b20ef9f206c1d6381e174d8a7
+        href: https://gist.github.com/garg-aayush/d377557b20ef9f206c1d6381e174d8a7
         description: "I wrote this comprehensive guide for setting up remote SSH access to a personal GPU workstation running Ubuntu, covering SSH keys, firewall setup, and ngrok tunneling."
       - title: Managing multiple CUDA versions using environment modules
-        path: https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956
+        href: https://gist.github.com/garg-aayush/156ec6ddda3d62e2c0ddad00b7e66956
         description: "My notes on installing multiple CUDA versions side by side on Ubuntu and switching between them using `environment-modules`."
 ---
 
-## [Live []{.rule}]{.sec-head} {.no-anchor}
+## [Live]{.sec-head} {.no-anchor}
 
-::: {.work-tiles}
-
-::: {.work-tile}
-[]{.live-dot} [Weather]{.ui-label}
-
-### [India Weather](india-weather.qmd){.card-link} {.no-anchor}
-
-Live temperature, humidity, and air quality across India's major metropolitan cities.
+::: {#work-live}
 :::
 
-::: {.work-tile}
-[Tools]{.ui-label}
-
-### [Browser tools](tools/){.card-link} {.no-anchor}
-
-Image, viewer and data utilities that run entirely in your browser.
-:::
-
-:::
-
-## [Open source []{.rule} [GitHub](https://github.com/garg-aayush)]{.sec-head} {.no-anchor}
+## [Open source [GitHub](https://github.com/garg-aayush)]{.sec-head} {.no-anchor}
 
 ::: {#work-projects}
 :::
 
-## [Gists []{.rule}]{.sec-head} {.no-anchor}
+## [Gists]{.sec-head} {.no-anchor}
 
 ::: {#work-gists}
 :::
 
-## [Publications []{.rule} [All publications](publications.qmd)]{.sec-head} {.no-anchor}
+## [Publications [All publications](publications.qmd)]{.sec-head} {.no-anchor}
 
 Journal papers and conference talks from my PhD and research years.

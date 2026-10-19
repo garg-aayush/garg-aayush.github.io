@@ -63,7 +63,7 @@ format:
       - static/css/pages.css
     include-in-header:
       - text: |
-          <link rel="preload" href="/static/fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+          <link rel="preload" href="/static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     include-after-body:
       - text: |
           <script src="/static/js/site.js"></script>

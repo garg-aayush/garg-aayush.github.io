@@ -6,14 +6,13 @@ sidebar: false
 toc: false
 listing:
   id: experience
-  template: _templates/experience.ejs
+  template: _templates/timeline.ejs
   sort: false
-  # Professional experience, newest first. Fields: title (company), dates, role, description, optional path (company URL), and now: true on the current role.
+  # Professional experience, newest first. Fields: dates, title (company), role, description, and an optional href (company URL) that links the title.
   contents:
     - title: Applied Computing
       dates: May 2026 to Present
       role: ML Engineer (Forward Deployed)
-      now: true
       description: "Build and deliver production AI systems for refinery and energy operations, working directly with process engineers and operators from problem framing and industrial data integration through model validation, deployment, and production support. Translate plant constraints and customer feedback into forecasting, anomaly detection, and optimisation capabilities that industrial teams can understand and trust."
     - title: Jiffy
       dates: Jan 2024 - Mar 2026
@@ -49,12 +48,12 @@ Unlike many in this field, my core background is not in computer science. My gra
 I love connecting and collaborating with new people. Please don't hesitate to reach out! 😊
 :::
 
-## [Professional Experience []{.rule}]{.sec-head} {.no-anchor}
+## [Professional experience]{.sec-head} {.no-anchor}
 
 ::: {#experience}
 :::
 
-## [Contact []{.rule}]{.sec-head} {.no-anchor}
+## [Contact]{.sec-head} {.no-anchor}
 
 ::: {.about-contact}
 - [aayushgargiitr@gmail.com](mailto:aayushgargiitr@gmail.com)

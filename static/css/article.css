@@ -36,7 +36,6 @@ body.article-page.floating .page-columns.page-layout-article {
 .article-kicker {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4) 14px;
   margin: 0;
 }
 
@@ -44,29 +43,34 @@ body.article-page.floating .page-columns.page-layout-article {
   color: var(--accent);
 }
 
+/* The dot between kicker and byline parts. Decorative, so the alternative text is empty. */
+:is(.article-kicker, .article-byline) > * + *::before {
+  content: "\00b7";
+  content: "\00b7" / "";
+  margin-inline: var(--space-8);
+}
+
 .article-head h1.title {
-  margin-top: 18px;
+  margin-top: var(--space-12);
 }
 
 .article-head .description {
-  margin-top: 18px;
+  margin-top: var(--space-16);
 }
 
 .article-byline {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4) 22px;
-  margin: 30px 0 var(--space-32);
-  padding: 13px 0;
-  border-block: 1px solid var(--border);
-  font-family: var(--font-mono);
+  margin: var(--space-24) 0 var(--space-32);
+  padding-bottom: var(--space-16);
+  border-bottom: 1px solid var(--border);
   font-size: var(--fs-label);
-  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 
 .article-byline .article-author {
-  font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text-content);
 }
 
 @media (max-width: 600px) {
@@ -75,8 +79,7 @@ body.article-page.floating .page-columns.page-layout-article {
   }
 
   .article-byline {
-    margin: 22px 0 var(--space-24);
-    gap: var(--space-4) var(--space-16);
+    margin: var(--space-16) 0 var(--space-24);
   }
 }
 
@@ -100,7 +103,7 @@ body.article-page .sidebar nav[role="doc-toc"] {
   width: 100%;
   margin: 0;
   padding: 0 0 0 var(--space-16);
-  font-size: 13.5px;
+  font-size: var(--fs-label);
   line-height: 1.35;
 }
 
@@ -123,12 +126,9 @@ body.article-page .sidebar nav[role="doc-toc"]::after {
 body.article-page .sidebar nav[role="doc-toc"] #toc-title {
   margin: 0 0 var(--space-8);
   padding: 0;
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
   font-weight: 400;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 body.article-page .sidebar nav[role="doc-toc"] ul {
@@ -167,7 +167,7 @@ body.article-page .sidebar nav[role="doc-toc"] ul > li > a.active {
 .article-toc-mobile details {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  font-size: 14px;
+  font-size: var(--fs-label);
   line-height: 1.4;
 }
 
@@ -330,8 +330,7 @@ body.article-page main.content .footnotes {
   margin: var(--space-48) 0 0;
   padding-top: var(--space-24);
   border-top: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
+  font-size: var(--fs-ui);
   line-height: 1.4;
 }
 
@@ -378,10 +377,9 @@ body.article-page main.content .footnotes {
 .content .table-caption,
 .content caption {
   margin-top: var(--space-12);
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
   line-height: 1.55;
-  color: var(--text-dim);
+  color: var(--text-muted);
   text-align: left;
 }
 
@@ -391,7 +389,7 @@ pre {
   padding: 18px 20px;
   overflow-x: auto;
   font-family: var(--font-mono);
-  font-size: 14.5px;
+  font-size: var(--fs-pre);
   line-height: 1.65;
 }
 
@@ -417,7 +415,7 @@ div.sourceCode pre.sourceCode {
   overflow-x: auto;
   /* Quarto sets overflow-y: visible on this element */
   overflow-y: hidden !important;
-  font-size: 14.5px;
+  font-size: var(--fs-pre);
 }
 
 /* Quarto's filename attribute: bar above the block, one shared border */
@@ -447,7 +445,7 @@ div.sourceCode pre.sourceCode {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
   line-height: 1.4;
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 .code-with-filename .code-with-filename-file strong {
@@ -474,7 +472,6 @@ div.sourceCode pre.sourceCode {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background-color: var(--bg-card);
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
   color: var(--text-muted);
 }
@@ -498,12 +495,6 @@ div.sourceCode pre.sourceCode {
 
 @media (max-width: 600px) {
   pre,
-  div.sourceCode pre,
-  div.sourceCode pre.sourceCode {
-    font-size: 13px;
-  }
-
-  pre,
   main pre:not(.sourceCode) {
     padding: 14px 16px;
   }
@@ -519,7 +510,7 @@ div.sourceCode pre.sourceCode {
   margin-block: var(--space-8) var(--space-24);
 }
 
-/* Tables: hairline rows, mono uppercase labels, scroll inside their own box instead of widening the page. The blog listing is excluded because it is its own layout. */
+/* Tables: hairline rows, sans column labels, scroll inside their own box instead of widening the page. The blog listing is excluded because it is its own layout. */
 main table:not(.quarto-listing-table) {
   display: block;
   width: max-content;
@@ -540,12 +531,9 @@ main table:not(.quarto-listing-table) :is(th, td) {
 }
 
 main table:not(.quarto-listing-table) thead th {
-  font-family: var(--font-mono);
   font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-dim);
+  font-weight: 600;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
@@ -553,10 +541,10 @@ main table:not(.quarto-listing-table) tbody tr:last-child :is(th, td) {
   border-bottom: 0;
 }
 
-/* Callouts: surface panel with an accent edge instead of Quarto's colored header bar. Selectors repeat Quarto's own so they win. */
+/* Callouts: surface panel with a neutral edge instead of Quarto's colored header bar. Selectors repeat Quarto's own so they win. */
 main div.callout.callout {
   border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--text-dim);
   border-radius: var(--radius-lg);
   background-color: var(--bg-card);
 }
@@ -565,12 +553,12 @@ main div.callout.callout-style-default > div.callout-header {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background-color: transparent;
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: var(--fs-ui);
   opacity: 1;
 }
 
 main div.callout.callout-style-default .callout-body {
-  font-size: 15px;
+  font-size: var(--fs-ui);
   line-height: 1.6;
   color: var(--text-content);
 }

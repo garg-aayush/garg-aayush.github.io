@@ -1,27 +1,28 @@
 /*-- scss:defaults --*/
 
 // Sass needs literal values for its color math and cannot read CSS variables. These mirror static/design-tokens.css, which is the source: change a value there first, then keep this block in sync.
-$tok-ground: #0A0D11;
-$tok-surface: #10161D;
-$tok-inset: #151C24;
-$tok-hover: #1A222B;
-$tok-line: #1E2730;
-$tok-heading: #E7EDF2;
-$tok-body: #B4BFCA;
-$tok-muted: #8A97A5;
-$tok-dim: #6E7C8A;
-$tok-accent: #7AAAFF;
-$tok-accent-hover: #9CC0FF;
+$tok-ground: #161618;
+$tok-surface: #1E1E21;
+$tok-inset: #242428;
+$tok-hover: #2A2A2F;
+$tok-line: #2E2E33;
+$tok-heading: #F5F5F7;
+$tok-body: #DADADF;
+$tok-muted: #A6A6AB;
+$tok-dim: #86868B;
+$tok-accent: #2997FF;
+$tok-accent-hover: #5AB1FF;
 $tok-green: #72994E;
 $tok-orange: #EE6331;
 $tok-red: #D44000;
 $tok-yellow: #E7B10A;
-$font-family-sans-serif: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-$font-family-monospace: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+$headings-font-family: ui-serif, "Source Serif 4", Georgia, "Times New Roman", serif;
 
 // Everything below derives from the mirror above. Page styling belongs in styles.css and static/css/, not in Sass rules.
 
-// Fonts are self-hosted from static/fonts/, so skip the Google Fonts import that the cosmo theme adds
+// The serif fallback is self-hosted from static/fonts/, so skip the Google Fonts import that the cosmo theme adds
 $web-font-path: false;
 
 $gray: $tok-hover;
@@ -63,7 +64,7 @@ $navbar-bg: $tok-ground;
 $navbar-fg: $tok-muted;
 $navbar-hl: $tok-heading;
 $footer-bg: $tok-ground;
-$footer-fg: $tok-dim;
+$footer-fg: $tok-muted;
 
 $code-color: $tok-heading;
 $code-bg: $tok-inset;

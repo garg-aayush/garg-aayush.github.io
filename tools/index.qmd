@@ -17,7 +17,7 @@ include-after-body:
 No tools match your search.
 :::
 
-## [Image Tools []{.rule}]{.sec-head} {.no-anchor}
+## [Image tools]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
@@ -71,7 +71,7 @@ Preview SVG files with zoom and background controls, inspect metadata and source
 
 :::
 
-## [Viewer Tools []{.rule}]{.sec-head} {.no-anchor}
+## [Viewer tools]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
@@ -117,7 +117,7 @@ Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback
 
 :::
 
-## [Data Tools []{.rule}]{.sec-head} {.no-anchor}
+## [Data tools]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 

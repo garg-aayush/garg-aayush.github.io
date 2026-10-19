@@ -31,9 +31,9 @@ quarto render tools/index.qmd
 - `tools/analytics.js`: shared analytics loader for standalone tools.
 - `tools/file-utils.js`: matching file labels and blob download behavior shared by the image tools and SVG viewer.
 - `static/design-tokens.css`: the single source for colors (including code syntax colors), font stacks, type, spacing and radius scales, component sizes, and site color aliases.
-- `static/fonts/`: self-hosted Geist and Geist Mono variable WOFF2 files (Latin subset, from `@fontsource-variable` 5.3.0), `fonts.css` with their `@font-face` rules, and the SIL Open Font License in `OFL.txt`.
+- `static/fonts/`: the self-hosted Source Serif 4 variable WOFF2 (Latin subset, weight axis, from `@fontsource-variable/source-serif-4` 5.3.1), `fonts.css` with its `@font-face` rule, and the SIL Open Font License in `OFL.txt`. It is the heading font in browsers without `ui-serif` (Safari uses Apple's New York); body text uses the system sans stack and code the system mono stack, with no web font for either.
 - `tools/common.css`: shared presentation for image tools that use the same layout and controls.
-- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow`, `.title-link`, `.card-link` and `.live-dot` classes).
+- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow`, `.title-link`, `.work-rows` and `.timeline` classes).
 - `static/css/home.css`, `static/css/article.css`, `static/css/pages.css`: homepage and blog listing, article, and about, publications, projects and tools catalog rules.
 - Page body classes: each page sets `body-classes` in its front matter and its CSS is scoped to that class. `home` is the homepage and `writing` the Writing index (both in `home.css`), `pg` is Work, About, Publications, the Tools catalog and the weather page (`pages.css`), and `article-page` is every post (`article.css`, set once in `posts/_metadata.yml`).
 - `_templates/`: EJS listing templates that turn the lists in a page's front matter, and the post listings, into markup. They hold markup and no page copy. Quarto does not render underscore paths.
@@ -46,7 +46,7 @@ quarto render tools/index.qmd
 
 Quarto copies the standalone tool HTML files, `tools/analytics.js`, `tools/file-utils.js`, `tools/common.css`, `static/`, and `CNAME` through the `resources` list in `_quarto.yml`. Tool HTML does not pass through Quarto rendering or automatically inherit the Quarto theme. When adding shared tool assets, include them in the copied resources and preserve direct URLs such as `/tools/image-converter.html`.
 
-Quarto pages load, in order, `static/fonts/fonts.css`, `static/design-tokens.css`, `styles.css`, `static/css/home.css`, `static/css/article.css`, and `static/css/pages.css`. Every stylesheet loads on every page, so page rules stay scoped by class. `_quarto.yml` also preloads only the Geist sans file from every Quarto page and loads `static/js/site.js`, which adds the skip link and honors reduced motion for Quarto's scripted smooth scrolling. Fonts are self-hosted, so `theme-dark.scss` turns off the Google Fonts import that the cosmo theme would otherwise add.
+Quarto pages load, in order, `static/fonts/fonts.css`, `static/design-tokens.css`, `styles.css`, `static/css/home.css`, `static/css/article.css`, and `static/css/pages.css`. Every stylesheet loads on every page, so page rules stay scoped by class. `_quarto.yml` also preloads only the Source Serif 4 file from every Quarto page and loads `static/js/site.js`, which adds the skip link and honors reduced motion for Quarto's scripted smooth scrolling. The serif is self-hosted, so `theme-dark.scss` turns off the Google Fonts import that the cosmo theme would otherwise add.
 
 All standalone tools use the same browser palette; syntax, search, and diff tokens remain local to the tools that need them. Tools keep the system font stack through `--font-system` and do not load `fonts.css`. The image converter, resizer, and cropper also load `tools/common.css`, with specialized control styles kept in each HTML file. Other tools retain their own layouts, control styles, and font fallback lists. The common tool stylesheet is loaded only by standalone tools. `theme-dark.scss` remains the Bootstrap compile-time theme: Sass color functions require literal Sass values, so keep its palette and font stacks aligned with the browser tokens when changing the theme. There is no generated token synchronization step.
 
@@ -72,22 +72,22 @@ node --test scripts/preserve-feed-guids.test.mjs
 
 Every visible word is text in a `.qmd` file or in `_quarto.yml`, so no HTML is needed. Repeated items live in lists at the top of the page's file, and the templates in `_templates/` turn them into markup. Run `quarto preview` while editing to see the result.
 
-- **Homepage (`index.qmd`)**: the hero text, the section labels, the Now header with its date label and the contact sentence are Markdown in the body. The Now rows (`label`, `text`, `sub`, `href`, `live`) are a list at the top of the file, and the Latest post row is added automatically. The career path stages (`years`, `title`, `text`, `badge`) and the featured tiles (`label`, `title`, `text`, `href`, `meta`, `live`) are lists too. `max-items` on `blog-listings` sets how many recent posts show.
+- **Homepage (`index.qmd`)**: the hero text, the section labels, the Now header with its date label and the contact sentence are Markdown in the body. The hero is the name, the role line, the statement, the lede and the two actions, all Markdown. The Now rows (`label`, `text`, `sub`, `href`) are a list at the top of the file, and the Latest post row is added automatically. The career path stages (`dates`, `title`, `description`) and the Built rows (`title`, `href`, `description`) are lists too. `max-items` on `blog-listings` sets how many recent posts show.
 - **Writing index (`blog/index.qmd`)**: the rows and the category chips are generated from the posts, so a new post or a new category shows up on its own.
 - **Posts**: written as before. The interface words (`toc-title`, `back-link-text`, `byline`) are in `posts/_metadata.yml`. The filter computes the reading time and the section count.
-- **Work (`projects.qmd`)**: projects and gists are lists with `title`, `path`, `description` and optional `list` and `note`. The order written is the order shown.
+- **Work (`projects.qmd`)**: the live items, the open source projects and the gists are lists with `title`, `href`, `description` and optional `list` and `note`. The order written is the order shown.
 - **Publications (`publications.qmd`)**: one item per paper with `year` as a string, `title`, `subtitle` for the authors (wrap the author's own name in `**`) and `description` for the venue (add a Markdown link). Keep the newest year first.
-- **About (`about.qmd`)**: the intro is Markdown. The roles are a list with `title`, `dates`, `role`, `description`, an optional `path` and `now: true` on the current role.
+- **About (`about.qmd`)**: the intro is Markdown. The roles are a list with `dates`, `title`, `role`, `description` and an optional `href` that links the title.
 - **Tools catalog (`tools/index.qmd`)**: the authoring pattern is unchanged, see [.claude/rules/tools-workflow.md](.claude/rules/tools-workflow.md).
 - **Navigation and footer**: `_quarto.yml`.
 
-Section headers are written the same way on every page, as `## [Label []{.rule} [link text](url)]{.sec-head} {.no-anchor}`. Leave out the link part when a header has no link.
+Section headers are written the same way on every page, as `## [Label [link text](url)]{.sec-head} {.no-anchor}`, a serif heading in sentence case with the link, if any, at the right edge. Leave out the link part when a header has no link.
 
-A link inside a sentence needs no class. Add `{.title-link}` to a Markdown link whose text is the name of an item in a list or row, such as a tool in the catalog (`[Image Resizer](image-resizer.html){.tool-link .title-link}`), and it gets a small arrow that points ↗ when the link leaves the site and → when it stays on it. The link in a section header and `{.link-arrow}` links such as "About me" get their arrow without any extra class, and a tile's title link takes `{.card-link}` so the whole tile is clickable.
+A link inside a sentence needs no class. Add `{.title-link}` to a Markdown link whose text is the name of an item in a list or row, such as a tool in the catalog (`[Image Resizer](image-resizer.html){.tool-link .title-link}`), and it gets a small arrow that points ↗ when the link leaves the site and → when it stays on it. The link in a section header and `{.link-arrow}` links such as "About me" get their arrow without any extra class.
 
 Quarto listing quirks to know when editing these lists:
 
-- Write any `date` field in a list as a quoted string.
+- Write any `date` field in a list as a quoted string. Dates show as `15 Jul 2026`, set by `date-format` in `posts/_metadata.yml` and on each post listing.
 - Lists use `sort: false` to keep the written order.
 - Markdown works in `title`, `subtitle` and `description`, but not in custom fields such as `sub`, `text` or `role`.
 

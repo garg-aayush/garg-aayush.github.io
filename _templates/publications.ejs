@@ -1,6 +1,6 @@
 <% const years = []; for (const item of items) { let group = years.find((g) => g.year === item.year); if (!group) { group = { year: item.year, items: [] }; years.push(group); } group.items.push(item); } %><% for (const group of years) { %>
 <section class="pub-year">
-<h2 class="no-anchor"><span class="sec-head"><%= group.year %><span class="rule"></span></span></h2>
+<h2 class="no-anchor"><span class="sec-head"><%= group.year %></span></h2>
 <ul class="pub-list"><% for (const item of group.items) { %>
 <li class="pub">
 <h3 class="pub-title no-anchor"><%- item.title %></h3>

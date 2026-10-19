@@ -1,12 +1,23 @@
-<ul class="work-rows"><% for (const item of items) { %>
-<li class="work-row">
-<h3 class="work-name no-anchor"><a class="title-link" href="<%- item.path %>" target="_blank" rel="noopener"><%- item.title %></a></h3>
+<%
+// One row per item: a title link, a description, and an optional bullet list and closing note.
+// Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
+// Reads title, href, description (Markdown works), list and note from a YAML item. A link to another host opens in a new tab.
+const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const rows = items.map((item) => {
+  const href = item.href ?? "";
+  const link = /^https?:/.test(href) ? ` class="title-link" target="_blank" rel="noopener"` : ` class="title-link no-external"`;
+  const list = item.list ? `<ul>${item.list.map((entry) => `<li>${esc(entry)}</li>`).join("")}</ul>` : "";
+  return `<li class="work-row">
+<h3 class="work-name no-anchor"><a href="${esc(href)}"${link}>${item.title}</a></h3>
 <div class="work-body">
-<p><%- item.description %></p><% if (item.list) { %>
-<ul><% for (const entry of item.list) { %>
-<li><%= entry %></li><% } %>
-</ul><% } %><% if (item.note) { %>
-<p><%= item.note %></p><% } %>
+<p>${item.description ?? ""}</p>${list}${item.note ? `<p>${esc(item.note)}</p>` : ""}
 </div>
-</li><% } %>
+</li>`;
+});
+%>
+
+```{=html}
+<ul class="work-rows">
+<%= rows.join("\n") %>
 </ul>
+```
