@@ -414,4 +414,4 @@ llama-server \
 
 2. **Gemma4-31B Context Size**: I had to reduce to 65,336 tokens to maintain ~40 tok/s generation. You can push it higher but generation speed degrades as context grows.
 
-3. **Qwen3.5 models needed a corrected Jinja chat template [qwen35-chat-template-corrected.jinja]()https://gist.github.com/garg-aayush/c0211a5fdca3e237d248d52806ff8d96 to work properly with llama-server. The default template had issues with thinking mode.
+3. **Qwen3.5 models needed a corrected Jinja chat template**: [qwen35-chat-template-corrected.jinja](https://gist.github.com/garg-aayush/c0211a5fdca3e237d248d52806ff8d96) to work properly with llama-server. The default template had issues with thinking mode.
