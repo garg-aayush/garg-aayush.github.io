@@ -11,7 +11,7 @@ quarto preview
 quarto render
 ```
 
-`quarto preview` starts the development server. `quarto render` builds the site into the untracked `_site/` directory and runs the RSS compatibility script using Node from `PATH`. No root Node package installation is required. A full render with Quarto 1.10.18 succeeds without additional execution dependencies. Posts inherit `execute.freeze: true` from `posts/_metadata.yml`; if you add executable cells, verify their dependencies in a clean checkout rather than relying on local cached results.
+`quarto preview` starts the development server. `quarto render` builds the site into the untracked `_site/` directory and runs the RSS compatibility script using Node from `PATH`. Rendering does not use the root npm dependencies; the validation commands below use their locked installs. A full render with Quarto 1.10.18 succeeds without additional execution dependencies. Posts inherit `execute.freeze: true` from `posts/_metadata.yml`; if you add executable cells, verify their dependencies in a clean checkout rather than relying on local cached results.
 
 To render one page or the tool catalog:
 
@@ -55,6 +55,28 @@ Run the compatibility checks with the pinned Node version:
 ```bash
 node --test scripts/preserve-feed-guids.test.mjs
 ```
+
+## Local checks
+
+Use Node 24.22.0 and its npm 11.19.1, then run these commands from the repository root. Playwright installs its own pinned Chromium build; system Chrome is not required.
+
+```bash
+npm ci --ignore-scripts
+npx playwright install chromium
+npm run check:posts
+npm test
+quarto render --clean
+npm run check:site
+npm run test:browser
+```
+
+`check:posts` validates the six required metadata fields and unique historical permalinks without changing existing routes. `npm test` covers malformed metadata, deliberate missing links and assets, fragment and RSS handling, download helper contracts, and feed identity compatibility. `check:site` parses rendered HTML, CSS, RSS descriptions, and sitemap URLs. It resolves relative, canonical-host, and legacy-host references against actual output files, checks HTML fragments, and treats RSS GUIDs as opaque identities. Static validation makes no network requests.
+
+The browser suite starts a local server for `_site/` and checks mobile navigation, visible article math, and decoded converter/resizer downloads, including dimensions, filenames, and transparency. It rejects missing local requests and uncaught browser errors. The math check requires the public MathJax CDN used by the rendered article; it fails if math does not typeset. Browser checks suppress analytics requests and do not run weather fetchers or publishers. Chromium installation on Linux may need `npx playwright install --with-deps chromium`, as used in CI.
+
+For another output directory, use `npm run check:site -- path/to/output` and `SITE_OUTPUT_DIR=path/to/output npm run test:browser`. Paths resolve from the project root. Set `SITE_TEST_PORT` if the default local port 4173 is occupied. Test artifacts are written under the ignored `test-results/` directory.
+
+`.github/workflows/site-checks.yml` runs these checks for pull requests to `master`, pushes to `master`, and manual runs. Its token has read-only contents permission; it does not publish, inject secrets, or run weather jobs. The publishing workflow remains separate.
 
 ## Publication and weather data
 
