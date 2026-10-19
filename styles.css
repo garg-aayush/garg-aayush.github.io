@@ -59,15 +59,113 @@ a:hover {
   color: var(--accent-hover);
 }
 
-:where(main :is(p, li, dd, td, th, figcaption, blockquote) a) {
+/* Only the context is wrapped in :where(), so the link keeps the specificity of the plain a rule above and wins by coming later */
+:where(main :is(p, li, dd, td, th, figcaption, blockquote, .description)) a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  text-decoration-color: var(--accent-dim);
+  text-decoration-color: var(--accent-line);
 }
 
-:where(main :is(p, li, dd, td, th, figcaption, blockquote) a):hover {
+:where(main :is(p, li, dd, td, th, figcaption, blockquote, .description)) a:hover {
   text-decoration-color: var(--accent);
+}
+
+/* Link kinds. Prose links, above, are Accent and underlined. Every kind below shows what it is without hover, because phones have no hover. */
+
+/* Arrow on title links, card links and secondary actions: → stays on the site, ↗ leaves it. Decorative, so the alternative text is empty; the first content line is the fallback for browsers without alternative text. */
+:is(.title-link, .card-link, .link-arrow, .sec-head a)::after {
+  content: "\00a0\2192";
+  content: "\00a0\2192" / "";
+  font-size: 0.9em;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+/* A link to another host takes ↗. Quarto rewrites every href to a full URL on load, so internal links read as aayushgarg.dev, localhost or 127.0.0.1, and all three count as the site. */
+:is(.title-link, .card-link, .link-arrow, .sec-head a):where([href^="http://"], [href^="https://"]):where(:not([href*="aayushgarg.dev"], [href*="//localhost"], [href*="//127.0.0.1"]))::after {
+  content: "\00a0\2197";
+  content: "\00a0\2197" / "";
+}
+
+/* Title links: an item's name in a list or row. Heading color with the arrow, Accent on hover and focus. The padding grows the tap area to the touch target and the negative margin keeps the line height. */
+.title-link {
+  display: inline-block;
+  padding-block: var(--space-12);
+  margin-block: calc(-1 * var(--space-12));
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.title-link:is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+
+/* Post rows are title links without the arrow, because a list of posts already reads as clickable */
+.title-link.no-arrow::after {
+  content: none;
+}
+
+/* Card links: the title link covers its card, so the card is the target. ::before draws the border that turns Accent on hover and focus, plus the focus ring; ::after is the arrow at the top right, placed by the card's --card-pad. */
+.card-link {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.card-link::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+}
+
+.card-link::after {
+  position: absolute;
+  top: var(--card-pad, var(--space-24));
+  right: var(--card-pad, var(--space-24));
+  font-size: var(--fs-ui);
+  line-height: 1;
+}
+
+.card-link:is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+
+.card-link:is(:hover, :focus-visible)::before {
+  border-color: var(--accent);
+}
+
+.card-link:focus-visible {
+  outline: none;
+}
+
+.card-link:focus-visible::before {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Secondary actions: the link in a section header, standalone actions such as "About me", and the back link that ends an article (which has its own ← arrow). Accent. */
+:is(.link-arrow, .sec-head a, .link-back) {
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+:is(.link-arrow, .sec-head a, .link-back):is(:hover, :focus-visible) {
+  color: var(--accent-hover);
+}
+
+.link-arrow {
+  font-size: var(--fs-control);
+}
+
+/* Underline on hover and focus, the same 1px line as prose links. Cards show their state with the border instead. */
+:is(.title-link, .link-arrow, .sec-head a, .link-back, footer.footer a):is(:hover, :focus-visible) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: currentColor;
 }
 
 /* Numbers and dates align in columns */
@@ -330,8 +428,9 @@ footer.footer .nav-footer p {
   margin: 0;
 }
 
+/* Links sit one step above the Dim copyright text and underline on hover and focus (see "Link kinds") */
 footer.footer .nav-footer a {
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 footer.footer .nav-footer a:hover {
@@ -375,6 +474,16 @@ footer.footer .footer-items .nav-link {
   font-weight: 400;
   line-height: var(--lh-dek);
   color: var(--text-content);
+}
+
+/* Bootstrap removes link underlines in the title block through an ID selector, so the prose underline here needs !important */
+.quarto-title-block .description a {
+  text-decoration: underline 1px var(--accent-line) !important;
+  text-underline-offset: 3px !important;
+}
+
+.quarto-title-block .description a:hover {
+  text-decoration-color: var(--accent) !important;
 }
 
 .quarto-title-meta-heading,
@@ -549,17 +658,12 @@ table td {
   background-color: var(--border);
 }
 
+/* The link takes the secondary action style under "Link kinds" and drops the label's mono uppercase */
 .sec-head a {
   font-family: var(--font-sans);
   font-size: var(--fs-small);
   letter-spacing: 0.04em;
   text-transform: none;
-  text-decoration: none;
-  color: var(--text-primary);
-}
-
-.sec-head a:hover {
-  color: var(--accent-hover);
 }
 
 /* Space around the heading. A page changes it by setting --sec-before and --sec-after. */
@@ -590,23 +694,6 @@ h2:has(> .sec-head) {
 .btn-solid:hover {
   color: var(--bg-body);
   filter: brightness(1.08);
-}
-
-/* Reusable: secondary text action that adds its own trailing arrow */
-.link-arrow {
-  font-size: var(--fs-control);
-  font-weight: 500;
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.link-arrow::after {
-  content: " \2192";
-  content: " \2192" / "";
-}
-
-.link-arrow:hover {
-  color: var(--accent-hover);
 }
 
 /* Reusable: green status dot for live data */

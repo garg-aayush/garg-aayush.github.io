@@ -339,18 +339,12 @@ body.article-page main.content .footnotes {
   display: inline-flex;
   align-items: center;
   min-height: var(--touch-target);
-  color: var(--text-primary);
-  text-decoration: none;
 }
 
 .article-end .link-back::before {
   content: "\2190";
   content: "\2190" / "";
   margin-right: var(--space-8);
-}
-
-.article-end .link-back:hover {
-  color: var(--accent-hover);
 }
 
 /* ---------- Content shared by every page ---------- */

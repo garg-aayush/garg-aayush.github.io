@@ -153,6 +153,7 @@
 }
 
 .now-row {
+  position: relative;
   display: grid;
   grid-template-columns: 100px minmax(0, 1fr);
   gap: var(--space-16);
@@ -184,15 +185,6 @@
   font-size: var(--fs-control);
   line-height: 1.45;
   color: var(--text-primary);
-}
-
-.now-text a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.now-text a:hover {
-  color: var(--accent-hover);
 }
 
 .now-text .live-dot {
@@ -365,20 +357,25 @@
   letter-spacing: -0.012em;
 }
 
-.post-title a {
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.post-title a:hover {
-  color: var(--accent-hover);
-}
-
-/* The title link covers the whole row */
-.post-title a::after {
+/* The title link covers the whole row, so the row is the target, and its ::before carries the focus ring. Used by post rows and Now panel rows. */
+:is(.post-title, .now-text) a::before {
   content: "";
   position: absolute;
   inset: 0;
+}
+
+:is(.post-title, .now-text) a:focus-visible {
+  outline: none;
+}
+
+:is(.post-title, .now-text) a:focus-visible::before {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The Now panel clips what is outside it, so its focus ring is drawn inside the row */
+.now-text a:focus-visible::before {
+  outline-offset: -2px;
 }
 
 .post-desc {
@@ -435,20 +432,6 @@
   }
 }
 
-/* Keyboard focus lands on the title link, so the outline goes around the whole row or tile */
-@supports selector(:has(*)) {
-  .post-title a:focus-visible,
-  .tile-title a:focus-visible {
-    outline: none;
-  }
-
-  .post-row:has(a:focus-visible),
-  .tile:has(a:focus-visible) {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
 /* Tiles */
 .tiles {
   display: grid;
@@ -456,19 +439,17 @@
   gap: var(--space-16);
 }
 
+/* The tile title is a card link (see styles.css), which covers the tile and adds the hover border and the arrow */
 .tile {
+  --card-pad: var(--space-24);
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
-  padding: var(--space-24);
+  padding: var(--card-pad);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background-color: var(--bg-card);
-}
-
-.tile:hover {
-  border-color: var(--text-dim);
 }
 
 .tile-label {
@@ -481,18 +462,6 @@
   margin: 0;
   font-size: var(--fs-h3);
   letter-spacing: -0.015em;
-}
-
-.tile-title a {
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.tile-title a::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
 }
 
 .tile-text {
@@ -517,10 +486,6 @@
   .tiles {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-12);
-  }
-
-  .tile {
-    padding: var(--space-24) var(--space-24);
   }
 }
 

@@ -1,6 +1,6 @@
 <ul class="work-rows"><% for (const item of items) { %>
 <li class="work-row">
-<h3 class="work-name no-anchor"><a href="<%- item.path %>" target="_blank" rel="noopener"><%- item.title %></a></h3>
+<h3 class="work-name no-anchor"><a class="title-link" href="<%- item.path %>" target="_blank" rel="noopener"><%- item.title %></a></h3>
 <div class="work-body">
 <p><%- item.description %></p><% if (item.list) { %>
 <ul><% for (const entry of item.list) { %>

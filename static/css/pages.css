@@ -36,19 +36,17 @@
   gap: var(--space-16);
 }
 
+/* The tile title is a card link (see styles.css), which covers the tile and adds the hover border and the arrow */
 .work-tile {
+  --card-pad: var(--space-24);
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-  padding: var(--space-24);
+  padding: var(--card-pad);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background-color: var(--bg-card);
-}
-
-.work-tile:hover {
-  background-color: var(--bg-hover);
 }
 
 .work-tile p {
@@ -71,27 +69,6 @@
   letter-spacing: var(--tracking-h3);
 }
 
-.work-tile h3 a {
-  color: var(--text-primary);
-}
-
-/* The link covers the whole tile so the tile is one target */
-.work-tile h3 a::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-
-.work-tile h3 a:focus-visible {
-  outline: none;
-}
-
-.work-tile h3 a:focus-visible::after {
-  border-radius: var(--radius-lg);
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
 .work-tile p:last-child {
   font-size: var(--fs-control);
   line-height: var(--lh-body);
@@ -105,7 +82,7 @@
   }
 
   .work-tile {
-    padding: var(--space-16);
+    --card-pad: var(--space-16);
   }
 }
 
@@ -136,14 +113,6 @@
   line-height: 1.35;
   letter-spacing: -0.012em;
   overflow-wrap: anywhere;
-}
-
-.work-name a {
-  color: var(--text-primary);
-}
-
-.work-name a:hover {
-  color: var(--accent-hover);
 }
 
 .work-body {
@@ -317,10 +286,6 @@
   letter-spacing: var(--tracking-h3);
 }
 
-.xp-company a {
-  color: var(--text-primary);
-}
-
 .xp-role {
   margin-top: var(--space-4);
   font-size: var(--fs-control);
@@ -419,15 +384,11 @@
 }
 
 .tool-link {
+  justify-self: start;
   font-size: calc(var(--fs-body) + 1px);
   font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.012em;
-  color: var(--text-primary);
-}
-
-a.tool-link:hover {
-  color: var(--accent-hover);
 }
 
 .tool-tagline {

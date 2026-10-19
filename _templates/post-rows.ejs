@@ -12,7 +12,7 @@ const rows = items.map((item) => {
   return `<li class="post-row" ${metadataAttrs(item)}>
 <time class="post-date">${esc(item.date)}</time>
 <div class="post-main">
-<h3 class="post-title no-anchor"><a href="${esc(root + item.outputHref)}" class="no-external">${esc(item.title)}</a></h3>
+<h3 class="post-title no-anchor"><a href="${esc(root + item.outputHref)}" class="title-link no-arrow no-external">${esc(item.title)}</a></h3>
 ${description}
 </div>
 ${category}

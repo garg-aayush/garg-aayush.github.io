@@ -67,7 +67,7 @@ listing:
 ::: {.work-tile}
 []{.live-dot} [Weather]{.ui-label}
 
-### [India Weather](india-weather.qmd) {.no-anchor}
+### [India Weather](india-weather.qmd){.card-link} {.no-anchor}
 
 Live temperature, humidity, and air quality across India's major metropolitan cities.
 :::
@@ -75,7 +75,7 @@ Live temperature, humidity, and air quality across India's major metropolitan ci
 ::: {.work-tile}
 [Tools]{.ui-label}
 
-### [Browser tools](tools/) {.no-anchor}
+### [Browser tools](tools/){.card-link} {.no-anchor}
 
 Image, viewer and data utilities that run entirely in your browser.
 :::

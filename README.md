@@ -33,7 +33,7 @@ quarto render tools/index.qmd
 - `static/design-tokens.css`: the single source for colors (including code syntax colors), font stacks, type, spacing and radius scales, component sizes, and site color aliases.
 - `static/fonts/`: self-hosted Geist and Geist Mono variable WOFF2 files (Latin subset, from `@fontsource-variable` 5.3.0), `fonts.css` with their `@font-face` rules, and the SIL Open Font License in `OFL.txt`.
 - `tools/common.css`: shared presentation for image tools that use the same layout and controls.
-- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow` and `.live-dot` classes).
+- `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow`, `.title-link`, `.card-link` and `.live-dot` classes).
 - `static/css/home.css`, `static/css/article.css`, `static/css/pages.css`: homepage and blog listing, article, and about, publications, projects and tools catalog rules.
 - Page body classes: each page sets `body-classes` in its front matter and its CSS is scoped to that class. `home` is the homepage and `writing` the Writing index (both in `home.css`), `pg` is Work, About, Publications, the Tools catalog and the weather page (`pages.css`), and `article-page` is every post (`article.css`, set once in `posts/_metadata.yml`).
 - `_templates/`: EJS listing templates that turn the lists in a page's front matter, and the post listings, into markup. They hold markup and no page copy. Quarto does not render underscore paths.
@@ -82,6 +82,8 @@ Every visible word is text in a `.qmd` file or in `_quarto.yml`, so no HTML is n
 - **Navigation and footer**: `_quarto.yml`.
 
 Section headers are written the same way on every page, as `## [Label []{.rule} [link text](url)]{.sec-head} {.no-anchor}`. Leave out the link part when a header has no link.
+
+A link inside a sentence needs no class. Add `{.title-link}` to a Markdown link whose text is the name of an item in a list or row, such as a tool in the catalog (`[Image Resizer](image-resizer.html){.tool-link .title-link}`), and it gets a small arrow that points ↗ when the link leaves the site and → when it stays on it. The link in a section header and `{.link-arrow}` links such as "About me" get their arrow without any extra class, and a tile's title link takes `{.card-link}` so the whole tile is clickable.
 
 Quarto listing quirks to know when editing these lists:
 

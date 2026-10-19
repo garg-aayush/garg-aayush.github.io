@@ -7,7 +7,7 @@ const rows = items.map((item) => {
   const label = item.label ?? templateParams?.label;
   const text = esc(item.text ?? item.title);
   const href = item.href ?? (item.outputHref ? `${templateParams?.root ?? ""}${item.outputHref}` : "");
-  const link = /^https?:/.test(href) ? ` target="_blank" rel="noopener"` : ` class="no-external"`;
+  const link = /^https?:/.test(href) ? ` class="title-link" target="_blank" rel="noopener"` : ` class="title-link no-external"`;
   const sub = item.sub ?? [item.date, item["reading-time"]].filter(Boolean).join(" · ");
   const dot = item.live ? `<span class="live-dot"></span>` : "";
   const body = href ? `<a href="${esc(href)}"${link}>${text}</a>` : text;
