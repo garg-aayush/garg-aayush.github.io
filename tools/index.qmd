@@ -1,21 +1,23 @@
 ---
 title: "Tools"
 description: "Browser-based tools that run entirely client-side. No data leaves your browser."
+page-layout: full
+body-classes: pg
 sidebar: false
-toc: true
+toc: false
+include-after-body:
+  - text: |
+      <script src="/static/js/tools-catalog.js"></script>
 ---
 
-```{=html}
-<div class="listing-actions-group">
-  <div class="input-group input-group-sm quarto-listing-filter">
-    <span class="input-group-text"><i class="bi bi-search"></i></span>
-    <input id="tools-filter" type="text" class="search form-control" placeholder="Filter">
-  </div>
-</div>
-<div id="tools-no-results" style="display: none; padding: 1.5rem 0; color: #888; font-style: italic;">No tools match your search.</div>
-```
+::: {#tools-filter-slot .tools-filter data-placeholder="Filter tools"}
+:::
 
-## Image Tools
+::: {#tools-no-results .tools-empty hidden=""}
+No tools match your search.
+:::
+
+## [Image Tools []{.rule}]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
@@ -69,7 +71,7 @@ Preview SVG files with zoom and background controls, inspect metadata and source
 
 :::
 
-## Viewer Tools
+## [Viewer Tools []{.rule}]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
@@ -115,7 +117,7 @@ Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback
 
 :::
 
-## Data Tools
+## [Data Tools []{.rule}]{.sec-head} {.no-anchor}
 
 ::: {.tools-list}
 
@@ -145,64 +147,6 @@ Percent-encode and decode URL strings with live conversion. Toggle between encod
 
 :::
 
-::: {.template-credit}
-*Most of these tools were vibe-coded so if you run into any quirks, that's probably why.*
-
-*Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).*
+::: {.tools-note}
+Most of these tools were vibe-coded so if you run into any quirks, that's probably why. Inspired by [tools.simonwillison.net](https://tools.simonwillison.net/).
 :::
-
-```{=html}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.tool-item').forEach(item => {
-    const desc = item.querySelector('.tool-desc');
-    if (!desc) return;
-    item.style.cursor = 'pointer';
-    item.addEventListener('click', (e) => {
-      // Don't toggle if they clicked the actual link to navigate
-      if (e.target.closest('a.tool-link')) return;
-      desc.classList.toggle('open');
-    });
-  });
-
-  // Search/filter functionality
-  const filterInput = document.getElementById('tools-filter');
-  const noResults = document.getElementById('tools-no-results');
-  if (!filterInput) return;
-
-  filterInput.addEventListener('input', () => {
-    const query = filterInput.value.toLowerCase().trim();
-    let totalVisible = 0;
-
-    document.querySelectorAll('.tools-list').forEach(list => {
-      const heading = list.previousElementSibling;
-      let visibleInSection = 0;
-
-      list.querySelectorAll('.tool-item').forEach(item => {
-        const link = item.querySelector('.tool-link');
-        const tagline = item.querySelector('.tool-tagline');
-        const desc = item.querySelector('.tool-desc');
-        const text = [
-          link ? link.textContent : '',
-          tagline ? tagline.textContent : '',
-          desc ? desc.textContent : ''
-        ].join(' ').toLowerCase();
-
-        const match = !query || text.includes(query);
-        item.style.display = match ? '' : 'none';
-        if (match) visibleInSection++;
-      });
-
-      const sectionHidden = visibleInSection === 0;
-      list.style.display = sectionHidden ? 'none' : '';
-      if (heading && heading.tagName === 'H2') {
-        heading.style.display = sectionHidden ? 'none' : '';
-      }
-      totalVisible += visibleInSection;
-    });
-
-    noResults.style.display = totalVisible === 0 && query ? 'block' : 'none';
-  });
-});
-</script>
-```

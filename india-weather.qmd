@@ -2,6 +2,7 @@
 title: "How's the weather across India right now?"
 description: "Live temperature, humidity, and air quality across India's major metropolitan cities."
 page-layout: full
+body-classes: pg
 toc: false
 sidebar: false
 include-in-header:

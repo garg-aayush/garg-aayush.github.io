@@ -572,8 +572,11 @@
 
 /* Mobile */
 @media (max-width: 900px) {
-  .iw-grid {
-    grid-template-columns: 1fr;
+  /* The wide-screen rule above sets columns with !important, so this one needs it too. Without it the 380px leaderboard column survives and overflows phones. */
+  .iw-grid,
+  .iw-grid.page-columns,
+  .iw-grid.page-columns.page-full {
+    grid-template-columns: minmax(0, 1fr) !important;
   }
   .iw-map-wrap {
     height: 60vh;

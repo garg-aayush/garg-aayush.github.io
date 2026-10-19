@@ -7,7 +7,7 @@ paths:
 
 ## Adding a New Tool
 1. Create the tool as a standalone `.html` file in `tools/` with local processing (CDN libraries are OK when needed, e.g. KaTeX, jsdiff). Load `../static/design-tokens.css` for browser colors and typography; reuse `common.css` when its image tool layout and control styles match, keeping specialized styles local.
-2. Add a list entry in `tools/index.qmd` under the appropriate `## Category` header using the `.tool-item` div pattern (tool-link + tool-tagline + expandable tool-desc)
+2. Add a list entry in `tools/index.qmd` inside the `.tools-list` div under the appropriate category heading (`## [Category []{.rule}]{.sec-head} {.no-anchor}`), using the `.tool-item` div pattern (tool-link + tool-tagline + a `.tool-desc` div). `static/js/tools-catalog.js` adds the Details button and the filter, so the entry needs no extra markup
 3. The `.html` files are copied as-is to `_site/` via the `resources: tools/*.html` entry in `_quarto.yml`
 4. After changes, run `quarto render tools/index.qmd` to rebuild the listing (standalone HTML tools don't need rendering)
 
@@ -32,4 +32,4 @@ paths:
 - **Back link**: Include a `<- Back to Tools` link pointing to `./`
 - **Validation**: Validate input files (type, size, dimensions) with user-visible error messages
 - **Downloads**: Use blob-based downloads (`URL.createObjectURL`) instead of data URLs for large file support
-- **Listing**: Each tool entry has a short tagline inline (no dash prefix) and a full description in an expandable `.tool-desc` div that toggles on click
+- **Listing**: Each tool entry has a short tagline inline (no dash prefix) and a full description in a `.tool-desc` div. `static/js/tools-catalog.js` hides the description and adds a Details button that toggles it (with `aria-expanded`); without the script every description stays visible. All catalog text, including the filter placeholder and the empty-state message, lives in `tools/index.qmd`
