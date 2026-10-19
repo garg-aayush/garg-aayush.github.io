@@ -35,6 +35,10 @@ quarto render tools/index.qmd
 - `tools/common.css`: shared presentation for image tools that use the same layout and controls.
 - `styles.css`: global base for every Quarto page (type, links, navbar, footer, focus, search, code, and the shared `.ui-label`, `.sec-head`, `.btn-solid`, `.link-arrow` and `.live-dot` classes).
 - `static/css/home.css`, `static/css/article.css`, `static/css/pages.css`: homepage and blog listing, article, and about, publications, projects and tools catalog rules.
+- Page body classes: each page sets `body-classes` in its front matter and its CSS is scoped to that class. `home` is the homepage and `writing` the Writing index (both in `home.css`), `pg` is Work, About, Publications, the Tools catalog and the weather page (`pages.css`), and `article-page` is every post (`article.css`, set once in `posts/_metadata.yml`).
+- `_templates/`: EJS listing templates that turn the lists in a page's front matter, and the post listings, into markup. They hold markup and no page copy. Quarto does not render underscore paths.
+- `_partials/title-block.html` and `_filters/article.lua`: the article header and the Pandoc filter for posts, both wired in through `posts/_metadata.yml`. The filter computes the reading time with Quarto's own listing formula so the header matches the post rows, counts the sections, adds the contents list for phones and appends the "All writing" link.
+- `static/js/tools-catalog.js`: adds the filter box and the Details buttons to the tools catalog. Without it every tool description stays visible.
 - `theme-dark.scss`: Bootstrap compile-time theme settings.
 - `static/js/site.js`: the only site-wide script, loaded from `include-after-body` in `_quarto.yml`.
 - `static/`: images and other static assets, including weather page assets and fallback data.
@@ -63,6 +67,27 @@ Run the compatibility checks with the pinned Node version:
 ```bash
 node --test scripts/preserve-feed-guids.test.mjs
 ```
+
+## Updating content
+
+Every visible word is text in a `.qmd` file or in `_quarto.yml`, so no HTML is needed. Repeated items live in lists at the top of the page's file, and the templates in `_templates/` turn them into markup. Run `quarto preview` while editing to see the result.
+
+- **Homepage (`index.qmd`)**: the hero text, the section labels, the Now header with its date label and the contact sentence are Markdown in the body. The Now rows (`label`, `text`, `sub`, `href`, `live`) are a list at the top of the file, and the Latest post row is added automatically. The career path stages (`years`, `title`, `text`, `badge`) and the featured tiles (`label`, `title`, `text`, `href`, `meta`, `live`) are lists too. `max-items` on `blog-listings` sets how many recent posts show.
+- **Writing index (`blog/index.qmd`)**: the rows and the category chips are generated from the posts, so a new post or a new category shows up on its own.
+- **Posts**: written as before. The interface words (`toc-title`, `back-link-text`, `byline`) are in `posts/_metadata.yml`. The filter computes the reading time and the section count.
+- **Work (`projects.qmd`)**: projects and gists are lists with `title`, `path`, `description` and optional `list` and `note`. The order written is the order shown.
+- **Publications (`publications.qmd`)**: one item per paper with `year` as a string, `title`, `subtitle` for the authors (wrap the author's own name in `**`) and `description` for the venue (add a Markdown link). Keep the newest year first.
+- **About (`about.qmd`)**: the intro is Markdown. The roles are a list with `title`, `dates`, `role`, `description`, an optional `path` and `now: true` on the current role.
+- **Tools catalog (`tools/index.qmd`)**: the authoring pattern is unchanged, see [.claude/rules/tools-workflow.md](.claude/rules/tools-workflow.md).
+- **Navigation and footer**: `_quarto.yml`.
+
+Section headers are written the same way on every page, as `## [Label []{.rule} [link text](url)]{.sec-head} {.no-anchor}`. Leave out the link part when a header has no link.
+
+Quarto listing quirks to know when editing these lists:
+
+- Write any `date` field in a list as a quoted string.
+- Lists use `sort: false` to keep the written order.
+- Markdown works in `title`, `subtitle` and `description`, but not in custom fields such as `sub`, `text` or `role`.
 
 ## Local checks
 
