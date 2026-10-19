@@ -733,11 +733,28 @@ h2:has(> .sec-head) {
   box-shadow: 0 0 0 3px var(--live-dim);
 }
 
-/* Contact: one title link per line, from _contact.qmd on the homepage and About. The title link's padding is the tap target, so the negative margin that keeps its line height elsewhere goes. */
+/* Contact: the title links in one row, from _contact.qmd on the homepage and About. A dot drawn here separates them, and the row only wraps where the screen is too narrow for it. The title link's padding is the tap target, so the negative margin that keeps its line height elsewhere goes. */
 .contact ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-12);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.contact li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+/* Decorative, so the alternative text is empty; the first content line is the fallback for browsers without alternative text */
+.contact li + li::before {
+  content: "\00b7";
+  content: "\00b7" / "";
+  color: var(--text-dim);
 }
 
 .contact .title-link {

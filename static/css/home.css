@@ -48,6 +48,33 @@
   padding: var(--space-64) 0 0;
 }
 
+/* The portrait is a Markdown image in index.qmd. It sits beside the name and the role line, which stack and stay centered against it. */
+.hero-id {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+/* The image sits in a paragraph, which must not shrink with the name beside it */
+.hero-id > p {
+  flex: none;
+  margin: 0;
+}
+
+/* Two classes, so the size beats Bootstrap's .img-fluid height */
+.hero-id .avatar {
+  display: block;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.hero-name {
+  min-width: 0;
+}
+
 .hero h1 {
   margin: 0;
   font-size: var(--fs-title);
@@ -55,7 +82,7 @@
 }
 
 .hero-role {
-  margin-top: var(--space-12);
+  margin-top: var(--space-4);
   font-size: var(--fs-role);
   color: var(--text-muted);
 }

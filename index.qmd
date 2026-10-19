@@ -6,6 +6,9 @@ page-layout: full
 body-classes: home
 toc: false
 sidebar: false
+# Fills the []{.build-month} span in the Now box header with the month of the build
+filters:
+  - _filters/build-month.lua
 listing:
   # The Now rows. Edit text, link and sub-line here. Add live: true for the green status dot. The Latest post row is added automatically after the first row.
   - id: now-rows
@@ -82,10 +85,20 @@ listing:
 
 ::: {.hero-copy}
 
+::: {.hero-id}
+
+![](static/img/aayush-avatar.jpg){.avatar width="72" height="72" loading="eager" fig-alt="Portrait of Aayush Garg"}
+
+::: {.hero-name}
+
 # Aayush Garg {.no-anchor}
 
 ::: {.hero-role}
 Forward deployed ML engineer at Applied Computing
+:::
+
+:::
+
 :::
 
 ::: {.hero-statement}
@@ -105,7 +118,7 @@ Right now that means forecasting, anomaly detection and optimisation for energy 
 ::: {.now-panel}
 
 ::: {.now-head}
-**Now** October 2026
+**Now** []{.build-month}
 :::
 
 ::: {.now-list}

@@ -21,7 +21,7 @@ website:
   description: "Personal website"
   site-url: "https://aayushgarg.dev"
   google-analytics: "G-16JWTLXJNG"
-  favicon: "static/img/aayush_cropped.jpg"
+  favicon: "static/img/favicon.png"
   open-graph: true
   twitter-card:
     card-style: summary_large_image

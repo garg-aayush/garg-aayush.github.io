@@ -89,6 +89,7 @@
   --nav-height: 56px;
   --touch-target: 44px;
   --btn-padding: 12px 18px;
+  --avatar-size: clamp(56px, calc(56px + 16 * (100vw - 600px) / 600), 72px);
 
   /* Aliases kept for the tools and older rules */
   --bg-primary: var(--bg-body);
