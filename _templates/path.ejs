@@ -1,0 +1,17 @@
+<%
+// One column per career stage. Reads years, title, text and badge from a YAML item.
+// Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
+// A stage with a badge is the current one: it gets the accent marker and the badge pill.
+const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const rows = items.map((item) => `<li class="path-stage${item.badge ? " is-current" : ""}">
+<p class="path-years">${esc(item.years)}${item.badge ? ` <span class="path-badge">${esc(item.badge)}</span>` : ""}</p>
+<h3 class="path-title no-anchor">${esc(item.title)}</h3>
+<p class="path-text">${esc(item.text)}</p>
+</li>`);
+%>
+
+```{=html}
+<ol class="list path-stages">
+<%= rows.join("\n") %>
+</ol>
+```

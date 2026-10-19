@@ -1,23 +1,35 @@
 ---
 title: "Writing"
-description: "From-scratch LLM builds, deep-dives and practical AI engineering."
-sidebar: false
+description: "From-scratch LLM builds, deep dives and practical AI engineering."
+page-layout: full
+body-classes: writing
 toc: false
+sidebar: false
 listing:
-  date-format: short
-  feed: true
-  filter-ui: true
-  type: table
-  sort-ui: false
-  sort: "date desc"
-  categories: true
-  fields: [date, title]
-  id: blog-listings
-  contents: 
-    - "../posts/20*.qmd"
-    - "../posts/20*/index.qmd"
-  page-size: 20
+  # The category chips above the rows. They are built from the categories of the posts below.
+  - id: blog-chips
+    template: ../_templates/category-chips.ejs
+    template-params:
+      all: All
+      label: Categories
+    contents: &posts
+      - "../posts/20*.qmd"
+      - "../posts/20*/index.qmd"
+  # Every post as a row, newest first, and published as the RSS feed.
+  - id: blog-listings
+    template: ../_templates/post-rows.ejs
+    template-params:
+      description: true
+      root: ../
+    feed: true
+    fields: [date, title, description, categories, reading-time]
+    date-format: "YYYY-MM-DD"
+    sort: "date desc"
+    contents: *posts
 ---
+
+::: {#blog-chips}
+:::
 
 ::: {#blog-listings}
 :::

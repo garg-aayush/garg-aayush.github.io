@@ -1,0 +1,18 @@
+<%
+// Filter chips built from the categories of the posts in this listing.
+// Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
+// Quarto's own script handles the click, the active state and the #category= URL hash for any .category element inside .quarto-listing-category.
+// template-params: all (label of the reset chip) and label (accessible name of the group).
+const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const counts = new Map();
+for (const item of items) for (const category of item.categories ?? []) counts.set(category, (counts.get(category) ?? 0) + 1);
+const chip = (name, label, count, active) => `<a class="category no-external${active ? " active" : ""}" data-category="${utils.b64encode(name)}" href="#${name ? `category=${encodeURIComponent(name)}` : ""}">${esc(label)} <span class="chip-count">${count}</span></a>`;
+const chips = [chip("", templateParams?.all, items.length, true)];
+for (const name of [...counts.keys()].sort((a, b) => a.localeCompare(b))) chips.push(chip(name, name, counts.get(name), false));
+%>
+
+```{=html}
+<div class="quarto-listing-category category-chips" role="group" aria-label="<%= templateParams?.label %>">
+<%= chips.join("\n") %>
+</div>
+```

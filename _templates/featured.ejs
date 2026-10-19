@@ -1,0 +1,21 @@
+<%
+// One tile per item. Reads label, live, title, text, href and meta (a list of short strings) from a YAML item.
+// Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
+const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const rows = items.map((item) => {
+  const link = /^https?:/.test(item.href ?? "") ? ` target="_blank" rel="noopener"` : ` class="no-external"`;
+  const meta = (item.meta ?? []).map((entry) => `<span>${esc(entry)}</span>`).join("");
+  return `<li class="tile">
+<p class="tile-label ui-label">${item.live ? `<span class="live-dot"></span>` : ""}${esc(item.label)}</p>
+<h3 class="tile-title no-anchor"><a href="${esc(item.href)}"${link}>${esc(item.title)}</a></h3>
+<p class="tile-text">${esc(item.text)}</p>
+${meta ? `<p class="tile-meta">${meta}</p>` : ""}
+</li>`;
+});
+%>
+
+```{=html}
+<ul class="list tiles">
+<%= rows.join("\n") %>
+</ul>
+```

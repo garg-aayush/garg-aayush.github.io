@@ -73,6 +73,15 @@ test('rendered validation catches deliberate missing targets and fragments in HT
   for (const target of ['missing.png', 'old-jekyll-route', '#absent', 'missing.pdf', 'source.qmd', 'missing.css', 'missing.woff2', 'rss-missing.png']) assert.ok(errors.some(error => error.includes(target)), `${target}: ${errors.join('\n')}`);
 });
 
+test('rendered validation skips the listing category filter hash but still checks every other fragment', async t => {
+  const filter = await renderedFixture(t, '<a href="article.html#category=AI%20Agents">Filter</a>');
+  assert.deepEqual((await checkSite(filter)).errors, []);
+  const other = await renderedFixture(t, '<a href="article.html#category=AI">Filter</a><a href="article.html#categories=AI">Not a filter</a><a href="article.html#absent">Anchor</a>');
+  const { errors } = await checkSite(other);
+  assert.equal(errors.length, 2, errors.join('\n'));
+  for (const target of ['#categories=AI', '#absent']) assert.ok(errors.some(error => error.includes(target)), `${target}: ${errors.join('\n')}`);
+});
+
 test('rendered validation rejects malformed XML and missing required feeds', async t => {
   const root = await renderedFixture(t);
   await writeFile(join(root, 'index.xml'), '<rss><channel></rss>');

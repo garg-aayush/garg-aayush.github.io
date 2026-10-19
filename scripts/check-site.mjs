@@ -107,7 +107,8 @@ export async function checkSite(directory) {
       if ((await stat(target)).isDirectory()) target = join(target, 'index.html');
       if (!(await stat(target)).isFile()) throw new Error('not a file');
     } catch { errors.push(`${source}: missing target ${raw} (${relative(root, target)})`); continue; }
-    if (fragment && extname(target) === '.html' && !documents.get(target)?.has(fragment)) errors.push(`${source}: missing fragment ${raw} (${relative(root, target)}#${fragment})`);
+    // #category=... is Quarto's listing filter hash, read by its script, not an element id
+    if (fragment && !fragment.startsWith('category=') && extname(target) === '.html' && !documents.get(target)?.has(fragment)) errors.push(`${source}: missing fragment ${raw} (${relative(root, target)}#${fragment})`);
   }
   return { pages: documents.size, references: references.length, errors };
 }

@@ -1,158 +1,585 @@
-/* Owns the homepage (index.qmd), the blog listing (blog/index.qmd) and the template credit that tools/index.qmd also uses. */
+/* Owns the homepage (index.qmd, body class home) and the Writing index (blog/index.qmd, body class writing). */
 
-/* Profile section */
-.profile-pic {
-  border-radius: 50%;
-  max-width: 100px;
-  height: auto;
+/* Page shell: full-width layout, content held to the site container */
+:is(.home, .writing) main.content {
+  grid-column: screen-start / screen-end;
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 0 var(--gutter);
+  box-sizing: border-box;
 }
 
-.profile-header .quarto-layout-row {
-  align-items: flex-start;
+/* The homepage headline is the page heading, so Quarto's own title block stays hidden */
+.home .quarto-title-block {
+  display: none;
 }
 
-/* Reset all margins inside profile header cells for top alignment */
-.profile-header .quarto-layout-cell {
-  padding-top: 0;
+.writing .quarto-title-block {
+  padding-top: var(--space-64);
+  margin-bottom: var(--space-32);
 }
 
-.profile-header .quarto-layout-cell p,
-.profile-header .quarto-layout-cell figure {
-  margin-top: 0;
-  margin-bottom: 0;
+.writing .quarto-title-block .description {
+  max-width: 34em;
 }
 
-.profile-header .profile-pic {
-  margin: 0;
+/* Homepage sections are spaced by the listing blocks, so a section header takes no top margin and a wider gap below */
+.home {
+  --sec-before: 0;
+  --sec-after: var(--space-32);
 }
 
 @media (max-width: 600px) {
-  /* Higher specificity than `.content img` in article.css so the hide actually wins. */
-  .profile-header .quarto-figure,
-  .profile-header .profile-pic {
-    display: none;
+  .home {
+    --sec-after: var(--space-24);
   }
 }
 
-@media (min-width: 600px) {
-  .profile-header .quarto-layout-row {
-    flex-direction: row;
-  }
+/* Rows, steps and tiles come from listing templates as plain lists */
+:is(.post-rows, .path-stages, .tiles) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-/* Blog listings - table style.
-   Quarto renders the listing into #listing-<id> (e.g. #listing-blog-listings),
-   not the raw id used in the page frontmatter, so we target the table class
-   directly. */
-.quarto-listing-container-table {
-  margin-top: 1.5rem;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.quarto-listing-table {
-  width: 100%;
-}
-
-.quarto-listing-table th {
-  border-bottom: 2px solid var(--border-color);
-  padding: 0.75rem 0.5rem;
-  text-align: left;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.quarto-listing-table td {
-  padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-secondary);
-}
-
-.quarto-listing-table tr:hover {
-  background-color: var(--bg-hover);
-}
-
-/* Links in table */
-.quarto-listing-table a {
-  text-decoration: none;
-  color: var(--accent);
-}
-
-.quarto-listing-table a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive table for mobile */
-@media (max-width: 768px) {
-  .quarto-listing-table {
-    font-size: 0.9rem;
-  }
-
-  .quarto-listing-table th,
-  .quarto-listing-table td {
-    padding: 0.5rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .quarto-listing-table,
-  .quarto-listing-table thead,
-  .quarto-listing-table tbody,
-  .quarto-listing-table th,
-  .quarto-listing-table td,
-  .quarto-listing-table tr {
-    display: block;
-  }
-
-  .quarto-listing-table thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-
-  .quarto-listing-table tr {
-    margin-bottom: 0.5rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .quarto-listing-table td {
-    border: none;
-    padding: 0.15rem 0;
-    text-align: left;
-  }
-
-  .quarto-listing-table td:nth-of-type(1) {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
-
-  .quarto-listing-table td:nth-of-type(2) a {
-    font-size: 1rem;
-    line-height: 1.35;
-  }
-}
-
-/* Template credit */
-.template-credit {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.template-credit p {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+:is(.post-rows, .path-stages, .tiles) > li {
   margin: 0;
 }
 
-.template-credit a {
-  color: var(--text-muted);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+:is(.now-row, .path-stage, .tile, .post-row) p {
+  margin: 0;
 }
 
-.template-credit a:hover {
+/* Every listing block on the homepage is followed by the same space */
+.home .level2 > .quarto-listing {
+  margin-bottom: var(--space-88);
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+  gap: var(--space-64) var(--space-64);
+  align-items: center;
+  padding-block: var(--space-88);
+}
+
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tracking-label-wide);
+  text-transform: uppercase;
   color: var(--accent);
+}
+
+.hero-tag p {
+  margin: 0;
+}
+
+.hero h1 {
+  margin: var(--space-24) 0 0;
+  font-size: var(--fs-display);
+  line-height: var(--lh-title);
+  letter-spacing: var(--tracking-display);
+}
+
+.hero h1 .dim {
+  color: var(--text-dim);
+}
+
+.hero-lede {
+  max-width: 31em;
+  margin-top: var(--space-24);
+  font-size: var(--fs-dek);
+  line-height: var(--lh-dek);
+  color: var(--text-content);
+}
+
+.hero-lede p {
+  margin: 0;
+}
+
+.hero-actions {
+  margin-top: var(--space-32);
+}
+
+.hero-actions p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-16) var(--space-24);
+  margin: 0;
+}
+
+/* Now panel. The Latest post row is a second listing, so the two listings dissolve into one column and the post takes second place. */
+.now-panel {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--bg-card);
+}
+
+.now-head {
+  border-bottom: 1px solid var(--border);
+}
+
+.now-head p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-16);
+  margin: 0;
+  padding: var(--space-16) var(--space-24);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.now-head strong {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.now-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.now-list :is(.quarto-listing, .now-rows) {
+  display: contents;
+}
+
+.now-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: var(--space-16);
+  padding: var(--space-16) var(--space-24);
+  border-bottom: 1px solid var(--border);
+}
+
+.now-row:last-child {
+  border-bottom: 0;
+}
+
+/* Order: the first YAML row, then the latest post, then the remaining YAML rows */
+.now-row.is-post {
+  order: 1;
+}
+
+.now-row:not(.is-post):nth-child(n + 2) {
+  order: 2;
+}
+
+.now-label {
+  padding-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--text-dim);
+}
+
+.now-text {
+  font-size: var(--fs-control);
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.now-text a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.now-text a:hover {
+  color: var(--accent-hover);
+}
+
+.now-text .live-dot {
+  margin-right: var(--space-8);
+  vertical-align: 2px;
+}
+
+.now-sub {
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--text-dim);
+}
+
+/* Path */
+.path-stages {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+.path-stage {
+  position: relative;
+  padding: var(--space-32) var(--space-32) 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.path-stage::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  box-sizing: border-box;
+  border: 1px solid var(--text-dim);
+  border-radius: 50%;
+  background-color: var(--bg-body);
+}
+
+.path-stage.is-current {
+  border-top-color: var(--accent);
+}
+
+.path-stage.is-current::before {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-dim);
+}
+
+.path-years {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--text-dim);
+}
+
+.path-badge {
+  padding: 1px var(--space-8);
+  border: 1px solid var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+  font-size: var(--fs-label);
+  color: var(--accent);
+}
+
+.path-title {
+  margin: var(--space-12) 0 0;
+  font-size: var(--fs-h3);
+}
+
+.path-text {
+  max-width: 24em;
+  margin-top: var(--space-8);
+  font-size: var(--fs-control);
+  line-height: var(--lh-body);
+  color: var(--text-content);
+}
+
+@media (max-width: 800px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-48);
+    padding-block: var(--space-48);
+  }
+
+  .home .level2 > .quarto-listing {
+    margin-bottom: var(--space-64);
+  }
+
+  .path-stages {
+    grid-auto-flow: row;
+  }
+
+  .path-stage {
+    padding: 0 0 var(--space-32) var(--space-24);
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+
+  .path-stage::before {
+    top: var(--space-4);
+    left: -5px;
+  }
+
+  .path-stage.is-current {
+    padding-bottom: var(--space-4);
+    border-left-color: var(--accent);
+  }
+
+  .path-title {
+    margin-top: var(--space-4);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    margin-top: var(--space-16);
+  }
+
+  .hero-lede {
+    margin-top: var(--space-16);
+  }
+
+  .hero-actions {
+    margin-top: var(--space-24);
+  }
+
+  .now-head p {
+    padding: var(--space-12) var(--space-16);
+  }
+
+  .now-row {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: var(--space-12);
+    padding: var(--space-12) var(--space-16);
+  }
+}
+
+/* Post rows: date, title, category and reading time. Used on the homepage and the Writing index. */
+.post-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 160px 56px;
+  gap: var(--space-24);
+  align-items: baseline;
+  padding: var(--space-16) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-row:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.post-date,
+.post-cat,
+.post-read {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--text-dim);
+}
+
+.post-title {
+  margin: 0;
+  font-size: var(--fs-article);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+}
+
+.post-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.post-title a:hover {
+  color: var(--accent-hover);
+}
+
+/* The title link covers the whole row */
+.post-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.post-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-top: var(--space-4);
+  font-size: var(--fs-control);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.post-cat::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: var(--space-8);
+  border-radius: 50%;
+  background-color: var(--accent);
+  vertical-align: 1px;
+}
+
+.post-read {
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .post-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "date read"
+      "main main"
+      "cat cat";
+    gap: var(--space-8) var(--space-12);
+  }
+
+  .post-date {
+    grid-area: date;
+  }
+
+  .post-read {
+    grid-area: read;
+  }
+
+  .post-main {
+    grid-area: main;
+  }
+
+  .post-cat {
+    grid-area: cat;
+  }
+}
+
+/* Keyboard focus lands on the title link, so the outline goes around the whole row or tile */
+@supports selector(:has(*)) {
+  .post-title a:focus-visible,
+  .tile-title a:focus-visible {
+    outline: none;
+  }
+
+  .post-row:has(a:focus-visible),
+  .tile:has(a:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Tiles */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-16);
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-24);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-card);
+}
+
+.tile:hover {
+  border-color: var(--text-dim);
+}
+
+.tile-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.tile-title {
+  margin: 0;
+  font-size: var(--fs-h3);
+  letter-spacing: -0.015em;
+}
+
+.tile-title a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.tile-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+}
+
+.tile-text {
+  font-size: var(--fs-control);
+  line-height: var(--lh-body);
+  color: var(--text-content);
+}
+
+.tile-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-12);
+  margin-top: auto;
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  color: var(--text-dim);
+}
+
+@media (max-width: 800px) {
+  .tiles {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-12);
+  }
+
+  .tile {
+    padding: var(--space-24) var(--space-24);
+  }
+}
+
+/* Contact */
+.contact {
+  max-width: 34em;
+  font-size: var(--fs-dek);
+  line-height: var(--lh-dek);
+  color: var(--text-content);
+}
+
+.contact p {
+  margin: 0;
+}
+
+/* Writing index: category chips. Quarto's script wires the click, the active state and the #category= hash. */
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  margin-bottom: var(--space-32);
+}
+
+.category-chips .category {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 40px;
+  padding: 0 var(--space-16);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-control);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.category-chips .category:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.category-chips .category.active {
+  border-color: var(--accent);
+  background-color: var(--accent-dim);
+  color: var(--text-primary);
+}
+
+.chip-count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+/* The chips need script to filter, so visitors without it only see the full list */
+@media (scripting: none) {
+  .category-chips {
+    display: none;
+  }
 }
