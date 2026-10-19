@@ -1,0 +1,12 @@
+#!/bin/sh
+# Refuse commits on master, then scan the staged content for secrets.
+set -eu
+
+branch=$(git branch --show-current)
+if [ "$branch" = master ]; then
+    echo "Refusing to commit on master. Commit on a branch: blog-posts, tools or <area>/<slug>." >&2
+    exit 1
+fi
+
+cd "$(git rev-parse --show-toplevel)"
+exec node scripts/check-secrets.mjs --staged
