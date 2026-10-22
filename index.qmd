@@ -137,7 +137,7 @@ I build and deploy AI systems, from first principles to production.
 :::
 
 ::: {.hero-lede}
-Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock. Outside work, I rebuild language models from scratch and write about what I learn.
+Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock, and took on contract work in game asset generation and semiconductor defect classification. Outside work, I rebuild language models from scratch and write about what I learn.
 :::
 
 ::: {.hero-actions}

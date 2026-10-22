@@ -2,6 +2,11 @@
 
 Deferred work that is not blocking but worth picking up if the relevant area is touched again.
 
+## Home page
+
+### Add Pixelart to the contract work
+The About page lists part-time contracts under Contract work (Renderwolf, SixSense), and the home and About intros mention them. Pixelart is still missing: add an entry and update both intro sentences once Aayush shares the dates and what the work was. Contracts stay off the home Path; a side track there was tried and rejected.
+
 ## Browser tools
 
 ### Snapshot the SVG export format before asynchronous rendering

@@ -5,31 +5,44 @@ body-classes: pg
 sidebar: false
 toc: false
 listing:
-  id: experience
-  template: _templates/timeline.ejs
-  sort: false
-  # Professional experience, newest first. Fields: dates, title (company), role, description, and an optional href (company URL) that links the title.
-  contents:
-    - title: Applied Computing
-      dates: May 2026 to Present
-      role: ML Engineer (Forward Deployed)
-      description: "Build and deliver production AI systems for refinery and energy operations, working directly with process engineers and operators from problem framing and industrial data integration through model validation, deployment, and production support. Translate plant constraints and customer feedback into forecasting, anomaly detection, and optimisation capabilities that industrial teams can understand and trust."
-    - title: Jiffy
-      dates: Jan 2024 - Mar 2026
-      role: Senior Machine Learning Engineer
-      description: "Built and ran the image enhancement pipeline behind a $100M+ DTF printing business, turning 40K+ daily uploads into print-ready artwork, and Smart Redraw, a multi-agent system that replaced multi-day manual edits with real-time AI edits. Fine-tuned LLMs and VLMs and optimized their prompts with DSPy. Maintained and optimized the GPU inference stack for open-source LLM and vision models, for both latency and cost."
-    - title: Flixstock
-      dates: Aug 2022 - Dec 2023
-      role: Software Development Engineer III
-      description: "Built Stable Diffusion pipelines for photo-shoot background generation with realistic shadows and lighting, identity transfer and fashion video generation. Fine-tuned custom ControlNets for pose, garment and lighting control."
-    - title: Shell
-      dates: Oct 2019 - Jul 2022
-      role: Research Geophysicist
-      description: "Applied deep learning across Shell's seismic research: denoising models for seismic data, uncertainty quantification for subsurface imaging, and learned Hessian operators for wave-equation optimization."
-    - title: TU Delft
-      dates: Aug 2015 - Aug 2019
-      role: PhD Researcher
-      description: "Developed JMI-res, a reservoir-oriented joint migration inversion method for high-resolution subsurface imaging. Built a deep learning super-resolution method for removing spatial aliasing from seismic data."
+  - id: experience
+    template: _templates/timeline.ejs
+    sort: false
+    # Professional experience, newest first. Fields: dates, title (company), role, description, and an optional href (company URL) that links the title.
+    contents:
+      - title: Applied Computing
+        dates: May 2026 to Present
+        role: ML Engineer (Forward Deployed)
+        description: "Build and deliver production AI systems for refinery and energy operations, working directly with process engineers and operators from problem framing and industrial data integration through model validation, deployment, and production support. Translate plant constraints and customer feedback into forecasting, anomaly detection, and optimisation capabilities that industrial teams can understand and trust."
+      - title: Jiffy
+        dates: Jan 2024 - Mar 2026
+        role: Senior Machine Learning Engineer
+        description: "Built and ran the image enhancement pipeline behind a $100M+ DTF printing business, turning 40K+ daily uploads into print-ready artwork, and Smart Redraw, a multi-agent system that replaced multi-day manual edits with real-time AI edits. Fine-tuned LLMs and VLMs and optimized their prompts with DSPy. Maintained and optimized the GPU inference stack for open-source LLM and vision models, for both latency and cost."
+      - title: Flixstock
+        dates: Aug 2022 - Dec 2023
+        role: Software Development Engineer III
+        description: "Built Stable Diffusion pipelines for photo-shoot background generation with realistic shadows and lighting, identity transfer and fashion video generation. Fine-tuned custom ControlNets for pose, garment and lighting control."
+      - title: Shell
+        dates: Oct 2019 - Jul 2022
+        role: Research Geophysicist
+        description: "Applied deep learning across Shell's seismic research: denoising models for seismic data, uncertainty quantification for subsurface imaging, and learned Hessian operators for wave-equation optimization."
+      - title: TU Delft
+        dates: Aug 2015 - Aug 2019
+        role: PhD Researcher
+        description: "Developed JMI-res, a reservoir-oriented joint migration inversion method for high-resolution subsurface imaging. Built a deep learning super-resolution method for removing spatial aliasing from seismic data."
+  # Part-time contract work, newest first. Same fields as the experience list.
+  - id: contracts
+    template: _templates/timeline.ejs
+    sort: false
+    contents:
+      - title: Renderwolf
+        dates: Dec 2024 - Jul 2025
+        role: ML and AI Engineer (part-time consultant)
+        description: "Built the generation stack for game asset pipelines: ComfyUI workflows for image (SDXL, Flux), video (WAN 2.1) and 3D (Trellis, Hunyuan3D) generation, deployed on Modal with custom nodes. Fine-tuned SDXL and Flux checkpoints for consistent character generation and style transfer."
+      - title: SixSense
+        dates: Jul 2024 - Oct 2024
+        role: ML Engineer (part-time consultant)
+        description: "Architecture search for fast, high-precision semiconductor chip defect classification across CNN and transformer models. Built domain-specific pre-training on chip inspection data for ConvNeXt and transformer backbones, improving accuracy and producing representations reusable across inspection projects."
 ---
 
 ::: {.about-intro}
@@ -41,6 +54,8 @@ My background spans computational geophysics, industrial research, computer visi
 
 Before that, at [Jiffy](https://www.jiffy.com/), I built the AI image enhancement pipeline powering a $100M+ DTF printing business, architected Smart Redraw (a multi-agent AI editing system), and developed end-to-end ML solutions spanning LLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation.
 
+Alongside Jiffy, I took on part-time contract work: game asset generation pipelines for Renderwolf, covering image, video and 3D models, and semiconductor chip defect classification for SixSense.
+
 Previously at [Flixstock](https://www.flixstock.com/), I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.
 
 Unlike many in this field, my core background is not in computer science. My graduate and Ph.D. research experience is in computational geophysics and I worked for [Shell](https://www.shell.com/) as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.
@@ -51,6 +66,11 @@ I love connecting and collaborating with new people. Please don't hesitate to re
 ## [Professional experience]{.sec-head} {.no-anchor}
 
 ::: {#experience}
+:::
+
+## [Contract work]{.sec-head} {.no-anchor}
+
+::: {#contracts}
 :::
 
 {{< include _contact.qmd >}}
