@@ -4,4 +4,5 @@
 - [Email](mailto:aayushgargiitr@gmail.com){.title-link}
 - [LinkedIn](https://www.linkedin.com/in/aayush-garg-8b26a734){.title-link}
 - [GitHub](https://github.com/garg-aayush){.title-link}
+- [X](https://x.com/Aayush_ander){.title-link}
 :::
