@@ -27,6 +27,11 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
+/* Keeps a lone word off a paragraph's last line and evens the ragged edge; browsers without it wrap as before */
+p {
+  text-wrap: pretty;
+}
+
 h2 {
   font-size: var(--fs-h2);
   line-height: var(--lh-heading);
