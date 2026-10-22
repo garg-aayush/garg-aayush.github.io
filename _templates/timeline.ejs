@@ -1,19 +1,45 @@
 <%
 // One row per stage, used by the homepage path and the About experience. The page's CSS decides the layout.
 // Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
-// Reads dates, title, optional role, description (Markdown works), optional href (links the title) and optional badge (marks the current stage and shows as a pill by the dates) from a YAML item.
+// Reads dates, title, optional role, description (Markdown works), optional href (links the title), optional badge (marks the current stage and shows as a pill by the dates), optional span (a column weight, set as --tl-span on the row) and optional milestones from a YAML item.
+// Each milestone has name, dates (shown), start (YYYY-MM, places it on the stage's time scale as --tl-at), role and note (raw like description, so Markdown or HTML links work). The page's CSS decides how the role and note are revealed.
+// A stage's scale runs from its first milestone start to the next stage's first milestone start, so the last stage has no scale and spaces its places evenly.
 const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const rows = items.map((item) => {
+const mo = (value) => {
+  const m = /^(\d{4})-(\d{2})$/.exec(String(value ?? ""));
+  return m ? Number(m[1]) * 12 + Number(m[2]) - 1 : NaN;
+};
+const rows = items.map((item, index) => {
   const href = item.href ?? "";
   const link = /^https?:/.test(href) ? ` class="title-link" target="_blank" rel="noopener"` : ` class="title-link no-external"`;
   const title = href ? `<a href="${esc(href)}"${link}>${item.title}</a>` : item.title;
   const badge = item.badge ? ` <span class="tl-badge">${esc(item.badge)}</span>` : "";
-  return `<li class="tl-row${item.badge ? " is-current" : ""}">
+  const list = item.milestones ?? [];
+  const has = list.length > 0;
+  const span = item.span ? ` style="--tl-span: ${esc(item.span)}"` : "";
+  const from = mo(list[0]?.start);
+  const to = mo(items[index + 1]?.milestones?.[0]?.start);
+  const scaled = to > from;
+  const at = (value, fallback) => {
+    const t = (mo(value) - from) / (to - from);
+    return (scaled && Number.isFinite(t) ? Math.min(Math.max(t, 0), 1) : fallback).toFixed(3);
+  };
+  const milestone = (m, i) => `<li class="tl-ms" tabindex="0" style="--tl-at: ${at(m.start, i / list.length)}">
+<span class="tl-ms-name">${esc(m.name)}</span> <span class="tl-ms-dates">${esc(m.dates)}</span>
+<span class="tl-ms-detail">
+<span class="tl-ms-role">${esc(m.role)}</span>
+<span class="tl-ms-note">${m.note ?? ""}</span>
+</span>
+</li>`;
+  return `<li class="tl-row${item.badge ? " is-current" : ""}${has ? " has-ms" : ""}"${span}>
 <p class="tl-dates">${esc(item.dates)}${badge}</p>
 <div class="tl-body">
 <h3 class="tl-title no-anchor">${title}</h3>
 ${item.role ? `<p class="tl-role">${esc(item.role)}</p>` : ""}
-<p class="tl-text">${item.description ?? ""}</p>
+<p class="tl-text">${item.description ?? ""}</p>${has ? `
+<ul class="tl-milestones">
+${list.map(milestone).join("\n")}
+</ul>` : ""}
 </div>
 </li>`;
 });

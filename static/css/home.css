@@ -236,7 +236,7 @@
   }
 }
 
-/* Path: the stages sit in columns under one rule. A dot marks each stage on the rule, and the current stage (the one with a badge) takes the Accent. Below 800px the rule runs down the left side. */
+/* Path: the stages sit in columns, each as wide as its span (--tl-span, default 1), with the dates and title on top. A stage with milestones draws its part of one continuous rule under the title, and the current stage's part takes the Accent. A stage without milestones keeps a rule on top with a dot. Below 960px, where the narrow last column stops reading well, the rule runs down the left side. */
 .home .timeline {
   display: grid;
   grid-auto-flow: column;
@@ -245,8 +245,13 @@
 
 .home .tl-row {
   position: relative;
+  grid-column: span var(--tl-span, 1);
   padding: var(--space-32) var(--space-32) 0 0;
   border-top: 1px solid var(--border);
+}
+
+.home .tl-row:last-child {
+  padding-right: 0;
 }
 
 .home .tl-row::before {
@@ -282,19 +287,184 @@
   margin-top: var(--space-12);
 }
 
-@media (max-width: 800px) {
+/* Milestones: a hollow dot on the rule with the name and year under it, always visible. A dot sits at --tl-at of the segment, its start date on the stage's time scale, so the first stands at the stage start. The milestone list carries the rule, and its height holds the labels because the items are absolute. Above 960px the stage text is a duplicate of the notes and is hidden, and the role and note sit in a panel under the label, revealed on hover or focus. The panel is only faded, so screen readers still read it, and absolute, so nothing moves. The last column anchors the panel to the right edge to stay inside the page. */
+.home .tl-row.has-ms {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.home .tl-row.has-ms::before,
+.home .tl-row.has-ms .tl-text {
+  display: none;
+}
+
+.home .tl-milestones {
+  position: relative;
+  height: var(--space-48);
+  margin: var(--space-16) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-label);
+  line-height: 1.4;
+}
+
+/* The rule is one line across the stages: each stage's part runs on through the column padding to the next. The current stage's part is the Accent. */
+.home .tl-milestones::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: calc(-1 * var(--space-32));
+  left: 0;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.home .tl-row:last-child .tl-milestones::before {
+  right: 0;
+}
+
+.home .is-current .tl-milestones::before {
+  background-color: var(--accent);
+}
+
+.home .tl-ms {
+  position: absolute;
+  top: -5px;
+  left: calc(100% * var(--tl-at));
+  padding-top: 14px;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+}
+
+.home .tl-ms::before,
+.home .tl-ms::after {
+  content: "";
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.home .tl-ms::before {
+  top: 0;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--text-dim);
+  border-radius: 50%;
+  background-color: var(--bg-body);
+}
+
+.home .tl-ms::after {
+  display: none;
+}
+
+.home .tl-ms:is(:hover, :focus-within)::before {
+  border-color: var(--text-primary);
+  background-color: var(--text-primary);
+}
+
+/* The one pin: where I am now. A rotated square with three round corners, its point on the rule, and the hole is the ::after. */
+.home .is-current .tl-ms:last-child::before {
+  top: -12px;
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50% 50% 50% 0;
+  background-color: var(--accent);
+  transform: rotate(-45deg);
+}
+
+.home .is-current .tl-ms:last-child::after {
+  display: block;
+  top: -8px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--bg-body);
+}
+
+.home .is-current .tl-ms:last-child:is(:hover, :focus-within)::before {
+  background-color: var(--accent-hover);
+}
+
+.home .tl-ms-name,
+.home .tl-ms-dates {
+  display: block;
+}
+
+.home .tl-ms-name {
+  color: var(--text-content);
+  text-decoration: underline dotted var(--text-dim);
+  text-underline-offset: 3px;
+}
+
+.home .tl-ms-dates {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.home .tl-ms-detail {
+  display: block;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 2;
+  width: 17rem;
+  max-width: calc(100vw - 2 * var(--gutter));
+  box-sizing: border-box;
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+  color: var(--text-content);
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.home .tl-row:last-child .tl-ms-detail {
+  right: 0;
+  left: auto;
+}
+
+.home .tl-ms:is(:hover, :focus-within) .tl-ms-detail {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.home .tl-ms-role,
+.home .tl-ms-note {
+  display: block;
+  line-height: var(--lh-body);
+}
+
+.home .tl-ms-role {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .tl-ms-detail {
+    transition: none;
+  }
+}
+
+/* Stacked: one rule runs down the left through every stage, the current stage's part in the Accent. Places are dots on it, with the pin for the current one, and the text and details stay visible. */
+@media (max-width: 960px) {
   .home .timeline {
     grid-auto-flow: row;
   }
 
   .home .tl-row {
-    padding: 0 0 var(--space-32) var(--space-24);
+    grid-column: auto;
+    padding: 0 0 var(--space-24) var(--space-24);
     border-top: 0;
     border-left: 1px solid var(--border);
   }
 
   .home .tl-row:last-child {
-    padding-bottom: var(--space-4);
+    padding-bottom: 0;
   }
 
   .home .tl-row::before {
@@ -306,8 +476,73 @@
     border-left-color: var(--accent);
   }
 
+  .home .tl-row.has-ms .tl-text {
+    display: block;
+  }
+
   .home .tl-title {
     margin-top: var(--space-4);
+  }
+
+  .home .tl-milestones {
+    height: auto;
+    margin-top: var(--space-12);
+  }
+
+  .home .tl-milestones::before {
+    display: none;
+  }
+
+  .home .tl-ms {
+    position: relative;
+    top: auto;
+    left: auto;
+    padding: 0;
+    white-space: normal;
+  }
+
+  .home .tl-ms + .tl-ms {
+    margin-top: var(--space-12);
+  }
+
+  /* The dot sits on the rule, 25px left of the text, level with the name */
+  .home .tl-ms::before {
+    top: 5px;
+    left: -29px;
+  }
+
+  .home .is-current .tl-ms:last-child::before {
+    top: 3px;
+    left: -32px;
+  }
+
+  .home .is-current .tl-ms:last-child::after {
+    top: 7px;
+    left: -28px;
+  }
+
+  .home .tl-ms-name,
+  .home .tl-ms-dates {
+    display: inline;
+  }
+
+  .home .tl-ms-name {
+    text-decoration: none;
+  }
+
+  .home .tl-ms-dates {
+    margin-left: var(--space-4);
+  }
+
+  .home .tl-ms-detail {
+    position: static;
+    width: auto;
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
