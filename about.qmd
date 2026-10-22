@@ -17,19 +17,19 @@ listing:
     - title: Jiffy
       dates: Jan 2024 - Mar 2026
       role: Senior Machine Learning Engineer
-      description: "Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system) and ML solutions spanning fine-tuning, model deployment and LLM-powered automation."
+      description: "Built and ran the image enhancement pipeline behind a $100M+ DTF printing business, turning 40K+ daily uploads into print-ready artwork, and Smart Redraw, a multi-agent system that replaced multi-day manual edits with real-time AI edits. Fine-tuned LLMs and VLMs and optimized their prompts with DSPy. Maintained and optimized the GPU inference stack for open-source LLM and vision models, for both latency and cost."
     - title: Flixstock
       dates: Aug 2022 - Dec 2023
       role: Software Development Engineer III
-      description: "Built Stable Diffusion pipelines for background generation, identity transfer and video generation."
+      description: "Built Stable Diffusion pipelines for photo-shoot background generation with realistic shadows and lighting, identity transfer and fashion video generation. Fine-tuned custom ControlNets for pose, garment and lighting control."
     - title: Shell
       dates: Oct 2019 - Jul 2022
       role: Research Geophysicist
-      description: "Built DL-based denoising models for seismic data, worked on uncertainty quantification and DL-based Hessian operators for wave-equation optimization."
+      description: "Applied deep learning across Shell's seismic research: denoising models for seismic data, uncertainty quantification for subsurface imaging, and learned Hessian operators for wave-equation optimization."
     - title: TU Delft
       dates: Aug 2015 - Aug 2019
       role: PhD Researcher
-      description: "Developed JMI-res for high-resolution subsurface imaging and created a DL-based super-resolution approach for seismic spatial aliasing removal."
+      description: "Developed JMI-res, a reservoir-oriented joint migration inversion method for high-resolution subsurface imaging. Built a deep learning super-resolution method for removing spatial aliasing from seismic data."
 ---
 
 ::: {.about-intro}
