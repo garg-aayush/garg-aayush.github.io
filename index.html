@@ -48,7 +48,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-88fd8f73d16762a12eb81573d0cad3bd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-476d14a836ca98a17e4f5fe221dedc89.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -142,9 +142,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-dates','listing-title','listing-description','listing-badge',{ data: ['index'] },{ data: ['categories'] }],
+      valueNames: ['listing-dates','listing-title','listing-span','listing-description','listing-milestones','listing-badge',{ data: ['index'] },{ data: ['categories'] }],
       
-      searchColumns: ["listing-dates","listing-title","listing-description","listing-badge"],
+      searchColumns: ["listing-dates","listing-title","listing-span","listing-description","listing-milestones","listing-badge"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -341,7 +341,7 @@ window.Quarto = {
 <p>I build and deploy AI systems, from first principles to production.</p>
 </div>
 <div class="hero-lede">
-<p>Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock. Outside work, I rebuild language models from scratch and write about what I learn.</p>
+<p>Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock, and took on contract work in game asset generation and semiconductor defect classification. Outside work, I rebuild language models from scratch and write about what I learn.</p>
 </div>
 <div class="hero-actions">
 <p><a href="blog/" class="btn-solid">Read the writing</a> <a href="./about.html" class="link-arrow">About me</a></p>
@@ -397,28 +397,69 @@ window.Quarto = {
 <h2 class="no-anchor" data-anchor-id="path"><span class="sec-head">Path</span></h2>
 <div id="listing-path" class="quarto-listing quarto-listing-container-custom">
 <ol class="timeline">
-<li class="tl-row">
+<li class="tl-row has-ms" style="--tl-span: 6">
 <p class="tl-dates">2015 to 2022</p>
 <div class="tl-body">
 <h3 class="tl-title no-anchor">Research</h3>
 
-<p class="tl-text">PhD at TU Delft, then research geophysicist at Shell, applying deep learning to imaging and inversion problems.</p>
+<p class="tl-text">Applying deep learning to subsurface imaging and inversion.</p>
+<ul class="tl-milestones">
+<li class="tl-ms" tabindex="0" style="--tl-at: 0.000">
+<span class="tl-ms-name">TU Delft</span> <span class="tl-ms-dates">2015</span>
+<span class="tl-ms-detail">
+<span class="tl-ms-role">PhD Researcher</span>
+<span class="tl-ms-note">JMI-res for high-resolution subsurface imaging, and deep learning super-resolution for seismic data.</span>
+</span>
+</li>
+<li class="tl-ms" tabindex="0" style="--tl-at: 0.595">
+<span class="tl-ms-name">Shell</span> <span class="tl-ms-dates">2019</span>
+<span class="tl-ms-detail">
+<span class="tl-ms-role">Research Geophysicist</span>
+<span class="tl-ms-note">Deep learning across seismic research: denoising, uncertainty quantification and learned Hessians for wave-equation optimization.</span>
+</span>
+</li>
+</ul>
 </div>
 </li>
-<li class="tl-row">
+<li class="tl-row has-ms" style="--tl-span: 8">
 <p class="tl-dates">2022 to 2026</p>
 <div class="tl-body">
-<h3 class="tl-title no-anchor">ML development</h3>
+<h3 class="tl-title no-anchor">ML development and engineering</h3>
 
-<p class="tl-text">Diffusion pipelines at Flixstock. The image enhancement pipeline and Smart Redraw at Jiffy.</p>
+<p class="tl-text">Building, deploying and running generative image pipelines in production.</p>
+<ul class="tl-milestones">
+<li class="tl-ms" tabindex="0" style="--tl-at: 0.000">
+<span class="tl-ms-name">Flixstock</span> <span class="tl-ms-dates">2022</span>
+<span class="tl-ms-detail">
+<span class="tl-ms-role">Software Development Engineer III</span>
+<span class="tl-ms-note">Stable Diffusion pipelines for photo-shoot backgrounds, identity transfer and fashion video, steered by custom ControlNets.</span>
+</span>
+</li>
+<li class="tl-ms" tabindex="0" style="--tl-at: 0.378">
+<span class="tl-ms-name">Jiffy</span> <span class="tl-ms-dates">2024</span>
+<span class="tl-ms-detail">
+<span class="tl-ms-role">Senior ML Engineer</span>
+<span class="tl-ms-note">The image enhancement pipeline behind a $100M+ DTF printing business, and Smart Redraw, real-time multi-agent image editing, on a GPU inference stack tuned for latency and cost.</span>
+</span>
+</li>
+</ul>
 </div>
 </li>
-<li class="tl-row is-current">
+<li class="tl-row is-current has-ms" style="--tl-span: 3">
 <p class="tl-dates">2026 onward <span class="tl-badge">Now</span></p>
 <div class="tl-body">
-<h3 class="tl-title no-anchor">Applied ML in the field</h3>
+<h3 class="tl-title no-anchor">Applied ML</h3>
 
-<p class="tl-text">Production AI for refineries and energy operations at Applied Computing.</p>
+<p class="tl-text">Production AI for refineries and energy operations.</p>
+<ul class="tl-milestones">
+<li class="tl-ms" tabindex="0" style="--tl-at: 0.000">
+<span class="tl-ms-name">Applied Computing</span> <span class="tl-ms-dates">2026</span>
+<span class="tl-ms-detail">
+<span class="tl-ms-role">Forward Deployed ML Engineer</span>
+<span class="tl-ms-note">Forecasting, anomaly detection and optimization models for energy operations.</span>
+</span>
+</li>
+</ul>
 </div>
 </li>
 </ol>
@@ -429,7 +470,7 @@ window.Quarto = {
 <h2 class="no-anchor" data-anchor-id="writing-all-writing"><span class="sec-head">Writing <a href="blog/">All writing</a></span></h2>
 <div id="listing-blog-listings" class="quarto-listing quarto-listing-container-custom">
 <ol class="list post-rows">
-<li class="post-row" data-index="0" data-categories="VGltZSUyMFNlcmllcw==" data-listing-date-sort="1784073600000" data-listing-file-modified-sort="1792433738614" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3157">
+<li class="post-row" data-index="0" data-categories="VGltZSUyMFNlcmllcw==" data-listing-date-sort="1784073600000" data-listing-file-modified-sort="1792690784566" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3157">
 <time class="post-date">15 Jul 2026</time>
 <div class="post-main">
 <h3 class="post-title no-anchor"><a href="posts/2026-07-15-kalman-filters-time-series/index.html" class="title-link no-arrow no-external">Kalman Filters and Smoothing for Time-Series Data</a></h3>
@@ -438,7 +479,7 @@ window.Quarto = {
 <span class="post-cat">Time Series</span>
 <span class="post-read">16 min</span>
 </li>
-<li class="post-row" data-index="1" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1777420800000" data-listing-file-modified-sort="1792433738614" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1649">
+<li class="post-row" data-index="1" data-categories="VG9vbHMlMjAlMjYlMjBJbmZyYQ==" data-listing-date-sort="1777420800000" data-listing-file-modified-sort="1792690784566" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1649">
 <time class="post-date">29 Apr 2026</time>
 <div class="post-main">
 <h3 class="post-title no-anchor"><a href="posts/2026-04-29-india-weather-with-claude/index.html" class="title-link no-arrow no-external">Building a Live India Weather Dashboard with Claude Code</a></h3>
@@ -447,7 +488,7 @@ window.Quarto = {
 <span class="post-cat">Tools &amp; Infra</span>
 <span class="post-read">9 min</span>
 </li>
-<li class="post-row" data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1792433738613" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140">
+<li class="post-row" data-index="2" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775347200000" data-listing-file-modified-sort="1792690784565" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="16" data-listing-word-count-sort="3140">
 <time class="post-date">5 Apr 2026</time>
 <div class="post-main">
 <h3 class="post-title no-anchor"><a href="posts/2026-04-05-qwen35-vs-gemma4/index.html" class="title-link no-arrow no-external">Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding</a></h3>
@@ -456,7 +497,7 @@ window.Quarto = {
 <span class="post-cat">Local LLMs</span>
 <span class="post-read">16 min</span>
 </li>
-<li class="post-row" data-index="3" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1792433738613" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134">
+<li class="post-row" data-index="3" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1775174400000" data-listing-file-modified-sort="1792690784565" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1134">
 <time class="post-date">3 Apr 2026</time>
 <div class="post-main">
 <h3 class="post-title no-anchor"><a href="posts/2026-04-03-self-hosted-gemma4-chat/index.html" class="title-link no-arrow no-external">Self-Hosted Gemma 4 Chat with Web UI</a></h3>
@@ -465,7 +506,7 @@ window.Quarto = {
 <span class="post-cat">Local LLMs</span>
 <span class="post-read">6 min</span>
 </li>
-<li class="post-row" data-index="4" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1792433738613" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152">
+<li class="post-row" data-index="4" data-categories="TG9jYWwlMjBMTE1z" data-listing-date-sort="1774742400000" data-listing-file-modified-sort="1792690784565" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2152">
 <time class="post-date">29 Mar 2026</time>
 <div class="post-main">
 <h3 class="post-title no-anchor"><a href="posts/2026-03-29-local-llm-opencode/index.html" class="title-link no-arrow no-external">Using a local LLM in OpenCode with llama.cpp</a></h3>
@@ -511,6 +552,7 @@ window.Quarto = {
 <li><a href="mailto:aayushgargiitr@gmail.com" class="title-link">Email</a></li>
 <li><a href="https://www.linkedin.com/in/aayush-garg-8b26a734" class="title-link">LinkedIn</a></li>
 <li><a href="https://github.com/garg-aayush" class="title-link">GitHub</a></li>
+<li><a href="https://x.com/Aayush_ander" class="title-link">X</a></li>
 </ul>
 </div>
 

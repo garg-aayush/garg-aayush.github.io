@@ -47,7 +47,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-71d273eb2b7826d769a10890d13d653a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-107a80a2c67166390cf3933d5f1787b8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -92,6 +92,34 @@ ul.task-list li input[type="checkbox"] {
 
     window['quarto-listings'] = window['quarto-listings'] || {};
     window['quarto-listings']['listing-experience'] = new List('listing-experience', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-contracts .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-dates','listing-role','listing-description',{ data: ['index'] },{ data: ['categories'] }],
+      
+      searchColumns: ["listing-title","listing-dates","listing-role","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-contracts'] = new List('listing-contracts', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -225,6 +253,7 @@ window.Quarto = {
 <p>Currently, I am a Forward Deployed ML Engineer at <a href="https://appliedcomputing.com/">Applied Computing</a>, working on decision systems for refineries and energy operations. I collaborate directly with process engineers and operators to turn plant data, engineering knowledge, and operational constraints into forecasting, anomaly detection, and optimisation capabilities that fit real workflows.</p>
 <p>My background spans computational geophysics, industrial research, computer vision, generative AI, and production ML. That combination helps me move between scientific problems, software systems, and the practical realities of deploying technology for customers.</p>
 <p>Before that, at <a href="https://www.jiffy.com/">Jiffy</a>, I built the AI image enhancement pipeline powering a $100M+ DTF printing business, architected Smart Redraw (a multi-agent AI editing system), and developed end-to-end ML solutions spanning LLM fine-tuning, custom model deployment on RunPod/Replicate and LLM-powered automation.</p>
+<p>Alongside Jiffy, I took on part-time contract work: game asset generation pipelines for Renderwolf, covering image, video and 3D models, and semiconductor chip defect classification for SixSense.</p>
 <p>Previously at <a href="https://www.flixstock.com/">Flixstock</a>, I integrated the HuggingFace ecosystem as core ML infrastructure and built Stable Diffusion pipelines for background generation, identity transfer with pose control and fashion video generation.</p>
 <p>Unlike many in this field, my core background is not in computer science. My graduate and Ph.D.&nbsp;research experience is in computational geophysics and I worked for <a href="https://www.shell.com/">Shell</a> as a research geophysicist for about three years. I believe this diverse background helps me approach problems from unique perspectives.</p>
 <p>I love connecting and collaborating with new people. Please don’t hesitate to reach out! 😊</p>
@@ -246,7 +275,7 @@ window.Quarto = {
 <div class="tl-body">
 <h3 class="tl-title no-anchor">Jiffy</h3>
 <p class="tl-role">Senior Machine Learning Engineer</p>
-<p class="tl-text">Built and maintained the core image enhancement pipeline, Smart Redraw (a multi-agent AI editing system) and ML solutions spanning fine-tuning, model deployment and LLM-powered automation.</p>
+<p class="tl-text">Built and ran the image enhancement pipeline behind a $100M+ DTF printing business, turning 40K+ daily uploads into print-ready artwork, and Smart Redraw, a multi-agent system that replaced multi-day manual edits with real-time AI edits. Fine-tuned LLMs and VLMs and optimized their prompts with DSPy. Maintained and optimized the GPU inference stack for open-source LLM and vision models, for both latency and cost.</p>
 </div>
 </li>
 <li class="tl-row">
@@ -254,7 +283,7 @@ window.Quarto = {
 <div class="tl-body">
 <h3 class="tl-title no-anchor">Flixstock</h3>
 <p class="tl-role">Software Development Engineer III</p>
-<p class="tl-text">Built Stable Diffusion pipelines for background generation, identity transfer and video generation.</p>
+<p class="tl-text">Built Stable Diffusion pipelines for photo-shoot background generation with realistic shadows and lighting, identity transfer and fashion video generation. Fine-tuned custom ControlNets for pose, garment and lighting control.</p>
 </div>
 </li>
 <li class="tl-row">
@@ -262,7 +291,7 @@ window.Quarto = {
 <div class="tl-body">
 <h3 class="tl-title no-anchor">Shell</h3>
 <p class="tl-role">Research Geophysicist</p>
-<p class="tl-text">Built DL-based denoising models for seismic data, worked on uncertainty quantification and DL-based Hessian operators for wave-equation optimization.</p>
+<p class="tl-text">Applied deep learning across Shell's seismic research: denoising models for seismic data, uncertainty quantification for subsurface imaging, and learned Hessian operators for wave-equation optimization.</p>
 </div>
 </li>
 <li class="tl-row">
@@ -270,7 +299,31 @@ window.Quarto = {
 <div class="tl-body">
 <h3 class="tl-title no-anchor">TU Delft</h3>
 <p class="tl-role">PhD Researcher</p>
-<p class="tl-text">Developed JMI-res for high-resolution subsurface imaging and created a DL-based super-resolution approach for seismic spatial aliasing removal.</p>
+<p class="tl-text">Developed JMI-res, a reservoir-oriented joint migration inversion method for high-resolution subsurface imaging. Built a deep learning super-resolution method for removing spatial aliasing from seismic data.</p>
+</div>
+</li>
+</ol>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+</section>
+<section id="contract-work" class="level2 no-anchor">
+<h2 class="no-anchor" data-anchor-id="contract-work"><span class="sec-head">Contract work</span></h2>
+<div id="listing-contracts" class="quarto-listing quarto-listing-container-custom">
+<ol class="timeline">
+<li class="tl-row">
+<p class="tl-dates">Dec 2024 - Jul 2025</p>
+<div class="tl-body">
+<h3 class="tl-title no-anchor">Renderwolf</h3>
+<p class="tl-role">ML and AI Engineer (part-time consultant)</p>
+<p class="tl-text">Built the generation stack for game asset pipelines: ComfyUI workflows for image (SDXL, Flux), video (WAN 2.1) and 3D (Trellis, Hunyuan3D) generation, deployed on Modal with custom nodes. Fine-tuned SDXL and Flux checkpoints for consistent character generation and style transfer.</p>
+</div>
+</li>
+<li class="tl-row">
+<p class="tl-dates">Jul 2024 - Oct 2024</p>
+<div class="tl-body">
+<h3 class="tl-title no-anchor">SixSense</h3>
+<p class="tl-role">ML Engineer (part-time consultant)</p>
+<p class="tl-text">Architecture search for fast, high-precision semiconductor chip defect classification across CNN and transformer models. Built domain-specific pre-training on chip inspection data for ConvNeXt and transformer backbones, improving accuracy and producing representations reusable across inspection projects.</p>
 </div>
 </li>
 </ol>
@@ -284,6 +337,7 @@ window.Quarto = {
 <li><a href="mailto:aayushgargiitr@gmail.com" class="title-link">Email</a></li>
 <li><a href="https://www.linkedin.com/in/aayush-garg-8b26a734" class="title-link">LinkedIn</a></li>
 <li><a href="https://github.com/garg-aayush" class="title-link">GitHub</a></li>
+<li><a href="https://x.com/Aayush_ander" class="title-link">X</a></li>
 </ul>
 </div>
 
