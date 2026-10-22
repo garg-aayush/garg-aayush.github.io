@@ -1,6 +1,6 @@
 ---
 title: "Aayush Garg"
-description: "Forward Deployed ML Engineer building production AI systems for refineries and energy operations."
+description: "Forward Deployed ML Engineer building AI models and a reasoning layer that help refineries and plants run better."
 title-block-style: none
 page-layout: full
 body-classes: home
@@ -15,7 +15,7 @@ listing:
     template: _templates/now.ejs
     contents:
       - label: Working on
-        text: Forecasting and anomaly detection for refinery operations
+        text: AI models and a reasoning layer for refineries and plants
         sub: Applied Computing
         href: https://appliedcomputing.com/
       - label: Building
@@ -77,14 +77,14 @@ listing:
       - dates: 2026 onward
         title: Applied ML
         span: 3
-        description: Production AI for refineries and energy operations.
+        description: Production AI for refineries and plants.
         badge: Now
         milestones:
           - name: Applied Computing
             dates: 2026
             start: 2026-05
             role: Forward Deployed ML Engineer
-            note: Forecasting, anomaly detection and optimization models for energy operations.
+            note: AI models and a reasoning layer for refineries and plants, from the first client call to production.
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
@@ -137,7 +137,7 @@ I build and deploy AI systems, from first principles to production.
 :::
 
 ::: {.hero-lede}
-Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock, and took on contract work in game asset generation and semiconductor defect classification. Outside work, I rebuild language models from scratch and write about what I learn.
+Right now that means building AI models and a reasoning layer for refineries and plants optimization at Applied Computing, from the first client call to production. Before that, I built image generation and enhancement pipelines at Jiffy and Flixstock, with some contract work on the side. Outside work, I tinker, rebuild language models from scratch and write about what I learn.
 :::
 
 ::: {.hero-actions}
