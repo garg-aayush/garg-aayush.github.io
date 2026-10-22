@@ -39,21 +39,52 @@ listing:
     contents:
       - posts/20*.qmd
       - posts/20*/index.qmd
-  # The career path, one entry per stage. Fields: dates, title, description. Add badge (the pill text) to mark the current stage.
+  # The career path, one entry per stage. Fields: dates, title, description. Add badge (the pill text) to mark the current stage. Add span (a whole number) to give a stage a wider or narrower column, in shares of the row. Add milestones (a list of name, dates, start, role and note) for the places inside a stage: each is a dot on the stage's line (the last one in the current stage is a pin) with its name and dates, and the role and note appear on hover or focus. start (YYYY-MM) places a dot on the stage's time scale, which runs to the next stage's first start; the last stage spaces its dots evenly. A stage with milestones shows its description on phones only.
   - id: path
     template: _templates/timeline.ejs
     sort: false
     contents:
       - dates: 2015 to 2022
         title: Research
-        description: PhD at TU Delft, then research geophysicist at Shell, applying deep learning to imaging and inversion problems.
+        span: 6
+        description: Applying deep learning to subsurface imaging and inversion.
+        milestones:
+          - name: TU Delft
+            dates: 2015
+            start: 2015-08
+            role: PhD Researcher
+            note: JMI-res for high-resolution subsurface imaging, and deep learning super-resolution for seismic data.
+          - name: Shell
+            dates: 2019
+            start: 2019-10
+            role: Research Geophysicist
+            note: "Deep learning across seismic research: denoising, uncertainty quantification and learned Hessians for wave-equation optimization."
       - dates: 2022 to 2026
-        title: ML development
-        description: Diffusion pipelines at Flixstock. The image enhancement pipeline and Smart Redraw at Jiffy.
+        title: ML development and engineering
+        span: 8
+        description: Building, deploying and running generative image pipelines in production.
+        milestones:
+          - name: Flixstock
+            dates: 2022
+            start: 2022-08
+            role: Software Development Engineer III
+            note: Stable Diffusion pipelines for photo-shoot backgrounds, identity transfer and fashion video, steered by custom ControlNets.
+          - name: Jiffy
+            dates: 2024
+            start: 2024-01
+            role: Senior ML Engineer
+            note: The image enhancement pipeline behind a $100M+ DTF printing business, and Smart Redraw, real-time multi-agent image editing, on a GPU inference stack tuned for latency and cost.
       - dates: 2026 onward
-        title: Applied ML in the field
-        description: Production AI for refineries and energy operations at Applied Computing.
+        title: Applied ML
+        span: 3
+        description: Production AI for refineries and energy operations.
         badge: Now
+        milestones:
+          - name: Applied Computing
+            dates: 2026
+            start: 2026-05
+            role: Forward Deployed ML Engineer
+            note: Forecasting, anomaly detection and optimization models for energy operations.
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
@@ -106,7 +137,7 @@ I build and deploy AI systems, from first principles to production.
 :::
 
 ::: {.hero-lede}
-Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock. Outside work, I rebuild language models from scratch and write about what I learn.
+Right now that means forecasting, anomaly detection and optimisation for energy operations at Applied Computing. Before that, I shipped image generation and enhancement pipelines at Jiffy and Flixstock, and took on contract work in game asset generation and semiconductor defect classification. Outside work, I rebuild language models from scratch and write about what I learn.
 :::
 
 ::: {.hero-actions}
