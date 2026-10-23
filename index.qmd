@@ -1,6 +1,6 @@
 ---
 title: "Aayush Garg"
-description: "Forward Deployed ML Engineer building AI models and a reasoning layer that help refineries and plants run better."
+description: "Forward Deployed ML Engineer building and deploying AI models and a reasoning layer that help refineries and plants run better."
 title-block-style: none
 page-layout: full
 body-classes: home
@@ -84,7 +84,7 @@ listing:
             dates: 2026
             start: 2026-05
             role: Forward Deployed ML Engineer
-            note: AI models and a reasoning layer for refineries and plants, from the first client call to production.
+            note: Building and deploying AI models and a reasoning layer for refineries and plants, from the first client call to production.
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
