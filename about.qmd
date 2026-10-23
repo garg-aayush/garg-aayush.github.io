@@ -46,7 +46,7 @@ listing:
 ---
 
 ::: {.about-intro}
-Recently, I started working as a Forward Deployed ML Engineer at [Applied Computing](https://appliedcomputing.com/). We build AI models and a reasoning layer that help refineries and plants run better.
+Recently, I started working as a Forward Deployed ML Engineer at [Applied Computing](https://appliedcomputing.com/). We build and deploy AI models and a reasoning layer that help refineries and plants run better.
 
 Plants and refineries were completely new to me. My PhD and early research were in energy too, but that was seismic data and imaging: a lot of science and not a single valve.
 
