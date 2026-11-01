@@ -31,6 +31,8 @@ gh pr create --base master --title "<plain sentence naming the change>" --body-f
 
 `gh pr merge <number> --merge`. Never `--squash` or `--rebase`, so every commit lands on `master`, and never `--delete-branch`, because `blog-posts` and `tools` are long-lived.
 
+Aayush sometimes merges on GitHub himself, even before CI finishes. If the PR is already merged, skip this step and make sure `gh pr checks <number>` passed.
+
 ## Sync branches
 
 ```bash
@@ -53,7 +55,7 @@ The push is fast-forward only. If either count is not 0, stop and ask. Fast-forw
   curl -s https://aayushgarg.dev/static/india-weather/india-weather.js | grep -c __MAPBOX_TOKEN__   # 0 means the token was injected
   ```
 
-- For a new post, also check its URL and that it is in `https://aayushgarg.dev/blog/index.xml`. Pages can lag a minute behind the workflow; retry before calling it broken.
+- For a post, also check its URL, its images and its item in `https://aayushgarg.dev/blog/index.xml`, and that `og:image` points at its `image:`. Pages can lag a minute behind the workflow; retry before calling it broken.
 - Never print the token or the injected script.
 
 ## Report
