@@ -403,6 +403,7 @@ font-style: inherit;">`reviewer`</span> only for changes that cut across several
   <category>Local LLMs</category>
   <guid>https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/</guid>
   <pubDate>Sun, 01 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://aayushgarg.dev/static/img/blog-2026-11-01/agent-split-card.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Kalman Filters and Smoothing for Time-Series Data</title>
