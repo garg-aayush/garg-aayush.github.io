@@ -24,6 +24,8 @@ quarto render --clean
 npm run check:site && npm run test:browser
 ```
 
+`check:secrets` scans tracked files only, so `git add` a new post before running it.
+
 `test:browser` includes a horizontal overflow test of every page at 390 and 1280 px. `site-checks.yml` runs the same sequence on every PR.
 
 ## Screenshots
