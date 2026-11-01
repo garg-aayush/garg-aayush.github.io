@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 596 560" width="596" height="560">
+  <title>How a coding session splits work between Sol and a local model</title>
+  <desc>You talk to a Sol orchestrator. It sends briefs to an explorer and an implementer running GLM-5.3-Flash and gets reports back. A Sol reviewer checks diffs for risky changes.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", Arial, sans-serif; font-size: 20px; fill: #DADADF; }
+      .h { font-size: 22px; font-weight: 600; fill: #F5F5F7; }
+      .m { fill: #A6A6AB; }
+      .note { fill: #72994E; font-style: italic; }
+      .cap { font-weight: 600; fill: #F5F5F7; }
+      .box { fill: #242428; stroke: #86868B; stroke-width: 2; }
+      .zone { fill: none; stroke: #86868B; stroke-opacity: 0.5; stroke-width: 2; }
+      .box.glm { stroke: #72994E; stroke-opacity: 0.75; }
+      .zone.glm { stroke: #72994E; stroke-opacity: 1; stroke-dasharray: 9 7; }
+      .arrow { fill: none; stroke: #A6A6AB; stroke-width: 2; }
+    </style>
+    <marker id="head" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#A6A6AB"/>
+    </marker>
+  </defs>
+  <rect width="596" height="560" fill="#161618"/>
+
+  <g id="gpt-zone">
+    <rect class="zone" x="12" y="84" width="572" height="176" rx="14"/>
+    <rect x="280" y="72" width="284" height="24" fill="#161618"/>
+    <text class="cap" x="422" y="91" text-anchor="middle">ChatGPT plan or API key</text>
+  </g>
+
+  <g id="glm-zone">
+    <rect class="zone glm" x="12" y="324" width="572" height="224" rx="14"/>
+    <text class="cap" x="26" y="502">GLM-5.3-Flash on H200s</text>
+    <text class="m" x="26" y="528">(shared)</text>
+    <text class="note" x="471" y="401" text-anchor="middle">most tokens</text>
+    <text class="note" x="471" y="427" text-anchor="middle">are spent here</text>
+  </g>
+
+  <g id="you">
+    <rect class="box" x="138" y="14" width="108" height="40" rx="20"/>
+    <text class="h" x="192" y="42" text-anchor="middle">You</text>
+  </g>
+  <g id="orchestrator">
+    <rect class="box" x="26" y="112" width="332" height="134" rx="10"/>
+    <text class="h" x="192" y="144" text-anchor="middle">orchestrator</text>
+    <text class="m" x="192" y="174" text-anchor="middle">Sol (gpt-6.1-sol)</text>
+    <text x="192" y="200" text-anchor="middle">plans, briefs,</text>
+    <text x="192" y="226" text-anchor="middle">checks diffs, runs tests</text>
+  </g>
+  <g id="reviewer">
+    <rect class="box" x="414" y="112" width="156" height="134" rx="10"/>
+    <text class="h" x="492" y="144" text-anchor="middle">reviewer</text>
+    <text class="m" x="492" y="174" text-anchor="middle">Sol</text>
+    <text x="492" y="200" text-anchor="middle">only for</text>
+    <text x="492" y="226" text-anchor="middle">risky changes</text>
+  </g>
+  <g id="explorer">
+    <rect class="box glm" x="26" y="338" width="160" height="134" rx="10"/>
+    <text class="h" x="106" y="370" text-anchor="middle">explorer</text>
+    <text x="106" y="400" text-anchor="middle">reads code,</text>
+    <text x="106" y="426" text-anchor="middle">answers with</text>
+    <text x="106" y="452" text-anchor="middle">path:line</text>
+  </g>
+  <g id="implementer">
+    <rect class="box glm" x="198" y="338" width="160" height="134" rx="10"/>
+    <text class="h" x="278" y="370" text-anchor="middle">implementer</text>
+    <text x="278" y="400" text-anchor="middle">edits files</text>
+    <text x="278" y="426" text-anchor="middle">in scope,</text>
+    <text x="278" y="452" text-anchor="middle">runs checks</text>
+  </g>
+
+  <g id="arrows">
+    <path class="arrow" marker-end="url(#head)" d="M192 54 V112"/>
+    <path class="arrow" marker-end="url(#head)" d="M358 179 H414"/>
+    <path class="arrow" marker-end="url(#head)" d="M74 246 V338"/>
+    <path class="arrow" marker-end="url(#head)" d="M110 338 V246"/>
+    <path class="arrow" marker-end="url(#head)" d="M274 246 V338"/>
+    <path class="arrow" marker-end="url(#head)" d="M310 338 V246"/>
+  </g>
+  <g id="arrow-labels">
+    <text class="m" x="386" y="169" text-anchor="middle">diff</text>
+    <text class="m" x="66" y="299" text-anchor="end">brief</text>
+    <text class="m" x="118" y="299">report</text>
+    <text class="m" x="266" y="299" text-anchor="end">brief</text>
+    <text class="m" x="318" y="299">report</text>
+  </g>
+</svg>
