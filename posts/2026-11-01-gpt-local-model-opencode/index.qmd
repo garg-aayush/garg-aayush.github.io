@@ -3,6 +3,8 @@ title: "Pairing GPT-6.1 Sol with a Local Model in OpenCode"
 tags: ["OpenCode", "Codex", "Claude Code", "GLM", "local LLM", "coding agents"]
 categories: [Local LLMs]
 description: "How I set up OpenCode so GPT-6.1 Sol plans and checks while a self-hosted GLM-5.3-Flash writes the code and does most of the work"
+image: /static/img/blog-2026-11-01/agent-split-card.jpg
+image-alt: "Diagram of the split: a Sol orchestrator and reviewer, with an explorer and an implementer on GLM-5.3-Flash"
 date: 2026-11-01
 permalink: /2026-11-01-gpt-local-model-opencode/
 ---
