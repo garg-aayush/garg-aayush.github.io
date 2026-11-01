@@ -1,6 +1,6 @@
 ---
 name: new-post
-description: Start, draft and finish a blog post on aayushgarg.dev. Load when asked to write, scaffold or edit a post under posts/: branch, folder and image layout, front matter, figures, and the render and checks before Aayush reads it.
+description: Start, draft and finish a blog post on aayushgarg.dev. Load when asked to write, scaffold or edit a post under posts/: branch, folder and image layout, front matter, figures, the render and checks before Aayush reads it, and the publish date and link preview card before shipping.
 argument-hint: "[title or topic]"
 ---
 
@@ -32,15 +32,24 @@ permalink: /2026-07-15-kalman-filters-time-series/
 - `title`, `tags`, `categories`, `date`, `permalink` and `description` are required, and permalinks are unique (`npm run check:posts`). The permalink is `/<folder name>/`. Add `mathjax: true` only when the post has math.
 - Reuse a category: `grep -h '^categories:' posts/*/index.qmd posts/*.qmd | sort | uniq -c`. A new one needs at least two posts that fit it.
 - The kicker, byline, reading time, section count, phone contents and "All writing" link come from `_partials/title-block.html` and `_filters/article.lua`. Do not write them in the post.
+- `image:` and `image-alt:` are optional and set the link preview; without `image:`, Quarto uses the first image in the post.
 
 ## Body
 
 - `##` headings build the contents rail, so keep them short.
 - Code is plain fenced blocks (` ```python `). Executable `{python}` cells would run in CI without their dependencies; do not add them.
 - Images use absolute paths, `![Caption](/static/img/blog-YYYY-MM-DD/name.jpg)`, with `{width=75%}` when a screenshot is small. Photos and screenshots are JPEG (the `basic-image-editing` skill, or `sips -s format jpeg -s formatOptions 85 in.png --out out.jpg`); diagrams are SVG. Draw figures for the dark page: background `#161618` and text `#DADADF`, the `--bg-body` and `--text-content` values in `static/design-tokens.css`.
+- Terminal screenshots are unreadable at phone width, so key strings (error messages, numbers) also go in the prose.
+- Link other posts by full URL, `https://aayushgarg.dev/posts/<folder>/index.html`, as older posts do.
 
 ## Before Aayush reads it
 
 - `quarto render posts/YYYY-MM-DD-slug/index.qmd` and `npm run check:posts`, then open the rendered page at phone and desktop width (`node scripts/screenshots.mjs posts/YYYY-MM-DD-slug/`).
 - Start `quarto preview` for him. Post-render steps do not run there, so the "All writing" link shows above the footnotes; `quarto render` places it after them.
 - Commit on `blog-posts` at checkpoints. Publishing goes through the `ship` skill, only after he has read the post and asked.
+
+## Before shipping
+
+- Move the post to its publish date: rename `posts/<date>-slug/` and `static/img/blog-<date>/`, and update `date`, `permalink` and the image paths.
+- Add a link preview card: the main figure centered on a 1200x630 `#161618` canvas at 2x, set as `image:`. X and LinkedIn crop previews to about 2:1, so a square figure loses its top and bottom.
+- Remove images the post no longer uses.
