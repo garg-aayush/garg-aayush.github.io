@@ -1,5 +1,6 @@
 ---
 title: "Search"
+description: "Search the writing, work and tools on this site. It runs in your browser and nothing you type is sent anywhere."
 page-layout: full
 body-classes: pg search-page
 sidebar: false

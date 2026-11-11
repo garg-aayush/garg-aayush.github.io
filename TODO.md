@@ -54,3 +54,8 @@ No answer feature ships: none of four small models passed the rule (decline at l
 
 ### Measure on a phone
 The stage 1 and stage 2 costs were measured in Chromium on a laptop only.
+
+## Post categories
+
+### A post opened directly sends its category link to the homepage
+A post's category link goes to `/index.html#category=...`, the homepage, whose Now box then shows "No matching items"; only a visitor who arrived from `/blog/` gets `/blog/index.html#category=...`. It predates the search work (Quarto picks the first listing that holds the post) and is on the live site. A fix would point the link at the Writing listing, for example by listing the posts only on `blog/index.qmd` or by rewriting the link in `static/js/site.js`.

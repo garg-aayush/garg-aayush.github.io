@@ -1,5 +1,5 @@
 // Site-wide behavior for every Quarto page. Loaded from include-after-body in _quarto.yml.
-// Quarto leaves out the tag that tells quarto.js how deep a page is when its own search is off (website: search: false in _quarto.yml). Without it the script asks for listings.json in the page's own folder, gets a 404, and a post's category stops linking to the Writing page. Put the tag back before quarto.js reads it on DOMContentLoaded, taking the depth from the path of Quarto's own site_libs files.
+// Quarto leaves out the tag that tells quarto.js how deep a page is when its own search is off (website: search: false in _quarto.yml). Without it the script asks for listings.json in the page's own folder, gets a 404, and a post's category stops being a link to a listing. Put the tag back so category links keep working as before (before quarto.js reads it on DOMContentLoaded), taking the depth from the path of Quarto's own site_libs files.
 if (!document.querySelector('meta[name="quarto:offset"]')) {
   var libs = document.querySelector('[href*="site_libs/"], [src*="site_libs/"]');
   var offset = document.createElement('meta');

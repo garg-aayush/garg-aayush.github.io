@@ -108,7 +108,7 @@ test('the search page is an ordinary page: it can be indexed, analytics is on, a
 });
 
 for (const path of [post, '/posts/2025-12-25-deriving-ppo-loss.html']) {
-  test(`with Quarto's search off, the category of ${path.split('/').pop() === 'index.html' ? 'a post in its own folder' : 'a single-file post'} still links to the Writing page and nothing is missing`, async ({ page }) => {
+  test(`with Quarto's search off, the category of ${path.split('/').pop() === 'index.html' ? 'a post in its own folder' : 'a single-file post'} still links to a listing and nothing is missing`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator('meta[name="quarto:offset"]')).toHaveCount(1);
     const link = page.locator('.quarto-category a').first();

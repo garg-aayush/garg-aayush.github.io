@@ -10,6 +10,11 @@
   line-height: var(--lh-heading);
 }
 
+/* The description is for the meta tags and link previews; the page shows the field straight under its heading */
+.search-page .quarto-title-block .description {
+  display: none;
+}
+
 /* The field: one line, the clear control inside its right edge */
 .search-page .search-field {
   position: relative;
