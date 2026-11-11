@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Search the writing, work and tools on this site. It runs in your browser and nothing you type is sent anywhere.">
+
+<title>Search – Aayush Garg</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<link href="../static/img/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-listing/list.min.js"></script>
+<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4be3c7e6edf8a534d1baebde36db032a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-849643857e12946a26332d23e8fbf621.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-search-posts .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-description','listing-categories','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
+      
+      searchColumns: ["listing-project","listing-website","listing-format","listing-resources","listing-engines","listing-language","listing-page-layout","listing-toc-location","listing-toc-title","listing-back-link-text","listing-back-link-href","listing-byline","listing-execute","listing-title","listing-tags","listing-categories","listing-mathjax","listing-description","listing-date","listing-permalink","listing-path","listing-outputHref","listing-date-modified","listing-author","listing-filename","listing-file-modified","listing-reading-time","listing-word-count","listing-image","listing-image-alt"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-search-posts'] = new List('listing-search-posts', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-search-pages .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-href','listing-section','listing-description','listing-match-body',{ data: ['index'] },{ data: ['categories'] }],
+      
+      searchColumns: ["listing-title","listing-href","listing-section","listing-description","listing-match-body"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-search-pages'] = new List('listing-search-pages', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-16JWTLXJNG"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../static/fonts/fonts.css">
+<link rel="stylesheet" href="../static/design-tokens.css">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../static/css/home.css">
+<link rel="stylesheet" href="../static/css/article.css">
+<link rel="stylesheet" href="../static/css/pages.css">
+<link rel="stylesheet" href="../static/css/search.css">
+<meta property="og:title" content="Search – Aayush Garg">
+<meta property="og:description" content="Search the writing, work and tools on this site. It runs in your browser and nothing you type is sent anywhere.">
+<meta property="og:site_name" content="Aayush Garg">
+<meta name="twitter:title" content="Search – Aayush Garg">
+<meta name="twitter:description" content="Search the writing, work and tools on this site. It runs in your browser and nothing you type is sent anywhere.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed pg search-page quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Aayush Garg</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog/"> 
+<span class="menu-text">Writing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../projects.html"> 
+<span class="menu-text">Work</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tools/"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../search/"> <i class="bi bi-search" role="img" aria-label="Search">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Search</h1>
+</div>
+
+<div>
+  <div class="description">
+    Search the writing, work and tools on this site. It runs in your browser and nothing you type is sent anywhere.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta column-page">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="search-app">
+  <div class="search-live" hidden="">
+    <div class="search-field">
+      <input class="search-input" type="search" placeholder="Search the site" aria-label="Search the site" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <button class="search-clear" type="button" hidden="">Clear</button>
+    </div>
+    <div class="search-bar">
+      <div class="search-filters" role="group" aria-label="Filter by section"></div>
+      <p class="search-mode">Keyword search</p>
+    </div>
+    <div class="search-topics" hidden="">
+      <span class="search-topics-label">Topics</span>
+      <div class="search-topic-list" role="group" aria-label="Topics"></div>
+    </div>
+    <div class="search-head">
+      <h2 class="search-heading no-anchor" hidden=""></h2>
+      <p class="search-count" role="status" aria-live="polite"></p>
+    </div>
+    <ol class="list post-rows search-rows"></ol>
+    <button class="search-more" type="button" aria-expanded="false" hidden=""></button>
+  </div>
+  <noscript><p class="search-note">Search needs JavaScript.</p></noscript>
+  <!-- Words and settings for static/js/search.js. root is the path from this page to the site root, put in front of every result link, and indexUrl is the passage index that scripts/build-search-index.mjs writes after every render. {count}, {shown}, {name} and {query} are filled in by the script. The controls start hidden and the script shows them, so with JavaScript off only the note shows. none is for a keyword-only search with no match; nearest is for a search with no keyword match once the meaning files have loaded, which lists the few pages closest by meaning. The choice labels are the spoken names of the filter and topic buttons. vectorsUrl is the file of passage vectors that scripts/build-search-vectors.mjs writes next to the index; it names the embedding table and vocabulary in static/search, and the page uses meaning search only when all three match the index. bestCount is how many rows a search lists before the Show all control. all and sections are the filter names, and a page's section must be one of sections. The stop words are left out of a query unless it has nothing else. -->
+  <script type="application/json" class="search-copy">
+  {
+    "root": "../",
+    "indexUrl": "../search-index.json",
+    "vectorsUrl": "../search-vectors.json",
+    "all": "All",
+    "sections": ["Writing", "Work", "Tools", "About", "Research"],
+    "latest": "Latest writing",
+    "latestCount": 5,
+    "count": "{count} results",
+    "countOne": "1 result",
+    "countBest": "Best {shown} of {count} results",
+    "bestCount": 8,
+    "showAll": "Show all {count} results",
+    "showBest": "Show the best {shown}",
+    "none": "No results for \"{query}\". Try a shorter phrase or pick a topic.",
+    "nearest": "No exact matches for \"{query}\". These {count} pages are the closest by meaning.",
+    "nearestOne": "No exact matches for \"{query}\". This page is the closest by meaning.",
+    "choiceLabel": "{name}, {count} results",
+    "choiceLabelOne": "{name}, 1 result",
+    "topicLabel": "{name}, {count} posts",
+    "topicLabelOne": "{name}, 1 post",
+    "modeHybrid": "Keyword and meaning search",
+    "modeFallback": "Titles and descriptions only",
+    "stopWords": ["a", "an", "and", "are", "as", "at", "be", "by", "do", "does", "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where", "which", "who", "why", "with", "you", "your"]
+  }
+  </script>
+</div>
+<div id="listing-search-posts" class="quarto-listing quarto-listing-container-custom">
+<script type="application/json" class="search-records">[{"title":"Pairing GPT-6.1 Sol with a Local Model in OpenCode","href":"posts/2026-11-01-gpt-local-model-opencode/index.html","section":"Writing","date":"1 Nov 2026","categories":["Local LLMs"],"read":"8 min","description":"How I set up OpenCode so GPT-6.1 Sol plans and checks while a self-hosted GLM-5.3-Flash writes the code and does most of the work","body":true},{"title":"Kalman Filters and Smoothing for Time-Series Data","href":"posts/2026-07-15-kalman-filters-time-series/index.html","section":"Writing","date":"15 Jul 2026","categories":["Time Series"],"read":"16 min","description":"A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples","body":true},{"title":"Building a Live India Weather Dashboard with Claude Code","href":"posts/2026-04-29-india-weather-with-claude/index.html","section":"Writing","date":"29 Apr 2026","categories":["Tools & Infra"],"read":"9 min","description":"A short reflection on prompting Claude Code in stages to build a live India weather and AQI dashboard for my portfolio site.","body":true},{"title":"Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding","href":"posts/2026-04-05-qwen35-vs-gemma4/index.html","section":"Writing","date":"5 Apr 2026","categories":["Local LLMs"],"read":"16 min","description":"Comparing Qwen 3.5 and Gemma4 (dense and MoE) for local agentic coding on an RTX 4090 using llama-bench and one-prompt coding tasks with Open Code.","body":true},{"title":"Self-Hosted Gemma 4 Chat with Web UI","href":"posts/2026-04-03-self-hosted-gemma4-chat/index.html","section":"Writing","date":"3 Apr 2026","categories":["Local LLMs"],"read":"6 min","description":"Steps to set up a self-hosted Gemma 4 chat with llama.cpp's built-in web UI, web search via MCP, and access from any device over Tailscale.","body":true},{"title":"Using a local LLM in OpenCode with llama.cpp","href":"posts/2026-03-29-local-llm-opencode/index.html","section":"Writing","date":"29 Mar 2026","categories":["Local LLMs"],"read":"11 min","description":"Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).","body":true},{"title":"FlashAttention: Making Attention I/O-Aware","href":"posts/2026-03-27-flash-attention/index.html","section":"Writing","date":"27 Mar 2026","categories":["Transformers"],"read":"15 min","description":"Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware","body":true},{"title":"Building Browser Tools with Claude Code","href":"posts/2026-03-20-browser-tools/index.html","section":"Writing","date":"20 Mar 2026","categories":["Tools & Infra"],"read":"5 min","description":"Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code.","body":true},{"title":"GRPO: Building Intuition Through Ablation Studies","href":"posts/2026-02-26-grpo-from-scratch/index.html","section":"Writing","date":"26 Feb 2026","categories":["RL & Alignment"],"read":"14 min","description":"My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.","body":true},{"title":"Tools for Better Claude Code and Terminal Experience","href":"posts/2026-02-12-cc-tools/index.html","section":"Writing","date":"12 Feb 2026","categories":["Tools & Infra"],"read":"8 min","description":"A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.","body":true},{"title":"Expert Iteration for Math Reasoning","href":"posts/2026-01-23-expert-iteration/index.html","section":"Writing","date":"23 Jan 2026","categories":["RL & Alignment","LLM Training"],"read":"11 min","description":"Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.","body":true},{"title":"A Brief Introduction to Claude Agent Skills","href":"posts/2026-01-13-claude-skills/index.html","section":"Writing","date":"13 Jan 2026","categories":["Tools & Infra"],"read":"10 min","description":"A practical guide to Claude Skills, what they are, why they matter and how to build your own using a basic image editing skill as an example.","body":true},{"title":"Key Insights from DeepSeekMath paper","href":"posts/2026-01-06-review-deepseek-math.html","section":"Writing","date":"6 Jan 2026","categories":["Paper Notes"],"read":"6 min","description":"Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline","body":true},{"title":"Understanding GRPO: PPO without the Critic","href":"posts/2026-01-01-understanding-grpo.html","section":"Writing","date":"1 Jan 2026","categories":["RL & Alignment"],"read":"12 min","description":"A blog post explaining the Group Relative Policy Optimization (GRPO) objective, showing how it simplifies PPO by replacing the learned critic with group sampling.","body":true},{"title":"Deriving the DPO Loss from First Principles","href":"posts/2025-12-30-deriving-dpo-loss.html","section":"Writing","date":"30 Dec 2025","categories":["RL & Alignment"],"read":"13 min","description":"A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.","body":true},{"title":"Deriving the PPO Loss from First Principles","href":"posts/2025-12-25-deriving-ppo-loss.html","section":"Writing","date":"25 Dec 2025","categories":["RL & Alignment"],"read":"31 min","description":"A step-by-step derivation of the Proximal Policy Optimization (PPO) loss, starting from basic RL concepts and building up to the complete RLHF objective used in LLM alignment.","body":true},{"title":"What I Learned Building SFT from the Ground Up","href":"posts/2025-12-28-sft-from-scratch.html","section":"Writing","date":"3 Dec 2025","categories":["LLM Training"],"read":"10 min","description":"A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.","body":true},{"title":"A Guide to Building Custom Nodes in ComfyUI","href":"posts/2025-09-10-build-custom-comfyui-node.html","section":"Writing","date":"10 Sep 2025","categories":["Tools & Infra"],"read":"7 min","description":"A practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.","body":true},{"title":"Building GPT from Scratch: Following Karpathy's Tutorial","href":"posts/2025-09-08-building-gpt-from-scratch.html","section":"Writing","date":"8 Sep 2025","categories":["Transformers"],"read":"6 min","description":"This blog summarizes building the GPT architecture by following Andrej Karpathy's 'Let's Build GPT' tutorial.","body":true},{"title":"Key Takeaways from Lecture 1: LLM Evaluation Lifecycle","href":"posts/2025-09-02-llm-evaluation-lifecycle.html","section":"Writing","date":"2 Sep 2025","categories":["Paper Notes"],"read":"6 min","description":"Here, I discuss the key ideas/takeaways around the systematic evaluation and metrics, \"Three Gulfs\" and effective prompting.","body":true},{"title":"Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction","href":"posts/2024-07-15-finetune-llama3-8B-predibase.html","section":"Writing","date":"15 Jul 2024","categories":["LLM Training"],"read":"7 min","description":"Blog on fine-tuning a Llama-3-8B model on the Predibase platform for structured functional representation extraction, and compare its performance with GPT-4 and Claude 3.5 Sonnet.","body":true},{"title":"Part II: Comparison of Model Performances on Structured Functional Representation Extraction","href":"posts/2024-07-09-compare-models-structured-data.html","section":"Writing","date":"9 Jul 2024","categories":["LLM Evaluation"],"read":"7 min","description":"This blog post compares the performance of various models in extracting structured functional representations from text.","body":true},{"title":"Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction","href":"posts/2024-07-03-baseline-gpt4o-structured-data.html","section":"Writing","date":"3 Jul 2024","categories":["LLM Evaluation"],"read":"8 min","description":"This blog gives a detailed walkthrough of structured data extraction using OpenAI's GPT-4o model.","body":true},{"title":"Step-by-Step Guide to Setup Your Personal GPU Server","href":"posts/2024-06-30-remote-gpu-server.html","section":"Writing","date":"30 Jun 2024","categories":["Tools & Infra"],"read":"9 min","description":"Guide to set up a remotely accessible personal GPU Ubuntu server, enabling its access from anywhere.","body":true},{"title":"Managing multiple CUDA versions using environment modules in Ubuntu","href":"posts/2024-05-19-manage-multiple-cuda.html","section":"Writing","date":"19 May 2024","categories":["Tools & Infra"],"read":"10 min","description":"Guide to install CUDA locally and manage multiple cuda environments on Ubuntu GPU server.","body":true}]</script>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+<div id="listing-search-pages" class="quarto-listing quarto-listing-container-custom">
+<script type="application/json" class="search-records">[{"title":"Work","href":"projects.html","section":"Work","categories":[],"description":"Open source projects, live tools and gists. Most of the code is on GitHub.","body":true},{"title":"India Weather","href":"india-weather.html","section":"Work","categories":[],"description":"Live temperature, humidity, and air quality across India's major metropolitan cities.","body":false},{"title":"Tools","href":"tools/","section":"Tools","categories":[],"description":"Browser-based tools that run entirely client-side. No data leaves your browser.","body":true},{"title":"Image Format Converter","href":"tools/image-converter.html","section":"Tools","categories":[],"description":"Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.","body":true},{"title":"Image Resizer","href":"tools/image-resizer.html","section":"Tools","categories":[],"description":"Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.","body":true},{"title":"Image Cropper","href":"tools/image-cropper.html","section":"Tools","categories":[],"description":"Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.","body":true},{"title":"Binary Mask Creator","href":"tools/image-mask-creator.html","section":"Tools","categories":[],"description":"Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.","body":true},{"title":"Image Adjust & Transform","href":"tools/image-operations.html","section":"Tools","categories":[],"description":"Flip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.","body":true},{"title":"SVG Viewer & Converter","href":"tools/svg-viewer.html","section":"Tools","categories":[],"description":"Preview SVG files with zoom and background controls, inspect metadata and source, and export to PNG, JPEG, or WebP at any scale.","body":true},{"title":"HTML Viewer","href":"tools/html-viewer.html","section":"Tools","categories":[],"description":"Paste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.","body":true},{"title":"Markdown Viewer","href":"tools/markdown-viewer.html","section":"Tools","categories":[],"description":"Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML.","body":true},{"title":"JSON Formatter & Viewer","href":"tools/json-formatter.html","section":"Tools","categories":[],"description":"Paste or drop JSON to format with syntax highlighting, collapsible tree view, validation with line-level error reporting, search, and one-click copy.","body":true},{"title":"Diff Viewer","href":"tools/diff-viewer.html","section":"Tools","categories":[],"description":"Compare two text blocks with line-level and word-level diff highlighting. Side-by-side and unified diff modes.","body":true},{"title":"LaTeX Math Preview","href":"tools/latex-preview.html","section":"Tools","categories":[],"description":"Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback, symbol palette, render mode toggle, and saved snippets.","body":true},{"title":"YAML ↔ JSON Converter","href":"tools/yaml-json-converter.html","section":"Tools","categories":[],"description":"Convert between YAML and JSON with live validation, configurable indentation, file drop support, and sample data.","body":true},{"title":"Base64 Encoder/Decoder","href":"tools/base64.html","section":"Tools","categories":[],"description":"Decode base64 to image with live preview and download, encode images to base64 data URIs (drag-and-drop), or encode/decode plain text.","body":true},{"title":"URL Encoder/Decoder","href":"tools/url-encoder.html","section":"Tools","categories":[],"description":"Percent-encode and decode URL strings with live conversion. Toggle between encodeURIComponent and encodeURI modes.","body":true},{"title":"About","href":"about.html","section":"About","categories":[],"description":"Forward deployed ML engineer at Applied Computing. My path from TU Delft and Shell to Flixstock and Jiffy, and contract work.","body":true},{"title":"Publications","href":"publications.html","section":"Research","categories":[],"description":"Journal papers and conference talks from my PhD and research years.","body":true},{"title":"DOVER-Lap","href":"pages/doverlap.html","section":"Research","categories":[],"description":"The code for DOVER-Lap, publicly available under the MIT license.","body":true},{"title":"Integration of speech separation, diarization, and recognition for multi-speaker meetings","href":"pages/jsalt.html","section":"Research","categories":[],"description":"How to reproduce and extend our pipeline of speech separation, diarization and ASR, with separated audio files and end-to-end recipes.","body":true},{"title":"Multi-class Spectral Clustering with Overlaps for Speaker Diarization","href":"pages/overlap-aware-sc.html","section":"Research","categories":[],"description":"The implementation of our SLT 2021 paper, an overlap detector and a modified spectral clustering method for overlap-aware diarization.","body":true}]</script>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/aayushgarg\.dev");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 Aayush Garg</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="https://github.com/garg-aayush">
+<p>GitHub</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.linkedin.com/in/aayush-garg-8b26a734">
+<p>LinkedIn</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://twitter.com/Aayush_ander">
+<p>X</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://aayushgarg.dev/blog/index.xml">
+<p>RSS</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+<script src="../static/js/site.js"></script>
+<script type="module" src="../static/js/search.js"></script>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

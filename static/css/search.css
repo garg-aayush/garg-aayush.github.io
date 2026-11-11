@@ -1,0 +1,240 @@
+/* Owns the search page (search/index.qmd, body classes pg search-page). The page shell comes from pages.css and the result rows are the post rows of home.css; this file adds the field, the filters and the snippet. */
+
+.search-page .quarto-title-block {
+  margin-bottom: var(--space-16);
+}
+
+/* A utility page: the heading is the h2 size, not the page title size */
+.search-page .quarto-title-block h1.title {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-heading);
+}
+
+/* The description is for the meta tags and link previews; the page shows the field straight under its heading */
+.search-page .quarto-title-block .description {
+  display: none;
+}
+
+/* The field: one line, the clear control inside its right edge */
+.search-page .search-field {
+  position: relative;
+}
+
+.search-page .search-input {
+  display: block;
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: var(--space-12) calc(var(--touch-target) + var(--space-24)) var(--space-12) var(--space-16);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-inset);
+  color: var(--text-primary);
+  font-family: inherit;
+  /* 16px, so iOS does not zoom the page when the field takes focus */
+  font-size: var(--fs-ui);
+  line-height: 1.4;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-page .search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.search-page .search-input:focus {
+  border-color: var(--accent);
+}
+
+/* The page has its own clear control */
+.search-page .search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: none;
+}
+
+.search-page .search-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  min-width: var(--touch-target);
+  padding: 0 var(--space-16);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.search-page .search-clear:hover {
+  color: var(--text-primary);
+}
+
+/* The filters on the left, the status on the right; on a phone the status wraps below */
+.search-page .search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--space-24);
+  margin-top: var(--space-8);
+}
+
+.search-page .search-filters,
+.search-page .search-topic-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* The first filter, text and underline, starts at the column edge */
+.search-page .search-filters .search-choice:first-child {
+  padding-left: 0;
+}
+
+/* The topics follow their label, so the first button's padding is pulled back against it */
+.search-page .search-topic-list {
+  margin-left: calc(-1 * var(--space-8));
+}
+
+.search-page .search-mode {
+  margin: 0;
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+}
+
+/* Section filters and topics: plain text buttons, the selected one in the heading color with an Accent underline like the navbar */
+.search-page .search-choice {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  min-height: var(--touch-target);
+  padding: 0 var(--space-8);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  line-height: var(--touch-target);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.search-page .search-choice:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.search-page .search-choice.is-active {
+  border-bottom-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.search-page .search-choice:disabled {
+  color: var(--text-dim);
+  cursor: default;
+}
+
+.search-page .search-choice-count {
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+}
+
+.search-page .search-topics {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-12);
+}
+
+.search-page .search-topics-label {
+  flex: none;
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+}
+
+.search-page .search-topic-list {
+  flex: 1;
+  min-width: 0;
+}
+
+/* A second line of choices, a little shorter than the filters */
+.search-page .search-topic-list .search-choice {
+  min-height: calc(var(--touch-target) - var(--space-8));
+  line-height: calc(var(--touch-target) - var(--space-8));
+}
+
+/* The heading and the count share a line; with the heading hidden the count stands alone at the left */
+.search-page .search-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-16);
+  margin: var(--space-16) 0 var(--space-12);
+}
+
+.search-page .search-heading {
+  margin: 0;
+  font-size: var(--fs-item);
+  line-height: 1.35;
+}
+
+.search-page .search-count {
+  margin: 0;
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.search-page .search-count:empty {
+  display: none;
+}
+
+/* Under a long result list: a text button, in the filters' type */
+.search-page .search-more {
+  display: block;
+  min-height: var(--touch-target);
+  margin-top: var(--space-8);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+
+.search-page .search-more:hover {
+  color: var(--text-primary);
+}
+
+.search-page .search-more[hidden] {
+  display: none;
+}
+
+.search-page .search-note {
+  margin: var(--space-24) 0 0;
+  color: var(--text-muted);
+}
+
+/* The highlighted words of a match, in the title and the snippet */
+.search-page mark {
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--accent-dim);
+  color: var(--text-primary);
+}
+
+/* Rows that are not posts have no category and no reading time, so the phone layout drops its last row */
+@media (max-width: 600px) {
+  .search-page .post-row.is-page {
+    grid-template-areas:
+      "date date"
+      "main main";
+  }
+
+  .search-page .search-mode {
+    margin-bottom: var(--space-8);
+  }
+}
