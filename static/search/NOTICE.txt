@@ -1,0 +1,13 @@
+Embedding table for the search page
+
+potion-base-8M.int8.bin and potion-base-8M.vocab.txt are derived from the Model2Vec model minishlab/potion-base-8M, revision bf8b056651a2c21b8d2565580b8569da283cab23 (https://huggingface.co/minishlab/potion-base-8M).
+
+License: MIT. The model card's metadata says "license: mit". The model repository has no separate license file and the card names no copyright holder, so none is reproduced here. The card was read on 2026-11-11.
+
+Authors: Stephan Tulkens and Thomas van Dongen (Minish Lab), the Model2Vec library and the potion models. Please cite the Model2Vec repository if you use the model:
+
+  Stephan Tulkens and Thomas van Dongen. Model2Vec: Fast State-of-the-Art Static Embeddings. 2024. https://github.com/MinishLab/model2vec, DOI 10.5281/zenodo.17270888.
+
+Where it comes from: the card says the model is distilled from baai/bge-base-en-v1.5 (MIT on its Hugging Face page) and trained with Tokenlearn on the dataset minishlab/tokenlearn-c4-en-bge-base-v1.5. The vocabulary (potion-base-8M.vocab.txt) is the model's own vocab.txt, unchanged. The license of the training dataset was not reviewed.
+
+What was changed: the float32 embedding table was quantized to int8 with one scale for the whole table (the largest absolute value over 127; the scale is in manifest.json). Nothing else was changed. scripts/make-search-table.mjs rebuilds both files from the pinned revision and checks them against the SHA-256 of each source file; manifest.json lists the size and SHA-256 of the two files it describes.
