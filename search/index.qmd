@@ -1,0 +1,174 @@
+---
+title: "Search"
+page-layout: full
+body-classes: pg search-page
+sidebar: false
+toc: false
+# The page is unlisted for now: no navbar entry, out of Quarto's own search index, noindex, and analytics off. Quarto ignores a page-level analytics opt-out, so the early flag below is what stops it.
+search: false
+include-in-header:
+  - text: |
+      <meta name="robots" content="noindex, nofollow">
+      <script>window['ga-disable-G-16JWTLXJNG'] = true;</script>
+include-after-body:
+  - text: |
+      <script type="module" src="/static/js/search.js"></script>
+listing:
+  # Every post, read by the script as data. A new post shows up on its own. template-params.section is the section name the filters use for posts.
+  - id: search-posts
+    template: ../_templates/search-records.ejs
+    template-params:
+      section: Writing
+    fields: [date, title, description, categories, reading-time]
+    date-format: "D MMM YYYY"
+    sort: "date desc"
+    contents:
+      - ../posts/20*.qmd
+      - ../posts/20*/index.qmd
+  # Every other page, in the order the filters list them. Fields: title, href (from the site root, so projects.html, not ../projects.html), section (one of the names in the script settings below), description. Add match-body: false to match only the title and description of a page whose own text is interface chrome.
+  - id: search-pages
+    template: ../_templates/search-records.ejs
+    sort: false
+    contents:
+      - title: Work
+        href: projects.html
+        section: Work
+        description: Open source projects, live tools and gists. Most of the code is on GitHub.
+      - title: India Weather
+        href: india-weather.html
+        section: Work
+        match-body: false
+        description: Live temperature, humidity, and air quality across India's major metropolitan cities.
+      - title: Tools
+        href: tools/
+        section: Tools
+        description: Browser-based tools that run entirely client-side. No data leaves your browser.
+      - title: Image Format Converter
+        href: tools/image-converter.html
+        section: Tools
+        description: Convert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.
+      - title: Image Resizer
+        href: tools/image-resizer.html
+        section: Tools
+        description: Resize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.
+      - title: Image Cropper
+        href: tools/image-cropper.html
+        section: Tools
+        description: Interactively crop images with draggable selection, aspect ratio presets, and full-resolution output.
+      - title: Binary Mask Creator
+        href: tools/image-mask-creator.html
+        section: Tools
+        description: Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.
+      - title: Image Adjust & Transform
+        href: tools/image-operations.html
+        section: Tools
+        description: Flip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.
+      - title: SVG Viewer & Converter
+        href: tools/svg-viewer.html
+        section: Tools
+        description: Preview SVG files with zoom and background controls, inspect metadata and source, and export to PNG, JPEG, or WebP at any scale.
+      - title: HTML Viewer
+        href: tools/html-viewer.html
+        section: Tools
+        description: Paste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.
+      - title: Markdown Viewer
+        href: tools/markdown-viewer.html
+        section: Tools
+        description: Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML.
+      - title: JSON Formatter & Viewer
+        href: tools/json-formatter.html
+        section: Tools
+        description: Paste or drop JSON to format with syntax highlighting, collapsible tree view, validation with line-level error reporting, search, and one-click copy.
+      - title: Diff Viewer
+        href: tools/diff-viewer.html
+        section: Tools
+        description: Compare two text blocks with line-level and word-level diff highlighting. Side-by-side and unified diff modes.
+      - title: LaTeX Math Preview
+        href: tools/latex-preview.html
+        section: Tools
+        description: Type LaTeX and see it rendered instantly with KaTeX. Per-equation error feedback, symbol palette, render mode toggle, and saved snippets.
+      - title: YAML ↔ JSON Converter
+        href: tools/yaml-json-converter.html
+        section: Tools
+        description: Convert between YAML and JSON with live validation, configurable indentation, file drop support, and sample data.
+      - title: Base64 Encoder/Decoder
+        href: tools/base64.html
+        section: Tools
+        description: Decode base64 to image with live preview and download, encode images to base64 data URIs (drag-and-drop), or encode/decode plain text.
+      - title: URL Encoder/Decoder
+        href: tools/url-encoder.html
+        section: Tools
+        description: Percent-encode and decode URL strings with live conversion. Toggle between encodeURIComponent and encodeURI modes.
+      - title: About
+        href: about.html
+        section: About
+        description: Forward deployed ML engineer at Applied Computing. My path from TU Delft and Shell to Flixstock and Jiffy, and contract work.
+      - title: Publications
+        href: publications.html
+        section: Research
+        description: Journal papers and conference talks from my PhD and research years.
+      - title: DOVER-Lap
+        href: pages/doverlap.html
+        section: Research
+        description: The code for DOVER-Lap, publicly available under the MIT license.
+      - title: "Integration of speech separation, diarization, and recognition for multi-speaker meetings"
+        href: pages/jsalt.html
+        section: Research
+        description: How to reproduce and extend our pipeline of speech separation, diarization and ASR, with separated audio files and end-to-end recipes.
+      - title: Multi-class Spectral Clustering with Overlaps for Speaker Diarization
+        href: pages/overlap-aware-sc.html
+        section: Research
+        description: The implementation of our SLT 2021 paper, an overlap detector and a modified spectral clustering method for overlap-aware diarization.
+---
+
+```{=html}
+<div class="search-app">
+  <div class="search-field">
+    <input class="search-input" type="search" placeholder="Search the site" aria-label="Search the site" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+    <button class="search-clear" type="button" hidden>Clear</button>
+  </div>
+  <div class="search-bar">
+    <div class="search-filters" role="group" aria-label="Filter by section"></div>
+    <p class="search-mode">Keyword search</p>
+  </div>
+  <div class="search-topics" hidden>
+    <span class="search-topics-label">Topics</span>
+    <div class="search-topic-list" role="group" aria-label="Topics"></div>
+  </div>
+  <div class="search-head">
+    <h2 class="search-heading no-anchor" hidden></h2>
+    <p class="search-count" role="status" aria-live="polite"></p>
+  </div>
+  <ol class="list post-rows search-rows"></ol>
+  <button class="search-more" type="button" aria-expanded="false" hidden></button>
+  <noscript><p class="search-note">Search needs JavaScript.</p></noscript>
+  <!-- Words and settings for static/js/search.js. root is the path from this page to the site root, put in front of every result link, and indexUrl is the passage index that scripts/build-search-index.mjs writes after every render. {count}, {shown} and {query} are filled in by the script. vectorsUrl is the file of passage vectors that scripts/build-search-vectors.mjs writes next to the index; it names the embedding table and vocabulary in static/search, and the page uses meaning search only when all three match the index. bestCount is how many rows a search lists before the Show all control. all and sections are the filter names, and a page's section must be one of sections. The stop words are left out of a query unless it has nothing else. -->
+  <script type="application/json" class="search-copy">
+  {
+    "root": "../",
+    "indexUrl": "../search-index.json",
+    "vectorsUrl": "../search-vectors.json",
+    "all": "All",
+    "sections": ["Writing", "Work", "Tools", "About", "Research"],
+    "latest": "Latest writing",
+    "latestCount": 5,
+    "count": "{count} results",
+    "countOne": "1 result",
+    "countBest": "Best {shown} of {count} results",
+    "bestCount": 8,
+    "showAll": "Show all {count} results",
+    "showBest": "Show the best {shown}",
+    "none": "No results for \"{query}\". Try a shorter phrase or pick a topic.",
+    "modeHybrid": "Keyword and meaning search",
+    "modeFallback": "Titles and descriptions only",
+    "stopWords": ["a", "an", "and", "are", "as", "at", "be", "by", "do", "does", "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where", "which", "who", "why", "with", "you", "your"]
+  }
+  </script>
+</div>
+```
+
+::: {#search-posts}
+:::
+
+::: {#search-pages}
+:::

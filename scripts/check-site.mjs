@@ -1,8 +1,13 @@
+import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse, parseFragment } from 'parse5';
 import { DOMParser } from '@xmldom/xmldom';
+import { base64ToBytes, VECTORS_VERSION } from '../static/js/search-embed.js';
+import { INDEX_VERSION } from '../static/js/search-rank.js';
+import { hashPages, pageKey, records } from './build-search-index.mjs';
+import { embedPassages, loadTable } from './build-search-vectors.mjs';
 
 const projectDir = fileURLToPath(new URL('../', import.meta.url));
 const siteUrl = 'https://aayushgarg.dev/';
@@ -113,11 +118,67 @@ export async function checkSite(directory) {
   return { pages: documents.size, references: references.length, errors };
 }
 
+// The search files a render has to leave: the index covers every page the search page lists, the vectors belong to that index and were made with the table the manifest names, and the table files are the ones the manifest hashes. A broken post-render step otherwise leaves a page that quietly falls back to keyword search.
+export async function checkSearch(directory) {
+  const root = resolve(directory);
+  const errors = [];
+  const read = async name => {
+    try { return await readFile(join(root, name)); } catch { errors.push(`${name}: required rendered output is missing`); return null; }
+  };
+  const [searchPage, indexBytes, vectorsBytes, manifestBytes] = await Promise.all(['search/index.html', 'search-index.json', 'search-vectors.json', 'static/search/manifest.json'].map(read));
+  if (!searchPage || !indexBytes) return { errors };
+
+  let index;
+  try { index = JSON.parse(indexBytes.toString('utf8')); } catch (error) { return { errors: [...errors, `search-index.json: invalid JSON: ${error.message}`] }; }
+  if (index.v !== INDEX_VERSION) errors.push(`search-index.json: version ${index.v}, the page reads ${INDEX_VERSION}`);
+  if (index.hash !== hashPages(index.pages ?? [])) errors.push('search-index.json: hash does not match its pages');
+  const indexed = new Map((index.pages ?? []).map(page => [page.h, page]));
+  const listed = records(searchPage.toString('utf8'));
+  if (!listed.length) errors.push('search/index.html: no pages listed for the search index');
+  for (const record of listed) {
+    const page = indexed.get(pageKey(record.href));
+    if (!page) errors.push(`search-index.json: ${record.href} is listed on the search page but is not indexed`);
+    else if (record.body !== false && !page.p.length) errors.push(`search-index.json: ${record.href} has no passages`);
+  }
+  if (indexed.size > listed.length) errors.push(`search-index.json: ${indexed.size} pages indexed but ${listed.length} listed`);
+
+  if (!vectorsBytes || !manifestBytes) return { errors };
+  let vectors;
+  let manifest;
+  try { vectors = JSON.parse(vectorsBytes.toString('utf8')); manifest = JSON.parse(manifestBytes.toString('utf8')); } catch (error) { return { errors: [...errors, `search vectors or manifest: invalid JSON: ${error.message}`] }; }
+  const passages = (index.pages ?? []).reduce((sum, page) => sum + 1 + page.p.length, 0);
+  if (vectors.v !== VECTORS_VERSION) errors.push(`search-vectors.json: version ${vectors.v}, the page reads ${VECTORS_VERSION}`);
+  if (vectors.index !== index.hash) errors.push(`search-vectors.json: made for index ${vectors.index}, the index is ${index.hash}`);
+  if (vectors.count !== passages) errors.push(`search-vectors.json: ${vectors.count} vectors for ${passages} passages`);
+  if (vectors.dimensions !== manifest.dimensions) errors.push(`search-vectors.json: ${vectors.dimensions} dimensions, the table has ${manifest.dimensions}`);
+  if (base64ToBytes(vectors.vectors ?? '').length !== vectors.count * vectors.dimensions) errors.push('search-vectors.json: the vector data is not count x dimensions bytes');
+  for (const [name, file] of [['table', manifest.files.table], ['vocab', manifest.files.vocab]]) {
+    const pointer = vectors[name];
+    if (pointer?.sha256 !== file.sha256 || pointer?.path !== `static/search/${file.path}`) errors.push(`search-vectors.json: its ${name} is not the one static/search/manifest.json names`);
+    const bytes = await read(`static/search/${file.path}`);
+    if (bytes && (bytes.length !== file.bytes || createHash('sha256').update(bytes).digest('hex') !== file.sha256)) errors.push(`static/search/${file.path}: does not match its hash in manifest.json`);
+  }
+  if (errors.length) return { errors };
+
+  // The vectors must be the ones the index text and the table give, so an edited page cannot keep an old vector
+  try {
+    const { embedder } = await loadTable(join(root, 'static/search'));
+    const fresh = embedPassages(index, embedder);
+    const stored = base64ToBytes(vectors.vectors);
+    if (fresh.data.length !== stored.length || fresh.data.some((value, i) => value !== (stored[i] << 24 >> 24)) || Math.abs(fresh.scale - vectors.scale) > 1e-12) errors.push('search-vectors.json: the vectors are not what the index text and the table give');
+  } catch (error) {
+    errors.push(`search-vectors.json: ${error.message}`);
+  }
+  return { errors, pages: indexed.size, passages };
+}
+
 if (import.meta.main) {
   const outputDir = resolve(projectDir, process.argv[2] ?? '_site');
   const result = await checkSite(outputDir);
-  if (result.errors.length) {
-    console.error(result.errors.join('\n'));
+  const search = await checkSearch(outputDir);
+  const errors = [...result.errors, ...search.errors];
+  if (errors.length) {
+    console.error(errors.join('\n'));
     process.exitCode = 1;
-  } else console.log(`Rendered site: ${result.pages} HTML pages and ${result.references} references passed`);
+  } else console.log(`Rendered site: ${result.pages} HTML pages and ${result.references} references passed; search: ${search.pages} pages and ${search.passages} passages indexed and embedded`);
 }

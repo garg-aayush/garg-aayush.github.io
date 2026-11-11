@@ -4,6 +4,8 @@ project:
   post-render:
     - node scripts/preserve-feed-guids.mjs
     - node scripts/place-article-end.mjs
+    - node scripts/build-search-index.mjs
+    - node scripts/build-search-vectors.mjs
   render:
     - index.qmd
     - about.qmd
@@ -15,6 +17,7 @@ project:
     - projects.qmd
     - tools/index.qmd
     - india-weather.qmd
+    - search/index.qmd
 
 website:
   title: "Aayush Garg"
@@ -61,6 +64,7 @@ format:
       - static/css/home.css
       - static/css/article.css
       - static/css/pages.css
+      - static/css/search.css
     include-in-header:
       - text: |
           <link rel="preload" href="/static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
