@@ -1,0 +1,9 @@
+{
+  "name": "local-search-embedding-eval",
+  "private": true,
+  "type": "module",
+  "description": "Stage 2 offline embedding comparison. Not part of the site build.",
+  "dependencies": {
+    "@huggingface/transformers": "4.3.2"
+  }
+}

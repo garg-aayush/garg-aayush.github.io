@@ -4,6 +4,8 @@ project:
   post-render:
     - node scripts/preserve-feed-guids.mjs
     - node scripts/place-article-end.mjs
+    - node scripts/build-search-index.mjs
+    - node scripts/build-search-vectors.mjs
   render:
     - index.qmd
     - about.qmd
@@ -15,12 +17,15 @@ project:
     - projects.qmd
     - tools/index.qmd
     - india-weather.qmd
+    - search/index.qmd
 
 website:
   title: "Aayush Garg"
   description: "Personal website"
   site-url: "https://aayushgarg.dev"
   google-analytics: "G-16JWTLXJNG"
+  # The search page at /search/ is the site's search. Quarto's own overlay, its magnifier and its f, / and s shortcuts are off; static/js/site.js sends / to the page.
+  search: false
   favicon: "static/img/favicon.png"
   open-graph: true
   twitter-card:
@@ -38,6 +43,9 @@ website:
         href: tools/
       - text: About
         href: about.qmd
+      - icon: search
+        href: search/
+        aria-label: Search
   page-footer:
     left: "© 2026 Aayush Garg"
     right:
@@ -61,6 +69,7 @@ format:
       - static/css/home.css
       - static/css/article.css
       - static/css/pages.css
+      - static/css/search.css
     include-in-header:
       - text: |
           <link rel="preload" href="/static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>

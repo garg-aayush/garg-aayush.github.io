@@ -1,0 +1,19 @@
+<%
+// The items of a listing as a JSON block for static/js/search.js. It prints no visible markup.
+// Quarto runs this as a lodash template, so <%= prints raw text. The < is escaped so no value can end the script tag.
+// template-params.section is the section of items that have none of their own. A post item gives date, categories and reading-time. A page item gives section, and match-body: false to skip the page's own text.
+const records = items.map((item) => ({
+  title: item.title,
+  href: item.outputHref ?? item.href,
+  section: item.section ?? templateParams?.section ?? "",
+  date: item.date,
+  categories: Array.isArray(item.categories) ? item.categories : [],
+  read: item["reading-time"],
+  description: item.description,
+  body: !(item["match-body"] === false || item["match-body"] === "false"),
+}));
+%>
+
+```{=html}
+<script type="application/json" class="search-records"><%= JSON.stringify(records).replace(/</g, "\\u003c") %></script>
+```

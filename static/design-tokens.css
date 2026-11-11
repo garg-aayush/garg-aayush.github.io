@@ -27,7 +27,6 @@
   /* RGB triple of --bg-body, for libraries that build their own rgba() values */
   --bg-body-rgb: 22, 22, 24;
   --nav-bg: rgba(var(--bg-body-rgb), 0.8);
-  --overlay-bg: rgba(var(--bg-body-rgb), 0.76);
 
   /* Code syntax colors, each at 4.5:1 or better on --bg-card */
   --code-keyword: #5AB1FF;

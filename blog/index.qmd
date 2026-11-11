@@ -28,6 +28,10 @@ listing:
     contents: *posts
 ---
 
+::: {.writing-search}
+[Search](../search/){.link-arrow}
+:::
+
 ::: {#blog-chips}
 :::
 

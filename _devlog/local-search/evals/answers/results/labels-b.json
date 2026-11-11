@@ -1,0 +1,722 @@
+{
+  "1fce8ddbcf": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "ec44c2c6ca": {
+    "label": "unsupported",
+    "note": "describes Raft voting; site does not cover it"
+  },
+  "41a5f735b5": {
+    "label": "unsupported",
+    "note": "says his model was 300B tokens; that is GPT-3's data"
+  },
+  "d1b746fedb": {
+    "label": "unsupported",
+    "note": "borderline: converter, resizer and cropper are not tied to AI image models in passages"
+  },
+  "dd3e541cd4": {
+    "label": "unsupported",
+    "note": "describes Box; site does not cover Rust"
+  },
+  "da3d2b3b5c": {
+    "label": "faithful",
+    "note": "hybrid architecture with fixed-size state, per P3"
+  },
+  "fbe39ddc1a": {
+    "label": "unsupported",
+    "note": "exact match of 0 is invented"
+  },
+  "0542913aff": {
+    "label": "non-answer",
+    "note": "declines although P1 was on topic"
+  },
+  "54bc318313": {
+    "label": "faithful",
+    "note": "Binary Mask Creator for AI inpainting, per P1/P2 (partial)"
+  },
+  "fcfe4b4c02": {
+    "label": "faithful",
+    "note": "borderline: overlap detector plus modified spectral clustering, per P1"
+  },
+  "8de90f88b0": {
+    "label": "unsupported",
+    "note": "says yes; P1 says it needs internet"
+  },
+  "d069eed61d": {
+    "label": "unsupported",
+    "note": "gives his model 175B parameters"
+  },
+  "267238f732": {
+    "label": "faithful",
+    "note": "RTX 4090, per P2"
+  },
+  "f6120f564a": {
+    "label": "unsupported",
+    "note": "says the local model checks the plan; P3 says Sol checks; no share given"
+  },
+  "23c01150b7": {
+    "label": "faithful",
+    "note": "gain shrinks toward zero, trusts prediction, per P1"
+  },
+  "704ae254a3": {
+    "label": "unsupported",
+    "note": "says it reuses a stored P; P1 says P is recomputed"
+  },
+  "d8057d0cd5": {
+    "label": "unsupported",
+    "note": "credits the fine-tuned Llama's exact match remark to Claude"
+  },
+  "32bb057da4": {
+    "label": "faithful",
+    "note": "hybrid architecture shrinks KV cache, per P3"
+  },
+  "9560234be2": {
+    "label": "faithful",
+    "note": "on-chip, ~20 MB, ~10x bandwidth, per P1"
+  },
+  "bcba9a4b26": {
+    "label": "unsupported",
+    "note": "borderline: 'used vLLM to debug and optimize the model' misreads P1"
+  },
+  "697c34a6e6": {
+    "label": "unsupported",
+    "note": "describes Box and Rc; site does not cover Rust"
+  },
+  "aa58ab7d1b": {
+    "label": "unsupported",
+    "note": "says he built a residual connection at Jiffy"
+  },
+  "9ce079aedf": {
+    "label": "faithful",
+    "note": "20 MB vs 80 GB, 10x bandwidth, 4000x smaller, per P1"
+  },
+  "46f9c22b3c": {
+    "label": "faithful",
+    "note": "super-resolution for spatial aliasing, per P1"
+  },
+  "6ffc92db96": {
+    "label": "faithful",
+    "note": "AI evals course for engineers and PMs, self-paced, per P1"
+  },
+  "f7def57cf9": {
+    "label": "unsupported",
+    "note": "says no invited talk; not supported and contradicts reference"
+  },
+  "9c33189d17": {
+    "label": "unsupported",
+    "note": "invents a spectral analysis overlap detection method"
+  },
+  "8c2337152d": {
+    "label": "non-answer",
+    "note": "says the text does not contain it"
+  },
+  "31c5cd12a1": {
+    "label": "faithful",
+    "note": "no model truly followed TDD, per P1"
+  },
+  "1f864ab888": {
+    "label": "unsupported",
+    "note": "answers with PPO and DPO text; site does not cover BERT"
+  },
+  "c1a579d50e": {
+    "label": "unsupported",
+    "note": "0.4214 is the unfiltered run, not the gain"
+  },
+  "356a67c3e6": {
+    "label": "faithful",
+    "note": "gain shrinks toward zero, per P1"
+  },
+  "381e2b2792": {
+    "label": "faithful",
+    "note": "separation, diarization, recognition per P2; sponsors per P1"
+  },
+  "cd59897c69": {
+    "label": "faithful",
+    "note": "super-resolution for spatial aliasing, per P1"
+  },
+  "a909308bc9": {
+    "label": "unsupported",
+    "note": "gives SSH key guide as the CI answer"
+  },
+  "2b21656ec4": {
+    "label": "faithful",
+    "note": "borderline: major cities every 15 minutes; no count"
+  },
+  "455883484e": {
+    "label": "unsupported",
+    "note": "gives the H100 config as how it fit on the 4090"
+  },
+  "8f1a0aa8c9": {
+    "label": "faithful",
+    "note": "separation, diarization and recognition from the P2 title"
+  },
+  "982976371e": {
+    "label": "faithful",
+    "note": "none truly followed TDD, per P1"
+  },
+  "b4ad06eda5": {
+    "label": "faithful",
+    "note": "GRPO, ~75% per P2"
+  },
+  "571fda4c74": {
+    "label": "unsupported",
+    "note": "says it works offline; P1 says it needs internet"
+  },
+  "c770b6eb6d": {
+    "label": "unsupported",
+    "note": "invents constrained-device efficiency reasons"
+  },
+  "4523df65f4": {
+    "label": "faithful",
+    "note": "borderline: stable gradients per P1; length effect follows from per-token normalization"
+  },
+  "21706964da": {
+    "label": "unsupported",
+    "note": "gives the DPO loss as the YOLO answer"
+  },
+  "fc8e4400d7": {
+    "label": "unsupported",
+    "note": "0.5 ppm RMSE is invented"
+  },
+  "bbd460fd2f": {
+    "label": "unsupported",
+    "note": "374 ppm is the data range, not an RMSE"
+  },
+  "f943e50f7b": {
+    "label": "unsupported",
+    "note": "gives llama-bench speeds as the SWE-bench answer"
+  },
+  "92c72ad5ee": {
+    "label": "unsupported",
+    "note": "claims vLLM; passages do not say"
+  },
+  "65963e2bfa": {
+    "label": "unsupported",
+    "note": "stages data curation, training, evaluation are wrong"
+  },
+  "107bb21c06": {
+    "label": "faithful",
+    "note": "gain shrinks toward zero, trusts prediction, per P1"
+  },
+  "77e88d9a5a": {
+    "label": "unsupported",
+    "note": "'fine-tune multiple models' gives no count and is not stated"
+  },
+  "c29c0a6988": {
+    "label": "unsupported",
+    "note": "says fine-tuning Claude/GPT-4o did worse; not in passages"
+  },
+  "ab02460d91": {
+    "label": "unsupported",
+    "note": "turns the planned Phi/Gemma comparison in P2 into a result"
+  },
+  "d8cad6d486": {
+    "label": "unsupported",
+    "note": "12 ppm RMSE is invented"
+  },
+  "59d4105bb6": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "0589be674e": {
+    "label": "unsupported",
+    "note": "borderline: 'affected the final reward model' is not in passages"
+  },
+  "3db4395027": {
+    "label": "faithful",
+    "note": "42% to 52% per P1"
+  },
+  "a81ed0a93c": {
+    "label": "unsupported",
+    "note": "80% is not Sonnet's exact match score"
+  },
+  "9b39b71461": {
+    "label": "unsupported",
+    "note": "says PPO keeps a model in memory per token; not in passages"
+  },
+  "91f7ee53f6": {
+    "label": "faithful",
+    "note": "time-series is key to his work and Kalman helps preprocess it, per P1"
+  },
+  "9426d22d90": {
+    "label": "non-answer",
+    "note": "says the text does not cover it"
+  },
+  "72b9cde00c": {
+    "label": "unsupported",
+    "note": "says it was 10 million tokens larger than GPT-3"
+  },
+  "0c8eb4ab3f": {
+    "label": "unsupported",
+    "note": "presents the free quota as the cost"
+  },
+  "9b87e07744": {
+    "label": "unsupported",
+    "note": "says Qwen3.5-27B followed TDD; P1 says none did"
+  },
+  "d3d2f0a837": {
+    "label": "unsupported",
+    "note": "borderline: gives the free-plan quota as if it answered the paid cost"
+  },
+  "32394bbc09": {
+    "label": "non-answer",
+    "note": "says the text does not give the RMSE"
+  },
+  "c16a90579f": {
+    "label": "faithful",
+    "note": "offloads vLLM KV cache and weights to CPU during training, per P2 (partial)"
+  },
+  "a74e804507": {
+    "label": "unsupported",
+    "note": "invents UC Berkeley"
+  },
+  "fd493839ca": {
+    "label": "faithful",
+    "note": "course name and self-paced with a blog per lesson, per P1"
+  },
+  "4038c0aec8": {
+    "label": "unsupported",
+    "note": "names GPT-6.1 Sol as the fine-tuned small model"
+  },
+  "e8b9bdb386": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "78cc811a64": {
+    "label": "unsupported",
+    "note": "gives the H100 config as how it fit on the 4090"
+  },
+  "a99ad65615": {
+    "label": "faithful",
+    "note": "51.7% per P1"
+  },
+  "eb77adb483": {
+    "label": "non-answer",
+    "note": "says score is not provided"
+  },
+  "86a7376f26": {
+    "label": "faithful",
+    "note": "borderline: overlap detector plus modified spectral clustering, per P1 (partial)"
+  },
+  "88429087a6": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "2a236f46e4": {
+    "label": "non-answer",
+    "note": "declines although P1 had the answer"
+  },
+  "8513548710": {
+    "label": "unsupported",
+    "note": "describes BERT MLM; site does not cover it"
+  },
+  "ff90667140": {
+    "label": "faithful",
+    "note": "no model followed TDD, integration tests hit the real API, per P1"
+  },
+  "2088ad45d4": {
+    "label": "non-answer",
+    "note": "borderline: vacuous statement with no share given"
+  },
+  "e78ff92af9": {
+    "label": "unsupported",
+    "note": "gives YOLO steps; site does not cover it"
+  },
+  "fe358c12d5": {
+    "label": "unsupported",
+    "note": "presents free-plan quota as the cost past the free plan"
+  },
+  "75635b72a0": {
+    "label": "faithful",
+    "note": "borderline: fixed-size DeltaNet state per P3; omits the hybrid attention layers"
+  },
+  "40e6f24b14": {
+    "label": "faithful",
+    "note": "borderline: major metropolitan cities and every 15 minutes; no count"
+  },
+  "38bb9ab3dc": {
+    "label": "unsupported",
+    "note": "uses llama.cpp separate-machine advice as his vLLM use"
+  },
+  "11f790f0a2": {
+    "label": "non-answer",
+    "note": "declines although P2 had the answer"
+  },
+  "c06179ed1b": {
+    "label": "unsupported",
+    "note": "implies SFT at 53.4% was best; ignores GRPO ~75% in P2"
+  },
+  "c8c13d0b65": {
+    "label": "unsupported",
+    "note": "claims it lets the model focus on a more compute-intensive forward pass; not in passages"
+  },
+  "95f2c044d9": {
+    "label": "faithful",
+    "note": "borderline: 'directly optimizing preference' glosses the name; core claim per P1"
+  },
+  "f1088e386d": {
+    "label": "unsupported",
+    "note": "invents UC San Diego"
+  },
+  "dc91290429": {
+    "label": "unsupported",
+    "note": "gives CI steps; site does not cover it"
+  },
+  "55b873e863": {
+    "label": "unsupported",
+    "note": "names GPT-6.1 Sol as the fine-tuned small model and claims a result not in passages"
+  },
+  "72cea9513d": {
+    "label": "faithful",
+    "note": "RTX 4090, per P2"
+  },
+  "99e8a665ee": {
+    "label": "unsupported",
+    "note": "gives GitLab CI advice; site does not cover it"
+  },
+  "215751036b": {
+    "label": "faithful",
+    "note": "classification loss reformulation, per P1"
+  },
+  "0cc005e58a": {
+    "label": "faithful",
+    "note": "epochs=3, rank=16, lr=2e-4 per P1"
+  },
+  "921436a6b6": {
+    "label": "faithful",
+    "note": "borderline: Kalman for denoising, gaps and trends, per P1; skips the job part"
+  },
+  "1dc8483bd3": {
+    "label": "unsupported",
+    "note": "borderline: phrasing makes his model the one with 17,500x more parameters; direction reversed"
+  },
+  "1df27fe071": {
+    "label": "unsupported",
+    "note": "says he built GPT-4 at Jiffy"
+  },
+  "29455d2132": {
+    "label": "unsupported",
+    "note": "claims vLLM; passages do not say"
+  },
+  "acffac1697": {
+    "label": "unsupported",
+    "note": "gives generic sharding claim; site does not cover it"
+  },
+  "922539b9f6": {
+    "label": "faithful",
+    "note": "course name and self-paced with a blog per lesson, per P1"
+  },
+  "10996d4db0": {
+    "label": "unsupported",
+    "note": "says time-series data comes from GPT-oss"
+  },
+  "89296991c3": {
+    "label": "unsupported",
+    "note": "borderline: adds model parallelism as seismic deep learning work"
+  },
+  "f15b346edb": {
+    "label": "unsupported",
+    "note": "presents Skills-Creator as the SwiftUI answer"
+  },
+  "0ee440d86b": {
+    "label": "non-answer",
+    "note": "says the text does not state the score"
+  },
+  "0c76497d90": {
+    "label": "unsupported",
+    "note": "borderline: asserts it was faster in his benchmarks without a figure"
+  },
+  "e2b27ee2dd": {
+    "label": "unsupported",
+    "note": "says expert iteration was highest at 47.1%"
+  },
+  "bae07a06ba": {
+    "label": "non-answer",
+    "note": "borderline: restates the question and gives no answer"
+  },
+  "6b18980615": {
+    "label": "faithful",
+    "note": "requires internet, per P1"
+  },
+  "8ae4d40f61": {
+    "label": "unsupported",
+    "note": "answers about Raft; site does not cover it"
+  },
+  "c677627328": {
+    "label": "unsupported",
+    "note": "1.5x figure is not in passages"
+  },
+  "b788f10b2c": {
+    "label": "unsupported",
+    "note": "says SFT/EI highest and GRPO lower at 75%; misreading"
+  },
+  "56a6ec1a3e": {
+    "label": "faithful",
+    "note": "borderline: noticeable accuracy difference is stated in P1; omits stability"
+  },
+  "0a77c73186": {
+    "label": "unsupported",
+    "note": "calls Q, K, V the attention matrix that is not stored; misreading"
+  },
+  "a35f7158e2": {
+    "label": "unsupported",
+    "note": "says it works offline; P1 says it requires internet for CDN libraries"
+  },
+  "add06a551d": {
+    "label": "unsupported",
+    "note": "attributes GRPO and GPT projects to Jiffy"
+  },
+  "d2f01ff9d5": {
+    "label": "unsupported",
+    "note": "presents an unrelated passage as SwiftUI instructions"
+  },
+  "44de15410c": {
+    "label": "unsupported",
+    "note": "share of 0 is not in passages"
+  },
+  "f9b082cb00": {
+    "label": "non-answer",
+    "note": "borderline: says no such tool is mentioned on the site"
+  },
+  "768b89686f": {
+    "label": "faithful",
+    "note": "classification loss without reward model or RL, per P1"
+  },
+  "b953d33016": {
+    "label": "non-answer",
+    "note": "borderline: says the site does not list such a tool"
+  },
+  "33f1f095cb": {
+    "label": "unsupported",
+    "note": "borderline: asserts it was faster in his benchmarks without a figure"
+  },
+  "862a33123d": {
+    "label": "unsupported",
+    "note": "claims a PDF compression tool exists"
+  },
+  "bc8da57d01": {
+    "label": "unsupported",
+    "note": "wrong course name ('Building Browser Tools with Claude Code')"
+  },
+  "d0ed6f95bb": {
+    "label": "faithful",
+    "note": "51.7% per P1"
+  },
+  "aa281bc0b6": {
+    "label": "non-answer",
+    "note": "says the text does not cover sharding"
+  },
+  "1f01e9800d": {
+    "label": "unsupported",
+    "note": "invents an SWE-bench comparison"
+  },
+  "c8f9f0bbf0": {
+    "label": "unsupported",
+    "note": "borderline: SVG Viewer is not tied to AI image models in passages"
+  },
+  "15fa96cb35": {
+    "label": "unsupported",
+    "note": "answers about Raft; site does not cover it"
+  },
+  "aa93883026": {
+    "label": "faithful",
+    "note": "borderline: major cities and every 15 minutes, per P1; no city count"
+  },
+  "afe9b3f232": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "4c7362ab2c": {
+    "label": "unsupported",
+    "note": "says yes but no passage mentions an invited talk"
+  },
+  "2f95249fb6": {
+    "label": "faithful",
+    "note": "borderline: other harnesses cannot run local subagents with Sol main session, per P1"
+  },
+  "d5c7f4947f": {
+    "label": "unsupported",
+    "note": "gives 'more used to them, great harness' (reasons for Claude Code/Codex) as the reason for OpenCode"
+  },
+  "1c07890ea8": {
+    "label": "unsupported",
+    "note": "0.0288% is the baseline figure, not the gain"
+  },
+  "6fd00c50b3": {
+    "label": "faithful",
+    "note": "51.7% per P1"
+  },
+  "95ed4f6a9a": {
+    "label": "non-answer",
+    "note": "says the text does not contain it"
+  },
+  "63987d73e8": {
+    "label": "faithful",
+    "note": "42% to 52% per P1"
+  },
+  "6153626362": {
+    "label": "unsupported",
+    "note": "borderline: 'also known as the trust gain' is not in passages; rest correct"
+  },
+  "3cbdd3e76c": {
+    "label": "unsupported",
+    "note": "ties Kalman filter to expert iteration experiments; unsupported"
+  },
+  "f8068e040d": {
+    "label": "unsupported",
+    "note": "invents ngrok pricing behaviour"
+  },
+  "9713d4a92c": {
+    "label": "unsupported",
+    "note": "says no invited talk; not supported and contradicts reference"
+  },
+  "b706fd5d8d": {
+    "label": "unsupported",
+    "note": "gives YOLO training steps; site does not cover it"
+  },
+  "48c0e0faba": {
+    "label": "non-answer",
+    "note": "says passages do not mention ngrok pricing"
+  },
+  "9b3e5c8c2e": {
+    "label": "faithful",
+    "note": "borderline: more stable gradients and better accuracy, per P1; motivation via outcome only"
+  },
+  "ddc35440c4": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "6dff14a9c0": {
+    "label": "unsupported",
+    "note": "$0.01 per connection is not in passages"
+  },
+  "0e3373af1b": {
+    "label": "faithful",
+    "note": "epochs=3, rank=16, lr=2e-4 per P1"
+  },
+  "7c17cfa1b4": {
+    "label": "unsupported",
+    "note": "says it reuses saved tiles instead of recomputing and cuts forward passes; misreading"
+  },
+  "a3069a4a7f": {
+    "label": "faithful",
+    "note": "RTX 4090 workstation running Ubuntu, per P2"
+  },
+  "c03c3678fd": {
+    "label": "non-answer",
+    "note": "declines"
+  },
+  "302bb28556": {
+    "label": "unsupported",
+    "note": "says PPO does not need multiple models; not in passages"
+  },
+  "2b661b17d7": {
+    "label": "faithful",
+    "note": "51.7% per P1"
+  },
+  "4d4f33717a": {
+    "label": "faithful",
+    "note": "SRAM on-chip and ~4000x smaller, HBM off-chip main memory, per P1"
+  },
+  "222bf72458": {
+    "label": "unsupported",
+    "note": "borderline: misreads _orig_mod weight loading as how vLLM was used"
+  },
+  "b53427e4d8": {
+    "label": "unsupported",
+    "note": "attributes the Shakespeare GPT to Jiffy; wrong entity"
+  },
+  "0fe3823ffe": {
+    "label": "faithful",
+    "note": "reformulates RLHF as a classification loss, per P1"
+  },
+  "d9a582e488": {
+    "label": "non-answer",
+    "note": "declines although P1 had the hyperparameters"
+  },
+  "2e95dcb905": {
+    "label": "unsupported",
+    "note": "gives generic sharding advice; site does not cover it"
+  },
+  "841b7225ef": {
+    "label": "faithful",
+    "note": "deep learning super-resolution on seismic data, per P1/P2 (partial)"
+  },
+  "3f475da30d": {
+    "label": "non-answer",
+    "note": "says the text does not contain the stages"
+  },
+  "24f6ca49fb": {
+    "label": "unsupported",
+    "note": "describes the H100 config as how it fit on the 4090"
+  },
+  "a281afea63": {
+    "label": "faithful",
+    "note": "epochs=3, rank=16, lr=2e-4 per P1"
+  },
+  "7be38da811": {
+    "label": "unsupported",
+    "note": "10 cities is not in passages"
+  },
+  "fe2853523b": {
+    "label": "faithful",
+    "note": "hybrid DeltaNet architecture shrinks KV cache, per P3"
+  },
+  "d84bf813b7": {
+    "label": "unsupported",
+    "note": "gives SwiftUI steps; site does not cover it"
+  },
+  "2707e7a0ae": {
+    "label": "faithful",
+    "note": "borderline: overlap detector plus modified spectral clustering, as P1 states (partial)"
+  },
+  "9ae2fe124e": {
+    "label": "unsupported",
+    "note": "invents sharding advice from unrelated passage"
+  },
+  "80f017c614": {
+    "label": "unsupported",
+    "note": "invents a BERT MLM description"
+  },
+  "97c98a10df": {
+    "label": "unsupported",
+    "note": "describes BERT MLM with PPO/RLHF text; site does not cover BERT"
+  },
+  "b05e3eb0fd": {
+    "label": "unsupported",
+    "note": "borderline: Image Cropper and SVG Viewer are not tied to AI image models in passages"
+  },
+  "ba1b8f23e3": {
+    "label": "non-answer",
+    "note": "borderline: garbled decline, states no price"
+  },
+  "6a95855023": {
+    "label": "unsupported",
+    "note": "invents a Box crate description; site does not cover Rust"
+  },
+  "99a4d45916": {
+    "label": "faithful",
+    "note": "SRAM about 4000x smaller than HBM, stated in passage (partial)"
+  },
+  "74a0babc57": {
+    "label": "non-answer",
+    "note": "says the text does not give the token share"
+  },
+  "24b095d160": {
+    "label": "non-answer",
+    "note": "garbled but says the text does not specify the serving engine"
+  },
+  "26fa81d07b": {
+    "label": "unsupported",
+    "note": "asserts FlashAttention was faster in his benchmarks; no benchmark figure in passages"
+  },
+  "f30c980026": {
+    "label": "unsupported",
+    "note": "cites the H100 config (microbatch 4) as the 4090 fit"
+  },
+  "af728402a8": {
+    "label": "unsupported",
+    "note": "invents a Raft election procedure; site does not cover Raft"
+  }
+}

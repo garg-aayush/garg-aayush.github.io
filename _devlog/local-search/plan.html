@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local search plan</title>
+<style>
+  /* Palette and type copied from static/design-tokens.css so this file opens on its own. */
+  :root {
+    --bg-body: #161618;
+    --bg-card: #1E1E21;
+    --bg-inset: #242428;
+    --border: #2E2E33;
+    --text-primary: #F5F5F7;
+    --text-content: #DADADF;
+    --text-muted: #A6A6AB;
+    --text-dim: #86868B;
+    --accent: #2997FF;
+    --accent-hover: #5AB1FF;
+    --green: #72994E;
+    --orange: #EE6331;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --fs-title: clamp(30px, calc(30px + 8 * (100vw - 600px) / 600), 38px);
+    --fs-h2: clamp(22px, calc(22px + 4 * (100vw - 600px) / 600), 26px);
+    --fs-h3: clamp(18px, calc(18px + 2 * (100vw - 600px) / 600), 20px);
+    --fs-body: clamp(16px, calc(16px + 1 * (100vw - 600px) / 600), 17px);
+    --fs-small: 14px;
+    --measure: 720px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg-body); color: var(--text-content); font-family: var(--font-sans); font-size: var(--fs-body); line-height: 1.6; }
+  main { max-width: var(--measure); margin: 0 auto; padding: 48px 16px 96px; }
+  h1, h2, h3 { font-family: var(--font-serif); color: var(--text-primary); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+  h1 { font-size: var(--fs-title); margin: 0 0 8px; line-height: 1.15; }
+  h2 { font-size: var(--fs-h2); margin: 56px 0 12px; padding-top: 24px; border-top: 1px solid var(--border); }
+  h3 { font-size: var(--fs-h3); margin: 32px 0 8px; }
+  p, ul, ol { margin: 0 0 16px; }
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; }
+  a:hover { color: var(--accent-hover); }
+  code { font-family: var(--font-mono); font-size: 0.875em; background: var(--bg-inset); padding: 1px 5px; border-radius: 4px; color: var(--text-primary); overflow-wrap: anywhere; }
+  strong { color: var(--text-primary); }
+  .dek { color: var(--text-muted); margin-bottom: 24px; }
+  .summary { border-left: 2px solid var(--border); padding-left: 16px; color: var(--text-primary); }
+  .summary p { margin-bottom: 8px; }
+  .note { color: var(--text-muted); font-size: var(--fs-small); }
+  /* Status words: one look everywhere, colored text with a hairline, sentence case. */
+  .st { display: inline-block; font-size: 13px; line-height: 1.4; padding: 0 6px; border: 1px solid currentColor; border-radius: 4px; white-space: nowrap; vertical-align: 1px; }
+  .st-d { color: var(--green); }
+  .st-p { color: var(--orange); }
+  .st-o { color: var(--text-muted); }
+  .st-x { color: var(--text-content); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: var(--fs-small); color: var(--text-muted); margin: 0 0 28px; padding: 0; list-style: none; }
+  .legend li { margin: 0; }
+  /* Wide things scroll inside their own box, never the page. */
+  .scroll { overflow-x: auto; margin: 0 0 20px; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; line-height: 1.5; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; color: var(--text-primary); border-bottom-color: var(--text-dim); }
+  td:first-child, th:first-child { padding-left: 0; }
+  table.models { min-width: 760px; }
+  table.results { min-width: 620px; }
+  table.plan { min-width: 680px; }
+  /* Rows under a spanning stage cell start with the model cell, which keeps its padding. */
+  table.plan td:first-child:not(.stage) { padding-left: 10px; }
+  td.empty { color: var(--text-dim); }
+  figure { margin: 24px 0 32px; }
+  .diagram { overflow-x: auto; padding: 16px 0 8px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .diagram pre.mermaid { margin: 0; background: none; text-align: center; }
+  /* Hide the Mermaid source until it has been drawn; if the CDN fails the text below still explains the diagram. */
+  .diagram pre.mermaid:not([data-processed]) { visibility: hidden; height: 0; overflow: hidden; }
+  .diagram svg { max-width: 100%; height: auto; }
+  figcaption { color: var(--text-primary); font-size: var(--fs-small); margin-top: 10px; }
+  .alt { color: var(--text-muted); font-size: var(--fs-small); margin-top: 6px; }
+  .fallback-msg { display: none; color: var(--text-muted); font-size: var(--fs-small); }
+  .no-mermaid .fallback-msg { display: block; }
+  .no-mermaid .diagram { display: none; }
+  dl { margin: 0 0 16px; }
+  dt { color: var(--text-primary); font-weight: 600; }
+  dd { margin: 0 0 12px; }
+  /* One block per stage: label on the left, text on the right; stacked on a phone. */
+  dl.block { display: grid; grid-template-columns: 8.5em 1fr; gap: 8px 16px; font-size: 15px; line-height: 1.55; margin: 0 0 8px; }
+  dl.block dt { font-weight: 600; }
+  dl.block dd { margin: 0; min-width: 0; }
+  dl.block dd ul { margin: 0; }
+  @media (max-width: 560px) {
+    dl.block { grid-template-columns: 1fr; gap: 2px; }
+    dl.block dd { margin-bottom: 10px; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Local search plan</h1>
+<p class="dek">Browser-local search for aayushgarg.dev, in Aayush's three stages, written for review. Rewritten 2026-11-11 from the journal (<code>_devlog/local-search/journal.md</code>), the scored runs in <code>evals/results/</code> and two research files: <a href="research/2026-11-11-embedding-models.md"><code>research/2026-11-11-embedding-models.md</code></a> (stage 2) and <a href="research/2026-11-11-answer-models.md"><code>research/2026-11-11-answer-models.md</code></a> (stage 3), where every model fact has its source. Updated 2026-11-12 with the stage 3 result: measured, not shipped. The page is live at <code>/search/</code> as stages 1 and 2 (keyword plus meaning), from 2026-11-12.</p>
+
+<ul class="legend" aria-label="Status labels">
+  <li><span class="st st-d">Decided</span> Aayush said so</li>
+  <li><span class="st st-p">Proposed</span> the orchestrating session's recommendation, not yet approved</li>
+  <li><span class="st st-o">Open</span> not settled</li>
+  <li><span class="st st-o">In progress</span> being built now</li>
+  <li><span class="st st-x">Done</span> built and measured</li>
+</ul>
+
+<div class="summary">
+  <p>Search runs only in the visitor's browser, on <code>/search/</code>, in three stages: keyword search, then keyword plus meaning-based search, then a small language model that answers from the results (measured, not shipped).</p>
+  <p>Stage 1 is done: BM25 over a clean index raised recall at 5 from 0.33 to 0.75 on the 40 queries, with no model and a 117,508 byte download.</p>
+  <p>Stage 2 is built and measured in Chromium: BM25 plus a static table (potion-base-8M, int8, 256 dimensions, 5.70 MB with brotli, 7.95 MB raw) with fusion over the first 10 pages of each list raised recall at 5 from 0.75 to 0.89 and MRR at 10 from 0.64 to 0.77 on the 40 development queries, and on 20 held-out queries recall at 5 from 0.67 to 0.72 and nDCG at 10 from 0.60 to 0.67. The held-out set did not confirm the choice of fusion cut-off over fusing whole lists.</p>
+  <p>Stage 3 was measured and not shipped. Four small models (255 to 570 MB) answered 45 questions from four retrieved passages, labelled by two independent judges who agreed on 179 of 180 labels. The rule fixed in advance was to decline at least 13 of the 15 unanswerable questions and be faithful on at least 15 of 30 answerable ones; no model passes. The closest, Qwen3.5-0.8B, is faithful on 17 of 30 but declines 10 of 15; the other three decline 1 to 3 of 15. The site ships stages 1 and 2: keyword search plus the static embedding table. The harness, questions, labels and results stay in the repository.</p>
+</div>
+
+<h2 id="short">The plan in short</h2>
+
+<p><span class="st st-d">Decided</span> The three stages, each measured on the same questions before the next. <span class="st st-p">Proposed</span> The models and loading rules in stage 2. Stage 3 was measured on 2026-11-12 and no model passed the rule, so no answer feature ships (see stage 3 below).</p>
+
+<div class="scroll">
+<table class="plan">
+  <thead><tr><th>Stage</th><th>Model</th><th>Download</th><th>Loads, or result</th></tr></thead>
+  <tbody>
+    <tr><td class="stage">1. Baseline, then BM25 <span class="st st-x">Done</span></td><td>None: BM25 over the passage index</td><td>346,530 bytes (117,508 gzipped)</td><td>Automatically with the page</td></tr>
+    <tr><td class="stage" rowspan="4">2. Keyword plus semantic <span class="st st-x">Built, measured in Chromium</span></td><td><strong><code>minishlab/potion-base-8M</code>, int8 table, 256 dims (built)</strong></td><td>7,952,080 bytes: the table 7,559,168, the vocabulary 219,690 and the passage vectors 173,222 (5,697,447 with brotli, 5,798,871 with gzip; GitHub Pages' own compression not observed)</td><td>Automatically on first use of the search box, from the site itself; keyword search answers meanwhile</td></tr>
+    <tr><td><code>Xenova/all-MiniLM-L6-v2</code> (not adopted)</td><td>23,685,047 bytes, plus the runtime</td><td>Not shipped</td></tr>
+    <tr><td><code>MongoDB/mdbr-leaf-ir</code> (not adopted)</td><td>23,889,368 bytes, plus the runtime</td><td>Not shipped</td></tr>
+    <tr><td>EmbeddingGemma 2 (reference)</td><td>206,696,682 bytes</td><td>Never: offline comparison only</td></tr>
+    <tr><td class="stage" rowspan="5">3. Answers from the results <span class="st st-x">Measured, not shipped</span></td><td>Qwen3-0.6B (<code>onnx-community/Qwen3-0.6B-ONNX</code>)</td><td>570 MB (q4f16); not cached by the browser, so downloaded on every visit</td><td>Not shipped: declined 3 of 15, faithful on 13 of 30</td></tr>
+    <tr><td>IBM Granite 4.0 350M (<code>onnx-community/granite-4.0-350m-ONNX-web</code>)</td><td>350 MB (q4f16)</td><td>Not shipped: declined 3 of 15, faithful on 10 or 11 of 30 (the two judges differ on one label)</td></tr>
+    <tr><td>LiquidAI LFM2.5-350M</td><td>255 MB; WebGPU only</td><td>Not shipped: declined 1 of 15, faithful on 13 of 30</td></tr>
+    <tr><td>Qwen3.5-0.8B, text only</td><td>470 MB; WebGPU only</td><td>Not shipped: declined 10 of 15 (needs 13), faithful on 17 of 30 (needs 15), the closest</td></tr>
+    <tr><td>Gemma 4 E2B (reference)</td><td>About 3.1 GB</td><td>Not run in this evaluation; never offered</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Stage 2 rows are candidates that were compared; one shipped. Stage 3 rows are the four models measured on 2026-11-12, all on WebGPU; none shipped, and the last column gives each result (declines out of the 15 unanswerable questions, faithful answers out of the 30 answerable ones). The downloads would have come from huggingface.co, because every file is over GitHub's 100 MiB limit.</p>
+
+<p>The fallback ladder below was written for stage 3 and is not built: with no answer feature, only its last three steps describe the site. Each step down keeps everything above it.</p>
+<ul>
+  <li><strong>Answer with sources</strong>: a stage 3 model is loaded and the passages answer the question.</li>
+  <li><strong>"The site does not seem to cover this"</strong>, then the results: the model judged the passages do not answer, or retrieval found nothing sharing a content word with the question (the model is not called).</li>
+  <li><strong>Results only, with one line saying why</strong>: no model chosen, the device cannot run one, or a load failed or was stopped.</li>
+  <li><strong>BM25 plus semantic results</strong>, if stage 2 ships a model and it loaded.</li>
+  <li><strong>BM25 results</strong>: always, from the first keystroke.</li>
+  <li><strong>Titles and descriptions only</strong>: the index could not be read (as today).</li>
+</ul>
+
+<h2 id="stages">The stages</h2>
+
+<p><span class="st st-d">Decided</span> Aayush's three stages replaced the earlier five-stage proposal on 2026-11-11. Simplest first, each step measured before the next.</p>
+
+<h3>Stage 1: baseline, then BM25</h3>
+<dl class="block">
+  <dt>Goal</dt><dd>Good keyword search on every device, with no model and no download beyond the index.</dd>
+  <dt>How</dt><dd>The page first ranked Quarto's <code>search.json</code> with a placeholder (the baseline). Then a post-render Node script writes a clean passage index from the rendered HTML (459 passages from 47 pages, tools included, sections split at 1,000 characters), and BM25 (k1 1.2, b 0.75, field weights 3, 2, 1, 0.5, Porter stemming, the last word as a prefix) runs in the browser as a module that Node runs unchanged for scoring.</dd>
+  <dt>Evaluated</dt><dd>Placeholder against 15 BM25 runs (stemming, prefix, index, three ablations) on the 40 queries. The default: recall at 5 of 0.75 against 0.33, MRR at 10 of 0.64 against 0.39, nDCG at 10 of 0.71 against 0.34, typing replay MRR 0.68 against 0.42.</dd>
+  <dt>Works</dt><dd>Lookup, topic, question and multi-page queries: recall at 5 of 1.00 in each type. Half-typed words. Ranking takes 0.028 ms per query (median) and preparing the index 17.9 ms, in Chromium on a laptop.</dd>
+  <dt>Does not</dt><dd>9 of 36 answerable queries need meaning: five paraphrases ("patching holes in a chart that repeats every year"), a tool by its effect ("make a photo black and white"), two person questions ("what does he do now", "has he worked in oil and gas") and the British spelling "diarisation". The four no-answer queries return 28, 31, 9 and 2 pages.</dd>
+  <dt>Fallback</dt><dd>Titles and descriptions only, if the index cannot be read.</dd>
+  <dt>Exit test</dt><dd>Met: one variant wired into the page with tests, and every run in the journal.</dd>
+  <dt>Status</dt><dd><span class="st st-x">Done</span> The page address and entry points are <span class="st st-d">Decided</span> (<code>/search/</code>, the navbar magnifier replacing Quarto's overlay, <code>/</code> from any page, a link on the Writing page); it went live on 2026-11-12 (journal entry "2026-11-12, going live").</dd>
+</dl>
+
+<h3>Stage 2: keyword plus semantic search</h3>
+<dl class="block">
+  <dt>Goal</dt><dd>Find the queries BM25 misses by meaning, without losing the ones it finds, at the smallest download that does it.</dd>
+  <dt>How</dt><dd>Embed the 506 passages (459 plus the 47 page descriptions) at build time and only the query in the browser, with the same static table; fuse with BM25 by reciprocal rank fusion over the first 10 pages of each list. Measured offline in Node first, on the same 40 queries, then built and measured in the browser.</dd>
+  <dt>Evaluated and compared with</dt><dd>BM25 alone, and each model alone and fused with BM25: <code>minishlab/potion-base-8M</code> (a static table, no runtime), <code>Xenova/all-MiniLM-L6-v2</code> (included at Aayush's request), <code>MongoDB/mdbr-leaf-ir</code>, and EmbeddingGemma 2 as the reference for what a large model would add. Per type and per query wins and losses, with the download.</dd>
+  <dt>Works</dt><dd>BM25 plus the potion table (int8, 256 dims) fixes four queries BM25 misses ("paraphrase-04", "paraphrase-05", "partial-03" the spelling "diarisation", "person-02" oil and gas) and breaks only "question-04", the weather page, which has no passages to embed; with the 47 page descriptions embedded it breaks none. Recall at 5 0.75 to 0.85, MRR at 10 0.64 to 0.75, nDCG at 10 0.71 to 0.79; paraphrase recall 0.33 to 0.67, partial 0.60 to 0.80, person 0.50 to 0.75.</dd>
+  <dt>Does not</dt><dd>No hybrid finds "tool-02" (make a photo black and white) or "person-03", although every transformer alone ranks them in the top 4 (see the fusion caveat). MiniLM fixes nothing over potion and breaks nothing; leaf-ir fixes "paraphrase-01" and breaks "paraphrase-06"; EmbeddingGemma 2 at 768 fixes nothing; so none passes the adoption rule.</dd>
+  <dt>Caveats</dt><dd><ul>
+    <li>Every model alone has higher recall at 5 than the same model fused with BM25 (leaf-ir 0.96 against 0.85, Gemma 0.98 against 0.85, MiniLM 0.94 against 0.85, potion 0.87 against 0.85). Reciprocal rank fusion of whole lists lets BM25's long tail of word matches outrank pages only the model finds. The fusion method matters and should be settled on queries other than these 40.</li>
+    <li>Under a different fusion (only the first 10 rows of each list), leaf-ir would fix "paraphrase-01" and "person-03" over potion and break nothing (with descriptions), passing the adoption rule at about four times the download.</li>
+    <li>Differences of one or two queries are noise at 36 answerable queries; one query moves the overall score by about 0.03.</li>
+    <li>Cosine scores alone do not separate answerable from unanswerable queries (AUC 0.66 to 0.83; a cutoff that silences the four no-answer queries keeps the right page for only 13 to 23 of 36), so stage 3 needs a second signal for its gate.</li>
+    <li>EmbeddingGemma 2 at 256 dims dropped recall at 5 alone from 0.98 to 0.86 (four queries), against its card's "close to lossless"; unexplained.</li>
+    <li>The JavaScript reimplementation was compared with Model2Vec 0.10.0 on 580 texts: identical token ids, float32 cosine 1.000000000, int8 against float32 at least 0.9989 on queries and passages.</li>
+    <li>On 20 held-out queries the fusion cut-off did not beat fusing whole lists (recall at 5 0.72 against 0.78, same nDCG), though it did on the development set (0.89 against 0.86); 18 queries cannot settle it.</li>
+  </ul></dd>
+  <dt>Fallback</dt><dd>BM25 results show at once and stay while the table loads. A failed load, a hash mismatch or vectors for another index: keyword search, status unchanged, no message. Tested with the table blocked, the vectors blocked, vectors of another index and a table with one byte changed.</dd>
+  <dt>Exit test</dt><dd>A model ships only if it fixes queries BM25 misses without breaking ones it gets; ties go to the smaller download. Met by the potion table offline and in the browser (development: five queries fixed, none broken; held-out: one fixed, none broken).</dd>
+  <dt>Built</dt><dd>BM25 plus <code>potion-base-8M</code> as an int8 table at 256 dimensions, fused by reciprocal rank fusion (k 60) over the first 10 pages of each list, loaded on first use of the search box without asking. Passage vectors are made on every render by <code>scripts/build-search-vectors.mjs</code> from the committed table in <code>static/search/</code>: no model download, no npm install and no cache in the deploy. <code>npm run check:site</code> fails if the index or the vectors miss a page or do not match. Adding or editing a post needs no search step (shown end to end in <code>results/stage2-browser/e2e-new-post.md</code>); a page that is not a post needs one entry in <code>search/index.qmd</code>.</dd>
+  <dt>Browser test results</dt><dd>(1) The browser's query vector matches Node's for 60 queries (cosine 1.000000000) and the rankings are identical. (2) The three files are 7,952,080 bytes raw and 5,697,447 with brotli; ready 32.5 ms after the first focus locally, 4.7 s at 10 Mbit/s and 29 s at 1.6 Mbit/s with brotli; typing stays responsive (0.36 ms per keystroke through the whole handler). Phone and GitHub Pages' compression not measured. (3) A failed or mismatched load leaves keyword search working. (4) Per-query time on a phone was not measured; in Chromium on a laptop 0.11 ms. (5) In a Chromium profile with a disk cache a second visit within the max-age made no request; a changed index or table has a new URL; other browsers not checked. (6) Typing: the first page changes about once per typed word against 0.47 for BM25, and the replay MRR equals BM25's (0.68); the flicker is in the first rows.</dd>
+  <dt>Status</dt><dd><span class="st st-x">Done</span> built, measured in Chromium and live. Open: the fusion cut-off (held-out disagrees), what to show for queries the site cannot answer, phone and real network.</dd>
+</dl>
+
+<h3>Stage 3: answers from the search results</h3>
+<dl class="block">
+  <dt>Goal</dt><dd>A short answer, with numbered sources, from the passages search found, generated in the visitor's browser, only when the visitor asks for it.</dd>
+  <dt>How</dt><dd>Retrieve the four best passages (stage 2's ranking, or BM25), skip the model if nothing shares a content word with the question, then prompt: use only these numbered passages, at most two sentences, cite passage numbers, or say the site does not seem to cover it. Transformers.js in a Web Worker, WebGPU (with <code>shader-f16</code>) or single-threaded WebAssembly, greedy decoding, no repetition penalty, streamed, stopped after two sentences. The passages always show below the answer, numbered and linked. Model files at a pinned revision from huggingface.co; the runtime self-hosted.</dd>
+  <dt>Evaluated</dt><dd>Four small models, all at q4f16 on WebGPU in Chromium on one laptop (Apple M5 Pro), greedy decoding, one prompt: Qwen3-0.6B, IBM Granite 4.0 350M (added by Aayush), LiquidAI LFM2.5-350M and Qwen3.5-0.8B text. 45 questions written before any model ran: 30 answerable and 15 the site does not answer (8 near misses on topics the site covers, 7 off-topic). Each question was typed into the page's own hybrid ranking and the top four pages were passed, one passage per page. Two independent judges (Opus 5.5 subagents) labelled all 180 answers faithful, unsupported or non-answer against the passages given, blind to the model and reading in opposite orders. They agreed on 179 of 180 labels; the one difference is Granite on "how does DPO get away without a reward model", which changes Granite's faithful count from 10 to 11 and nothing else. Rule fixed in advance: decline at least 13 of the 15 unanswerable questions and be faithful on at least 15 of the 30 answerable ones, both at once.
+    <div class="scroll">
+    <table class="results">
+      <thead><tr><th>Model</th><th>Faithful / unsupported / non-answer, 30 answerable</th><th>Declined of 15 (near miss 8 / off-topic 7)</th><th>Passes</th></tr></thead>
+      <tbody>
+        <tr><td>Qwen3-0.6B</td><td>13 / 11 / 6</td><td>3 (3 / 0)</td><td>No</td></tr>
+        <tr><td>Granite 4.0 350M</td><td>10 / 20 / 0 (judge B: 11 / 19 / 0)</td><td>3 (3 / 0)</td><td>No</td></tr>
+        <tr><td>LFM2.5-350M</td><td>13 / 17 / 0</td><td>1 (0 / 1)</td><td>No</td></tr>
+        <tr><td>Qwen3.5-0.8B (text)</td><td>17 / 9 / 4</td><td>10 (6 / 4)</td><td>No: faithful bar met, 10 of 15 declines against 13</td></tr>
+      </tbody>
+    </table>
+    </div>
+    From the journal entry "2026-11-12, stage 3: result and decision" (the numbers come from <code>score.mjs</code> run on <code>labels-a.json</code> and <code>labels-b.json</code>); the other 5 answers to the 15 unanswerable questions from Qwen3.5 and the 12 to 14 from each other model were all unsupported. On the 20 answerable questions where retrieval supplied a supporting quote: faithful 10, 8 (judge B the same), 10 and 13 of 20 for the four models in the order above.</dd>
+  <dt>Works</dt><dd>Questions one passage answers in a sentence: all four models gave the 51.7% DeepSeekMath score; for the filtered SFT run Qwen3-0.6B and Qwen3.5 gave "42% to 52%" while LFM2.5 and Granite gave another run's figure. Retrieval supplied the supporting passage for 20 of 30 answerable questions (rank 1 for 15).</dd>
+  <dt>Does not</dt><dd>Decline. Of 60 answers to the 15 unanswerable questions, 43 were answers and all unsupported: an outside-knowledge answer (Qwen3-0.6B on how Raft elects a leader), a sentence from an unrelated passage presented as the answer (Qwen3.5 on SwiftUI), the free-plan quota given as the price of the paid plan (Qwen3.5 on Context7). Retrieval missed the supporting quote for 10 of 30 answerable questions: for 9 the right page was in the top four but one passage per page showed another section; for 1 it ranked 7th. The stricter measure (80 percent faithful and at most 10 percent unsupported on the 20 hit questions) is met by none: the best is 65 percent faithful and 25 percent unsupported (Qwen3.5).</dd>
+  <dt>Speed and size</dt><dd>WebGPU, one laptop: first token 72 to 328 ms and 85 to 267 tokens per second on a 570 token prompt; the 45 questions took 10 to 40 s in all. Downloads 255 to 570 MB. Single threaded WebAssembly loads only Granite (4.1 tokens per second) and Qwen3-0.6B (2.2); LFM2.5-350M and Qwen3.5 are WebGPU only. Qwen3-0.6B's file is above the 512 MiB Cache Storage limit Chromium enforced here and is not cached by the default caching, so it downloads again on every visit. Phone, other browsers and a real network not measured.</dd>
+  <dt>Fallback</dt><dd>Not built. The ladder in "The plan in short" was written for answers; with none shipped, search results are always the whole answer.</dd>
+  <dt>Exit test</dt><dd>Not met by any model under either judge. The rule was fixed before any answer was generated (journal, 2026-11-12), so no number could move it.</dd>
+  <dt>Decision</dt><dd><span class="st st-d">Decided</span> 2026-11-12, by the orchestrating session under Aayush's delegation to decide by the scores: no answer feature ships; the site ships stages 1 and 2. The harness, question set, labels and results stay in the repository as the record.</dd>
+  <dt>Status</dt><dd><span class="st st-x">Measured, not shipped</span> The journal entry "2026-11-12, stage 3: result and decision" has the worked examples, the limits and what would have to change for answers to be viable.</dd>
+</dl>
+
+<p><strong>Set aside for now.</strong> The earlier proposal had a stage 4 (a larger embedding model on WebGPU for capable devices, with a device ladder) and a stage 5 (image search and generated answers). Aayush's three stages drop the larger embedding model as a stage: it was to be revisited only if stage 2 showed EmbeddingGemma 2 fixing several queries the small models miss, and fused with BM25 it fixed none over the potion table. Answers became stage 3. Image search is an idea for later, not a stage.</p>
+
+<h2 id="how">How it works</h2>
+<p class="fallback-msg">The diagrams could not load (the Mermaid script comes from cdn.jsdelivr.net). The text under each caption describes them.</p>
+
+<h3>At build time</h3>
+<p>Everything the browser needs for search is computed when the site is rendered and published as static files next to the pages. Answer models are not built; they are downloaded as published.</p>
+<figure>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  Q["Posts and pages (.qmd)"] --> R["quarto render"]
+  R --> H["Rendered HTML"]
+  T["Tool HTML files"] --> P
+  H --> P["Post-render script:<br/>split into passages"]
+  P --> J["search-index.json<br/>page, anchor, heading, text"]
+  J --> L["BM25 in the browser<br/>stage 1"]
+  J --> X["Hash each passage<br/>stage 2"]
+  X --> E["Embed new or changed<br/>with the chosen model"]
+  E --> V["vectors.bin"]
+  E --> M["manifest.json<br/>with a probe vector"]
+</pre>
+  </div>
+  <figcaption>Build time: rendered pages become passages and a keyword index and, from stage 2, vectors with a manifest.</figcaption>
+  <p class="alt">Text version: Quarto renders the posts and pages to HTML. A post-render script reads that HTML and the tools' own HTML and writes the passage index (page, anchor, heading, text), which BM25 uses in the browser. From stage 2, each passage is hashed, new or changed ones are embedded with the chosen model, and the vectors and a manifest (with a probe vector) are written.</p>
+</figure>
+
+<h3>On a keystroke</h3>
+<p>BM25 is a pure function from the query and the index to ranked passages, grouped to one row per page. Semantic search adds a second path that runs only when its model is ready.</p>
+<figure>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  K["Keystroke"] --> N["Normalize and<br/>split into terms"]
+  N --> B["BM25 over passages"]
+  N -.-> O{"Embedding loaded and<br/>probe matched?"}
+  O -.->|yes| E["Embed the query"]
+  E -.-> C["Cosine scan<br/>over vectors"]
+  B --> F["Fuse rankings (RRF)"]
+  C -.-> F
+  O -.->|no| G
+  F --> G["One row per page"]
+  B -->|"BM25 only"| G
+  G --> W["Render post rows"]
+</pre>
+  </div>
+  <figcaption>Query time: solid lines are stage 1; dashed lines are added in stage 2.</figcaption>
+  <p class="alt">Text version: a keystroke is normalized and split into terms, BM25 scores the passages, results are grouped to one row per page and rendered. From stage 2, if an embedding model is loaded and its probe vector matched, the query is also embedded, compared by cosine against every passage vector, and fused with the BM25 ranking by reciprocal rank fusion before grouping. Otherwise BM25 results show alone.</p>
+</figure>
+
+<h3>Asking for an answer</h3>
+<p>Not built: this is the design the stage 3 evaluation tested, kept as the record, because no model passed the rule (see stage 3). It would have run only after the visitor pressed Ask, with the results already on the page and staying there whatever happened.</p>
+<figure>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  A["Visitor asks"] --> R["Retrieve top 4 passages<br/>stage 2 or BM25"]
+  R --> G{"Any passage shares a<br/>content word?"}
+  G -->|no| N["Say: not on this site<br/>show results"]
+  G -->|yes| L{"Answer model loaded?"}
+  L -->|no| D{"Device can run a candidate<br/>and visitor chooses?"}
+  D -->|no| S["Results only,<br/>one line why"]
+  D -->|yes| W["Download from huggingface.co<br/>size shown, Stop button"]
+  W -->|"fails or stopped"| S
+  W -->|loaded| P
+  L -->|yes| P["Prompt: numbered passages,<br/>two sentences, cite or decline"]
+  P --> M["Generate in a worker,<br/>streamed"]
+  M --> C{"Model declines?"}
+  C -->|yes| N
+  C -->|no| Y["Answer with numbered<br/>sources, then results"]
+</pre>
+  </div>
+  <figcaption>The answer path: every exit keeps the search results; the model is called only when retrieval found something.</figcaption>
+  <p class="alt">Text version: when the visitor asks, the four best passages are retrieved. If none shares a content word with the question, the page says the site does not seem to cover it and shows the results, without calling a model. Otherwise, if no answer model is loaded, the page checks whether the device can run one and whether the visitor chooses to download it; if not, results only with a line saying why. A download shows its size and a Stop button; a failure or a stop leads to results only. With the model loaded, the prompt holds the numbered passages and asks for at most two sentences with citations, or a decline. Generation runs in a worker and streams. A decline shows "not on this site" and the results; an answer shows with its numbered sources, followed by the results.</p>
+</figure>
+
+<p><strong>What the page would have checked before offering a model (not built).</strong> The same checks for all four candidates; there was no separate tier for capable devices. <code>requestAdapter()</code> returns an adapter that is not a fallback and has <code>shader-f16</code> (for q4f16 weights), else WebAssembly; WebGPU-only models are not offered on WebAssembly. <code>navigator.storage.estimate()</code> has room. The files are already cached (then no download). An earlier load did not end unfinished. It cannot see free GPU memory, and iOS may reload a page under memory pressure with no error. Downloads live in Cache Storage (<code>transformers-cache</code>) until the visitor presses Delete, or the browser evicts the site under storage pressure. Details and sources are in the two research files.</p>
+
+<h2 id="current">Keeping the index current</h2>
+
+<p><span class="st st-x">Done</span> for the keyword index: the post-render script rebuilds it on every <code>quarto render</code>, locally and in the deploy (<code>quarto-publish.yml</code>, on every push to <code>master</code>), with Node built-ins only, so a new or edited post is searchable on the next publish. <span class="st st-p">Proposed</span> for stage 2 vectors: cached by a hash of each passage's text, heading and title for one exact model, so only new or changed passages are embedded on the runner's CPU. Answer models need nothing at build time.</p>
+
+<figure>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  A["Push to master"] --> B["Deploy workflow"]
+  B --> C["Restore cache:<br/>model files, vector cache"]
+  C --> R["quarto render"]
+  R --> P["Post-render:<br/>passages and hashes"]
+  P --> L["Keyword index<br/>always rebuilt"]
+  P --> Q{"Hash in cache for<br/>this model?"}
+  Q -->|yes| U["Reuse vector"]
+  Q -->|no| E["Embed on runner CPU"]
+  E --> S["Save to cache"]
+  U --> V["vectors.bin<br/>and manifest"]
+  S --> V
+  L --> G["Publish to gh-pages"]
+  V --> G
+</pre>
+  </div>
+  <figcaption>A post is added or edited: the keyword index is rebuilt and, from stage 2, only that post's passages are embedded again.</figcaption>
+  <p class="alt">Text version: a push to master starts the deploy workflow. It restores the model files and the vector cache, renders the site, and the post-render script writes the passages and their hashes. The keyword index is always rebuilt. From stage 2, a passage hash already in the cache for this model reuses its vector; a new hash is embedded on the runner's CPU and saved. The vectors and manifest are written and the site is published to gh-pages.</p>
+</figure>
+
+<p><strong>The manifest</strong> records the model id and revision, quantization, dimension, prefixes and a probe vector (the embedding of a fixed sentence). The browser embeds the same sentence after loading and uses keyword search only if the result differs beyond a set tolerance. At 459 passages the vectors are small: 117,504 bytes at int8 and 256 dimensions, 352,512 at 768.</p>
+
+<h2 id="models">Models</h2>
+
+<p>The stage 3 evaluation of 2026-11-12 measured all four answer models and none passed the rule; the notes below were written before it and are kept as written, apart from what it settled. Checked on 2026-11-11 against each model's card and file listing. Stage 2 candidates, sizes, licenses and benchmarks: <a href="research/2026-11-11-embedding-models.md">embedding research</a>. Stage 3 candidates (LiquidAI, Qwen, Gemma, SmolLM, Granite, Phi, Llama, Pleias), runtimes, hosting, caching and the similar site's method and numbers: <a href="research/2026-11-11-answer-models.md">answer model research</a>. Each file ends with what could not be verified.</p>
+<ul>
+  <li><strong>Why Qwen3-0.6B is tested first.</strong> Of the four, it has the best published numbers on a comparable site (18 of 30 faithful, 6 of 15 invented), it is Apache 2.0, and it runs on WebAssembly as well as WebGPU. Sizes of <code>onnx-community/Qwen3-0.6B-ONNX</code>: 583 MB at q4f16 (needs <code>shader-f16</code> on WebGPU), 631 MB at q8, 933 MB at q4; Qwen's own <code>Qwen/Qwen3-0.6B-GGUF</code> is 639 MB at Q8_0, for wllama. Its weakness is the one that matters most here: it still invents answers.</li>
+  <li><strong>Why Granite 4.0 350M is second.</strong> Aayush added it on 2026-11-11. Of the small models with no published grounded-answering numbers, it is the one whose publisher lists RAG and question answering among its capabilities (its RAG example says "Coming soon"), it is Apache 2.0, and at 357 MB (q4f16; 576 MB at q4) it is between LFM2.5-350M and Qwen3-0.6B. The ONNX repository is tagged for Transformers.js; on 2026-11-12 it loaded and generated on WebGPU and on single threaded WebAssembly. Context 32,768 tokens.</li>
+  <li><strong>Why LiquidAI is third.</strong> Aayush prefers LiquidAI, so it was weighed first. LiquidAI's card for LFM2.5-350M recommends it for extraction and tool use and "not ... for knowledge-intensive tasks"; on another personal blog it invented answers for 13 of 15 unanswerable questions; and it runs only on WebGPU. It is the smallest download and stays on the list to be measured here.</li>
+  <li><strong>Ruled out by Aayush on 2026-11-11.</strong> The similar site's fine-tune <code>bartdegoede/qwen3-0.6b-small-rag</code>; for context only, that site ships it as its default and reports 16 of 30 faithful and 0 of 15 invented on its own questions. And any larger on-demand answer model (LFM2.5-1.2B-Instruct, LFM2-1.2B-RAG). Also considered and not taken up: Pleias-RAG-350M.</li>
+</ul>
+
+<h2 id="compare">How stages are compared</h2>
+
+<p><span class="st st-d">Decided</span> The 40-query set in <code>evals/questions.json</code> (36 answerable, 4 with no answer, nine types), used unchanged at every stage, and every measurement recorded in the journal.</p>
+
+<p><span class="st st-p">Proposed</span> The rules:</p>
+<ul>
+  <li>The same queries, page list and index at every stage. Ranking runs in Node with the module the browser uses.</li>
+  <li>Results per query type with recall at 5, MRR at 10 and nDCG at 10, plus what comes back for the no-answer queries (count and top score).</li>
+  <li>One query moves a per-type score by 17 to 25 points, so every comparison also lists per-query wins and losses.</li>
+  <li>A heavier configuration is adopted only if it fixes queries the lighter one misses without breaking ones it got right. Ties go to the smaller download.</li>
+  <li>Cost is reported next to quality every time: download, time until usable, time per query, memory; on a laptop, and on a phone once there is something to run on one.</li>
+</ul>
+
+<h3>Results so far</h3>
+<p>From <code>evals/results/summary.md</code> (Node 24.22.0, question file hash <code>ea19782d861a</code>), over the 36 answerable queries. The full list of 16 runs is in that file.</p>
+<div class="scroll">
+<table class="results">
+  <thead><tr><th>Run</th><th>Recall at 5</th><th>MRR at 10</th><th>nDCG at 10</th><th>Typing MRR at 10</th><th>Paraphrase recall at 5</th><th>Download</th></tr></thead>
+  <tbody>
+    <tr><td>Placeholder over <code>search.json</code> (baseline)</td><td>0.33</td><td>0.39</td><td>0.34</td><td>0.42</td><td>0.00</td><td>394,989 bytes</td></tr>
+    <tr><td>BM25 Porter and prefix over <code>search.json</code> (ranker alone)</td><td>0.71</td><td>0.63</td><td>0.70</td><td>0.67</td><td>0.17</td><td>394,989 bytes</td></tr>
+    <tr><td><strong>BM25 Porter and prefix, clean index (the default)</strong></td><td>0.75</td><td>0.64</td><td>0.71</td><td>0.68</td><td>0.33</td><td>346,530 bytes</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Stage 2, from <code>evals/results/stage2/summary.md</code> (index hash <code>759f6c5572dd74aa</code>, the same 459 passages; BM25 reproduced stage 1 query for query). Each model alone, then fused with BM25 by reciprocal rank fusion (k 60), over the 36 answerable queries.</p>
+<div class="scroll">
+<table class="results">
+  <thead><tr><th>Configuration</th><th>Recall at 5 alone / fused</th><th>MRR at 10 alone / fused</th><th>nDCG at 10 alone / fused</th></tr></thead>
+  <tbody>
+    <tr><td>BM25 alone (stage 1 default)</td><td>0.75</td><td>0.64</td><td>0.71</td></tr>
+    <tr><td>potion-base-8M, float32 table, 256 dims</td><td>0.87 / 0.85</td><td>0.70 / 0.75</td><td>0.76 / 0.80</td></tr>
+    <tr><td><strong>potion-base-8M, int8 table, 256 dims (recommended)</strong></td><td>0.87 / 0.85</td><td>0.70 / 0.75</td><td>0.76 / 0.79</td></tr>
+    <tr><td>potion-base-8M, int8 table, 128 dims</td><td>0.77 / 0.82</td><td>0.63 / 0.73</td><td>0.71 / 0.76</td></tr>
+    <tr><td>all-MiniLM-L6-v2, q8, 384 dims</td><td>0.94 / 0.85</td><td>0.77 / 0.74</td><td>0.80 / 0.80</td></tr>
+    <tr><td>mdbr-leaf-ir, q8, 768 dims</td><td>0.96 / 0.85</td><td>0.81 / 0.80</td><td>0.85 / 0.84</td></tr>
+    <tr><td>mdbr-leaf-ir, q8, 256 dims</td><td>0.96 / 0.85</td><td>0.83 / 0.83</td><td>0.85 / 0.85</td></tr>
+    <tr><td>EmbeddingGemma 2, q4, 768 dims (reference)</td><td>0.98 / 0.85</td><td>0.89 / 0.80</td><td>0.89 / 0.83</td></tr>
+    <tr><td>EmbeddingGemma 2, q4, 256 dims (reference)</td><td>0.86 / 0.89</td><td>0.88 / 0.78</td><td>0.84 / 0.80</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Stage 2 in the browser, from <code>evals/results/stage2-browser/dev.md</code> and <code>holdout.md</code> (index hash <code>759f6c5572dd74aa</code>, 506 passages including the 47 page descriptions, the committed int8 table, the page's own modules). Recall at 5 / MRR at 10 / nDCG at 10 over the answerable queries: the 40 development queries (36 answerable) and the 20 held-out queries (18 answerable), scored once after the choice was made.</p>
+<div class="scroll">
+<table class="results">
+  <thead><tr><th>Method</th><th>Development</th><th>Held-out</th></tr></thead>
+  <tbody>
+    <tr><td>BM25 alone</td><td>0.75 / 0.64 / 0.71</td><td>0.67 / 0.56 / 0.60</td></tr>
+    <tr><td>Fusion over whole lists (RRF, k 60)</td><td>0.86 / 0.75 / 0.81</td><td>0.78 / 0.56 / 0.67</td></tr>
+    <tr><td><strong>Fusion over the first 10 pages of each list (built)</strong></td><td>0.89 / 0.77 / 0.82</td><td>0.72 / 0.55 / 0.67</td></tr>
+    <tr><td>Meaning alone (reference, development only)</td><td>0.89 / 0.71 / 0.78</td><td>not run</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Also compared on the development set only: fusion over the first 20, meaning weighted 2 to 1, and BM25 without single generic term matches (all 0.86 / 0.76 / 0.82). The browser's query vectors equal Node's (cosine 1.000000000, 60 queries) and its rankings are identical. In Chromium on one laptop: ready 32.5 ms after the first focus with no real download, 4.7 s at an emulated 10 Mbit/s with brotli and 29 s at 1.6 Mbit/s; 0.11 ms per hybrid ranking. A phone and GitHub Pages' compression were not measured.</p>
+
+<p>Stage 2 costs, from <code>evals/results/stage2/costs.md</code>: measured in Node 24.22.0 with Transformers.js 4.3.2 on the CPU of one laptop (Apple M5 Pro, 15 cores, 24 GB), with other work running at times. No browser or phone was measured, and no real network.</p>
+<div class="scroll">
+<table class="results">
+  <thead><tr><th>Model</th><th>Bytes downloaded</th><th>Embed 459 passages (default / one thread)</th><th>One query, median (default / one thread)</th><th>Passage vectors, int8</th></tr></thead>
+  <tbody>
+    <tr><td>potion-base-8M, int8, 256 dims</td><td>8,242,834 with tokenizer (5,642,563 brotli)</td><td>74 ms</td><td>0.009 ms</td><td>117,504 bytes</td></tr>
+    <tr><td>potion-base-8M, int8, 128 dims</td><td>4,463,250 with tokenizer (3,093,427 brotli)</td><td>74 ms</td><td>0.009 ms</td><td>58,752 bytes</td></tr>
+    <tr><td>all-MiniLM-L6-v2, q8</td><td>23,685,047, plus the runtime</td><td>3.9 s / 8.1 s</td><td>0.80 / 0.69 ms</td><td>176,256 bytes</td></tr>
+    <tr><td>mdbr-leaf-ir, q8</td><td>23,889,368, plus the runtime</td><td>3.1 s / 7.5 s</td><td>0.75 / 1.09 ms</td><td>352,512 bytes (768); 117,504 (256)</td></tr>
+    <tr><td>EmbeddingGemma 2, q4</td><td>206,696,682</td><td>93.5 s / 305.9 s</td><td>16.0 / 59.0 ms</td><td>352,512 bytes (768)</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">The potion timings are for any variant of the table. The runtime the transformer models need in a browser (a 26.9 MB WebAssembly file, 4.70 MB with brotli) is from the research file, not measured. The queries were written by a model that had just read every page, so they are probably easier than real ones. The set's README lists six judgments for Aayush to review.</p>
+
+<h3>Answers (stage 3)</h3>
+<p>Search scores cannot judge an answer, so stage 3 had its own set and labels. Run on 2026-11-12; the scores are in the stage 3 block above and the tables in the journal entry "2026-11-12, stage 3: result and decision" and from <code>score.mjs</code> with the two labels files, <code>labels-a.json</code> and <code>labels-b.json</code>.</p>
+<ul>
+  <li><strong>Questions.</strong> 45 in <code>evals/answers/questions.json</code>: 30 answerable (12 fact, 8 how, 6 broad, 4 person) and 15 the site does not answer (8 near misses, 7 off-topic), written before any model ran and without looking at retrieval.</li>
+  <li><strong>Labels.</strong> Faithful (every claim is in the passages), unsupported (a claim is not, even if true) or non-answer (a decline), against the passages the model was given. On the unanswerable half a non-answer is the right result.</li>
+  <li><strong>Same input.</strong> The four passages were fixed and stored per question, one passage per page, so every model read the same text; greedy decoding.</li>
+  <li><strong>Judges.</strong> Two independent Opus 5.5 subagents, blind to the model and reading in opposite orders; 179 of 180 labels agree. No human label is recorded.</li>
+  <li><strong>Gate.</strong> The "nothing shares a content word" gate would have fired on 0 of the 15 unanswerable questions, so it removes nothing; the model's own decline was the only signal and it was weak.</li>
+  <li><strong>Cost.</strong> Download, first token and speed on WebGPU on a laptop, and which models load on WebAssembly (stage 3 block). No phone.</li>
+</ul>
+
+<h2 id="status">Decided, proposed, open</h2>
+<dl>
+  <dt><span class="st st-d">Decided</span></dt>
+  <dd>Search runs only in the browser. The three stages, simplest first, each measured. The page at <code>/search/</code>, reached from the navbar magnifier (replacing Quarto's overlay), <code>/</code> from any page, and a Writing page link at go-live. No AI controls until they are real. The 40-query set. Stage 2 compares potion-base-8M, all-MiniLM-L6-v2 and mdbr-leaf-ir, with EmbeddingGemma 2 as reference. Not using the <code>bartdegoede/qwen3-0.6b-small-rag</code> fine-tune (Aayush, 2026-11-11). No larger on-demand answer model (LFM2.5-1.2B-Instruct, LFM2-1.2B-RAG) (Aayush, 2026-11-11). IBM Granite 4.0 350M is a stage 3 candidate (Aayush, 2026-11-11). Stage 3 ends with no answer feature shipped: no model passed the rule fixed before any answer was generated, under either judge (the orchestrating session, 2026-11-12, under Aayush's delegation to decide by the scores). The site ships stages 1 and 2; the harness, question set, labels and results stay in the repository as the record. Every measurement in the journal, for a later post.</dd>
+  <dt><span class="st st-p">Proposed</span></dt>
+  <dd>The comparison and adoption rules. Stage 2: BM25 plus the potion-base-8M int8 table at 256 dimensions, loaded on first use of the search box without asking, the 128 dimension table as fallback, nothing heavier.</dd>
+  <dt><span class="st st-o">Open</span></dt>
+  <dd>Whether to revisit answers later (the first question below). Vector cache in the repository or the workflow cache only. Whether the weather page body is indexed.</dd>
+</dl>
+
+<h2 id="questions">Questions for Aayush</h2>
+<p>Ordered by how much each answer unblocks. One recommendation each.</p>
+<ol>
+  <li><strong>Revisit answers later?</strong> Nothing ships now, and the data says the missing skill is declining: of 60 answers to unanswerable questions, 43 were answers and all unsupported. Recommended: not now. If you want to try again, these are the possibilities, none planned, each with what the evidence here says:
+    <ul>
+      <li>Pass more than one passage per page, or more passages. Supported as a fix for retrieval (9 of the 10 misses had the right page in the top four); not shown to fix the models, which failed on hit questions too (best 13 of 20 faithful).</li>
+      <li>A retrieval score or an agreement signal for the gate. Evidence is against a score (stage 2: cosine does not separate answerable from unanswerable; the content-word gate fired on 0 of 15); no agreement signal was measured. A score gate can be tested offline on the stored retrieval without running a model.</li>
+      <li>A larger model, or one trained to decline. You ruled both out on 2026-11-11. Another blog's counts (a decline-trained fine-tune: 16 of 30 faithful and 0 of 15 invented; Gemma 4 E2B: 28 and 0) point that way but were not measured here.</li>
+      <li>A stricter prompt. One prompt was tried; Qwen3.5 declined 14 of 45 in its own words while Granite and LFM2.5 almost never declined, so wording may matter. Untested.</li>
+    </ul></li>
+  <li><strong>Approve BM25 plus the potion table as the stage 2 choice?</strong> It fixed four queries offline and broke none once the weather page's description is embedded; no heavier model passed the rule. Recommended: yes, then start the browser test.</li>
+  <li><strong>May a table of about 5.6 MB compressed (8.2 MB raw) load without asking</strong>, on first use of the search box on the search page only? Recommended: yes; if that is too much, the 128 dimension table (3.1 MB compressed, one query worse).</li>
+  <li><strong>Review the six search judgments</strong> listed in <code>evals/README.md</code>; every stage 1 and 2 score depends on them.</li>
+</ol>
+
+<p class="note">Sources: <code>_devlog/local-search/journal.md</code>, <code>evals/README.md</code>, <code>evals/results/</code>, <code>evals/answers/results/score.mjs</code> with <code>labels-a.json</code> and <code>labels-b.json</code>, <code>research/2026-11-11-embedding-models.md</code>, <code>research/2026-11-11-answer-models.md</code>, <code>.github/workflows/quarto-publish.yml</code>, and the model repositories and documentation linked from the research files.</p>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js" integrity="sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2" crossorigin="anonymous"></script>
+<script>
+  (function () {
+    if (!window.mermaid) { document.documentElement.classList.add('no-mermaid'); return; }
+    var css = getComputedStyle(document.documentElement);
+    var v = function (name) { return css.getPropertyValue(name).trim(); };
+    window.mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      securityLevel: 'strict',
+      fontFamily: v('--font-sans'),
+      flowchart: { htmlLabels: true, useMaxWidth: true, padding: 12, nodeSpacing: 28, rankSpacing: 36 },
+      themeVariables: {
+        darkMode: true,
+        background: v('--bg-body'),
+        fontFamily: v('--font-sans'),
+        fontSize: '15px',
+        primaryColor: v('--bg-inset'),
+        primaryTextColor: v('--text-primary'),
+        primaryBorderColor: v('--text-dim'),
+        secondaryColor: v('--bg-card'),
+        tertiaryColor: v('--bg-card'),
+        lineColor: v('--text-muted'),
+        textColor: v('--text-content'),
+        edgeLabelBackground: v('--bg-body'),
+        clusterBkg: v('--bg-card'),
+        clusterBorder: v('--border')
+      }
+    });
+    window.mermaid.run({ querySelector: 'pre.mermaid' }).catch(function () {
+      document.documentElement.classList.add('no-mermaid');
+    });
+  })();
+</script>
+</body>
+</html>

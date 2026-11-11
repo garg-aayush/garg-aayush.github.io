@@ -1,0 +1,2586 @@
+{
+ "run": "bm25-quarto.s",
+ "description": "BM25, s, over Quarto's search.json passages",
+ "config": {
+  "stem": "s",
+  "prefix": false
+ },
+ "index": {
+  "file": "search.json",
+  "bytes": 394989,
+  "hash": "cff91c03c856",
+  "pages": 47,
+  "passages": 180,
+  "note": "passages after the placeholder cleaning, not Quarto rows"
+ },
+ "questions": {
+  "file": "questions.json",
+  "hash": "ea19782d861a",
+  "count": 40
+ },
+ "node": "v24.22.0",
+ "typing": {
+  "queries": 31,
+  "recall5": 0.5698924731182795,
+  "mrr10": 0.5470430107526881
+ },
+ "relativeCutoffs": [
+  {
+   "fraction": 0.25,
+   "relevantInTop10": 58,
+   "lost": 0,
+   "noneResultsLeftInTop10": [
+    10,
+    10,
+    8,
+    2
+   ]
+  },
+  {
+   "fraction": 0.5,
+   "relevantInTop10": 58,
+   "lost": 10,
+   "noneResultsLeftInTop10": [
+    2,
+    3,
+    6,
+    2
+   ]
+  }
+ ],
+ "overall": {
+  "queries": 36,
+  "recall5": 0.6574074074074074,
+  "mrr10": 0.584292328042328,
+  "ndcg10": 0.639851245853727
+ },
+ "byType": {
+  "lookup": {
+   "queries": 4,
+   "recall5": 1,
+   "mrr10": 1,
+   "ndcg10": 1
+  },
+  "topic": {
+   "queries": 4,
+   "recall5": 1,
+   "mrr10": 0.8333333333333334,
+   "ndcg10": 0.9086698758102724
+  },
+  "question": {
+   "queries": 5,
+   "recall5": 1,
+   "mrr10": 0.9,
+   "ndcg10": 0.9764242397321408
+  },
+  "paraphrase": {
+   "queries": 6,
+   "recall5": 0,
+   "mrr10": 0.08908730158730159,
+   "ndcg10": 0.20144121656588357
+  },
+  "partial": {
+   "queries": 5,
+   "recall5": 0.4,
+   "mrr10": 0.26666666666666666,
+   "ndcg10": 0.2760187533431869
+  },
+  "tool": {
+   "queries": 4,
+   "recall5": 0.75,
+   "mrr10": 0.4583333333333333,
+   "ndcg10": 0.6515807138437268
+  },
+  "person": {
+   "queries": 4,
+   "recall5": 0.5,
+   "mrr10": 0.375,
+   "ndcg10": 0.40604193704778696
+  },
+  "multi": {
+   "queries": 4,
+   "recall5": 0.9166666666666666,
+   "mrr10": 1,
+   "ndcg10": 0.9246531197887713
+  }
+ },
+ "none": {
+  "queries": 4,
+  "resultCounts": [
+   {
+    "id": "none-01",
+    "query": "deploying models on kubernetes",
+    "results": 28,
+    "topScore": 4.235
+   },
+   {
+    "id": "none-02",
+    "query": "mamba state space language model",
+    "results": 28,
+    "topScore": 11.551
+   },
+   {
+    "id": "none-03",
+    "query": "rag with a vector database",
+    "results": 8,
+    "topScore": 4.677
+   },
+   {
+    "id": "none-04",
+    "query": "react hooks tutorial",
+    "results": 2,
+    "topScore": 5.735
+   }
+  ]
+ },
+ "floor": {
+  "noneTopMax": 11.551,
+  "answerableBestRelevantBelowFloor": [
+   "lookup-02",
+   "lookup-04",
+   "topic-03",
+   "topic-04",
+   "question-03",
+   "question-05",
+   "paraphrase-01",
+   "paraphrase-02",
+   "paraphrase-03",
+   "paraphrase-04",
+   "paraphrase-05",
+   "paraphrase-06",
+   "partial-01",
+   "partial-02",
+   "partial-03",
+   "partial-04",
+   "partial-05",
+   "tool-02",
+   "tool-03",
+   "person-01",
+   "person-02",
+   "person-03",
+   "person-04",
+   "multi-02",
+   "multi-04"
+  ]
+ },
+ "queries": [
+  {
+   "id": "lookup-01",
+   "type": "lookup",
+   "query": "dover-lap",
+   "results": 1,
+   "topScore": 18.199608582036298,
+   "top10": [
+    {
+     "key": "pages/doverlap.html",
+     "score": 18.2,
+     "grade": 2
+    }
+   ],
+   "ranks": {
+    "pages/doverlap.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 18.199608582036298,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "lookup-02",
+   "type": "lookup",
+   "query": "jmi-res",
+   "results": 3,
+   "topScore": 10.05282952120784,
+   "top10": [
+    {
+     "key": "publications.html",
+     "score": 10.053,
+     "grade": 2
+    },
+    {
+     "key": "about.html",
+     "score": 7.681,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 6.296,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "about.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "publications.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 10.05282952120784,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "lookup-03",
+   "type": "lookup",
+   "query": "bradley-terry model",
+   "results": 28,
+   "topScore": 15.495106594669581,
+   "top10": [
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 15.495,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 7.146,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 1.339,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-09-compare-models-structured-data.html",
+     "score": 1.334,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 1.316,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 1.31,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 1.301,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 1.28,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 1.242,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 1.227,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2025-12-30-deriving-dpo-loss.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "posts/2025-12-25-deriving-ppo-loss.html": {
+     "grade": 1,
+     "rank": 2
+    }
+   },
+   "bestRelevantScore": 15.495106594669581,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "lookup-04",
+   "type": "lookup",
+   "query": "svg2raster",
+   "results": 2,
+   "topScore": 6.294457914536771,
+   "top10": [
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 6.294,
+     "grade": 2
+    },
+    {
+     "key": "projects.html",
+     "score": 3.009,
+     "grade": 1
+    }
+   ],
+   "ranks": {
+    "posts/2025-09-10-build-custom-comfyui-node.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "projects.html": {
+     "grade": 1,
+     "rank": 2
+    }
+   },
+   "bestRelevantScore": 6.294457914536771,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "topic-01",
+   "type": "topic",
+   "query": "online softmax",
+   "results": 4,
+   "topScore": 12.368754128867113,
+   "top10": [
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 12.369,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 4.41,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 3.91,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 3.037,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-03-27-flash-attention/index.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 12.368754128867113,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "topic-02",
+   "type": "topic",
+   "query": "speaker diarization",
+   "results": 3,
+   "topScore": 14.781914574155362,
+   "top10": [
+    {
+     "key": "pages/overlap-aware-sc.html",
+     "score": 14.782,
+     "grade": 2
+    },
+    {
+     "key": "pages/jsalt.html",
+     "score": 14.669,
+     "grade": 2
+    },
+    {
+     "key": "publications.html",
+     "score": 3.042,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "pages/overlap-aware-sc.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "pages/jsalt.html": {
+     "grade": 2,
+     "rank": 2
+    }
+   },
+   "bestRelevantScore": 14.781914574155362,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "topic-03",
+   "type": "topic",
+   "query": "kv cache memory",
+   "results": 11,
+   "topScore": 12.284984710865203,
+   "top10": [
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 12.285,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 10.152,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 9.734,
+     "grade": 2
+    },
+    {
+     "key": "projects.html",
+     "score": 5.81,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 4.925,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 3.721,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 3.419,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 2.995,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 2.773,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 2.296,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-03-29-local-llm-opencode/index.html": {
+     "grade": 2,
+     "rank": 3
+    },
+    "posts/2026-04-05-qwen35-vs-gemma4/index.html": {
+     "grade": 1,
+     "rank": 2
+    },
+    "posts/2026-04-03-self-hosted-gemma4-chat/index.html": {
+     "grade": 1,
+     "rank": 6
+    }
+   },
+   "bestRelevantScore": 9.733690503931495,
+   "recall5": 1,
+   "rr": 0.3333333333333333,
+   "ndcg": 0.6346795032410896
+  },
+  {
+   "id": "topic-04",
+   "type": "topic",
+   "query": "residual connections",
+   "results": 9,
+   "topScore": 11.149149262424093,
+   "top10": [
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 11.149,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 5.253,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 4.863,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 3.816,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 3.441,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 3.405,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 2.801,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 2.722,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 1.833,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2025-09-08-building-gpt-from-scratch.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 11.149149262424093,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "question-01",
+   "type": "question",
+   "query": "how many gpus does glm-5.3-flash need",
+   "results": 28,
+   "topScore": 17.441409055214205,
+   "top10": [
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 17.441,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 7.838,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 7.047,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 6.533,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 5.774,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 5.655,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 5.103,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 4.925,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 4.87,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 4.835,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-11-01-gpt-local-model-opencode/index.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 17.441409055214205,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "question-02",
+   "type": "question",
+   "query": "should i use skills or mcp servers",
+   "results": 28,
+   "topScore": 17.407210097403553,
+   "top10": [
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 17.407,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 14.11,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 11.925,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 7.967,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 6.487,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 6.32,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 4.902,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 4.63,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 4.475,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 4.26,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-02-12-cc-tools/index.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "posts/2026-01-13-claude-skills/index.html": {
+     "grade": 2,
+     "rank": 2
+    }
+   },
+   "bestRelevantScore": 17.407210097403553,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "question-03",
+   "type": "question",
+   "query": "does doing sft first make grpo better",
+   "results": 28,
+   "topScore": 10.050375736239964,
+   "top10": [
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 10.05,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 7.367,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 7.137,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 6.81,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 6.545,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 6.502,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 6.183,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 6.087,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 5.94,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 5.34,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-02-26-grpo-from-scratch/index.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 10.050375736239964,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "question-04",
+   "type": "question",
+   "query": "where does the india weather page get its aqi numbers",
+   "results": 25,
+   "topScore": 25.831410512663865,
+   "top10": [
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 25.831,
+     "grade": 2
+    },
+    {
+     "key": "india-weather.html",
+     "score": 12.848,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 8.504,
+     "grade": 0
+    },
+    {
+     "key": "publications.html",
+     "score": 6.587,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 5.976,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 5,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 4.868,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 4.694,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 4.601,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 4.438,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "india-weather.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "posts/2026-04-29-india-weather-with-claude/index.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 25.831410512663865,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "question-05",
+   "type": "question",
+   "query": "which model did best on the viggo extraction task",
+   "results": 29,
+   "topScore": 14.361188940902212,
+   "top10": [
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 14.361,
+     "grade": 1
+    },
+    {
+     "key": "posts/2024-07-09-compare-models-structured-data.html",
+     "score": 10.965,
+     "grade": 2
+    },
+    {
+     "key": "posts/2024-07-03-baseline-gpt4o-structured-data.html",
+     "score": 10.785,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 8.417,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 6.87,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 6.713,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 6.345,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 4.691,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 4.193,
+     "grade": 0
+    },
+    {
+     "key": "about.html",
+     "score": 4.038,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2024-07-09-compare-models-structured-data.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "posts/2024-07-15-finetune-llama3-8B-predibase.html": {
+     "grade": 1,
+     "rank": 1
+    },
+    "posts/2024-07-03-baseline-gpt4o-structured-data.html": {
+     "grade": 1,
+     "rank": 3
+    }
+   },
+   "bestRelevantScore": 10.96526776412719,
+   "recall5": 1,
+   "rr": 0.5,
+   "ndcg": 0.8821211986607034
+  },
+  {
+   "id": "paraphrase-01",
+   "type": "paraphrase",
+   "query": "patching holes in a chart that repeats every year",
+   "results": 24,
+   "topScore": 8.845538930859375,
+   "top10": [
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 8.846,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 6.34,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 5.631,
+     "grade": 0
+    },
+    {
+     "key": "publications.html",
+     "score": 5.348,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 5.26,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 3.738,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-03-baseline-gpt4o-structured-data.html",
+     "score": 3.659,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 3.182,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 3.181,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 2.925,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-07-15-kalman-filters-time-series/index.html": {
+     "grade": 2,
+     "rank": 8
+    }
+   },
+   "bestRelevantScore": 3.1815064685210186,
+   "recall5": 0,
+   "rr": 0.125,
+   "ndcg": 0.31546487678572877
+  },
+  {
+   "id": "paraphrase-02",
+   "type": "paraphrase",
+   "query": "connect to the box under my desk when traveling",
+   "results": 13,
+   "topScore": 6.166228921613892,
+   "top10": [
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 6.166,
+     "grade": 0
+    },
+    {
+     "key": "pages/doverlap.html",
+     "score": 4.816,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 4.522,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 4.09,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 3.579,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 3.482,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 3.297,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 3.297,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 3.082,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 2.842,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2024-06-30-remote-gpu-server.html": {
+     "grade": 2,
+     "rank": 6
+    },
+    "projects.html": {
+     "grade": 1,
+     "rank": 12
+    }
+   },
+   "bestRelevantScore": 3.481549638115733,
+   "recall5": 0,
+   "rr": 0.16666666666666666,
+   "ndcg": 0.27078426295835145
+  },
+  {
+   "id": "paraphrase-03",
+   "type": "paraphrase",
+   "query": "keep an old and a new gpu toolchain on one box without clashes",
+   "results": 30,
+   "topScore": 9.953918670609388,
+   "top10": [
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 9.954,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 7.918,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 7.698,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 6.871,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 6.666,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 6.288,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 6.047,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 5.862,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 5.726,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 5.685,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2024-05-19-manage-multiple-cuda.html": {
+     "grade": 2,
+     "rank": 23
+    },
+    "projects.html": {
+     "grade": 1,
+     "rank": 18
+    }
+   },
+   "bestRelevantScore": 2.899293543684038,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "paraphrase-04",
+   "type": "paraphrase",
+   "query": "let the model grade its own homework and study only what it got right",
+   "results": 30,
+   "topScore": 13.20039664372215,
+   "top10": [
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 13.2,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 11.603,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 11.175,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 10.873,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 9.264,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 7.683,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 7.664,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 6.811,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 6.757,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 6.686,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-01-23-expert-iteration/index.html": {
+     "grade": 2,
+     "rank": 7
+    }
+   },
+   "bestRelevantScore": 7.6641143824609035,
+   "recall5": 0,
+   "rr": 0.14285714285714285,
+   "ndcg": 0.3333333333333333
+  },
+  {
+   "id": "paraphrase-05",
+   "type": "paraphrase",
+   "query": "pull topic-specific documents out of a giant internet dump",
+   "results": 24,
+   "topScore": 6.9897999715879635,
+   "top10": [
+    {
+     "key": "tools/index.html",
+     "score": 6.99,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 6.124,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 5.138,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 4.951,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 3.91,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 3.599,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 3.555,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 3.408,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 3.338,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 3.285,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-01-06-review-deepseek-math.html": {
+     "grade": 2,
+     "rank": 13
+    }
+   },
+   "bestRelevantScore": 2.9139313897681416,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "paraphrase-06",
+   "type": "paraphrase",
+   "query": "why vibe-checking chatbot outputs is not enough",
+   "results": 28,
+   "topScore": 7.771413876125446,
+   "top10": [
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 7.771,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 7.573,
+     "grade": 0
+    },
+    {
+     "key": "tools/index.html",
+     "score": 6.383,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 5.254,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 4.943,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 4.864,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 4.395,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-03-baseline-gpt4o-structured-data.html",
+     "score": 4.32,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 3.8,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 3.611,
+     "grade": 2
+    }
+   ],
+   "ranks": {
+    "posts/2025-09-02-llm-evaluation-lifecycle.html": {
+     "grade": 2,
+     "rank": 10
+    }
+   },
+   "bestRelevantScore": 3.61120593293872,
+   "recall5": 0,
+   "rr": 0.1,
+   "ndcg": 0.2890648263178879
+  },
+  {
+   "id": "partial-01",
+   "type": "partial",
+   "query": "geophysics",
+   "results": 0,
+   "topScore": 0,
+   "top10": [],
+   "ranks": {
+    "about.html": {
+     "grade": 2,
+     "rank": null
+    },
+    "publications.html": {
+     "grade": 1,
+     "rank": null
+    }
+   },
+   "bestRelevantScore": 0,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "partial-02",
+   "type": "partial",
+   "query": "quantiz",
+   "results": 0,
+   "topScore": 0,
+   "top10": [],
+   "ranks": {
+    "posts/2026-03-29-local-llm-opencode/index.html": {
+     "grade": 2,
+     "rank": null
+    },
+    "posts/2026-04-05-qwen35-vs-gemma4/index.html": {
+     "grade": 1,
+     "rank": null
+    }
+   },
+   "bestRelevantScore": 0,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "partial-03",
+   "type": "partial",
+   "query": "diarisation",
+   "results": 0,
+   "topScore": 0,
+   "top10": [],
+   "ranks": {
+    "pages/overlap-aware-sc.html": {
+     "grade": 2,
+     "rank": null
+    },
+    "pages/jsalt.html": {
+     "grade": 2,
+     "rank": null
+    }
+   },
+   "bestRelevantScore": 0,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "partial-04",
+   "type": "partial",
+   "query": "tokenizers",
+   "results": 1,
+   "topScore": 4.427276946943091,
+   "top10": [
+    {
+     "key": "projects.html",
+     "score": 4.427,
+     "grade": 2
+    }
+   ],
+   "ranks": {
+    "projects.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "posts/2025-12-28-sft-from-scratch.html": {
+     "grade": 1,
+     "rank": null
+    }
+   },
+   "bestRelevantScore": 4.427276946943091,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 0.7601875334318685
+  },
+  {
+   "id": "partial-05",
+   "type": "partial",
+   "query": "derive ppo loss",
+   "results": 7,
+   "topScore": 11.108790402218274,
+   "top10": [
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 11.109,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 9.311,
+     "grade": 1
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 7.256,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 2.725,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 2.528,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 2.321,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 2.133,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2025-12-25-deriving-ppo-loss.html": {
+     "grade": 2,
+     "rank": 3
+    },
+    "posts/2026-01-01-understanding-grpo.html": {
+     "grade": 1,
+     "rank": 2
+    }
+   },
+   "bestRelevantScore": 7.255797465714803,
+   "recall5": 1,
+   "rr": 0.3333333333333333,
+   "ndcg": 0.6199062332840657
+  },
+  {
+   "id": "tool-01",
+   "type": "tool",
+   "query": "draw a mask for inpainting",
+   "results": 9,
+   "topScore": 13.425533290940251,
+   "top10": [
+    {
+     "key": "tools/image-mask-creator.html",
+     "score": 13.426,
+     "grade": 2
+    },
+    {
+     "key": "tools/index.html",
+     "score": 12.334,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 9.974,
+     "grade": 1
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 5.477,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 3.162,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 3.114,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 2.551,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 2.519,
+     "grade": 0
+    },
+    {
+     "key": "pages/jsalt.html",
+     "score": 1.137,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "tools/image-mask-creator.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "tools/index.html": {
+     "grade": 1,
+     "rank": 2
+    },
+    "posts/2026-03-20-browser-tools/index.html": {
+     "grade": 1,
+     "rank": 3
+    }
+   },
+   "bestRelevantScore": 13.425533290940251,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "tool-02",
+   "type": "tool",
+   "query": "make a photo black and white",
+   "results": 21,
+   "topScore": 13.176690966719194,
+   "top10": [
+    {
+     "key": "tools/image-mask-creator.html",
+     "score": 13.177,
+     "grade": 0
+    },
+    {
+     "key": "tools/index.html",
+     "score": 9.98,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 7.468,
+     "grade": 0
+    },
+    {
+     "key": "about.html",
+     "score": 4.573,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 2.772,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 2.654,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 2.513,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 2.431,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 2.376,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 2.334,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "tools/image-operations.html": {
+     "grade": 2,
+     "rank": null
+    },
+    "tools/index.html": {
+     "grade": 1,
+     "rank": 2
+    }
+   },
+   "bestRelevantScore": 0,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0.23981246656813146
+  },
+  {
+   "id": "tool-03",
+   "type": "tool",
+   "query": "pretty print json",
+   "results": 16,
+   "topScore": 6.321225092727067,
+   "top10": [
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 6.321,
+     "grade": 0
+    },
+    {
+     "key": "tools/yaml-json-converter.html",
+     "score": 4.924,
+     "grade": 0
+    },
+    {
+     "key": "tools/json-formatter.html",
+     "score": 4.894,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 4.593,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 4.442,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 4.129,
+     "grade": 0
+    },
+    {
+     "key": "tools/index.html",
+     "score": 4.115,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 4.028,
+     "grade": 0
+    },
+    {
+     "key": "about.html",
+     "score": 3.573,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 3.357,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "tools/json-formatter.html": {
+     "grade": 2,
+     "rank": 3
+    },
+    "tools/index.html": {
+     "grade": 1,
+     "rank": 7
+    }
+   },
+   "bestRelevantScore": 4.89432407299908,
+   "recall5": 1,
+   "rr": 0.3333333333333333,
+   "ndcg": 0.5067916889545789
+  },
+  {
+   "id": "tool-04",
+   "type": "tool",
+   "query": "decode a percent-encoded link",
+   "results": 9,
+   "topScore": 13.554998710065826,
+   "top10": [
+    {
+     "key": "tools/index.html",
+     "score": 13.555,
+     "grade": 1
+    },
+    {
+     "key": "tools/url-encoder.html",
+     "score": 12.233,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 11.965,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-05-19-manage-multiple-cuda.html",
+     "score": 7.122,
+     "grade": 0
+    },
+    {
+     "key": "tools/base64.html",
+     "score": 6.465,
+     "grade": 0
+    },
+    {
+     "key": "pages/jsalt.html",
+     "score": 4.389,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 4.336,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 2.482,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 2.448,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "tools/url-encoder.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "tools/index.html": {
+     "grade": 1,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 12.233400075599285,
+   "recall5": 1,
+   "rr": 0.5,
+   "ndcg": 0.8597186998521972
+  },
+  {
+   "id": "person-01",
+   "type": "person",
+   "query": "where did he do his phd",
+   "results": 11,
+   "topScore": 9.620090934598718,
+   "top10": [
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 9.62,
+     "grade": 0
+    },
+    {
+     "key": "about.html",
+     "score": 6.707,
+     "grade": 2
+    },
+    {
+     "key": "publications.html",
+     "score": 6.383,
+     "grade": 1
+    },
+    {
+     "key": "projects.html",
+     "score": 6.277,
+     "grade": 1
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 4.442,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 4.301,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 3.618,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 3.411,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 2.927,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 1.804,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "about.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "projects.html": {
+     "grade": 1,
+     "rank": 4
+    },
+    "publications.html": {
+     "grade": 1,
+     "rank": 3
+    }
+   },
+   "bestRelevantScore": 6.707380297255895,
+   "recall5": 1,
+   "rr": 0.5,
+   "ndcg": 0.7002827395649097
+  },
+  {
+   "id": "person-02",
+   "type": "person",
+   "query": "has he worked in oil and gas",
+   "results": 22,
+   "topScore": 6.627859906923277,
+   "top10": [
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 6.628,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 6.095,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 5.989,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 5.548,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 5.52,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 5.082,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 4.668,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 4.016,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 3.385,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 3.175,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "about.html": {
+     "grade": 2,
+     "rank": 12
+    },
+    "publications.html": {
+     "grade": 1,
+     "rank": null
+    }
+   },
+   "bestRelevantScore": 2.188967656227804,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "person-03",
+   "type": "person",
+   "query": "what does he do now",
+   "results": 15,
+   "topScore": 7.129957688172693,
+   "top10": [
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 7.13,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 3.277,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 3.233,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 2.927,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 2.906,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 2.665,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 2.585,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 2.561,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 2.385,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 2.212,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "about.html": {
+     "grade": 2,
+     "rank": null
+    }
+   },
+   "bestRelevantScore": 0,
+   "recall5": 0,
+   "rr": 0,
+   "ndcg": 0
+  },
+  {
+   "id": "person-04",
+   "type": "person",
+   "query": "stable diffusion experience",
+   "results": 10,
+   "topScore": 10.879692893256186,
+   "top10": [
+    {
+     "key": "about.html",
+     "score": 10.88,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 5.037,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 4.45,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 3.977,
+     "grade": 1
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 3.861,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 3.025,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 2.886,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 2.542,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 1.23,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 1.107,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "about.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "projects.html": {
+     "grade": 1,
+     "rank": 4
+    }
+   },
+   "bestRelevantScore": 10.879692893256186,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 0.9238850086262381
+  },
+  {
+   "id": "multi-01",
+   "type": "multi",
+   "query": "ppo vs dpo vs grpo",
+   "results": 13,
+   "topScore": 12.186790758924996,
+   "top10": [
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 12.187,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 9.326,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 9.02,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 6.928,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 5.724,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 4.814,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 3.997,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-27-flash-attention/index.html",
+     "score": 3.192,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 3.054,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 2.454,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2025-12-25-deriving-ppo-loss.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "posts/2025-12-30-deriving-dpo-loss.html": {
+     "grade": 2,
+     "rank": 3
+    },
+    "posts/2026-01-01-understanding-grpo.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "posts/2026-01-06-review-deepseek-math.html": {
+     "grade": 1,
+     "rank": 5
+    },
+    "posts/2026-02-26-grpo-from-scratch/index.html": {
+     "grade": 1,
+     "rank": 4
+    }
+   },
+   "bestRelevantScore": 12.186790758924996,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "multi-02",
+   "type": "multi",
+   "query": "self-hosting llms on a 4090",
+   "results": 23,
+   "topScore": 9.389541241766667,
+   "top10": [
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 9.39,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 5.785,
+     "grade": 2
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 5.233,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 5.122,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-23-expert-iteration/index.html",
+     "score": 4.547,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 4.456,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 4.378,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 3.634,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 3.445,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 3.366,
+     "grade": 1
+    }
+   ],
+   "ranks": {
+    "posts/2026-03-29-local-llm-opencode/index.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "posts/2026-04-03-self-hosted-gemma4-chat/index.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "posts/2026-04-05-qwen35-vs-gemma4/index.html": {
+     "grade": 2,
+     "rank": 6
+    },
+    "posts/2024-06-30-remote-gpu-server.html": {
+     "grade": 1,
+     "rank": 10
+    }
+   },
+   "bestRelevantScore": 9.389541241766667,
+   "recall5": 0.6666666666666666,
+   "rr": 1,
+   "ndcg": 0.9085361622000284
+  },
+  {
+   "id": "multi-03",
+   "type": "multi",
+   "query": "structured data extraction series",
+   "results": 28,
+   "topScore": 13.140627139984861,
+   "top10": [
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 13.141,
+     "grade": 2
+    },
+    {
+     "key": "posts/2024-07-09-compare-models-structured-data.html",
+     "score": 12.856,
+     "grade": 2
+    },
+    {
+     "key": "posts/2024-07-03-baseline-gpt4o-structured-data.html",
+     "score": 10.683,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 7.127,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 4.411,
+     "grade": 0
+    },
+    {
+     "key": "about.html",
+     "score": 4.035,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 3.606,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 3.533,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-06-review-deepseek-math.html",
+     "score": 3.249,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 2.816,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2024-07-03-baseline-gpt4o-structured-data.html": {
+     "grade": 2,
+     "rank": 3
+    },
+    "posts/2024-07-09-compare-models-structured-data.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "posts/2024-07-15-finetune-llama3-8B-predibase.html": {
+     "grade": 2,
+     "rank": 1
+    }
+   },
+   "bestRelevantScore": 13.140627139984861,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 1
+  },
+  {
+   "id": "multi-04",
+   "type": "multi",
+   "query": "projects built with claude code",
+   "results": 29,
+   "topScore": 10.765255443903943,
+   "top10": [
+    {
+     "key": "posts/2026-04-29-india-weather-with-claude/index.html",
+     "score": 10.765,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-03-20-browser-tools/index.html",
+     "score": 9.659,
+     "grade": 2
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 9.495,
+     "grade": 0
+    },
+    {
+     "key": "about.html",
+     "score": 7.348,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 6.769,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 6.197,
+     "grade": 1
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 6.165,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 6.151,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 5.646,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-03-self-hosted-gemma4-chat/index.html",
+     "score": 3.27,
+     "grade": 0
+    }
+   ],
+   "ranks": {
+    "posts/2026-03-20-browser-tools/index.html": {
+     "grade": 2,
+     "rank": 2
+    },
+    "posts/2026-04-29-india-weather-with-claude/index.html": {
+     "grade": 2,
+     "rank": 1
+    },
+    "tools/index.html": {
+     "grade": 1,
+     "rank": 18
+    },
+    "india-weather.html": {
+     "grade": 1,
+     "rank": null
+    },
+    "posts/2026-02-12-cc-tools/index.html": {
+     "grade": 1,
+     "rank": 6
+    }
+   },
+   "bestRelevantScore": 10.765255443903943,
+   "recall5": 1,
+   "rr": 1,
+   "ndcg": 0.7900763169550566
+  },
+  {
+   "id": "none-01",
+   "type": "none",
+   "query": "deploying models on kubernetes",
+   "results": 28,
+   "topScore": 4.234603767552051,
+   "top10": [
+    {
+     "key": "posts/2026-02-26-grpo-from-scratch/index.html",
+     "score": 4.235,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-28-sft-from-scratch.html",
+     "score": 3.699,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-04-05-qwen35-vs-gemma4/index.html",
+     "score": 1.339,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-09-compare-models-structured-data.html",
+     "score": 1.334,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 1.33,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 1.323,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-11-01-gpt-local-model-opencode/index.html",
+     "score": 1.316,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 1.31,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-03-29-local-llm-opencode/index.html",
+     "score": 1.301,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 1.28,
+     "grade": 0
+    }
+   ]
+  },
+  {
+   "id": "none-02",
+   "type": "none",
+   "query": "mamba state space language model",
+   "results": 28,
+   "topScore": 11.5505955754479,
+   "top10": [
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 11.551,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 8.291,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-30-deriving-dpo-loss.html",
+     "score": 6.321,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-02-12-cc-tools/index.html",
+     "score": 4.466,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 4.35,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-06-30-remote-gpu-server.html",
+     "score": 4.11,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-01-understanding-grpo.html",
+     "score": 4.063,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-15-finetune-llama3-8B-predibase.html",
+     "score": 3.986,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-02-llm-evaluation-lifecycle.html",
+     "score": 3.619,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 3.232,
+     "grade": 0
+    }
+   ]
+  },
+  {
+   "id": "none-03",
+   "type": "none",
+   "query": "rag with a vector database",
+   "results": 8,
+   "topScore": 4.676685930042657,
+   "top10": [
+    {
+     "key": "pages/overlap-aware-sc.html",
+     "score": 4.677,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-07-15-kalman-filters-time-series/index.html",
+     "score": 4.597,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-10-build-custom-comfyui-node.html",
+     "score": 4.579,
+     "grade": 0
+    },
+    {
+     "key": "posts/2026-01-13-claude-skills/index.html",
+     "score": 4.352,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 3.047,
+     "grade": 0
+    },
+    {
+     "key": "posts/2025-12-25-deriving-ppo-loss.html",
+     "score": 2.691,
+     "grade": 0
+    },
+    {
+     "key": "pages/jsalt.html",
+     "score": 1.903,
+     "grade": 0
+    },
+    {
+     "key": "posts/2024-07-03-baseline-gpt4o-structured-data.html",
+     "score": 1.409,
+     "grade": 0
+    }
+   ]
+  },
+  {
+   "id": "none-04",
+   "type": "none",
+   "query": "react hooks tutorial",
+   "results": 2,
+   "topScore": 5.735234092233522,
+   "top10": [
+    {
+     "key": "posts/2025-09-08-building-gpt-from-scratch.html",
+     "score": 5.735,
+     "grade": 0
+    },
+    {
+     "key": "projects.html",
+     "score": 3.654,
+     "grade": 0
+    }
+   ]
+  }
+ ],
+ "latency": {
+  "medianMs": 0.006,
+  "worstMs": 0.19,
+  "buildMs": 14.022
+ }
+}

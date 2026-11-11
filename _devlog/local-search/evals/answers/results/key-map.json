@@ -1,0 +1,1266 @@
+{
+ "seed": 20261112,
+ "missing": [],
+ "keys": {
+  "1fce8ddbcf": {
+   "model": "qwen3",
+   "id": "near-07",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "ec44c2c6ca": {
+   "model": "qwen3",
+   "id": "off-04",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "41a5f735b5": {
+   "model": "granite",
+   "id": "fact-11",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "d1b746fedb": {
+   "model": "granite",
+   "id": "broad-06",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "dd3e541cd4": {
+   "model": "granite",
+   "id": "off-02",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "da3d2b3b5c": {
+   "model": "granite",
+   "id": "how-05",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "fbe39ddc1a": {
+   "model": "lfm",
+   "id": "near-01",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "0542913aff": {
+   "model": "qwen3",
+   "id": "fact-01",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "54bc318313": {
+   "model": "lfm",
+   "id": "broad-06",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "fcfe4b4c02": {
+   "model": "lfm",
+   "id": "how-08",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "8de90f88b0": {
+   "model": "lfm",
+   "id": "fact-10",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "d069eed61d": {
+   "model": "qwen3",
+   "id": "fact-11",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "267238f732": {
+   "model": "qwen35",
+   "id": "person-02",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "f6120f564a": {
+   "model": "granite",
+   "id": "fact-09",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "23c01150b7": {
+   "model": "lfm",
+   "id": "how-07",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "704ae254a3": {
+   "model": "lfm",
+   "id": "how-02",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "d8057d0cd5": {
+   "model": "qwen3",
+   "id": "near-01",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "32bb057da4": {
+   "model": "lfm",
+   "id": "how-05",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "9560234be2": {
+   "model": "granite",
+   "id": "fact-06",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "bcba9a4b26": {
+   "model": "qwen3",
+   "id": "broad-05",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "697c34a6e6": {
+   "model": "qwen3",
+   "id": "off-02",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "aa58ab7d1b": {
+   "model": "lfm",
+   "id": "person-01",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "9ce079aedf": {
+   "model": "qwen3",
+   "id": "fact-06",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "46f9c22b3c": {
+   "model": "qwen35",
+   "id": "broad-02",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "6ffc92db96": {
+   "model": "qwen3",
+   "id": "person-03",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "f7def57cf9": {
+   "model": "granite",
+   "id": "person-04",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "9c33189d17": {
+   "model": "granite",
+   "id": "how-08",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "8c2337152d": {
+   "model": "qwen35",
+   "id": "near-08",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "31c5cd12a1": {
+   "model": "qwen35",
+   "id": "fact-08",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "1f864ab888": {
+   "model": "qwen3",
+   "id": "off-07",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "c1a579d50e": {
+   "model": "lfm",
+   "id": "fact-03",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "356a67c3e6": {
+   "model": "qwen35",
+   "id": "how-07",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "381e2b2792": {
+   "model": "qwen3",
+   "id": "fact-12",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "cd59897c69": {
+   "model": "granite",
+   "id": "broad-02",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "a909308bc9": {
+   "model": "lfm",
+   "id": "off-01",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "2b21656ec4": {
+   "model": "qwen35",
+   "id": "fact-07",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "455883484e": {
+   "model": "qwen3",
+   "id": "how-04",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "8f1a0aa8c9": {
+   "model": "granite",
+   "id": "fact-12",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "982976371e": {
+   "model": "qwen3",
+   "id": "fact-08",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "b4ad06eda5": {
+   "model": "lfm",
+   "id": "broad-01",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "571fda4c74": {
+   "model": "qwen3",
+   "id": "fact-10",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "c770b6eb6d": {
+   "model": "lfm",
+   "id": "how-06",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "4523df65f4": {
+   "model": "qwen35",
+   "id": "how-01",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "21706964da": {
+   "model": "lfm",
+   "id": "off-03",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "fc8e4400d7": {
+   "model": "granite",
+   "id": "near-04",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "bbd460fd2f": {
+   "model": "lfm",
+   "id": "near-04",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "f943e50f7b": {
+   "model": "qwen3",
+   "id": "near-08",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "92c72ad5ee": {
+   "model": "granite",
+   "id": "near-02",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "65963e2bfa": {
+   "model": "lfm",
+   "id": "fact-12",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "107bb21c06": {
+   "model": "qwen3",
+   "id": "how-07",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "77e88d9a5a": {
+   "model": "granite",
+   "id": "fact-05",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "c29c0a6988": {
+   "model": "granite",
+   "id": "broad-03",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "ab02460d91": {
+   "model": "qwen35",
+   "id": "broad-03",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "d8cad6d486": {
+   "model": "qwen3",
+   "id": "near-04",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "59d4105bb6": {
+   "model": "qwen35",
+   "id": "off-01",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "0589be674e": {
+   "model": "granite",
+   "id": "how-01",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "3db4395027": {
+   "model": "qwen35",
+   "id": "fact-03",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "a81ed0a93c": {
+   "model": "granite",
+   "id": "near-01",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "9b39b71461": {
+   "model": "qwen35",
+   "id": "fact-05",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "91f7ee53f6": {
+   "model": "qwen3",
+   "id": "broad-04",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "9426d22d90": {
+   "model": "qwen35",
+   "id": "off-02",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "72b9cde00c": {
+   "model": "lfm",
+   "id": "fact-11",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "0c8eb4ab3f": {
+   "model": "lfm",
+   "id": "near-06",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "9b87e07744": {
+   "model": "lfm",
+   "id": "fact-08",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "d3d2f0a837": {
+   "model": "qwen35",
+   "id": "near-06",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "32394bbc09": {
+   "model": "qwen35",
+   "id": "near-04",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "c16a90579f": {
+   "model": "qwen35",
+   "id": "broad-05",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "a74e804507": {
+   "model": "lfm",
+   "id": "near-07",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "fd493839ca": {
+   "model": "qwen35",
+   "id": "person-03",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "4038c0aec8": {
+   "model": "lfm",
+   "id": "broad-03",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "e8b9bdb386": {
+   "model": "qwen3",
+   "id": "fact-05",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "78cc811a64": {
+   "model": "qwen35",
+   "id": "how-04",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "a99ad65615": {
+   "model": "qwen35",
+   "id": "fact-04",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "eb77adb483": {
+   "model": "granite",
+   "id": "near-08",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "86a7376f26": {
+   "model": "qwen3",
+   "id": "how-08",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "88429087a6": {
+   "model": "qwen3",
+   "id": "near-05",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "2a236f46e4": {
+   "model": "qwen3",
+   "id": "how-06",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "8513548710": {
+   "model": "qwen35",
+   "id": "off-07",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "ff90667140": {
+   "model": "granite",
+   "id": "fact-08",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "2088ad45d4": {
+   "model": "qwen3",
+   "id": "fact-09",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "e78ff92af9": {
+   "model": "qwen3",
+   "id": "off-03",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "fe358c12d5": {
+   "model": "qwen3",
+   "id": "near-06",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "75635b72a0": {
+   "model": "qwen35",
+   "id": "how-05",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "40e6f24b14": {
+   "model": "lfm",
+   "id": "fact-07",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "38bb9ab3dc": {
+   "model": "granite",
+   "id": "broad-05",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "11f790f0a2": {
+   "model": "qwen3",
+   "id": "person-02",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "c06179ed1b": {
+   "model": "granite",
+   "id": "broad-01",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "c8c13d0b65": {
+   "model": "qwen3",
+   "id": "how-02",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "95f2c044d9": {
+   "model": "granite",
+   "id": "how-03",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "f1088e386d": {
+   "model": "granite",
+   "id": "near-07",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "dc91290429": {
+   "model": "granite",
+   "id": "off-01",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "55b873e863": {
+   "model": "qwen3",
+   "id": "broad-03",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "72cea9513d": {
+   "model": "lfm",
+   "id": "person-02",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "99e8a665ee": {
+   "model": "qwen3",
+   "id": "off-01",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "215751036b": {
+   "model": "qwen35",
+   "id": "how-03",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "0cc005e58a": {
+   "model": "granite",
+   "id": "fact-02",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "921436a6b6": {
+   "model": "qwen35",
+   "id": "broad-04",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "1dc8483bd3": {
+   "model": "qwen35",
+   "id": "fact-11",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "1df27fe071": {
+   "model": "qwen35",
+   "id": "person-01",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "29455d2132": {
+   "model": "lfm",
+   "id": "near-02",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "acffac1697": {
+   "model": "lfm",
+   "id": "off-05",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "922539b9f6": {
+   "model": "granite",
+   "id": "person-03",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "10996d4db0": {
+   "model": "granite",
+   "id": "broad-04",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "89296991c3": {
+   "model": "qwen3",
+   "id": "broad-02",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "f15b346edb": {
+   "model": "qwen35",
+   "id": "off-06",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "0ee440d86b": {
+   "model": "qwen35",
+   "id": "near-01",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "0c76497d90": {
+   "model": "qwen3",
+   "id": "near-03",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "e2b27ee2dd": {
+   "model": "qwen35",
+   "id": "broad-01",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "bae07a06ba": {
+   "model": "lfm",
+   "id": "off-06",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "6b18980615": {
+   "model": "qwen35",
+   "id": "fact-10",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "8ae4d40f61": {
+   "model": "granite",
+   "id": "off-04",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "c677627328": {
+   "model": "granite",
+   "id": "near-03",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "b788f10b2c": {
+   "model": "qwen3",
+   "id": "broad-01",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "56a6ec1a3e": {
+   "model": "lfm",
+   "id": "how-01",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "0a77c73186": {
+   "model": "granite",
+   "id": "how-02",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "a35f7158e2": {
+   "model": "granite",
+   "id": "fact-10",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "add06a551d": {
+   "model": "qwen3",
+   "id": "person-01",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "d2f01ff9d5": {
+   "model": "qwen3",
+   "id": "off-06",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "44de15410c": {
+   "model": "lfm",
+   "id": "fact-09",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "f9b082cb00": {
+   "model": "granite",
+   "id": "near-05",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "768b89686f": {
+   "model": "qwen3",
+   "id": "how-03",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "b953d33016": {
+   "model": "qwen35",
+   "id": "near-05",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "33f1f095cb": {
+   "model": "lfm",
+   "id": "near-03",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "862a33123d": {
+   "model": "lfm",
+   "id": "near-05",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "bc8da57d01": {
+   "model": "lfm",
+   "id": "person-03",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "d0ed6f95bb": {
+   "model": "qwen3",
+   "id": "fact-04",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "aa281bc0b6": {
+   "model": "qwen35",
+   "id": "off-05",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "1f01e9800d": {
+   "model": "lfm",
+   "id": "near-08",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "c8f9f0bbf0": {
+   "model": "qwen3",
+   "id": "broad-06",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "15fa96cb35": {
+   "model": "lfm",
+   "id": "off-04",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "aa93883026": {
+   "model": "granite",
+   "id": "fact-07",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "afe9b3f232": {
+   "model": "qwen3",
+   "id": "near-02",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "4c7362ab2c": {
+   "model": "lfm",
+   "id": "person-04",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "2f95249fb6": {
+   "model": "qwen35",
+   "id": "how-06",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "d5c7f4947f": {
+   "model": "granite",
+   "id": "how-06",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "1c07890ea8": {
+   "model": "granite",
+   "id": "fact-03",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "6fd00c50b3": {
+   "model": "lfm",
+   "id": "fact-04",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "95ed4f6a9a": {
+   "model": "qwen35",
+   "id": "near-07",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "63987d73e8": {
+   "model": "qwen3",
+   "id": "fact-03",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "6153626362": {
+   "model": "granite",
+   "id": "how-07",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "3cbdd3e76c": {
+   "model": "lfm",
+   "id": "broad-04",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "f8068e040d": {
+   "model": "granite",
+   "id": "fact-01",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "9713d4a92c": {
+   "model": "qwen35",
+   "id": "person-04",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "b706fd5d8d": {
+   "model": "granite",
+   "id": "off-03",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "48c0e0faba": {
+   "model": "qwen35",
+   "id": "fact-01",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "9b3e5c8c2e": {
+   "model": "qwen3",
+   "id": "how-01",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "ddc35440c4": {
+   "model": "qwen3",
+   "id": "person-04",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "6dff14a9c0": {
+   "model": "lfm",
+   "id": "fact-01",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "0e3373af1b": {
+   "model": "lfm",
+   "id": "fact-02",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "7c17cfa1b4": {
+   "model": "qwen35",
+   "id": "how-02",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "a3069a4a7f": {
+   "model": "granite",
+   "id": "person-02",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": true
+  },
+  "c03c3678fd": {
+   "model": "qwen35",
+   "id": "off-03",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "302bb28556": {
+   "model": "lfm",
+   "id": "fact-05",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "2b661b17d7": {
+   "model": "granite",
+   "id": "fact-04",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "4d4f33717a": {
+   "model": "qwen35",
+   "id": "fact-06",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "222bf72458": {
+   "model": "lfm",
+   "id": "broad-05",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "b53427e4d8": {
+   "model": "granite",
+   "id": "person-01",
+   "half": "answerable",
+   "kind": "person",
+   "retrievalHit": false
+  },
+  "0fe3823ffe": {
+   "model": "lfm",
+   "id": "how-03",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "d9a582e488": {
+   "model": "qwen35",
+   "id": "fact-02",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "2e95dcb905": {
+   "model": "qwen3",
+   "id": "off-05",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "841b7225ef": {
+   "model": "lfm",
+   "id": "broad-02",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "3f475da30d": {
+   "model": "qwen35",
+   "id": "fact-12",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "24f6ca49fb": {
+   "model": "granite",
+   "id": "how-04",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "a281afea63": {
+   "model": "qwen3",
+   "id": "fact-02",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "7be38da811": {
+   "model": "qwen3",
+   "id": "fact-07",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "fe2853523b": {
+   "model": "qwen3",
+   "id": "how-05",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": true
+  },
+  "d84bf813b7": {
+   "model": "granite",
+   "id": "off-06",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "2707e7a0ae": {
+   "model": "qwen35",
+   "id": "how-08",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "9ae2fe124e": {
+   "model": "granite",
+   "id": "off-05",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "80f017c614": {
+   "model": "granite",
+   "id": "off-07",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "97c98a10df": {
+   "model": "lfm",
+   "id": "off-07",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "b05e3eb0fd": {
+   "model": "qwen35",
+   "id": "broad-06",
+   "half": "answerable",
+   "kind": "broad",
+   "retrievalHit": true
+  },
+  "ba1b8f23e3": {
+   "model": "granite",
+   "id": "near-06",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "6a95855023": {
+   "model": "lfm",
+   "id": "off-02",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  },
+  "99a4d45916": {
+   "model": "lfm",
+   "id": "fact-06",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": true
+  },
+  "74a0babc57": {
+   "model": "qwen35",
+   "id": "fact-09",
+   "half": "answerable",
+   "kind": "fact",
+   "retrievalHit": false
+  },
+  "24b095d160": {
+   "model": "qwen35",
+   "id": "near-02",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "26fa81d07b": {
+   "model": "qwen35",
+   "id": "near-03",
+   "half": "unanswerable",
+   "kind": "near-miss",
+   "retrievalHit": null
+  },
+  "f30c980026": {
+   "model": "lfm",
+   "id": "how-04",
+   "half": "answerable",
+   "kind": "how",
+   "retrievalHit": false
+  },
+  "af728402a8": {
+   "model": "qwen35",
+   "id": "off-04",
+   "half": "unanswerable",
+   "kind": "off-topic",
+   "retrievalHit": null
+  }
+ }
+}

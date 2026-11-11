@@ -1,0 +1,2266 @@
+{
+ "againstBm25": {
+  "potion8.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-01",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-01"
+   ]
+  },
+  "potion8.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "minilm.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-04"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-05",
+    "tool-02",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "lookup-04",
+    "person-04",
+    "multi-01"
+   ]
+  },
+  "minilm.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "tool-04",
+    "person-04"
+   ]
+  },
+  "leaf.hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf.d256.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02"
+   ]
+  },
+  "leaf.d256.hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "person-03",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2.d256.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-04",
+    "paraphrase-06",
+    "multi-01",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "person-03",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "person-04"
+   ]
+  },
+  "gemma2.d256.hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-04"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-01",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-01"
+   ]
+  },
+  "potion8.int8.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.d128.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-02",
+    "question-04",
+    "question-05",
+    "paraphrase-06",
+    "multi-02",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "partial-01",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-01",
+    "multi-02"
+   ]
+  },
+  "potion8.d128.hybrid": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05"
+   ]
+  },
+  "potion8.d128.int8.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-02",
+    "question-04",
+    "question-05",
+    "paraphrase-06",
+    "multi-02",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "partial-01",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-01",
+    "multi-02"
+   ]
+  },
+  "potion8.d128.int8.hybrid": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05"
+   ]
+  },
+  "potion32r.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06",
+    "person-04"
+   ],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-01",
+    "partial-03",
+    "person-03",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "tool-04",
+    "person-04"
+   ]
+  },
+  "potion32r.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "partial-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "person-04"
+   ]
+  },
+  "potion32r.d128.int8.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-04",
+    "paraphrase-06",
+    "person-04",
+    "multi-02",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "partial-01",
+    "partial-03"
+   ],
+   "top1Lost": [
+    "lookup-02",
+    "question-01",
+    "tool-04",
+    "person-04",
+    "multi-02",
+    "multi-03"
+   ]
+  },
+  "potion32r.d128.int8.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "partial-03"
+   ],
+   "top1Lost": [
+    "person-04",
+    "multi-02"
+   ]
+  },
+  "arctic.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "person-03",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02"
+   ]
+  },
+  "arctic.hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "asym.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02"
+   ]
+  },
+  "asym.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "asym.d256.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06",
+    "multi-02"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02"
+   ]
+  },
+  "asym.d256.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "question-04",
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-01",
+    "partial-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "lookup-02",
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-01"
+   ]
+  },
+  "potion8@desc.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-01",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "lookup-02",
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-01"
+   ]
+  },
+  "potion8.int8@desc.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.d128.int8@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "lookup-02",
+    "question-02",
+    "question-05",
+    "paraphrase-06",
+    "multi-02",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "partial-01",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "lookup-02",
+    "partial-02",
+    "partial-05",
+    "tool-04",
+    "person-04",
+    "multi-02"
+   ]
+  },
+  "potion8.d128.int8@desc.hybrid": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05",
+    "tool-04"
+   ]
+  },
+  "minilm@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "lookup-02"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-03",
+    "paraphrase-05",
+    "tool-02",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "lookup-04",
+    "person-04",
+    "multi-01"
+   ]
+  },
+  "minilm@desc.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-04",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "person-04"
+   ]
+  },
+  "leaf@desc.hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf.d256@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "partial-04",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02"
+   ]
+  },
+  "leaf.d256@desc.hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-04",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "person-03",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2@desc.hybrid": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "asym@desc.semantic": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-01",
+    "paraphrase-02",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-02"
+   ]
+  },
+  "asym@desc.hybrid": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "tool-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  }
+ },
+ "fusedOverTop10": {
+  "potion8": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8@desc": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8@desc": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.d128.int8": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05"
+   ]
+  },
+  "potion8.d128.int8@desc": {
+   "fixed": [
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "person-02"
+   ],
+   "top1Lost": [
+    "partial-05",
+    "tool-04"
+   ]
+  },
+  "minilm": {
+   "fixed": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "paraphrase-04",
+    "paraphrase-05",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "minilm@desc": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-04",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf@desc": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-02",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf.d256": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "tool-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "leaf.d256@desc": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "paraphrase-04",
+    "partial-03",
+    "tool-03",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [
+    "question-04"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-01",
+    "person-02",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "gemma2@desc": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "paraphrase-05",
+    "partial-03",
+    "person-02",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03",
+    "person-01",
+    "person-02"
+   ],
+   "top1Lost": []
+  },
+  "leaf|potion8.int8": {
+   "fixed": [
+    "paraphrase-01",
+    "person-03"
+   ],
+   "broken": [
+    "tool-02"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "tool-03"
+   ],
+   "top1Lost": []
+  },
+  "leaf@desc|potion8.int8@desc": {
+   "fixed": [
+    "paraphrase-01",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "tool-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-05"
+   ]
+  },
+  "minilm|potion8.int8": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "partial-03",
+    "person-01"
+   ]
+  },
+  "minilm@desc|potion8.int8@desc": {
+   "fixed": [
+    "paraphrase-03"
+   ],
+   "broken": [
+    "partial-03"
+   ],
+   "top1Gained": [
+    "paraphrase-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "partial-03"
+   ]
+  },
+  "gemma2|leaf": {
+   "fixed": [
+    "paraphrase-03"
+   ],
+   "broken": [
+    "paraphrase-01"
+   ],
+   "top1Gained": [
+    "paraphrase-06",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "tool-03"
+   ]
+  },
+  "gemma2@desc|leaf@desc": {
+   "fixed": [
+    "paraphrase-03"
+   ],
+   "broken": [
+    "paraphrase-01",
+    "tool-02"
+   ],
+   "top1Gained": [
+    "paraphrase-05",
+    "paraphrase-06"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "tool-03"
+   ]
+  },
+  "gemma2|potion8.int8": {
+   "fixed": [
+    "paraphrase-03",
+    "person-03"
+   ],
+   "broken": [
+    "tool-02"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-06",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02"
+   ]
+  },
+  "gemma2@desc|potion8.int8@desc": {
+   "fixed": [
+    "paraphrase-03",
+    "person-03"
+   ],
+   "broken": [
+    "tool-02"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-06",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-02"
+   ]
+  },
+  "potion8.int8|potion8.d128.int8": {
+   "fixed": [
+    "paraphrase-04"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "partial-05"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8@desc|potion8.d128.int8@desc": {
+   "fixed": [
+    "paraphrase-04"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "partial-05",
+    "tool-04"
+   ],
+   "top1Lost": []
+  }
+ },
+ "betweenModels": {
+  "leaf|potion8|hybrid": {
+   "fixed": [
+    "paraphrase-01"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "tool-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-06"
+   ]
+  },
+  "leaf|potion8|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "partial-04",
+    "person-03",
+    "multi-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-05",
+    "partial-05",
+    "tool-03",
+    "person-01",
+    "multi-01",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-01",
+    "partial-02"
+   ]
+  },
+  "leaf|minilm|hybrid": {
+   "fixed": [
+    "paraphrase-01"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "tool-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-04"
+   ]
+  },
+  "leaf|minilm|semantic": {
+   "fixed": [
+    "lookup-02",
+    "partial-04"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "lookup-04",
+    "question-05",
+    "paraphrase-01",
+    "partial-03",
+    "person-01",
+    "multi-01"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "tool-02",
+    "tool-04"
+   ]
+  },
+  "asym|leaf|hybrid": {
+   "fixed": [],
+   "broken": [
+    "paraphrase-01"
+   ],
+   "top1Gained": [],
+   "top1Lost": [
+    "paraphrase-05"
+   ]
+  },
+  "asym|leaf|semantic": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-04",
+    "tool-04",
+    "person-04"
+   ],
+   "top1Lost": [
+    "person-01"
+   ]
+  },
+  "gemma2|leaf|hybrid": {
+   "fixed": [
+    "paraphrase-06"
+   ],
+   "broken": [
+    "paraphrase-01"
+   ],
+   "top1Gained": [
+    "paraphrase-06",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "tool-03"
+   ]
+  },
+  "gemma2|leaf|semantic": {
+   "fixed": [
+    "paraphrase-06"
+   ],
+   "broken": [
+    "multi-03"
+   ],
+   "top1Gained": [
+    "paraphrase-03",
+    "partial-02",
+    "tool-02",
+    "tool-04",
+    "person-03",
+    "person-04"
+   ],
+   "top1Lost": [
+    "topic-03",
+    "question-05"
+   ]
+  },
+  "minilm|potion8|hybrid": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "paraphrase-06",
+    "partial-03"
+   ]
+  },
+  "minilm|potion8|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "person-03",
+    "multi-03"
+   ],
+   "broken": [
+    "lookup-02"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-05",
+    "partial-05",
+    "tool-02",
+    "tool-03",
+    "tool-04",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "lookup-04",
+    "paraphrase-01",
+    "partial-01",
+    "partial-03"
+   ]
+  },
+  "gemma2|potion8|hybrid": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "person-01",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02"
+   ]
+  },
+  "gemma2|potion8|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "partial-04",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-05",
+    "tool-02",
+    "tool-03",
+    "tool-04",
+    "person-01",
+    "person-03",
+    "person-04",
+    "multi-01",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-01"
+   ]
+  },
+  "leaf|potion8.int8|hybrid": {
+   "fixed": [
+    "paraphrase-01"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "tool-03"
+   ],
+   "top1Lost": []
+  },
+  "leaf|potion8.int8|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "partial-04",
+    "person-03",
+    "multi-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05",
+    "paraphrase-05",
+    "partial-05",
+    "tool-03",
+    "person-01",
+    "multi-01",
+    "multi-04"
+   ],
+   "top1Lost": [
+    "partial-01",
+    "partial-02"
+   ]
+  },
+  "potion8.int8|potion8.d128.int8|hybrid": {
+   "fixed": [
+    "paraphrase-04"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "partial-05"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8|potion8.d128.int8|semantic": {
+   "fixed": [
+    "lookup-02",
+    "question-02",
+    "question-05",
+    "paraphrase-06",
+    "multi-02"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-02",
+    "multi-02"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8|potion8|hybrid": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-06"
+   ]
+  },
+  "potion8.int8|potion8|semantic": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [],
+   "top1Lost": []
+  },
+  "leaf.d256|leaf|hybrid": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-04",
+    "multi-04"
+   ],
+   "top1Lost": []
+  },
+  "leaf.d256|leaf|semantic": {
+   "fixed": [],
+   "broken": [],
+   "top1Gained": [
+    "tool-04",
+    "person-04"
+   ],
+   "top1Lost": [
+    "person-01"
+   ]
+  },
+  "gemma2.d256|gemma2|hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "paraphrase-03"
+   ],
+   "broken": [
+    "lookup-02"
+   ],
+   "top1Gained": [
+    "paraphrase-02"
+   ],
+   "top1Lost": [
+    "paraphrase-05",
+    "paraphrase-06"
+   ]
+  },
+  "gemma2.d256|gemma2|semantic": {
+   "fixed": [],
+   "broken": [
+    "lookup-02",
+    "paraphrase-04",
+    "paraphrase-06",
+    "partial-04",
+    "multi-01",
+    "multi-03"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "question-05"
+   ],
+   "top1Lost": [
+    "partial-02",
+    "person-04"
+   ]
+  },
+  "leaf@desc|potion8@desc|hybrid": {
+   "fixed": [
+    "paraphrase-01"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "tool-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-05",
+    "paraphrase-06"
+   ]
+  },
+  "leaf@desc|potion8@desc|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "partial-04",
+    "person-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "lookup-02",
+    "topic-03",
+    "question-05",
+    "paraphrase-05",
+    "partial-05",
+    "tool-03",
+    "tool-04",
+    "person-01",
+    "multi-01"
+   ],
+   "top1Lost": [
+    "partial-01",
+    "partial-02"
+   ]
+  },
+  "leaf@desc|minilm@desc|hybrid": {
+   "fixed": [
+    "paraphrase-01",
+    "partial-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "paraphrase-02",
+    "partial-03",
+    "tool-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-04"
+   ]
+  },
+  "leaf@desc|minilm@desc|semantic": {
+   "fixed": [
+    "lookup-02",
+    "partial-03",
+    "partial-04"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "lookup-04",
+    "question-05",
+    "paraphrase-01",
+    "partial-03",
+    "person-01",
+    "multi-01"
+   ],
+   "top1Lost": [
+    "paraphrase-03",
+    "partial-02",
+    "tool-02"
+   ]
+  },
+  "minilm@desc|potion8@desc|hybrid": {
+   "fixed": [],
+   "broken": [
+    "partial-03"
+   ],
+   "top1Gained": [
+    "paraphrase-04"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "paraphrase-05",
+    "paraphrase-06",
+    "partial-03"
+   ]
+  },
+  "minilm@desc|potion8@desc|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "person-03"
+   ],
+   "broken": [
+    "lookup-02",
+    "partial-03"
+   ],
+   "top1Gained": [
+    "lookup-02",
+    "topic-03",
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-05",
+    "tool-02",
+    "tool-03",
+    "tool-04"
+   ],
+   "top1Lost": [
+    "lookup-04",
+    "paraphrase-01",
+    "partial-01",
+    "partial-03"
+   ]
+  },
+  "gemma2@desc|leaf@desc|hybrid": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-06"
+   ],
+   "broken": [
+    "paraphrase-01"
+   ],
+   "top1Gained": [
+    "paraphrase-05",
+    "paraphrase-06"
+   ],
+   "top1Lost": [
+    "paraphrase-02",
+    "tool-03"
+   ]
+  },
+  "gemma2@desc|leaf@desc|semantic": {
+   "fixed": [
+    "paraphrase-06"
+   ],
+   "broken": [
+    "partial-04"
+   ],
+   "top1Gained": [
+    "paraphrase-03",
+    "partial-02",
+    "tool-02",
+    "person-03",
+    "person-04"
+   ],
+   "top1Lost": [
+    "topic-03",
+    "question-05"
+   ]
+  },
+  "gemma2@desc|potion8@desc|hybrid": {
+   "fixed": [
+    "paraphrase-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "topic-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-02"
+   ]
+  },
+  "gemma2@desc|potion8@desc|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "person-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "lookup-02",
+    "paraphrase-03",
+    "paraphrase-05",
+    "partial-05",
+    "tool-02",
+    "tool-03",
+    "tool-04",
+    "person-01",
+    "person-03",
+    "person-04",
+    "multi-01"
+   ],
+   "top1Lost": [
+    "partial-01"
+   ]
+  },
+  "potion8.int8@desc|potion8.d128.int8@desc|hybrid": {
+   "fixed": [
+    "paraphrase-04"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "partial-05",
+    "tool-04"
+   ],
+   "top1Lost": []
+  },
+  "potion8.int8@desc|potion8.d128.int8@desc|semantic": {
+   "fixed": [
+    "lookup-02",
+    "question-02",
+    "question-05",
+    "paraphrase-06",
+    "multi-02",
+    "multi-03"
+   ],
+   "broken": [],
+   "top1Gained": [
+    "paraphrase-01",
+    "paraphrase-02",
+    "partial-02",
+    "multi-02"
+   ],
+   "top1Lost": [
+    "multi-01"
+   ]
+  },
+  "leaf@desc|potion8.int8@desc|hybrid": {
+   "fixed": [
+    "paraphrase-01"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "topic-03",
+    "tool-03",
+    "person-01"
+   ],
+   "top1Lost": [
+    "paraphrase-05"
+   ]
+  },
+  "leaf@desc|potion8.int8@desc|semantic": {
+   "fixed": [
+    "paraphrase-03",
+    "paraphrase-04",
+    "partial-04",
+    "person-03"
+   ],
+   "broken": [
+    "paraphrase-06"
+   ],
+   "top1Gained": [
+    "lookup-02",
+    "topic-03",
+    "question-05",
+    "paraphrase-05",
+    "partial-05",
+    "tool-04",
+    "person-01",
+    "multi-01"
+   ],
+   "top1Lost": [
+    "partial-01",
+    "partial-02"
+   ]
+  },
+  "asym@desc|leaf@desc|hybrid": {
+   "fixed": [],
+   "broken": [
+    "paraphrase-01"
+   ],
+   "top1Gained": [],
+   "top1Lost": [
+    "person-01"
+   ]
+  },
+  "asym@desc|leaf@desc|semantic": {
+   "fixed": [],
+   "broken": [
+    "partial-04"
+   ],
+   "top1Gained": [
+    "paraphrase-04",
+    "person-04"
+   ],
+   "top1Lost": [
+    "person-01"
+   ]
+  }
+ },
+ "quantization": {
+  "potion8|potion8.int8": {
+   "top5Overlap": 1,
+   "top1Same": 38,
+   "meanCosDiff": 0.0016642086074150327,
+   "maxCosDiff": 0.01070934534072876
+  },
+  "potion8|potion8.d128": {
+   "top5Overlap": 0.8350000000000002,
+   "top1Same": 33,
+   "meanCosDiff": 0.03262257208365867,
+   "maxCosDiff": 0.13119009137153625
+  },
+  "potion8|potion8.d128.int8": {
+   "top5Overlap": 0.8350000000000002,
+   "top1Same": 33,
+   "meanCosDiff": 0.032343943764102066,
+   "maxCosDiff": 0.12923258543014526
+  },
+  "minilm|minilm.vec-int8": {
+   "top5Overlap": 1,
+   "top1Same": 40,
+   "meanCosDiff": 0.0004307200966713059,
+   "maxCosDiff": 0.0020256154239177704
+  },
+  "leaf|leaf.d256": {
+   "top5Overlap": 0.885,
+   "top1Same": 36,
+   "meanCosDiff": 0.035643624552970085,
+   "maxCosDiff": 0.09854824841022491
+  },
+  "leaf|leaf.vec-int8": {
+   "top5Overlap": 1,
+   "top1Same": 40,
+   "meanCosDiff": 0.0005354250954477749,
+   "maxCosDiff": 0.0030590668320655823
+  },
+  "leaf|leaf.d256.vec-int8": {
+   "top5Overlap": 0.8800000000000001,
+   "top1Same": 36,
+   "meanCosDiff": 0.03563654622321573,
+   "maxCosDiff": 0.09854359924793243
+  },
+  "gemma2|gemma2.d512": {
+   "top5Overlap": 0.9099999999999999,
+   "top1Same": 37,
+   "meanCosDiff": 0.007608105586375027,
+   "maxCosDiff": 0.03609335422515869
+  },
+  "gemma2|gemma2.d256": {
+   "top5Overlap": 0.7750000000000004,
+   "top1Same": 33,
+   "meanCosDiff": 0.026566563283695895,
+   "maxCosDiff": 0.0811195969581604
+  },
+  "gemma2|gemma2.d128": {
+   "top5Overlap": 0.6450000000000002,
+   "top1Same": 24,
+   "meanCosDiff": 0.1329374501875283,
+   "maxCosDiff": 0.24193471670150757
+  },
+  "gemma2|gemma2.vec-int8": {
+   "top5Overlap": 0.99,
+   "top1Same": 40,
+   "meanCosDiff": 0.0005306231202902617,
+   "maxCosDiff": 0.002767324447631836
+  },
+  "gemma2|gemma2.d256.vec-int8": {
+   "top5Overlap": 0.7850000000000004,
+   "top1Same": 32,
+   "meanCosDiff": 0.02649961789838629,
+   "maxCosDiff": 0.08032363653182983
+  }
+ },
+ "failureQueries": [
+  "paraphrase-01",
+  "paraphrase-02",
+  "paraphrase-03",
+  "paraphrase-04",
+  "paraphrase-05",
+  "tool-02",
+  "person-02",
+  "person-03",
+  "partial-03"
+ ]
+}

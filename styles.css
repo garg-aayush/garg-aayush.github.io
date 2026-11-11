@@ -1,4 +1,4 @@
-/* Global base for every Quarto page: type, links, navigation, footer, focus, search, code and the shared UI classes (labels, section headers, buttons, item rows, the dated timeline, the live dot and the contact list). Page rules live in static/css/. Every color, font, size and scale value comes from static/design-tokens.css. */
+/* Global base for every Quarto page: type, links, navigation, footer, focus, code and the shared UI classes (labels, section headers, buttons, item rows, the dated timeline, the live dot and the contact list). Page rules live in static/css/. Every color, font, size and scale value comes from static/design-tokens.css. */
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -249,8 +249,25 @@ body.nav-fixed {
   position: relative;
 }
 
+/* The search link is an icon, the last item of the list. It is the same link as the others, with its underline under the icon. */
+/* Quarto's own rule for an icon item (nav .nav-item.compact .nav-link) pads it .5rem, so the same padding as the other links needs one more class. */
+.navbar .navbar-nav .nav-item.compact .nav-link {
+  padding: 0 var(--space-8);
+}
+
+.navbar .navbar-nav .nav-link .bi-search {
+  position: relative;
+  font-size: calc(var(--fs-h3) + var(--space-4));
+  line-height: 1;
+}
+
+.navbar .navbar-nav .nav-link .bi-search + .menu-text {
+  display: none;
+}
+
 /* The active page: Heading color and a 2px Accent underline */
-.navbar .navbar-nav .nav-link.active .menu-text::after {
+.navbar .navbar-nav .nav-link.active .menu-text::after,
+.navbar .navbar-nav .nav-link.active .bi-search::after {
   content: "";
   position: absolute;
   left: 0;
@@ -262,92 +279,38 @@ body.nav-fixed {
 
 @media (max-width: 600px) {
   .navbar .navbar-container > .navbar-nav {
-    gap: var(--space-4);
+    gap: 0;
     margin-right: calc(-1 * var(--space-4));
   }
 
-  .navbar .navbar-nav .nav-link {
+  .navbar .navbar-nav .nav-link,
+  .navbar .navbar-nav .nav-item.compact .nav-link {
     padding: 0 var(--space-4);
-  }
-
-  /* Search does not fit beside four links on a phone */
-  .navbar .aa-Autocomplete {
-    display: none;
   }
 }
 
-/* The narrowest phones: the brand and the four links still share one row */
+/* The narrowest phones: the brand, the four links and the search icon still share one row */
 @media (max-width: 380px) {
   .navbar-brand {
     font-size: var(--fs-ui);
   }
+}
 
-  .navbar .navbar-container > .navbar-nav {
-    gap: 0;
+/* The links and the icon take the label size below the width where the five items no longer fit at the UI size */
+@media (max-width: 370px) {
+  .navbar .navbar-nav .nav-link {
+    font-size: var(--fs-label);
   }
 
-  .navbar .navbar-nav .nav-link {
-    padding: 0 var(--space-4);
+  .navbar .navbar-nav .nav-link .bi-search {
+    font-size: var(--fs-h3);
   }
 }
 
 @media (max-width: 340px) {
-  .navbar .navbar-nav .nav-link {
+  .navbar-brand {
     font-size: var(--fs-label);
   }
-}
-
-/* Site search */
-.aa-DetachedOverlay {
-  background-color: var(--overlay-bg);
-}
-
-.aa-Form {
-  background-color: var(--bg-inset);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-}
-
-.aa-Form:focus-within {
-  border-color: var(--accent);
-  box-shadow: none;
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.aa-DetachedOverlay .aa-Panel {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-
-.aa-DetachedOverlay .aa-Item .search-item,
-.aa-DetachedOverlay li.aa-Item[aria-selected="false"] .search-item,
-.aa-DetachedOverlay .aa-Item .search-result-doc:not(.document-selectable) .search-result-title-container {
-  background-color: var(--bg-card);
-  border-color: var(--border);
-  color: var(--text-content);
-}
-
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item,
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item.search-result-more,
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item .search-result-section,
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item .search-result-text,
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item .search-result-title-container,
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item .search-result-text-container {
-  background-color: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-.aa-DetachedOverlay .aa-SourceHeader .search-result-header {
-  background-color: var(--bg-inset);
-  color: var(--text-muted);
-}
-
-.aa-DetachedOverlay li.aa-Item[aria-selected="true"] .search-item mark.search-match,
-.aa-DetachedOverlay li.aa-Item[aria-selected="false"] .search-item mark.search-match {
-  color: var(--text-primary);
-  background-color: var(--accent-dim);
 }
 
 /* Footer */

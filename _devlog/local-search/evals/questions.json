@@ -1,0 +1,398 @@
+{
+  "version": 1,
+  "written": "2026-11-11",
+  "grades": { "2": "answers the query", "1": "also useful" },
+  "questions": [
+    {
+      "id": "lookup-01",
+      "query": "dover-lap",
+      "type": "lookup",
+      "relevant": [
+        { "href": "pages/doverlap.html", "grade": 2 }
+      ],
+      "why": "The page title is DOVER-Lap. Its body is one sentence (MIT license and a repo link), so the title is all there is to match."
+    },
+    {
+      "id": "lookup-02",
+      "query": "jmi-res",
+      "type": "lookup",
+      "relevant": [
+        { "href": "about.html", "grade": 2 },
+        { "href": "publications.html", "grade": 2 }
+      ],
+      "why": "About (TU Delft entry): 'Developed JMI-res, a reservoir-oriented joint migration inversion method'. Publications: two paper titles (2018, 2020) contain JMI-res."
+    },
+    {
+      "id": "lookup-03",
+      "query": "bradley-terry model",
+      "type": "lookup",
+      "relevant": [
+        { "href": "posts/2025-12-30-deriving-dpo-loss.html", "grade": 2, "section": "ii-the-bradley-terry-model-for-preference-learning" },
+        { "href": "posts/2025-12-25-deriving-ppo-loss.html", "grade": 1, "section": "reward-model-loss-function" }
+      ],
+      "why": "The DPO post has a whole section on the Bradley-Terry model; the PPO post uses it for the reward model loss. Much of both is in equations."
+    },
+    {
+      "id": "lookup-04",
+      "query": "svg2raster",
+      "type": "lookup",
+      "relevant": [
+        { "href": "posts/2025-09-10-build-custom-comfyui-node.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "The ComfyUI custom node guide uses the Svg2Raster package as its running example. Work lists the ComfyUI-Svg2Raster repo with a one-line description."
+    },
+    {
+      "id": "topic-01",
+      "query": "online softmax",
+      "type": "topic",
+      "relevant": [
+        { "href": "posts/2026-03-27-flash-attention/index.html", "grade": 2, "section": "online-softmax" }
+      ],
+      "why": "The FlashAttention post has an Online Softmax section deriving the 3-pass to 1-pass update; the key recurrences are display math."
+    },
+    {
+      "id": "topic-02",
+      "query": "speaker diarization",
+      "type": "topic",
+      "relevant": [
+        { "href": "pages/overlap-aware-sc.html", "grade": 2 },
+        { "href": "pages/jsalt.html", "grade": 2 }
+      ],
+      "why": "Both research pages are about diarization (overlap-aware spectral clustering; the JSALT separation, diarization and ASR pipeline). DOVER-Lap is a diarization tool but its page never says so, so it is not graded."
+    },
+    {
+      "id": "topic-03",
+      "query": "kv cache memory",
+      "type": "topic",
+      "relevant": [
+        { "href": "posts/2026-03-29-local-llm-opencode/index.html", "grade": 2, "section": "reasoning-and-things-i-learned-along-the-way" },
+        { "href": "posts/2026-04-05-qwen35-vs-gemma4/index.html", "grade": 1 },
+        { "href": "posts/2026-04-03-self-hosted-gemma4-chat/index.html", "grade": 1 }
+      ],
+      "why": "The OpenCode post explains why Qwen3.5's hybrid architecture keeps the KV cache small and that each --parallel slot gets its own cache (the size comparison is an image). The other two set q8_0 KV cache and pick context sizes to fit 24 GB."
+    },
+    {
+      "id": "topic-04",
+      "query": "residual connections",
+      "type": "topic",
+      "relevant": [
+        { "href": "posts/2025-09-08-building-gpt-from-scratch.html", "grade": 2 }
+      ],
+      "why": "Update 4 of the GPT from scratch post explains residual connections as a 'gradient superhighway' and the val loss drop to ~2.09."
+    },
+    {
+      "id": "question-01",
+      "query": "how many gpus does glm-5.3-flash need",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2026-11-01-gpt-local-model-opencode/index.html", "grade": 2 }
+      ],
+      "why": "'GLM-5.3-Flash is free, runs on a single 4-GPU H200 server' (320B total, 18B active, 512K context)."
+    },
+    {
+      "id": "question-02",
+      "query": "should i use skills or mcp servers",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2026-02-12-cc-tools/index.html", "grade": 2, "section": "prefer-skills-over-mcp-servers" },
+        { "href": "posts/2026-01-13-claude-skills/index.html", "grade": 2 }
+      ],
+      "why": "The Claude Code tools post has a section titled 'Prefer Skills Over MCP Servers' (the token comparison is in images); the skills post has a table comparing skills, CLAUDE.md, MCP servers and subagents, and contrasts progressive loading with MCP tool descriptions."
+    },
+    {
+      "id": "question-03",
+      "query": "does doing sft first make grpo better",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "grade": 2, "section": "sft-checkpoint-initialization" }
+      ],
+      "why": "SFT Checkpoint Initialization ablation: the base model beats every SFT checkpoint; 'SFT initialization hurts in this case'. The curves are in an image."
+    },
+    {
+      "id": "question-04",
+      "query": "where does the india weather page get its aqi numbers",
+      "type": "question",
+      "relevant": [
+        { "href": "india-weather.html", "grade": 2 },
+        { "href": "posts/2026-04-29-india-weather-with-claude/index.html", "grade": 2, "section": "what-it-does" }
+      ],
+      "why": "The weather page footnote names WAQI (CPCB stations) for live AQI and Open-Meteo CAMS for 7d/30d; the build post has a sources table and explains the choice. The weather page is indexed with match-body: false, so its footnote is not searchable by design."
+    },
+    {
+      "id": "question-05",
+      "query": "which model did best on the viggo extraction task",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2024-07-09-compare-models-structured-data.html", "grade": 2 },
+        { "href": "posts/2024-07-15-finetune-llama3-8B-predibase.html", "grade": 1 },
+        { "href": "posts/2024-07-03-baseline-gpt4o-structured-data.html", "grade": 1 }
+      ],
+      "why": "Part II concludes Claude Sonnet 3.5 was best of six models (the scores are only in a plot image). Part III shows a fine-tuned Llama-3-8B beating GPT-4o on exact match; Part I is the GPT-4o baseline."
+    },
+    {
+      "id": "paraphrase-01",
+      "query": "patching holes in a chart that repeats every year",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2026-07-15-kalman-filters-time-series/index.html", "grade": 2, "section": "example-airpassengers-gaps" }
+      ],
+      "why": "Kalman smoothing fills deleted gaps in the seasonal AirPassengers series. Shared words: only 'every' and 'year'; 'patching', 'holes', 'chart' do not appear, and 'repeats' does not prefix 'repeatedly'."
+    },
+    {
+      "id": "paraphrase-02",
+      "query": "connect to the box under my desk when traveling",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2024-06-30-remote-gpu-server.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "The personal GPU server guide sets up SSH and ngrok to reach the workstation from a cafe or co-working space; Work lists the same guide as a gist. Shared word: only 'connect'; 'box', 'desk', 'traveling' do not appear."
+    },
+    {
+      "id": "paraphrase-03",
+      "query": "keep an old and a new gpu toolchain on one box without clashes",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2024-05-19-manage-multiple-cuda.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "Installing CUDA 11.8 and 12.1 side by side and switching with environment modules ('avoid CUDA environment conflicts'). Shared word: only 'gpu'; 'old', 'new', 'toolchain', 'box', 'clashes' do not appear."
+    },
+    {
+      "id": "paraphrase-04",
+      "query": "let the model grade its own homework and study only what it got right",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2026-01-23-expert-iteration/index.html", "grade": 2 }
+      ],
+      "why": "Expert iteration: generate solutions, filter for correct ones, fine-tune on them. Shared words are generic ('model', 'own', 'right'); 'grade', 'homework', 'study' do not appear."
+    },
+    {
+      "id": "paraphrase-05",
+      "query": "pull topic-specific documents out of a giant internet dump",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2026-01-06-review-deepseek-math.html", "grade": 2, "section": "the-iterative-data-curation-pipeline" }
+      ],
+      "why": "DeepSeekMath's iterative fastText pipeline that recalls math pages from Common Crawl. Shared word: only 'specific'; 'documents', 'giant', 'internet', 'dump', 'pull' do not appear (the page says 'Common Crawl', 'web pages')."
+    },
+    {
+      "id": "paraphrase-06",
+      "query": "why vibe-checking chatbot outputs is not enough",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2025-09-02-llm-evaluation-lifecycle.html", "grade": 2 }
+      ],
+      "why": "Takeaway 1, 'Evaluation isn't Optional but Fundamental': ad-hoc checks lead to knee-jerk fixes. Shared words: 'outputs' and a hyphen-split 'checking' (page has 'checks'); 'vibe', 'chatbot', 'enough' do not appear."
+    },
+    {
+      "id": "partial-01",
+      "query": "geophysics",
+      "type": "partial",
+      "relevant": [
+        { "href": "about.html", "grade": 2 },
+        { "href": "publications.html", "grade": 1 }
+      ],
+      "why": "About says 'Research Geophysicist' (Shell); Publications cites 'Geophysical Journal International'. Neither contains 'geophysics', and it is not a prefix of either word."
+    },
+    {
+      "id": "partial-02",
+      "query": "quantiz",
+      "type": "partial",
+      "relevant": [
+        { "href": "posts/2026-03-29-local-llm-opencode/index.html", "grade": 2 },
+        { "href": "posts/2026-04-05-qwen35-vs-gemma4/index.html", "grade": 1 }
+      ],
+      "why": "Half-typed. The OpenCode post explains the UD-Q4_K_XL quantization choice; the comparison post uses quantized GGUFs and 'KV cache keys quantized to 8-bit'. About's 'quantification' must not match."
+    },
+    {
+      "id": "partial-03",
+      "query": "diarisation",
+      "type": "partial",
+      "relevant": [
+        { "href": "pages/overlap-aware-sc.html", "grade": 2 },
+        { "href": "pages/jsalt.html", "grade": 2 }
+      ],
+      "why": "British spelling; every page uses 'diarization', and 'diarisation' does not appear anywhere on the site."
+    },
+    {
+      "id": "partial-04",
+      "query": "tokenizers",
+      "type": "partial",
+      "relevant": [
+        { "href": "projects.html", "grade": 2 },
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "grade": 1 }
+      ],
+      "why": "Plural the site never uses. Work lists 'BPE tokenizer from scratch (with a Rust encoder for 3.7x speedup)'; the SFT post discusses BPE tokenization boundary issues."
+    },
+    {
+      "id": "partial-05",
+      "query": "derive ppo loss",
+      "type": "partial",
+      "relevant": [
+        { "href": "posts/2025-12-25-deriving-ppo-loss.html", "grade": 2 },
+        { "href": "posts/2026-01-01-understanding-grpo.html", "grade": 1 }
+      ],
+      "why": "Verb form: the pages say 'Deriving' and 'derivation', and 'derive' prefixes neither. The GRPO post recaps the PPO objective."
+    },
+    {
+      "id": "tool-01",
+      "query": "draw a mask for inpainting",
+      "type": "tool",
+      "relevant": [
+        { "href": "tools/image-mask-creator.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 },
+        { "href": "posts/2026-03-20-browser-tools/index.html", "grade": 1 }
+      ],
+      "why": "Binary Mask Creator: 'Paint binary black-and-white masks for AI inpainting'. The tool page itself has no indexed text, only its description in the search list."
+    },
+    {
+      "id": "tool-02",
+      "query": "make a photo black and white",
+      "type": "tool",
+      "relevant": [
+        { "href": "tools/image-operations.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 }
+      ],
+      "why": "Image Adjust & Transform does 'convert to grayscale'. Its description has none of these words, while the Binary Mask Creator description contains 'black-and-white', so keyword search should rank the wrong tool first."
+    },
+    {
+      "id": "tool-03",
+      "query": "pretty print json",
+      "type": "tool",
+      "relevant": [
+        { "href": "tools/json-formatter.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 }
+      ],
+      "why": "JSON Formatter & Viewer formats with syntax highlighting. 'pretty print' does not appear; 'json' also matches the YAML to JSON converter, which is not graded."
+    },
+    {
+      "id": "tool-04",
+      "query": "decode a percent-encoded link",
+      "type": "tool",
+      "relevant": [
+        { "href": "tools/url-encoder.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 }
+      ],
+      "why": "URL Encoder/Decoder: 'Percent-encode and decode URL strings'. 'link' does not appear; 'decode' also matches the Base64 tool, which is not graded."
+    },
+    {
+      "id": "person-01",
+      "query": "where did he do his phd",
+      "type": "person",
+      "relevant": [
+        { "href": "about.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 },
+        { "href": "publications.html", "grade": 1 }
+      ],
+      "why": "About: TU Delft, PhD Researcher, Aug 2015 to Aug 2019. Work mentions TU Delft and University of Amsterdam under spatial-alias-removal; Publications lists the PhD papers but never names the university."
+    },
+    {
+      "id": "person-02",
+      "query": "has he worked in oil and gas",
+      "type": "person",
+      "relevant": [
+        { "href": "about.html", "grade": 2 },
+        { "href": "publications.html", "grade": 1 }
+      ],
+      "why": "About: Research Geophysicist at Shell (seismic), PhD on reservoir imaging, and now AI for refineries and plants. 'oil' and 'gas' appear nowhere on the site; Publications is all reservoir and seismic work."
+    },
+    {
+      "id": "person-03",
+      "query": "what does he do now",
+      "type": "person",
+      "relevant": [
+        { "href": "about.html", "grade": 2 }
+      ],
+      "why": "About: ML Engineer (Forward Deployed) at Applied Computing since May 2026, AI for ammonia and olefins plants. Almost every query word is a stop word or generic."
+    },
+    {
+      "id": "person-04",
+      "query": "stable diffusion experience",
+      "type": "person",
+      "relevant": [
+        { "href": "about.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "About: Stable Diffusion pipelines and custom ControlNets at Flixstock, SDXL and Flux fine-tuning at Renderwolf. Work lists diffusion paper notes (DDPM, SDXL) and the ComfyUI node."
+    },
+    {
+      "id": "multi-01",
+      "query": "ppo vs dpo vs grpo",
+      "type": "multi",
+      "relevant": [
+        { "href": "posts/2025-12-25-deriving-ppo-loss.html", "grade": 2 },
+        { "href": "posts/2025-12-30-deriving-dpo-loss.html", "grade": 2 },
+        { "href": "posts/2026-01-01-understanding-grpo.html", "grade": 2 },
+        { "href": "posts/2026-01-06-review-deepseek-math.html", "grade": 1 },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "grade": 1 }
+      ],
+      "why": "The three derivation posts each contrast their method with the others (DPO opens by recapping PPO; GRPO with PPO and DPO). DeepSeekMath and the GRPO ablations add context."
+    },
+    {
+      "id": "multi-02",
+      "query": "self-hosting llms on a 4090",
+      "type": "multi",
+      "relevant": [
+        { "href": "posts/2026-03-29-local-llm-opencode/index.html", "grade": 2 },
+        { "href": "posts/2026-04-03-self-hosted-gemma4-chat/index.html", "grade": 2 },
+        { "href": "posts/2026-04-05-qwen35-vs-gemma4/index.html", "grade": 2 },
+        { "href": "posts/2024-06-30-remote-gpu-server.html", "grade": 1 }
+      ],
+      "why": "Three posts run quantized models with llama.cpp on an RTX 4090 (Qwen3.5-27B for OpenCode, Gemma 4 chat, the four-model comparison). The GPU server guide sets up remote access to the same workstation."
+    },
+    {
+      "id": "multi-03",
+      "query": "structured data extraction series",
+      "type": "multi",
+      "relevant": [
+        { "href": "posts/2024-07-03-baseline-gpt4o-structured-data.html", "grade": 2 },
+        { "href": "posts/2024-07-09-compare-models-structured-data.html", "grade": 2 },
+        { "href": "posts/2024-07-15-finetune-llama3-8B-predibase.html", "grade": 2 }
+      ],
+      "why": "Parts I, II and III on ViGGO functional representation extraction: GPT-4o baseline, six-model comparison, Llama-3-8B fine-tune on Predibase."
+    },
+    {
+      "id": "multi-04",
+      "query": "projects built with claude code",
+      "type": "multi",
+      "relevant": [
+        { "href": "posts/2026-03-20-browser-tools/index.html", "grade": 2 },
+        { "href": "posts/2026-04-29-india-weather-with-claude/index.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 },
+        { "href": "india-weather.html", "grade": 1 },
+        { "href": "posts/2026-02-12-cc-tools/index.html", "grade": 1 }
+      ],
+      "why": "The browser tools and India weather dashboard were both built with Claude Code, each with a post about it. The tools catalog and weather page are the results; the Claude Code tools post is about workflow, not a build."
+    },
+    {
+      "id": "none-01",
+      "query": "deploying models on kubernetes",
+      "type": "none",
+      "relevant": [],
+      "why": "Near miss. The only mention is the GRPO post saying Modal needs 'no Docker/Kubernetes'. The GLM post defers deployment details to a future post."
+    },
+    {
+      "id": "none-02",
+      "query": "mamba state space language model",
+      "type": "none",
+      "relevant": [],
+      "why": "Near miss. The Kalman post is about state-space models for time series and the OpenCode post covers Qwen3.5's Gated DeltaNet hybrid; neither mentions Mamba or covers state-space language models."
+    },
+    {
+      "id": "none-03",
+      "query": "rag with a vector database",
+      "type": "none",
+      "relevant": [],
+      "why": "Near miss. Parts I and II mention RAG only as motivation for structured extraction; nothing covers retrieval, embeddings or vector stores."
+    },
+    {
+      "id": "none-04",
+      "query": "react hooks tutorial",
+      "type": "none",
+      "relevant": [],
+      "why": "Off topic. 'react' appears on no page; the site has no frontend framework content."
+    }
+  ]
+}

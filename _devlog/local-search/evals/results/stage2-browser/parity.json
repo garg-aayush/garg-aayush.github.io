@@ -1,0 +1,31 @@
+{
+ "queries": 60,
+ "rankings": {
+  "hybrid": {
+   "queries": 60,
+   "identical": 60,
+   "differing": []
+  },
+  "keyword only": {
+   "queries": 60,
+   "identical": 60,
+   "differing": []
+  }
+ },
+ "vectors": [
+  {
+   "name": "development and held-out queries",
+   "count": 60,
+   "sameTokenIds": 60,
+   "minCosine": 1,
+   "maxAbsDifference": 0
+  },
+  {
+   "name": "cross-check texts (queries, passages and edge cases)",
+   "count": 580,
+   "sameTokenIds": 580,
+   "minCosine": 1,
+   "maxAbsDifference": 0
+  }
+ ]
+}

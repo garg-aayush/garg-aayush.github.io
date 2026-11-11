@@ -1,0 +1,15 @@
+580 texts, dim 256, model2vec 0.10.0
+model2vec 0.10.0, numpy 2.5.4, tokenizers 0.23.3, normalize true, max_length 512, median token length 6
+
+queries (40): same token ids 40/40; JS float32 vs Model2Vec min 1.000000000 mean 1.000000000; int8 vs JS float32 min 0.998874028 mean 0.999655139; int8 vs Model2Vec min 0.998874028 mean 0.999655139
+passages (506): same token ids 506/506; JS float32 vs Model2Vec min 1.000000000 mean 1.000000000; int8 vs JS float32 min 0.999058547 mean 0.999712042; int8 vs Model2Vec min 0.999058546 mean 0.999712042
+edge cases (34): same token ids 34/34; JS float32 vs Model2Vec min 1.000000000 mean 1.000000000; int8 vs JS float32 min 0.000000000 mean 0.968237122; int8 vs Model2Vec min 0.000000000 mean 0.968237122
+
+No text differs in token ids or has a JS float32 cosine under 0.99999.
+
+Lowest int8 vs float32 cosines:
+  0.000000000 "a"
+  0.945227071 "!!!"
+  0.987232841 "???"
+  0.998455431 "don't can't it's o'clock 3.14 1,000 $5 100% a+b=c"
+  0.998645656 "[CLS] [SEP] [UNK] [PAD] [MASK] and [cls] and [CLS]hello"
