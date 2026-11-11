@@ -642,3 +642,104 @@ The guard: `npm run check:site` now also runs `checkSearch` (`scripts/check-site
 - `quarto render --clean`: completed; post-render lines "Search index: 47 pages and 459 passages in 54 ms" and "Search vectors: 506 passages x 256 dimensions, 173222 bytes, in 59 ms". The index hash is 759f6c5572dd74aa, the one every evaluation above used.
 - `npm run check:site`: Rendered site: 50 HTML pages and 5676 references passed; search: 47 pages and 506 passages indexed and embedded.
 - `npm run test:browser`: 111 passed (11.2s), including the 7 search tests and the search page's two overflow tests. The three posts that load images from raw.githubusercontent.com did not time out this time.
+
+## 2026-11-12, stage 3: the answer evaluation, rule fixed in advance
+
+This entry is written before any answer exists. The orchestrating session set the shipping rule; I record it here so that no number can move it.
+
+- Candidates: Qwen3-0.6B, Granite 4.0 350M, LFM2.5-350M and Qwen3.5-0.8B (text), all at q4f16 with the pinned revisions in `evals/answers/harness/models.mjs`. All four load and generate on WebGPU; only Granite and Qwen3-0.6B load on single threaded WebAssembly (the other two have no CPU kernel for `GatherBlockQuantized`), from `evals/answers/feasibility.md`. The evaluation runs on WebGPU.
+- Questions: `evals/answers/questions.json`, 45 questions, 30 answerable and 15 unanswerable (8 near misses, 7 off-topic). Written before any model or retrieval result was seen.
+- The prompt, the refusal sentence and the model settings are the ones in `harness/prompt.mjs` and `harness/models.mjs`, unchanged. Greedy decoding.
+- Shipping rule: a model ships only if it declines at least 13 of the 15 unanswerable questions and at least half of its 30 answerable answers are labelled faithful, both at once. The stricter measure the question writer proposed (of the answerable questions where retrieval supplied a supporting passage, at least 80 percent faithful and at most 10 percent unsupported) is reported but does not decide. If no model passes, no answer feature ships.
+- Labelling: an independent judge labels each answer faithful, unsupported or non-answer against the passages the model was given, blind to which model wrote it. The generation session does not judge.
+- Retrieval and passage format, fixed before any model ran (`evals/answers/prepare.mjs`): each question is typed as a query into the page's own `rankHybrid` over the rendered index (hash 759f6c5572dd74aa, vectors checked equal to `_site/search-vectors.json`), and the top four pages are given, one passage per page, the page's best passage in the fused list. Passage title is the page title, plus ", section: <heading>" when the passage has a heading; the text is the indexed passage text unchanged (at most 1000 characters, no truncation or rewriting); the prompt numbers them [1] to [4] in rank order. The same input goes to all four models.
+- Retrieval hit: an answerable question is a hit when at least one of its supporting quotes is a contiguous substring of a supplied passage after lowercasing, keeping the label of markdown links and turning every run of characters that are not letters or digits into one space.
+- Generation done (this session does not judge). All four models ran 45 of 45 items on WebGPU in Playwright's Chromium 156 (Apple Metal adapter, `shader-f16`), greedy, with no failed item and no retry; raw outputs, the exact prompts and timings are in `evals/answers/results/raw/*.jsonl`, the retrieval in `results/retrieval.json`, the statistics (no quality labels) in `results/raw-stats.md`. Retrieval supplied a supporting quote for 20 of the 30 answerable questions (rank of the supporting passage among the four: 15 at 1, 3 at 2, 2 at 3). In the 10 others the quote is in the index text of a page, so the miss is the ranking: for 9 the supporting page is in the top four but its best passage by the ranking is another section of the page, and for 1 the page is at rank 7. The "skip the model when the four passages share no content word with the question" gate would have fired on 0 of the 15 unanswerable questions (and on 0 of the 30 answerable). `results/to-judge.json` is the blinded file (180 entries), `results/key-map.json` the mapping the judge does not open, `results/score.mjs` the scorer.
+
+## 2026-11-12, stage 3: result and decision
+
+No model passes the shipping rule under either judge, so stage 3 ends with no answer feature shipped. The site ships stages 1 and 2: keyword search plus the static embedding table. This entry records the scores, why they came out this way, and what would have to change for answers to be worth trying again. The full tables are in `evals/answers/results/summary.md`; every number below comes from `results/score.mjs` run on `labels-a.json` and `labels-b.json`, and from `retrieval.json`, `raw-stats.md` and `feasibility.md`.
+
+### The rule, the judging and the decision
+
+The rule was written above, before any answer existed: a model ships only if it declines at least 13 of the 15 unanswerable questions and at least 15 of its 30 answerable answers are labelled faithful, both at once. The stricter measure the question writer proposed (on the answerable questions where retrieval supplied a supporting quote, at least 80 percent faithful and at most 10 percent unsupported) was reported and did not decide.
+
+Two independent judges (Opus 5.5 subagents) labelled all 180 answers (4 models by 45 questions) faithful, unsupported or non-answer, blind to which model wrote each, reading the entries in opposite orders. They agreed on 179 of 180 labels. The one difference is Granite 4.0 350M on `how-03` ("How does DPO get away without a reward model or reinforcement learning?"): judge A unsupported, judge B faithful. Both called it borderline for the same phrase, "directly optimizing the policy's preference for text generation", which is not in the passages; the rest of the answer restates the passage. `how-03` is one of the 10 questions where retrieval did not supply the supporting quote, so the difference moves only Granite's all-30 counts (faithful 10 against 11, unsupported 20 against 19). It changes no pass or fail and no other figure.
+
+Decision (orchestrating session, 2026-11-12, under Aayush's delegation to decide by the scores): stage 3 ends with no answer feature shipped. The harness, the question set, the labels and the results stay in the repo as the record.
+
+### Scores
+
+Faithful, unsupported and non-answer are against the passages the model was given. "Hit" questions are the 20 of the 30 answerable where retrieval supplied a supporting quote. On the 15 unanswerable questions a non-answer is a decline and any answer is unsupported (no model got a faithful label there).
+
+Judge A:
+
+| Model | All 30 answerable (faithful / unsupported / non-answer) | 20 hits (faithful / unsupported / non-answer) | 15 unanswerable (declined / answered) | 8 near misses (declined / answered) | 7 off-topic (declined / answered) | Passes |
+|---|---|---|---|---|---|---|
+| Qwen3-0.6B | 13 / 11 / 6 | 10 / 8 / 2 | 3 / 12 | 3 / 5 | 0 / 7 | No |
+| Granite 4.0 350M | 10 / 20 / 0 | 8 / 12 / 0 | 3 / 12 | 3 / 5 | 0 / 7 | No |
+| LFM2.5-350M | 13 / 17 / 0 | 10 / 10 / 0 | 1 / 14 | 0 / 8 | 1 / 6 | No |
+| Qwen3.5-0.8B (text) | 17 / 9 / 4 | 13 / 5 / 2 | 10 / 5 | 6 / 2 | 4 / 3 | No |
+
+Judge B differs only in the Granite row, where the all-30 cell is 11 / 19 / 0; every other cell, for every model, is the same.
+
+- Qwen3.5-0.8B is the closest. It meets the faithful bar (17 of 30, needs 15) and declines 10 of 15 (needs 13). Granite fails on both (3 declines, 10 or 11 faithful), Qwen3-0.6B on both (3 declines, 13 faithful), LFM2.5-350M on both (1 decline, 13 faithful).
+- The stricter measure is met by no model: faithful and unsupported on the hit questions are 50% and 40% (Qwen3-0.6B), 40% and 60% (Granite), 50% and 50% (LFM2.5), 65% and 25% (Qwen3.5).
+- Across the four models, 17 of the 60 answers to the 15 unanswerable questions were declines and 43 were answers, every one unsupported. Near misses were declined 12 times in 32 and off-topic questions 5 times in 28.
+
+### Retrieval
+
+Retrieval supplied a supporting quote for 20 of the 30 answerable questions: the supporting passage was at rank 1 for 15, rank 2 for 3 and rank 3 for 2. The 10 misses are `fact-01`, `fact-05`, `fact-07`, `fact-08`, `fact-09`, `how-03`, `how-04`, `how-08`, `person-01` and `person-04`. In all 10 the quote is in the indexed text of a page. For 9 the supporting page was among the four passed but the passage chosen for it (the page's best passage in the fused list, one passage per page) was another section; for 1 (`person-04`) the supporting page ranked 7th. So the misses come from passing one passage per page and from the ranking, not from missing text.
+
+A miss is not always a wrong answer: on those 10 questions judge A labelled faithful 3 answers from Qwen3-0.6B, 2 from Granite, 3 from LFM2.5 and 4 from Qwen3.5, because the passage passed said enough of the point without containing the exact quote. The hit rule is a quote match, which is stricter than "enough to answer". The no-shared-content-word gate would have fired on 0 of the 15 unanswerable questions, so it would have removed nothing.
+
+### Speed, download and memory
+
+One machine (Apple M5 Pro, 24 GB), Chromium 156, Transformers.js 4.3.2, q4f16, WebGPU. Speed and first token are from `feasibility.md` (a 570 token prompt); the last two columns are from the 45 real questions (prompts of about 780 tokens, answers of 20 to 35 tokens at the median).
+
+| Model | Download (q4f16 model files) | First token | Tokens per second | 45 questions: median item time / run time | Peak browser memory, feasibility run / answer run |
+|---|---|---|---|---|---|
+| Qwen3-0.6B | 569,789,750 bytes | 328 ms | 127.5 | 719 ms / 39.8 s | 4.98 GB / 7.51 GB |
+| Granite 4.0 350M | 350,484,597 bytes in two files | 142 ms | 181.8 | 412 ms / 20.2 s | 3.79 GB / 8.34 GB |
+| LFM2.5-350M | 255,148,587 bytes in two files | 72 ms | 267.0 | 185 ms / 10.1 s | 2.20 GB / 2.21 GB |
+| Qwen3.5-0.8B (text) | 469,929,410 bytes in two files | 181 ms | 85.2 | 608 ms / 30.1 s | 2.89 GB / 3.88 GB |
+
+The two memory columns disagree by up to 4.5 GB for one model (Granite), so the figure is a loose upper bound, not a number to promise anyone. Backend facts: all four run on WebGPU; on single threaded WebAssembly (what GitHub Pages allows) only Granite (4.1 tokens per second, 8.7 s to the first token) and Qwen3-0.6B (2.2 tokens per second, 15.0 s) load, because ONNX Runtime Web has no CPU kernel for `GatherBlockQuantized`, so LFM2.5-350M and Qwen3.5-0.8B are WebGPU only. Chromium refused to store a file above about 512 MiB in Cache Storage from a buffer, so Qwen3-0.6B's 570 MB file, the largest, is not cached by Transformers.js's default caching and downloads again on every visit; the other three are cached. The evaluation ran on WebGPU only.
+
+### Examples
+
+Six answers, with the judges' notes. Both judges gave the same label in each.
+
+1. An invented answer to an off-topic question. Qwen3-0.6B, `off-04`: "How does the Raft consensus algorithm elect a leader?" Answer: "The Raft consensus algorithm elects a leader by using a voting mechanism where each node votes for the leader, and the leader with the most votes is chosen. This process ensures that consensus is maintained through periodic communication between nodes." Unsupported. Judge A: "answers from outside knowledge; passages say nothing on Raft". Judge B: "describes Raft voting; site does not cover it". The model answered from its own memory, which the prompt forbids.
+2. An off-topic question answered with an unrelated passage fact. Qwen3.5-0.8B, `off-06`: "How do I build an iPhone app with SwiftUI?" Answer: "You can use the Skills-Creator skill in the Claude app to build your own skills just by describing what you want." Unsupported. Judge A: "Skills-Creator fact presented as the answer". Judge B: "presents Skills-Creator as the SwiftUI answer". This is the extraction habit in its plainest form: a sentence from a retrieved passage becomes the answer to a question it does not address.
+3. A near miss answered from a nearby fact. Qwen3.5-0.8B, `near-06`: "How much does Context7 cost once you go past the free plan?" Answer: "The free plan gives you around 1000 API requests per month, which is more than enough for most use cases." Unsupported. Judge A: "free plan fact presented as the answer". Judge B: "borderline: gives the free-plan quota as if it answered the paid cost". The site says nothing about paid pricing; the model restated the free-plan quota instead.
+4. A correct fact with one unsupported addition. Granite 4.0 350M, `how-07`: "What does the Kalman gain do when the sensor is unreliable?" Answer: "The Kalman gain, also known as the trust gain, is a trust dial that re-tunes itself at every timestep based on who currently deserves more trust. When the measurement noise R is large, the Kalman gain shrinks toward zero and the filter mostly trusts its own prediction." Unsupported. Judge A: "borderline: 'also known as the trust gain' is not in P1; rest supported". Judge B: "borderline: 'also known as the trust gain' is not in passages; rest correct". The label is strict by design: one claim outside the passages makes the answer unsupported, however small. Qwen3-0.6B, LFM2.5 and Qwen3.5 answered the same question faithfully.
+5. A faithful answer. Qwen3.5-0.8B, `fact-03`: "How much did filtering out wrong reasoning traces help his SFT run on Qwen2.5-Math?" Answer: "According to the text, filtering out incorrect reasoning traces boosted the model's accuracy from 42% to 52%." Faithful. Judge A: "42% to 52%, per P1". Judge B: "42% to 52% per P1". LFM2.5 answered "0.4214", the unfiltered run's accuracy, to the same question, and Granite "0.0288% accuracy", the baseline.
+6. A correct decline. Qwen3.5-0.8B, `near-01`: "What exact match score did Claude Sonnet 3.5 get on the ViGGO task?" Answer: "The text does not state the exact match score for Claude Sonnet 3.5 on the ViGGO task." Non-answer, which is correct here (the score is in an image, not in text). Judge A: "says the text does not state it". Judge B: "says the text does not state the score". On the same question Qwen3-0.6B attributed another model's remark to Sonnet, Granite said "about 80%" (the score of another model) and LFM2.5 said "0". The same model also declined wrongly: on `fact-02` (hyperparameters for fine-tuning Llama-3-8B on Predibase, which the passage gives) Qwen3.5 said the passages do not contain them.
+
+### What it means
+
+The small models here pull out a nearby fact; they do not decline. Faced with a question the passages do not answer, the four models answered 43 times in 60 and declined 17, and every one of the 43 answers was unsupported; many leaned on real sentences from the passages (a free-plan quota, a different model's score, a different post's loss description). Qwen3.5-0.8B declined most (10 of 15) and was also the most faithful (17 of 30), but even it answered 5 of 15 unanswerable questions and declined 4 answerable ones. Telling "the passages answer this" from "the passages are close to this" is the skill that is missing at this size, with this prompt.
+
+Retrieval is the second weakness. It supplied the supporting passage for only 20 of 30 questions, mostly because one passage per page was passed and the best-ranked passage of the right page was often another section. That lowers what any answer model can do, though the model failures were not mainly retrieval failures: on the 20 hit questions the best model was faithful on 13 and the others on 8 to 10.
+
+### What would have to change
+
+These are possibilities, not plans; none is scheduled.
+
+- Pass more than one passage per page, or more than four passages. Supported by this data as a fix for retrieval: 9 of the 10 misses had the supporting page in the top four. Not supported as a fix for the models: they failed on hit questions too (the best was faithful on 13 of 20 hits), and a longer prompt costs time (about 780 prompt tokens now). Nothing here tests it.
+- A retrieval score or an agreement signal for the gate. The existing evidence is against scores: stage 2's cosine scores do not separate answerable from unanswerable queries (AUC 0.66 to 0.83), and the shared-content-word gate fired on 0 of 15. No agreement signal (for example, the same answer from two models or two prompts) was measured, so there is no evidence for or against it. The 15 unanswerable questions and their retrieval are stored, so a score-based gate could be tested offline without running a model; that was not done.
+- A larger model, or a model trained to decline. Both were ruled out by Aayush on 2026-11-11 (any larger on-demand answer model; the `bartdegoede/qwen3-0.6b-small-rag` fine-tune). Evidence from another personal blog, not measured here: that fine-tune was reported faithful on 16 of 30 and inventing 0 of 15, and Gemma 4 E2B faithful on 28 of 30 and inventing 0 of 15. That fits the direction of this result (the skill is declining, and training or size supplies it), but those are another site's counts.
+- A stricter prompt. The prompt already says to use only the passages and gives an exact refusal sentence. Qwen3-0.6B used that sentence 8 times and Qwen3.5 twice; Granite and LFM2.5 never did. Qwen3.5 mostly declined in its own words and declined most (14 of 45), which hints that wording matters; Granite declined 3 times in 45 and LFM2.5 once. Whether a different prompt changes the counts is untested: one prompt was tried.
+
+### Limits
+
+- 45 questions, written by a model that had read the whole site, so they are likely easier and closer to the site's wording than a visitor's. One question moves an answerable rate by about 3 points and an unanswerable one by about 7.
+- One machine (Apple M5 Pro), Chromium and WebGPU only. No WebAssembly answers, no phone, no other browser, no real network. Memory is noisy.
+- Greedy decoding and one prompt, with one passage format (four passages, one per page).
+- LLM judges. The two judges are the same model family, so they can share blind spots; 179 of 180 agreement shows they apply the rubric alike, not that the rubric is right. Many labels are borderline (23 of judge A's notes and 30 of judge B's say so). No human label is recorded.
+- No borderline label could change a result: only Qwen3.5 is near, it is 3 declines short (10 of 15 against 13), and the two judges agreed on every one of its labels.
+
+### Files
+
+`evals/answers/results/summary.md` (the tables), `labels-a.json` and `labels-b.json` (labels and notes per key), `key-map.json` (key to model and question), `score.mjs`, `retrieval.json`, `raw-stats.md`, `raw/*.jsonl` (answers and prompts), `feasibility.md` (speed, download, memory and backends). The question set and README are in `evals/answers/`.

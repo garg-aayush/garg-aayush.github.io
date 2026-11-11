@@ -1,0 +1,4 @@
+qwen3 exit 0
+granite exit 0
+lfm exit 0
+qwen35 exit 0

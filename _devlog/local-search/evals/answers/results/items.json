@@ -1,0 +1,992 @@
+[
+ {
+  "id": "fact-01",
+  "question": "How much does ngrok cost if I want an SSH port that stays the same after my GPU server reboots?",
+  "passages": [
+   {
+    "title": "Step-by-Step Guide to Setup Your Personal GPU Server, section: Setting Up External Remote Access",
+    "text": "Visit ngrok’s website and sign up for a free account if you haven’t already. After signing up, you’ll receive an auth token. On your GPU workstation, run: bash ngrok config add-authtoken YOUR_AUTH_TOKEN You can get the config file path and edit using ngrok config check and vim <path>, respectively.\nStart the ngrok Tunnel\nNow, you can create a secure tunnel to your SSH service: bash ngrok tcp 22 This command will display a URL that looks like tcp://X.tcp.ngrok.io:PORT. Note down this URL.\nConnect to Your Workstation\nFrom any external laptop, you can now SSH into your GPU workstation using: bash ssh -p YYYY user@X.tcp.ngrok.io Replace PORT with the port number and X with the subdomain from the ngrok URL. Replace user with your Ubuntu username.\nThe above steps ensure that you can remotely access the workstation from external network. However, no one is going to manually start the ngrok every time before heading out.\nMake ngrok start automatically on boot"
+   },
+   {
+    "title": "Work, section: Gists",
+    "text": "Step-by-Step Guide to setup your own personal GPU server\nA guide to setting up remote SSH access to a personal GPU workstation running Ubuntu, covering SSH keys, firewall setup, and ngrok tunneling.\nManaging multiple CUDA versions using environment modules\nMy notes on installing multiple CUDA versions side by side on Ubuntu and switching between them using `environment-modules`."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Step 5: Start the server on the Tailscale IP",
+    "text": "Now start the server bound to your Tailscale IP so it is accessible from your MacBook:\nReplace <YOUR_GPU_SERVER_IP> with your GPU server’s IP (Tailscale IP if remote or 127.0.0.1 if local). Check with tailscale status.\nI would recommend starting with a smaller --ctx-size (eg 16384) first to verify everything works. The server starts faster with less KV cache allocation so you can catch misconfigurations quickly. Once confirmed, restart with your target context size.\nThe sampling parameters (--temp 0.6, --top-p 0.95, --top-k 20) are the recommended values from Qwen3.5 for thinking mode with precise coding tasks.\nI chose --ctx-size 65536 because at this context length the total VRAM usage sits around 22 GB (includig model) on a 24 GB card. I could probably go higher by 10k but this leaves enough breathing room to avoid OOM on longer prompts or during prefill spikes."
+   },
+   {
+    "title": "Self-Hosted Gemma 4 Chat with Web UI, section: My Setup",
+    "text": "RTX 4090 GPU server running Ubuntu with CUDA installed\nTailscale set up on the server and all my devices (phone, laptop)\ngemma-4-26B-A4B-it-UD-Q4_K_XL.gguf from the Unsloth HuggingFace repo. If you also want vision/image support, use mmproj-BF16.gguf from the same repo.\nThe Q4_K_XL quant fits on a 4090 even with full 256K context at approximately 20.5 GB VRAM"
+   }
+  ]
+ },
+ {
+  "id": "fact-02",
+  "question": "What hyperparameters did he use to fine-tune Llama-3-8B on Predibase?",
+  "passages": [
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Setup and Finetune",
+    "text": "Once you have uploaded the dataset, running the fine-tuning process is refreshingly simple. For this example, I fine-tune the base llama-3-8b model with the following parameters: epochs=3, rank=16, and learning_rate=2e-4.\nThat’s all you need to do to submit a job! Once completed, it will be available on the Predibase platform.\ntrain-1\ntrain-2\nYou can always tweak multiple hyperparameters (see Finetuning Config) and run the fine-tune job again. All your fine-tune jobs will be available on the Predibase platform."
+   },
+   {
+    "title": "Part II: Comparison of Model Performances on Structured Functional Representation Extraction, section: Next steps….",
+    "text": "I plan to fine-tune the base Llama-3-8B and other smaller models (like Phi and Gemma) on the ViGGO dataset to assess whether a fine-tuned smaller model can compete with or surpass the performance of Claude Sonnet-3.5 and GPT-4o.\nAt the same time, investigate the trade offs like inference speed, accuracy, and latency associated with fine-tuned smaller models and propreitory models api calls."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Reasoning and things I learned along the way",
+    "text": "Some of the choices I made and what I picked up in the process.\nRun inference on a separate machine if you can. You don’t need two machines for this but if you have a personal GPU workstation or a Mac Mini, I would recommend running the model there instead of on your daily use machine. Running inference on your laptop eats into your available RAM, it drains your battery fast and the laptop starts heating up bad.\nWhy llama.cpp? I started with the Unsloth guide which uses llama.cpp with the GGUF format. Since I am setting this up locally for myself, llama.cpp felt like an easier choice than vLLM.\nWhy Qwen3.5-27B over 35B-A3B? The MoE variant is 3-5x faster (~60-100 tok/s) because only 3B parameters are active per token but the 27B has all 27B parameters active and consistently scores higher across benchmarks. For coding tasks, I preferred quality."
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Part 2: Instruction SFT with Llama-3.1-8B",
+    "text": "With the reasoning SFT working, I moved on to the second part: instruction fine-tuning. This loosely follows the CS336 Supplementary Assignment 5, where the goal is to build a model that can follow diverse instructions and refuse harmful requests.\nUnlike reasoning SFT, instruction fine-tuning uses conversational instruction-response pairs. The training data combines UltraChat-200K (diverse multi-turn conversations) and SafetyLlama (safety-focused examples) totaling around 200K examples, formatted using the Alpaca prompt template.\nFor evaluation, I used four benchmarks as specified in the assignment: - GSM8K: Grade-school math problems (tests math reasoning) - MMLU: Multiple-choice questions across 57 subjects (tests factual knowledge) - AlpacaEval: Open-ended instructions judged by LLM-as-judge (tests instruction-following quality) - Simple Safety Tests (SST): Harmful prompts to test refusal behavior (tests safety)"
+   }
+  ]
+ },
+ {
+  "id": "fact-03",
+  "question": "How much did filtering out wrong reasoning traces help his SFT run on Qwen2.5-Math?",
+  "passages": [
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Results",
+    "text": "After all that debugging, here’s what the training runs achieved:\nReasoning SFT Results\nRun\nTraining Data\nReward Accuracy\nFormat Accuracy\nbaseline\n-\n0.0288\n0.1438\nrun_all\nFull 4.8K (correct + incorrect)\n0.4214\n0.9924\nrun_filtered\nFiltered 3.6K (correct only)\n0.5204\n0.9906\nrun_filtered-2epoch\nFiltered 3.6K (2 epochs)\n0.5336\n0.9926\nKey takeaways: - Filtering out incorrect reasoning traces boosted accuracy from 42% to 52%. Training on wrong traces teaches the model wrong patterns. - The model quickly learned the output format (99%+ format accuracy after training). - Running for 2 epochs gave a boost in accuracy though a marginal one."
+   },
+   {
+    "title": "Expert Iteration for Math Reasoning, section: Comparison to SFT Experiments",
+    "text": "In my previous SFT experiments, I finetuned the same Qwen2.5-Math-1.5B model using the same train and eval data, with train data being GPT-oss-120B generated reasoning traces. Below is the comparison of SFT and Expert Iteration best experiments:\nMethod\nConfiguration\nReward Accuracy\nBaseline\nUntrained Qwen2.5-Math-1.5B\n2.9%\nExpert Iteration (best)\nD=1024, R=4, 2 epochs\n47.1%\nSFT (best)\nFiltered data, 2 epochs\n53.4%\nDespite extensive tuning across batch sizes, rollout counts and learning rate schedules Expert Iteration reached 47.1% accuracy which is around 6% below SFT’s 53.4%.\nIn my understanding, the gap comes down to two factors: data quality and rationalization:"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies",
+    "text": "Following the same approach as I did for SFT and Expert Iteration, I have written the GRPO training code from scratch. I loosely followed GRPO experiment part of Stanford CS336 Assignment 5 as a reference point and trained Qwen2.5-Math-1.5B with verifiable math rewards. This time around I had 3 main motivations:\nAs usual, write the GRPO code from scratch for the sake of understanding.\nTrain Qwen2.5-Math-1.5B model with verifiable math rewards and get a feel of what kind of accuracy we can push with pure RL (no supervised fine-tuning).\nMost importantly, run a lot of ablation studies to understand and build intuition on what matters in GRPO training, the different design choices we can make and how to interpret the different metrics. Now I look back, I think this is the most important part of this long exercise.\nBest GRPO run: eval reward accuracy and mean response length\nBest: ~75% reward accuracy on MATH validation (up from ~3% base model accuracy)"
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: Code Training Helps Math",
+    "text": "The paper also provides evidence for the hypothesized connection between code training and reasoning. In their results, models that underwent code pre-training before math training showed improved performance on mathematical benchmarks, both with and without tool use. Thus, DeepSeekMath-Base is initialized with DeepSeek-Coder-Base-v1.5 7B, not a general language model.\nMy understanding is code pushes the model toward more structured, step-wise patterns of reasoning and that structure transfers well to math."
+   }
+  ]
+ },
+ {
+  "id": "fact-04",
+  "question": "What does DeepSeekMath-7B score on the MATH benchmark?",
+  "passages": [
+   {
+    "title": "Key Insights from DeepSeekMath paper",
+    "text": "Over the weekend, I finished reading the DeepSeekMath paper which introduced GRPO (the RL algorithm I covered in my previous post). Below are my thoughts and key takeaways from the paper.\nIn this paper, the authors show that a small domain-specific model (7B parameters) can approach the performance of SOTA general models like GPT-4 on competition-level math when it is pre-trained on a sufficiently large, well-curated math corpus (120B tokens) and then reinforced with RL. It outperform major open-source models available at that time including same or larger size math-specialized models like WizardMath-v1.1 7B, Llemma 34B and MetaMath 70B. As shown below, DeepseekMath-7B achieves 51.7% on the competition-level MATH benchmark.\nIn a nutshell: data quality and domain-specific pre-training are more critical for mathematical reasoning than sheer parameter count."
+   },
+   {
+    "title": "Understanding GRPO: PPO without the Critic, section: The Full GRPO Objective",
+    "text": "This is a deliberate simplification. Since we only receive a single reward for the entire completion trying to learn which specific tokens were “good” or “bad” can be difficult.\nFrom DeepSeekMath: “While in the LLM context, usually only the last token is assigned a reward score by the reward model, which may complicate the training of a value function that is accurate at each token.”"
+   },
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Standard Benchmarks with llama-bench",
+    "text": "llama.cpp has a llama-bench utility that runs standard prefill and generation (decode) benchmarks. It is a quick way to get raw throughput numbers..\nThis is the command I used to run the benchmarks:\nllama-bench flags used\nFlag\nValue\nMeaning\n-ctk\nq8_0\nKV cache keys quantized to 8-bit\n-ctv\nq8_0\nKV cache values quantized to 8-bit\n-fa\n1\nFlash Attention enabled\n-b\n2048\nBatch size (max tokens processed per batch)\n-ub\n512\nMicro-batch size (tokens processed per CUDA kernel call)\n-p\n512,2048,...,65336\nPrefill token counts to sweep\n-n\n128\nDecode (generation) tokens per run\n-r\n3\nRepeat each test 3 times and report mean\n-o\nmd\nOutput as markdown table"
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Part 2: Instruction SFT with Llama-3.1-8B",
+    "text": "With the reasoning SFT working, I moved on to the second part: instruction fine-tuning. This loosely follows the CS336 Supplementary Assignment 5, where the goal is to build a model that can follow diverse instructions and refuse harmful requests.\nUnlike reasoning SFT, instruction fine-tuning uses conversational instruction-response pairs. The training data combines UltraChat-200K (diverse multi-turn conversations) and SafetyLlama (safety-focused examples) totaling around 200K examples, formatted using the Alpaca prompt template.\nFor evaluation, I used four benchmarks as specified in the assignment: - GSM8K: Grade-school math problems (tests math reasoning) - MMLU: Multiple-choice questions across 57 subjects (tests factual knowledge) - AlpacaEval: Open-ended instructions judged by LLM-as-judge (tests instruction-following quality) - Simple Safety Tests (SST): Harmful prompts to test refusal behavior (tests safety)"
+   }
+  ]
+ },
+ {
+  "id": "fact-05",
+  "question": "How many models does PPO need in memory at once when fine-tuning an LLM?",
+  "passages": [
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Setup and Finetune",
+    "text": "Once you have uploaded the dataset, running the fine-tuning process is refreshingly simple. For this example, I fine-tune the base llama-3-8b model with the following parameters: epochs=3, rank=16, and learning_rate=2e-4.\nThat’s all you need to do to submit a job! Once completed, it will be available on the Predibase platform.\ntrain-1\ntrain-2\nYou can always tweak multiple hyperparameters (see Finetuning Config) and run the fine-tune job again. All your fine-tune jobs will be available on the Predibase platform."
+   },
+   {
+    "title": "Understanding GRPO: PPO without the Critic, section: The Value Function Problem in PPO",
+    "text": "One more issue with PPO is that GAE needs per-token rewards to compute Temporal Difference (TD) residuals at each position. But in LLM fine-tuning, we typically get outcome rewards which is a single score for the entire completion assigned only at the final token.\nFrom DeepSeekMath: “During RL training, the value function is treated as a baseline in the calculation of the advantage for variance reduction. While in the LLM context, usually only the last token is assigned a reward score by the reward model, which may complicate the training of a value function that is accurate at each token.”\nIt raises a fundamental question: how can the critic learn accurate per-token values when all training signal comes from a single final reward?"
+   },
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: Clipped Surrogate Objective",
+    "text": "LLM Context (from Umar Jamil Video): In language model fine-tuning, the policy π_θ(a_t|s_t) is the probability the model assigns to token a_t given the context s_t (prompt + previously generated tokens). The probability ratio r_t(θ) measures how much more or less likely the fine-tuned model is to generate a particular token compared to the reference policy. Clipping ensures that no single token’s probability can change by more than a factor of (1 ± ε) in a single update iteration, preventing the model from “overreacting” to high-advantage tokens."
+   },
+   {
+    "title": "Part II: Comparison of Model Performances on Structured Functional Representation Extraction, section: Next steps….",
+    "text": "I plan to fine-tune the base Llama-3-8B and other smaller models (like Phi and Gemma) on the ViGGO dataset to assess whether a fine-tuned smaller model can compete with or surpass the performance of Claude Sonnet-3.5 and GPT-4o.\nAt the same time, investigate the trade offs like inference speed, accuracy, and latency associated with fine-tuned smaller models and propreitory models api calls."
+   }
+  ]
+ },
+ {
+  "id": "fact-06",
+  "question": "How does on-chip SRAM compare with HBM on an A100?",
+  "passages": [
+   {
+    "title": "FlashAttention: Making Attention I/O-Aware, section: The GPU Memory Hierarchy",
+    "text": "It is helpful to have a basic understanding of GPU memory hierarchy before diving into FlashAttention. A GPU has two levels of memory that matter here:\nHBM (High Bandwidth Memory): It is the GPU’s main (slow) memory which you see when you run nvidia-smi. It sits off-compute chip. An A100 has about 80 GB of HBM with a bandwidth of ~2 TB/s.\nSRAM (Static RAM) is on-chip memory. A A100 has about ~20 MB total (spread across 108 SMs) with ~19 TB/s bandwidth. This is roughly 10x the bandwidth of HBM but nearly 4000x smaller in capacity.\nThese numbers scale with each generation: an H100 SXM has 80 GB HBM3 at 3.35 TB/s, a B200 pushes to 192 GB HBM3e at 8 TB/s but the SRAM-to-HBM bandwidth gap persists across all of them. The principles apply regardless of which GPU you are on.\nEvery GPU kernel (operation) must load its inputs from HBM into SRAM, do the computation and write results back to HBM. The key intuition: SRAM is where compute happens. HBM is where data lives."
+   },
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Standard Benchmarks with llama-bench",
+    "text": "llama.cpp has a llama-bench utility that runs standard prefill and generation (decode) benchmarks. It is a quick way to get raw throughput numbers..\nThis is the command I used to run the benchmarks:\nllama-bench flags used\nFlag\nValue\nMeaning\n-ctk\nq8_0\nKV cache keys quantized to 8-bit\n-ctv\nq8_0\nKV cache values quantized to 8-bit\n-fa\n1\nFlash Attention enabled\n-b\n2048\nBatch size (max tokens processed per batch)\n-ub\n512\nMicro-batch size (tokens processed per CUDA kernel call)\n-p\n512,2048,...,65336\nPrefill token counts to sweep\n-n\n128\nDecode (generation) tokens per run\n-r\n3\nRepeat each test 3 times and report mean\n-o\nmd\nOutput as markdown table"
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: How This Compares to GPT-3",
+    "text": "My Model\nGPT-3\nParameters\n~10M\n175B\nDataset\n~300K tokens\n300B tokens\nArchitecture\nNearly identical\nThe architecture we built is essentially the same as GPT-3. The difference is pure scale: 17,500x more parameters trained on 1 million times more data. By today’s standards, even GPT-3’s 300B tokens is considered modest. Current models train on 1T+ tokens.\nThis is what makes the Transformer architecture so remarkable. The same fundamental design (attention for communication, feed-forward for computation, residual connections, layer norm) scales from a 10M parameter Shakespeare generator to a 175B parameter model!"
+   },
+   {
+    "title": "About, section: Contract work",
+    "text": "Dec 2024 - Jul 2025\nRenderwolf\nML and AI Engineer (part-time consultant)\nBuilt the generation stack for game asset pipelines: ComfyUI workflows for image (SDXL, Flux), video (WAN 2.1) and 3D (Trellis, Hunyuan3D) generation, deployed on Modal with custom nodes. Fine-tuned SDXL and Flux checkpoints for consistent character generation and style transfer.\nJul 2024 - Oct 2024\nSixSense\nML Engineer (part-time consultant)\nArchitecture search for fast, high-precision semiconductor chip defect classification across CNN and transformer models. Built domain-specific pre-training on chip inspection data for ConvNeXt and transformer backbones, improving accuracy and producing representations reusable across inspection projects."
+   }
+  ]
+ },
+ {
+  "id": "fact-07",
+  "question": "How many cities does the India weather dashboard show, and how often is it updated?",
+  "passages": [
+   {
+    "title": "Building a Live India Weather Dashboard with Claude Code",
+    "text": "It is summer in India with temperature soaring above 40°C in many parts and like a lot of folks here, I too have a habit of checking the temperature and humidity more often than I would like to admit. Moreover, if you are from northern or western India, you are probably also checking the AQI given how big and genuine the pollution problem is these parts.\nAs a fun project, I built a small dashboard that shows the weather and AQI for the major Indian cities along with the option of viewing the history over 24 hours, 7 days and 30 days. Moreover, this dashboard fetches the data every 15 minutes so more or less you have a live view of the weather and AQI for the major Indian cities.\nThe dashboard is live at aayushgarg.dev/india-weather.\nLive India weather map\nPer-city history charts"
+   },
+   {
+    "title": "India Weather",
+    "text": "Live temperature, humidity, and air quality across India's major metropolitan cities."
+   },
+   {
+    "title": "Work, section: Live",
+    "text": "India Weather\nLive temperature, humidity, and air quality across India's major metropolitan cities.\nBrowser tools\nImage, viewer and data utilities that run entirely in your browser."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: ArXiv Papers are Surprisingly Ineffective",
+    "text": "ArXiv papers are often a default ingredient in many math pre-training recipes, but the authors report that pre-training on arXiv content was not helpful in their setup. In some cases, it led to no improvement or even to worse performance.\nNote, the authors have been cautious claiming it to be definitely true and rather presented it as an empirical finding that requires more studies to confirm it.\nStill, I found this interesting. It suggests arXiv-style technical writing might be more useful for formal exposition (or informalization) than for improving competition-style problem solving."
+   }
+  ]
+ },
+ {
+  "id": "fact-08",
+  "question": "In his Qwen3.5 vs Gemma 4 coding test, did any model really follow test-driven development?",
+  "passages": [
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Takeaways",
+    "text": "None of the models truly followed TDD. All claimed red-green methodology but wrote integration tests hitting the real API. No mocks, no genuinely failing tests first.\nBetter structure does not mean better code. Qwen3.5-35B-A3B had the cleanest design (class-based) but hardcoded an API key and used the wrong model name. Structure alone is not enough.\nBottom Line\nQwen3.5-27B feels like the best overall pick for agentic coding on a 4090.\nReliable: got the complex task right on the first try\n130K context is a practical sweet spot for long agentic sessions without maxing out the card\n44.9 tok/s is slower than MoE but fast enough for interactive use\nMost efficient on the simple task (fewest API calls)\nOnly uses ~21 GB VRAM, leaving headroom\nProduced the most correct and cleanest code of all four models\nThese are notes from a single benchmarking session with two prompts and my experience over the last 2 days. I am not claiming any of this is statistically rigorous."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Trying it out",
+    "text": "I ran through a few prompts in OpenCode using the Qwen3.5-27B model to see how well it handles agentic coding tasks, tool calls and skills:\nI ask it to write a Python script for Gemini image generation, pointing it at context7 to fetch the latest docs\nThe model initially uses Gemini 2.5, so I tell it to switch to the 3.1 image generation model and it updates the script\nI run the script with uv run to generate an image of a cat on a window sill\nI use /explain-code (a custom skill) to have the model explain the generated script\nFinally, I ask it to save the explanation as a readme\nThe model handles all of this well. It picks up the tool calls, uses the skills correctly, follows up on corrections and produces working code. Honestly, for a 27B model running quantized on a single 4090, the quality is surprisingly good.\nFor reference, here are the speeds I am getting across some of the sessions:\nPrefill speed\n~2400 tokens/s\nGeneration speed\n~40 tokens/s"
+   },
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "Based on my experience, I would not ideally switch to it for all tasks but it pairs really well with Sol (or maybe Opus 5.5). Instead of running the whole session with one model, Sol does the planning, writes the briefs, reads the diffs and runs the checks, while GLM reads the code, makes the edits, runs the tests and iterates on failures. Sol also catches things GLM misses. This way the plan limits (or the API bill) go to judgment and most of the tokens go to in-house GPUs.\nNothing here depends on GLM. You can deploy this model or any other one, even something like Qwen3.8-27B on a single GPU."
+   },
+   {
+    "title": "A Brief Introduction to Claude Agent Skills, section: Walkthrough: Creating the Basic Image Editing Skill",
+    "text": "Once you have enabled the skill-creator, you can describe what you want to create a skill for. For eg, I want to create a skill for basic image editing:\nClaude used the skill-creator framework to scaffold the initial structure: a SKILL.md with proper YAML frontmatter and a Python script with core operations.\nStep 3: Test Immediately, Iterate Constantly\nOne thing I always make sure of: I dont try to create a polished skill in one go. Whatever skill gets created, test it immediately. This is one of the things I appreciate about creating skills in the Claude web app. You can test them instantly in the same conversation.\nFor eg, I uploaded a test image and asked Claude to change the background to orange:\nThis gives you a tight feedback loop. You test what you’re building, and if something doesn’t work, Claude can fix it for you right there. No context-switching between environments. You build, test, and refine in one place.\nStep 4: Iterate and Improve"
+   }
+  ]
+ },
+ {
+  "id": "fact-09",
+  "question": "When he pairs GPT-6.1 Sol with a self-hosted GLM model in OpenCode, what share of the tokens goes to GLM?",
+  "passages": [
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "How I set up OpenCode so GPT-6.1 Sol plans and checks while a self-hosted GLM-5.3-Flash writes the code and does most of the work"
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Step 6: Add the provider in OpenCode",
+    "text": "Update ~/.config/opencode/opencode.json:\nIf everything worked, you should see the local model available in OpenCode’s model selector:"
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: Update 1: Self-Attention (7b0e03a)",
+    "text": "Note: Attention is really a communication mechanism. You can think of it as nodes in a directed graph where every node aggregates information from nodes that point to it. In our case, token 5 can receive information from tokens 1-4 (and itself), but not from tokens 6-8. The triangular mask creates this directed structure and is what makes this a “decoder” block.\nOne subtle but important point: attention has no notion of space. The tokens don’t inherently know where they are in the sequence. That’s why we add positional embeddings. Each position gets its own learned embedding that’s added to the token embedding, giving the model spatial information.\nResult: ~2.4 validation loss. Tokens can now see context."
+   },
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: B: Installation",
+    "text": "llama.cpp Installation\nTokenscope: I used the opencode-tokenscope plugin to get per-session token breakdowns. You need to add \"plugin\": [\"@ramtinj95/opencode-tokenscope\"] to your opencode.json then create a /tokenscope slash command in ~/.config/opencode/command/tokenscope.md.\nllama-server /metrics: llama-server exposes a /metrics endpoint (enabled with the --metrics flag) that returns Prometheus-format counters."
+   }
+  ]
+ },
+ {
+  "id": "fact-10",
+  "question": "Does the Markdown Viewer tool work without an internet connection?",
+  "passages": [
+   {
+    "title": "Tools, section: Viewer tools",
+    "text": "HTML Viewer paste HTML, see it rendered live\nPaste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.\nMarkdown Viewer live preview with math & code highlighting\nPaste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries.\nJSON Formatter & Viewer format, validate, and explore JSON\nPaste or drop JSON to format with syntax highlighting, collapsible tree view, validation with line-level error reporting, search, and one-click copy.\nDiff Viewer compare text side-by-side with word-level highlighting\nCompare two text blocks with line-level and word-level diff highlighting. Side-by-side and unified diff modes. Requires internet for diff library.\nLaTeX Math Preview scratchpad for previewing LaTeX equations"
+   },
+   {
+    "title": "Markdown Viewer",
+    "text": "Markdown\nCopy Markdown Clear\n0 characters · 0 lines\nPreview"
+   },
+   {
+    "title": "Building Browser Tools with Claude Code, section: Viewer Tools",
+    "text": "HTML Viewer: Paste HTML and see it rendered in a sandboxed frame.\nMarkdown Viewer: Live markdown preview with syntax highlighting and latex math support.\nJSON Formatter & Viewer: Format, validate, collapsible tree view, and search.\nDiff Viewer: Side-by-side and unified diff with word-level highlighting.\nLaTeX Math Preview: Live math latex rendering with a symbol palette and saved snippets.\nThe HTML and Markdown viewers comes in handy especially if you are working with an OCR model and quickly want to see the generated preview of an image or PDF. And whenever I am working with math equations, the LaTeX Preview is a nice scratchpad where I can quickly test out an equation and make sure it renders correctly."
+   },
+   {
+    "title": "Self-Hosted Gemma 4 Chat with Web UI, section: Troubleshooting",
+    "text": "Problem\nCause\nFix\n500: CPPHTTPLIB_OPENSSL_SUPPORT is not defined\nBuilt without OpenSSL\nRebuild with -DLLAMA_CURL=ON and libssl-dev installed\nModel says “I can’t search” or “my knowledge cutoff is…”\nMCP toggle auto-disabled or system prompt missing\nRe-enable MCP toggle in settings, check systemMessage in config\nNo tools array in request payload\nMCP server not connected\nCheck Connection Log, enable “Use llama-server proxy” via edit icon\nMCP toggle keeps turning itself off\nConnection fails on startup\nUse --webui-config-file (Section 3) instead of manual UI config\nModel ignores tools even though they’re in payload\nChat template not applied\nMake sure --jinja flag is set\nFailed to fetch in Connection Log\nCORS blocking direct request\nEnable “Use llama-server proxy” on the MCP entry\nCan’t reach UI from phone\nWrong bind address\nMake sure --host is your Tailscale IP, not 127.0.0.1 or 0.0.0.0"
+   }
+  ]
+ },
+ {
+  "id": "fact-11",
+  "question": "How big was the Shakespeare GPT he built compared with GPT-3?",
+  "passages": [
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: How This Compares to GPT-3",
+    "text": "My Model\nGPT-3\nParameters\n~10M\n175B\nDataset\n~300K tokens\n300B tokens\nArchitecture\nNearly identical\nThe architecture we built is essentially the same as GPT-3. The difference is pure scale: 17,500x more parameters trained on 1 million times more data. By today’s standards, even GPT-3’s 300B tokens is considered modest. Current models train on 1T+ tokens.\nThis is what makes the Transformer architecture so remarkable. The same fundamental design (attention for communication, feed-forward for computation, residual connections, layer norm) scales from a 10M parameter Shakespeare generator to a 175B parameter model!"
+   },
+   {
+    "title": "Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction, section: References",
+    "text": "GPT-4o baseline evaluation notebook\nOpenAI GPT-4o\nViGGO Dataset\nAnyscale Blog on Fine-tuning Llama 2\nPydantic Documentation\nInstructor Package\nThanks for reading! If you have any questions or feedback, please let me know on Twitter or LinkedIn."
+   },
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction",
+    "text": "Blog on fine-tuning a Llama-3-8B model on the Predibase platform for structured functional representation extraction, and compare its performance with GPT-4 and Claude 3.5 Sonnet."
+   },
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "In my current job we have quite a few H200 GPU servers :). A couple of weeks back I deployed GLM-5.3-Flash on one of them with the aim of making it my main coding model and the workhorse for development so that I can cut down my Claude Code and Codex usage. If that works, I can even nudge my teammates to use it as well 🙈.\nNo doubt models like Claude Opus 5.5, GPT-6 Astra or GPT-6.1 Sol are the best right now and way ahead of their open-source counterparts for complex tasks. However, no one can ignore the $$ of using them and the anxiety of hitting the limits or draining your credits.\nGLM-5.3-Flash is free, runs on a single 4-GPU H200 server and is good enough for low and medium complexity tasks. It is also quite fast since it is an MoE model (320B total, only 18B active). I serve it with a 512K context window and if needed I can scale it to around 8 to 10 people at the same time without any issues."
+   }
+  ]
+ },
+ {
+  "id": "fact-12",
+  "question": "What are the stages of the JSALT 2020 pipeline for multi-speaker meetings?",
+  "passages": [
+   {
+    "title": "Integration of speech separation, diarization, and recognition for multi-speaker meetings, section: Credits",
+    "text": "This work was conducted during JSALT 2020 with support from Microsoft, Amazon, and Google. If you use the data or code in your research, consider citing:"
+   },
+   {
+    "title": "Publications",
+    "text": "2020\nTarget-oriented elastic parameter models estimation from surface seismic data using JMI-res\nGarg, A., Verschuur, D. J.\nInvited speaker for FWI workshop in 82nd EAGE Conference and Exhibition\n2019\nFrom surface seismic data to reservoir elastic parameters using a full-wavefield redatuming approach\nGarg, A., Verschuur, D. J.\nGeophysical Journal International, Volume 221, Issue 1, April 2020, Pages 115-128\nSpatial aliasing removal using deep learning super-resolution\nGarg, A., Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J.\nFirst Break, 37(9), 87-92\nEstimation of reservoir elastic parameters via full-wavefield redatuming: Comparison of approaches\nGarg, A., Verschuur, D. J.\n89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648\nBlock-Krylov methods for multi-dimensional deconvolution\nLuiken N., Garg, A.\n89th Annual International Meeting, SEG Technical Program Expanded Abstracts"
+   },
+   {
+    "title": "About, section: Contract work",
+    "text": "Dec 2024 - Jul 2025\nRenderwolf\nML and AI Engineer (part-time consultant)\nBuilt the generation stack for game asset pipelines: ComfyUI workflows for image (SDXL, Flux), video (WAN 2.1) and 3D (Trellis, Hunyuan3D) generation, deployed on Modal with custom nodes. Fine-tuned SDXL and Flux checkpoints for consistent character generation and style transfer.\nJul 2024 - Oct 2024\nSixSense\nML Engineer (part-time consultant)\nArchitecture search for fast, high-precision semiconductor chip defect classification across CNN and transformer models. Built domain-specific pre-training on chip inspection data for ConvNeXt and transformer backbones, improving accuracy and producing representations reusable across inspection projects."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: The Iterative Data Curation Pipeline",
+    "text": "As I mentioned earlier, one of the key contributions of this paper is their data curation pipeline that extracts high-quality mathematical content from Common Crawl.\nThe reason I am going into detail here is that you can draw parallels from this approach to create any other domain-specific dataset from publicly available data like Common Crawl. The pipeline is iterative and uses a fastText classifier at its core. Crudely, this is how the pipeline works:"
+   }
+  ]
+ },
+ {
+  "id": "how-01",
+  "question": "Why did he switch to per-token loss normalization when training SFT?",
+  "passages": [
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: The Training Loop: Per-Token vs. Sequence Loss",
+    "text": "Thus, I added a per_token_loss flag to my training step which when enabled normalizes the loss by the actual number of response tokens in each sequence. The difference was noticeable with subtle improved accuracy. More importantly, the gradients became much more stable with per-token normalization.\nRun\nLoss Normalization\nReward Accuracy\nrun_filtered\nPer-token\n0.5204\nrun_filtered-res-len\nSequence-level\n0.5106"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Length Normalization",
+    "text": "When aggregating per-token losses over the sequence dimension, the choice of normalization affects how much gradient signal each individual token receives. As noted in the assignment, it is not necessary or even correct to always average losses by sequence length. I tested three modes:\nmean: divide by number of response tokens per sequence. In this case, short correct answers get disproportionately large per-token gradients.\nconstant: divide by a fixed constant (max_gen_len=1024). Every token gets the same gradient magnitude regardless of sequence length (used in DeepSeek).\nmicrobatch: normalize by the longest response in the current microbatch. This is a middle ground between mean and constant.\nAll three modes converge to similar final reward accuracy and mean response length."
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: Update 5 & 6: Layer Normalization (63ef5f8, 4f5bef8)",
+    "text": "Batch normalization normalizes columns (across examples in a batch). Layer normalization normalizes rows (across features for each example). The implementation is almost identical, you just change which dimension you normalize over.\nLayer norm has advantages for Transformers: - No dependency on batch size (works even with batch size 1) - No running buffers to maintain - No distinction between training and test time\nThe original Transformer paper used post-layer norm (normalize after attention/FFN). Modern implementations use pre-layer norm (normalize before). Pre-layer norm creates a cleaner residual pathway since the transformation happens on normalized inputs, leading to more stable training.\nResult: ~2.076 validation loss."
+   },
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: How is the Reward Model Trained?",
+    "text": "The standard procedure for training the reward model is:\nSample prompts (x)\nGenerate multiple candidate completions (y_1, y_2, ..., y_K) from a baseline policy (often an SFT model).\nAsk humans to compare candidates (pairwise preferences are easier than absolute scoring).\nTrain the RM (r_φ) to predict those preferences.\nArchitecturally, the reward model is typically: - Initialized from a pretrained language model (often the SFT model itself) - The final non-embedding layer (which projects to vocabulary) is removed - Replaced it with a linear layer that projects the hidden state of the last token to a single scalar output"
+   }
+  ]
+ },
+ {
+  "id": "how-02",
+  "question": "Why is FlashAttention's backward pass faster even though it recomputes the attention matrix?",
+  "passages": [
+   {
+    "title": "FlashAttention: Making Attention I/O-Aware, section: Recomputation",
+    "text": "Tiling eliminates the N × N matrix from the forward pass. However, the gradient computation requires the probability matrix P (see the backward algorithm above). If we store P for the backward pass, we reintroduce O(N^2) memory per head which is exactly the cost we just eliminated.\nFlashAttention makes a deliberate choice: do not store P, recompute it during the backward pass from the saved Q, K, and V tiles.\nThis trades memory for compute. Since, standard attention is memory-bound, the additional compute is small in comparison. You need one extra forward pass over the QK^T tiles per backward pass. Since the backward pass already has to load Q, K, and V from HBM, recomputation adds no extra HBM reads. The memory savings are enormous. Thus, we only need to store Q, K, V, O (all O(Nd)) and one additional scalar L."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: GPU Memory Optimization (Fitting on 24 GB)",
+    "text": "I wrote the training code and tested it on my personal RTX 4090 with 24 GB of VRAM. With the default parameters suggested in the assignment, I immediately ran into OOM errors and had to do some memory optimizations to fit the training loop.\nPeak memory tracking: Not an optimization in itself but an essential step to keep track of the peak memory usage. I made sure to log the peak memory at important junctures in the training loop.\nGradient checkpointing: The simplest one is to enable gradient checkpointing which recomputes activations during backward pass instead of storing them. You can trade up to ~30% memory savings for speed.\nvLLM sleep mode: This is quite a nice trick to offload vLLM KV cache and weights to CPU during the training phase (when vLLM is not generating). This frees GPU memory for the backward pass and prevents the vLLM cache from competing with training activations."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: 4) Expand the Seed Corpus and Repeat",
+    "text": "Finally, these new math related web pages are added to the seed corpus and the fastText classifier is retrained. This process is repeated until some sort of convergence is reached.\nThis approach enables training an improved classifier with each iteration leading to better recall of math-related web pages in each subsequent iteration.\nAccording to the paper, the pipeline converges after 4 iterations with 98% of the data already collected in the third round."
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: Update 7: Scaling Up (d4141d7)",
+    "text": "With all the architectural pieces in place, Karpathy scales up the architecture:\nParameter\nBefore\nAfter\nBlock size (context)\n8\n256\nEmbedding dim\n32\n384\nHeads\n4\n6\nLayers\n3\n6\nDropout\n0\n0.2\nDropout is added for regularization. It randomly shuts off neurons during training, effectively training an ensemble of sub-networks. At test time, everything is enabled and the sub-networks merge.\nResult: ~1.48 validation loss. The generated text now looks like Shakespeare (structure, dialogue formatting, character names) even though it’s nonsensical when you actually read it."
+   }
+  ]
+ },
+ {
+  "id": "how-03",
+  "question": "How does DPO get away without a reward model or reinforcement learning?",
+  "passages": [
+   {
+    "title": "Deriving the DPO Loss from First Principles",
+    "text": "A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning."
+   },
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: IX: Complete PPO Objective with KL Penalty",
+    "text": "When fine-tuning an LLM with “vanilla” PPO, the policy learns to maximize rewards from the reward model. However, the reward model is an imperfect proxy for human preferences. It is a neural network trained on limited data that can be exploited. Without constraints, the policy may discover adversarial outputs that achieve high reward scores while producing text that:\nDegenerates into repetitive or nonsensical patterns that “fool” the reward model\nDrifts far from natural language, losing fluency and coherence\nExploits spurious correlations learned by the reward model\nThis phenomenon is called reward hacking. The policy finds a way to “game” the reward model rather than genuinely improving response quality.\nTo prevent reward hacking, the InstructGPT paper adds a KL divergence penalty that regularizes the policy to stay close to a reference model π_ref (typically the SFT model before RL fine-tuning)."
+   },
+   {
+    "title": "Understanding GRPO: PPO without the Critic, section: References",
+    "text": "Papers:\nDeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models: The original GRPO paper\nDeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning: DeepSeek’s reasoning model trained with GRPO\nBack to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs: The RLOO paper comparing critic-free methods\nBlogs:\nJohn Schulman’s post on approximating KL divergence: Derivation of the unbiased non-negative KL estimator\nRLHF Book by Nathan Lambert: Comprehensive resource on RLHF algorithms including GRPO implementation details\nUnderstanding GRPO by Cameron R. Wolfe: Deep dive into GRPO mechanics and implementation"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Summary and Key Takeaways",
+    "text": "Best configuration:\non-policy (epochs_per_rollout_batch=1)\nlr=3e-5\nloss_type=grpo_clip\nuse_std_normalization=True\nr1_zero structured prompt\nbase model (no SFT initialization)\nBest performance: ~0.75 on MATH validation (up from ~3% base model accuracy).\nKey lessons:\nEval reward accuracy is the north star metric. It directly measures what we care about. Especially in the case of reinforcement learning with verifiable rewards.\nHowever, gradient norm and mean_response_length are the two other important metrics to watch. They are the early warning signals for instability and reward collapse.\nBinary math reward is robust to some design choices (length normalization) but sensitive to others (baseline subtraction, learning rate).\nOn-policy training wins in this case, reusing rollouts introduces policy drift that is not worth the compute savings.\nThe R1-zero structured prompt matters. A dedicated reasoning scratchpad produces sharper final policies and higher accuracy."
+   }
+  ]
+ },
+ {
+  "id": "how-04",
+  "question": "How did he fit GRPO training on a single 24 GB RTX 4090?",
+  "passages": [
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: H100 Config Optimization",
+    "text": "On the H100, I disabled the memory tricks that only exist to fit on 24 GB (gradient checkpointing, 8-bit AdamW) and used larger microbatches (4 instead of 1) for better tensor core utilization. I kept vLLM sleep mode on since it is still useful to free KV cache during training.\nTiming comparison (20 GRPO steps, reinforce_with_baseline):\nHardware\nConfig\nTime\nRTX 4090 (24 GB)\nRTX 4090 defaults\n~28 min\nH100 (80 GB)\nRTX 4090 defaults (unchanged)\n~18 min\nH100 (80 GB)\nH100 optimized config\n~10 min\nCost note: Running all the ablation studies discussed below including failed experiments and runs I terminated early, cost approximately $140 on Modal. I think that is well worth it for the understanding I gained."
+   },
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Summary Tables",
+    "text": "Speed\nModel\nPrefill tok/s (P1)\nPrefill tok/s (P2)\nGen tok/s (P1)\nGen tok/s (P2)\nGemma4-26B-A4B\n4,338\n4,560\n135.5\n134.4\nQwen3.5-35B-A3B\n3,179\n3,056\n136.7\n132.3\nGemma4-31B\n1,466\n1,357\n37.7\n35.2\nQwen3.5-27B\n2,474\n2,188\n44.9\n44.6\nEfficiency and Completion\nModel\nTokens Gen (P1)\nTokens Gen (P2)\nAPI Calls (P1)\nAPI Calls (P2)\nTool Calls (P2)\nCorrect Turn (P2)\nGemma4-26B-A4B\n1,623\n3,435\n10\n13\n11\n3rd\nQwen3.5-35B-A3B\n7,564\n32,904\n13\n30\n28\n2nd\nGemma4-31B\n2,903\n5,968\n10\n16\n14\n1st\nQwen3.5-27B\n2,867\n11,824\n9\n18\n14\n1st\nHardware Fit (RTX 4090 24 GB)\nModel\nVRAM Usage\nMax Context\nGemma4-26B-A4B\n~21 GB\n256,000\nQwen3.5-35B-A3B\n~23 GB\n200,000\nQwen3.5-27B\n~21 GB\n130,672\nGemma4-31B\n~24 GB\n65,336"
+   },
+   {
+    "title": "Self-Hosted Gemma 4 Chat with Web UI, section: My Setup",
+    "text": "RTX 4090 GPU server running Ubuntu with CUDA installed\nTailscale set up on the server and all my devices (phone, laptop)\ngemma-4-26B-A4B-it-UD-Q4_K_XL.gguf from the Unsloth HuggingFace repo. If you also want vision/image support, use mmproj-BF16.gguf from the same repo.\nThe Q4_K_XL quant fits on a 4090 even with full 256K context at approximately 20.5 GB VRAM"
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: On the GPU machine (RTX 4090)",
+    "text": ""
+   }
+  ]
+ },
+ {
+  "id": "how-05",
+  "question": "Why can Qwen3.5-27B run with a 64K context on a 24 GB card?",
+  "passages": [
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Summary Tables",
+    "text": "Speed\nModel\nPrefill tok/s (P1)\nPrefill tok/s (P2)\nGen tok/s (P1)\nGen tok/s (P2)\nGemma4-26B-A4B\n4,338\n4,560\n135.5\n134.4\nQwen3.5-35B-A3B\n3,179\n3,056\n136.7\n132.3\nGemma4-31B\n1,466\n1,357\n37.7\n35.2\nQwen3.5-27B\n2,474\n2,188\n44.9\n44.6\nEfficiency and Completion\nModel\nTokens Gen (P1)\nTokens Gen (P2)\nAPI Calls (P1)\nAPI Calls (P2)\nTool Calls (P2)\nCorrect Turn (P2)\nGemma4-26B-A4B\n1,623\n3,435\n10\n13\n11\n3rd\nQwen3.5-35B-A3B\n7,564\n32,904\n13\n30\n28\n2nd\nGemma4-31B\n2,903\n5,968\n10\n16\n14\n1st\nQwen3.5-27B\n2,867\n11,824\n9\n18\n14\n1st\nHardware Fit (RTX 4090 24 GB)\nModel\nVRAM Usage\nMax Context\nGemma4-26B-A4B\n~21 GB\n256,000\nQwen3.5-35B-A3B\n~23 GB\n200,000\nQwen3.5-27B\n~21 GB\n130,672\nGemma4-31B\n~24 GB\n65,336"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: H100 Config Optimization",
+    "text": "On the H100, I disabled the memory tricks that only exist to fit on 24 GB (gradient checkpointing, 8-bit AdamW) and used larger microbatches (4 instead of 1) for better tensor core utilization. I kept vLLM sleep mode on since it is still useful to free KV cache during training.\nTiming comparison (20 GRPO steps, reinforce_with_baseline):\nHardware\nConfig\nTime\nRTX 4090 (24 GB)\nRTX 4090 defaults\n~28 min\nH100 (80 GB)\nRTX 4090 defaults (unchanged)\n~18 min\nH100 (80 GB)\nH100 optimized config\n~10 min\nCost note: Running all the ablation studies discussed below including failed experiments and runs I terminated early, cost approximately $140 on Modal. I think that is well worth it for the understanding I gained."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Reasoning and things I learned along the way",
+    "text": "Why UD-Q4_K_XL quantization? Unsloth’s Dynamic 2.0 quantization selectively upcasts important layers to 8 or 16-bit precision, so you get better quality without paying the full VRAM cost of a higher quant. Benjamin Marie’s benchmarks show UD-Q4_K_XL stays within a 1-point accuracy drop of the original while being ~8GB smaller than comparable quants.\nHybrid architecture and KV cache. Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all."
+   },
+   {
+    "title": "Self-Hosted Gemma 4 Chat with Web UI, section: My Setup",
+    "text": "RTX 4090 GPU server running Ubuntu with CUDA installed\nTailscale set up on the server and all my devices (phone, laptop)\ngemma-4-26B-A4B-it-UD-Q4_K_XL.gguf from the Unsloth HuggingFace repo. If you also want vision/image support, use mmproj-BF16.gguf from the same repo.\nThe Q4_K_XL quant fits on a 4090 even with full 256K context at approximately 20.5 GB VRAM"
+   }
+  ]
+ },
+ {
+  "id": "how-06",
+  "question": "Why does he run the GPT plus local GLM setup in OpenCode instead of Claude Code or Codex?",
+  "passages": [
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode, section: Which harness to use",
+    "text": "Ideally I would love to use this pattern in Claude Code or Codex since I am more used to them and both have a great harness. But I found it is not easy (or maybe not even possible) to have the main session running on Sol or Opus 5.5 while the subagents do all the work on your locally deployed model, in this case GLM-5.3-Flash.\nFor example in Codex I set up a glm_implementer agent role pointing at the GLM server. Codex picks up the role but still sends its requests to OpenAI so the subagent fails right away with The 'coder-glm' model is not supported when using Codex with a ChatGPT account.\nCodex spawns the glm_implementer role and the subagent fails right away\nThis turns out to be documented in Codex’s subagent docs and there are open issues asking for it (#40858, #47752) to be resolved. Claude Code has the same limitation: a subagent can pick a different model but not a different endpoint (docs)."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Using it with Codex",
+    "text": "This setup also works with Codex. Add this to your ~/.codex/config.toml (refer to this thread for more details):\nThen start Codex with:"
+   },
+   {
+    "title": "A Brief Introduction to Claude Agent Skills, section: Walkthrough: Creating the Basic Image Editing Skill",
+    "text": "Once you have a basic working version, you can start adding more operations and optimizing.\nSimilarly, since this skill runs Python scripts locally, I switched to PEP 723 inline metadata so uv run installs dependencies automatically on the fly:\nIf you have some domain knowledge, use it. Go through the code Claude generated and check if it’s doing something redundant. You can review and ask Claude to make those optimizations.\nFinally, once you have a version you are happy with, go through the SKILL.md file and make sure the examples are good. If not, add them manually. Good examples help Claude understand exactly how to use the skill.\nStep 5: Export and Use Across Agents\nOnce you have a skill you want to keep, export it. You can use it in the Claude web app, Claude Code, or other agents like Codex CLI and Cursor."
+   },
+   {
+    "title": "Building Browser Tools with Claude Code, section: Data Tools",
+    "text": "YAML/JSON Converter: Bidirectional conversion with validation and configurable indentation.\nBase64 Encoder/Decoder: Encode/decode images and text with image preview.\nURL Encoder/Decoder: Percent encode and decode useful for API calls and debugging.\nThe YAML/JSON converter I like a lot, especially when working with training configs. The Base64 tool is another one I use often when working with llm/image-gen APIs, sometimes they send back base64 encoded images or require base64 encoded images as input and I can directly do that here.\nFor what it is worth, I do have all of these set up as skills in my Claude Code setup too. But it is always nice to have something in the browser where you can quickly drag and drop an image and get the result without opening a terminal session or burning tokens."
+   }
+  ]
+ },
+ {
+  "id": "how-07",
+  "question": "What does the Kalman gain do when the sensor is unreliable?",
+  "passages": [
+   {
+    "title": "Kalman Filters and Smoothing for Time-Series Data, section: The Kalman gain is a trust dial",
+    "text": "The gain is the heart of the algorithm and worth staring at for a minute.\nIntuition behind the Kalman gain\nWhen the measurement noise R is large (an unreliable sensor), K_k shrinks toward zero and the filter mostly trusts its own prediction. When the prior uncertainty P^-_k is large (an uncertain model), K_k grows toward one and the filter mostly trusts the measurement. In between it blends the two optimally: for a linear-Gaussian system, no other linear combination of prediction and measurement achieves lower mean squared error.\nIt is a trust dial that re-tunes itself at every timestep based on who currently deserves more trust, the model or the sensor."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: RL Sharpens Distribution, Does not Expand Model Capability",
+    "text": "This is one of my favorite analyses in the paper. The authors compare Maj@K (majority voting accuracy) and Pass@K (whether any of K samples is correct) for both the Instruct and RL models.\nAt K=64 samples, both models reach similar Pass@K ceilings (around 83-85% on MATH) which indicates that the fundamental capability is the same. However, RL consistently outperforms on Maj@K.\nThis suggests RL isn’t expanding fundamental reasoning abilities. Instead it is sharpening the distribution of the model’s output which boosts the correct responses that were already within the model’s capability."
+   },
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: The Instability Problem",
+    "text": "While the CPI objective improves sample efficiency, unconstrained optimization of L^CPI(θ) is unstable. The core issue is that importance sampling becomes unreliable when π_θ drifts far from π_θ_old:\nExtreme probability ratios: The ratio r_t(θ) can become arbitrarily large or small, destabilizing gradient estimates.\nStale advantages: The estimates A_t were computed under π_θ_old and become inaccurate as π_θ diverges. The optimizer may exploit these stale estimates, making updates that appear beneficial but are actually harmful.\nIn practice, unconstrained maximization of L^CPI(θ) often leads to excessively large policy updates that cause catastrophic performance collapse."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: H100 Config Optimization",
+    "text": "On the H100, I disabled the memory tricks that only exist to fit on 24 GB (gradient checkpointing, 8-bit AdamW) and used larger microbatches (4 instead of 1) for better tensor core utilization. I kept vLLM sleep mode on since it is still useful to free KV cache during training.\nTiming comparison (20 GRPO steps, reinforce_with_baseline):\nHardware\nConfig\nTime\nRTX 4090 (24 GB)\nRTX 4090 defaults\n~28 min\nH100 (80 GB)\nRTX 4090 defaults (unchanged)\n~18 min\nH100 (80 GB)\nH100 optimized config\n~10 min\nCost note: Running all the ablation studies discussed below including failed experiments and runs I terminated early, cost approximately $140 on Modal. I think that is well worth it for the understanding I gained."
+   }
+  ]
+ },
+ {
+  "id": "how-08",
+  "question": "How was spectral clustering changed to handle overlapping speakers in the SLT 2021 diarization work?",
+  "passages": [
+   {
+    "title": "Multi-class Spectral Clustering with Overlaps for Speaker Diarization",
+    "text": "The implementation of our SLT 2021 paper, an overlap detector and a modified spectral clustering method for overlap-aware diarization."
+   },
+   {
+    "title": "Integration of speech separation, diarization, and recognition for multi-speaker meetings",
+    "text": "This post describes how to reproduce and extend our pipeline of speech separation, diarization and ASR. We have provided separated audio files along with entire end-to-end reproducible recipes to supplement our SLT 2021 paper.\nHere is a summary of contents of this post:\nSummary of our pipeline\nDatasets\nReproducible recipes\nExample use cases (for extending this work)\nCredits"
+   },
+   {
+    "title": "Kalman Filters and Smoothing for Time-Series Data, section: Example 1: Decomposing the Mauna Loa CO_2 Series",
+    "text": "Zooming into 1990 to 1996 shows the components at the individual-cycle level:\nZoomed view of the CO_2 seasonal cycles, 1990 to 1996\nThe green line is the trend alone, the blue line adds the estimated seasonal component and the observed points cluster tightly around the reconstruction.\nThe below MLE variances are as informative as the plots:\nParameter\nEstimate\nInterpretation\nσ^2_irregular\n0.023\nObservation noise is small (good measurements)\nσ^2_level\n0.056\nThe level moves meaningfully month to month\nσ^2_trend\n3.4 × 10^-6\nThe growth rate changes very slowly\nσ^2_seasonal\n≈ 0\nThe seasonal shape is essentially fixed over 43 years\nThe near-zero seasonal variance is the model telling us the annual CO_2 cycle has barely changed shape across four decades. This kind of interpretability is quite useful."
+   },
+   {
+    "title": "Image Cropper",
+    "text": "Click or drag and drop an image here PNG, JPEG, WebP, GIF, BMP, SVG, AVIF\nChange\nAspect Ratio\nFree 1:1 4:3 16:9 2:1\nCrop Area\nImage to crop\nDrag to move, use handles to resize.\nApply Crop\nResult\nCropped image preview\nDownload"
+   }
+  ]
+ },
+ {
+  "id": "broad-01",
+  "question": "Which approach got Qwen2.5-Math-1.5B the highest MATH accuracy: SFT, expert iteration or GRPO?",
+  "passages": [
+   {
+    "title": "Expert Iteration for Math Reasoning, section: Comparison to SFT Experiments",
+    "text": "In my previous SFT experiments, I finetuned the same Qwen2.5-Math-1.5B model using the same train and eval data, with train data being GPT-oss-120B generated reasoning traces. Below is the comparison of SFT and Expert Iteration best experiments:\nMethod\nConfiguration\nReward Accuracy\nBaseline\nUntrained Qwen2.5-Math-1.5B\n2.9%\nExpert Iteration (best)\nD=1024, R=4, 2 epochs\n47.1%\nSFT (best)\nFiltered data, 2 epochs\n53.4%\nDespite extensive tuning across batch sizes, rollout counts and learning rate schedules Expert Iteration reached 47.1% accuracy which is around 6% below SFT’s 53.4%.\nIn my understanding, the gap comes down to two factors: data quality and rationalization:"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies",
+    "text": "Following the same approach as I did for SFT and Expert Iteration, I have written the GRPO training code from scratch. I loosely followed GRPO experiment part of Stanford CS336 Assignment 5 as a reference point and trained Qwen2.5-Math-1.5B with verifiable math rewards. This time around I had 3 main motivations:\nAs usual, write the GRPO code from scratch for the sake of understanding.\nTrain Qwen2.5-Math-1.5B model with verifiable math rewards and get a feel of what kind of accuracy we can push with pure RL (no supervised fine-tuning).\nMost importantly, run a lot of ablation studies to understand and build intuition on what matters in GRPO training, the different design choices we can make and how to interpret the different metrics. Now I look back, I think this is the most important part of this long exercise.\nBest GRPO run: eval reward accuracy and mean response length\nBest: ~75% reward accuracy on MATH validation (up from ~3% base model accuracy)"
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Part 1: Reasoning SFT with Qwen2.5-Math-1.5B",
+    "text": "The idea behind reasoning SFT is simple. You take a base model that barely outputs correct answers, show it high-quality examples of how to solve problems step-by-step, and train it to replicate/mimic that reasoning process. The model learns to think in a structured format with first generating reasoning inside <think> tags, then outputting the final answer in <answer> tags.\nMy starting point was Qwen2.5-Math-1.5B, which had quite poor baseline accuracies on the math validation set: ~2.9% for answers and ~14% for format."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: 4) Expand the Seed Corpus and Repeat",
+    "text": "Finally, these new math related web pages are added to the seed corpus and the fastText classifier is retrained. This process is repeated until some sort of convergence is reached.\nThis approach enables training an improved classifier with each iteration leading to better recall of math-related web pages in each subsequent iteration.\nAccording to the paper, the pipeline converges after 4 iterations with 98% of the data already collected in the third round."
+   }
+  ]
+ },
+ {
+  "id": "broad-02",
+  "question": "What deep learning work has Aayush done on seismic data?",
+  "passages": [
+   {
+    "title": "About, section: Professional experience",
+    "text": "PhD Researcher\nDeveloped JMI-res, a reservoir-oriented joint migration inversion method for high-resolution subsurface imaging. Built a deep learning super-resolution method for removing spatial aliasing from seismic data."
+   },
+   {
+    "title": "Work, section: Open source GitHub",
+    "text": "Tutorials I wrote for myself and shared along the way.\nspatial-alias-removal\nI used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data by 2x in the spatial direction and remove spatial aliasing. This work was published as a paper back in 2019, built during my time at TU Delft and University of Amsterdam.\nresearch-papers\nMy reading notes and summaries for deep learning papers organized by category. Covers diffusion models (DDPM, DDIM, ControlNet, SDXL, and more), Transformers (Attention Is All You Need), and GANs.\npytorch-pl-hydra-templates\nI put together four progressively more sophisticated PyTorch training templates using CIFAR-10: vanilla single-GPU, multi-GPU with DistributedDataParallel, PyTorch Lightning with TensorBoard, and PyTorch Lightning + Hydra for rapid experimentation with swappable models, optimizers, and configs.\nmodel-parallelism\nI explored how to pipeline models with skip connections (ResNets, UNets) across multiple GPUs using torchgpipe."
+   },
+   {
+    "title": "Publications",
+    "text": "2020\nTarget-oriented elastic parameter models estimation from surface seismic data using JMI-res\nGarg, A., Verschuur, D. J.\nInvited speaker for FWI workshop in 82nd EAGE Conference and Exhibition\n2019\nFrom surface seismic data to reservoir elastic parameters using a full-wavefield redatuming approach\nGarg, A., Verschuur, D. J.\nGeophysical Journal International, Volume 221, Issue 1, April 2020, Pages 115-128\nSpatial aliasing removal using deep learning super-resolution\nGarg, A., Vos, A., Bortych, N., Gupta, D. K., Verschuur, D. J.\nFirst Break, 37(9), 87-92\nEstimation of reservoir elastic parameters via full-wavefield redatuming: Comparison of approaches\nGarg, A., Verschuur, D. J.\n89th Annual International Meeting, SEG Technical Program Expanded Abstracts, Pages 644-648\nBlock-Krylov methods for multi-dimensional deconvolution\nLuiken N., Garg, A.\n89th Annual International Meeting, SEG Technical Program Expanded Abstracts"
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: The Iterative Data Curation Pipeline",
+    "text": "As I mentioned earlier, one of the key contributions of this paper is their data curation pipeline that extracts high-quality mathematical content from Common Crawl.\nThe reason I am going into detail here is that you can draw parallels from this approach to create any other domain-specific dataset from publicly available data like Common Crawl. The pipeline is iterative and uses a fastText classifier at its core. Crudely, this is how the pipeline works:"
+   }
+  ]
+ },
+ {
+  "id": "broad-03",
+  "question": "Did fine-tuning a small open model beat GPT-4o on the ViGGO extraction task?",
+  "passages": [
+   {
+    "title": "Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction, section: Introduction",
+    "text": "Extracting structured data from unstructured texts allow us to condense the information present in the text. This representation then can be used for efficient indexing and other downstream RAG applications.\nI want to evaluate GPT-4o’s performance in extracting structural data, specifically, functional representation, from the unstructured domain-specific text. I will use ViGGO dataset to evaluate it on custom evaluation criteria and will set it as baseline performance for that can be used for comparison in future work with other models such as Claude, Gemini, and custom fine-tuned open-source models."
+   },
+   {
+    "title": "Part II: Comparison of Model Performances on Structured Functional Representation Extraction, section: Next steps….",
+    "text": "I plan to fine-tune the base Llama-3-8B and other smaller models (like Phi and Gemma) on the ViGGO dataset to assess whether a fine-tuned smaller model can compete with or surpass the performance of Claude Sonnet-3.5 and GPT-4o.\nAt the same time, investigate the trade offs like inference speed, accuracy, and latency associated with fine-tuned smaller models and propreitory models api calls."
+   },
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Task and Dataset",
+    "text": "Similar to my previous blogs, the custom task is to predict the structured functional representation from the given text video game opinions of the ViGGO validation dataset.\nTo make this exercise interesting and challenging for future experiments, I will use a maximum of 1000 examples for fine-tuning any LLM model, instead of the full ~5K train dataset.\nBelow is an example from the randomly selected 1K train dataset:\nAs shown in the graph below, the selected 1K dataset is a fairly representative sample of the full ViGGO train dataset.\nUnderstanding Data Distribution"
+   },
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "In my current job we have quite a few H200 GPU servers :). A couple of weeks back I deployed GLM-5.3-Flash on one of them with the aim of making it my main coding model and the workhorse for development so that I can cut down my Claude Code and Codex usage. If that works, I can even nudge my teammates to use it as well 🙈.\nNo doubt models like Claude Opus 5.5, GPT-6 Astra or GPT-6.1 Sol are the best right now and way ahead of their open-source counterparts for complex tasks. However, no one can ignore the $$ of using them and the anxiety of hitting the limits or draining your credits.\nGLM-5.3-Flash is free, runs on a single 4-GPU H200 server and is good enough for low and medium complexity tasks. It is also quite fast since it is an MoE model (320B total, only 18B active). I serve it with a 512K context window and if needed I can scale it to around 8 to 10 people at the same time without any issues."
+   }
+  ]
+ },
+ {
+  "id": "broad-04",
+  "question": "How does time-series data come into Aayush's current job, and where does the Kalman filter fit?",
+  "passages": [
+   {
+    "title": "Kalman Filters and Smoothing for Time-Series Data",
+    "text": "An important part of my current work involves time-series data. Over the past couple of months, I have come to appreciate the importance of preprocessing, especially because time-series data is often noisy, incomplete, irregularly sampled, and contains gaps. Your time‑series prediction model is only as good as your understanding and the preprocessing you apply to the data. There is one approach that really helps with denoising, filling gaps, separating trends and is a sort of a Swiss Army Knife for time-series data: the Kalman filter."
+   },
+   {
+    "title": "Expert Iteration for Math Reasoning, section: Comparison to SFT Experiments",
+    "text": "In my previous SFT experiments, I finetuned the same Qwen2.5-Math-1.5B model using the same train and eval data, with train data being GPT-oss-120B generated reasoning traces. Below is the comparison of SFT and Expert Iteration best experiments:\nMethod\nConfiguration\nReward Accuracy\nBaseline\nUntrained Qwen2.5-Math-1.5B\n2.9%\nExpert Iteration (best)\nD=1024, R=4, 2 epochs\n47.1%\nSFT (best)\nFiltered data, 2 epochs\n53.4%\nDespite extensive tuning across batch sizes, rollout counts and learning rate schedules Expert Iteration reached 47.1% accuracy which is around 6% below SFT’s 53.4%.\nIn my understanding, the gap comes down to two factors: data quality and rationalization:"
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: Update 4: Residual Connections (0239c07)",
+    "text": "This is one of two optimizations that make deep networks actually trainable. Without it, stacking many layers leads to vanishing gradients and optimization difficulties.\nKarpathy visualizes it nicely: imagine a residual pathway running from top to bottom. You can “fork off” from this pathway, do some computation, and project back via addition. The path from inputs to outputs is just a series of additions.\nNote: Why does this help? During backpropagation, addition distributes gradients equally to both branches. The gradients “hop” through every addition node directly to the input. This creates a “gradient superhighway” from supervision to input, unimpeded. The residual blocks are initialized to contribute very little at first, then “come online” over time during optimization.\nResult: ~2.09 validation loss. Now we can stack layers without vanishing gradients."
+   },
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Setup and Finetune",
+    "text": "Once you have uploaded the dataset, running the fine-tuning process is refreshingly simple. For this example, I fine-tune the base llama-3-8b model with the following parameters: epochs=3, rank=16, and learning_rate=2e-4.\nThat’s all you need to do to submit a job! Once completed, it will be available on the Predibase platform.\ntrain-1\ntrain-2\nYou can always tweak multiple hyperparameters (see Finetuning Config) and run the fine-tune job again. All your fine-tune jobs will be available on the Predibase platform."
+   }
+  ]
+ },
+ {
+  "id": "broad-05",
+  "question": "How has he used vLLM inside his own training runs?",
+  "passages": [
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: vLLM Integration: The Debugging Nightmare",
+    "text": "With torch.compile enabled on my model (for faster training), loading weights into vLLM failed with the below error. The issue is that torch.compile wraps the original model and stores the actual weights under _orig_mod. When loading weights into vLLM, you need to access them through this attribute, not directly from the compiled model.\nSolution: In my load_policy_into_vllm_instance function, I made sure to load from model._orig_mod when the model is compiled.\nThese three issues cost me almost a day. However, it was worth it because I learned a lot about vLLM and how to integrate it in training run"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: GPU Memory Optimization (Fitting on 24 GB)",
+    "text": "I wrote the training code and tested it on my personal RTX 4090 with 24 GB of VRAM. With the default parameters suggested in the assignment, I immediately ran into OOM errors and had to do some memory optimizations to fit the training loop.\nPeak memory tracking: Not an optimization in itself but an essential step to keep track of the peak memory usage. I made sure to log the peak memory at important junctures in the training loop.\nGradient checkpointing: The simplest one is to enable gradient checkpointing which recomputes activations during backward pass instead of storing them. You can trade up to ~30% memory savings for speed.\nvLLM sleep mode: This is quite a nice trick to offload vLLM KV cache and weights to CPU during the training phase (when vLLM is not generating). This frees GPU memory for the backward pass and prevents the vLLM cache from competing with training activations."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Reasoning and things I learned along the way",
+    "text": "Some of the choices I made and what I picked up in the process.\nRun inference on a separate machine if you can. You don’t need two machines for this but if you have a personal GPU workstation or a Mac Mini, I would recommend running the model there instead of on your daily use machine. Running inference on your laptop eats into your available RAM, it drains your battery fast and the laptop starts heating up bad.\nWhy llama.cpp? I started with the Unsloth guide which uses llama.cpp with the GGUF format. Since I am setting this up locally for myself, llama.cpp felt like an easier choice than vLLM.\nWhy Qwen3.5-27B over 35B-A3B? The MoE variant is 3-5x faster (~60-100 tok/s) because only 3B parameters are active per token but the 27B has all 27B parameters active and consistently scores higher across benchmarks. For coding tasks, I preferred quality."
+   },
+   {
+    "title": "FlashAttention: Making Attention I/O-Aware, section: Compute-bound vs. memory-bound operations",
+    "text": "Every GPU has a theoretical arithmetic intensity where compute time and memory transfer time are exactly balanced. For an A100, this is ≈ 156 FLOPs/byte. Operations above this threshold are compute-bound, operations below it are memory-bound. This framework is known as the roofline model.\nNote, Horace He’s “Making Deep Learning Go Brrrr” is a great resource to understand this concept in detail. Also, remember a punchline from the blog, if an operation is memory-bound, making it faster is not about fewer FLOPs. It is about moving fewer bytes. This holds true for FlashAttention."
+   }
+  ]
+ },
+ {
+  "id": "broad-06",
+  "question": "Which tools on the site help when working with AI image models?",
+  "passages": [
+   {
+    "title": "Building Browser Tools with Claude Code, section: Image Tools",
+    "text": "Image Format Converter: Convert between PNG, JPEG, and WebP with transparency handling.\nImage Resizer: Resize imagesby by dimensions, aspect ratio and percentage.\nImage Cropper: Interactive crop with draggable selection and aspect ratio presets.\nBinary Mask Creator: Paint binary black and white masks for AI inpainting and fill models.\nImage Adjust & Transform: Flip, rotate, invert, grayscale, brightness, and contrast adjustments.\nSVG Viewer & Converter: Preview SVGs, inspect metadata, export to raster formats.\nI find the Binary Mask Creator pretty handy, especially when working with inpainting models like FLUX Fill or Ideogram v3. Creating clean masks is usually a bit of a pain using some clunky web app. The SVG Viewer is another one I reach for often to preview and convert SVGs on the go (saves me time).\nBinary Mask Creator\nSVG Viewer & Converter\nBinary Mask Creator and SVG Viewer & Converter"
+   },
+   {
+    "title": "Tools, section: Image tools",
+    "text": "Image Format Converter convert between formats\nConvert images between PNG, JPEG, and WebP with adjustable quality and transparency handling.\nImage Resizer resize by dimensions or percentage\nResize images by dimensions, percentage, or fit-within bounds with aspect ratio lock and format options.\nImage Cropper interactive crop with presets\nInteractively crop images with draggable selection, aspect ratio presets, and full-resolution output.\nBinary Mask Creator masks for ai inpainting/edits\nPaint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options.\nImage Adjust & Transform flip, rotate, adjust colors\nFlip, rotate, invert colors, convert to grayscale, and adjust brightness and contrast.\nSVG Viewer & Converter preview and export SVGs as raster images\nPreview SVG files with zoom and background controls, inspect metadata and source, and export to PNG, JPEG, or WebP at any scale."
+   },
+   {
+    "title": "Tools for Better Claude Code and Terminal Experience, section: Managing Your AI Context",
+    "text": "One of the biggest challenges with AI assistants is getting the right context in and keeping the context window healthy."
+   },
+   {
+    "title": "About",
+    "text": "Recently, I started working as a Forward Deployed ML Engineer at Applied Computing. We build and deploy AI models and a reasoning layer that help refineries and plants run better.\nPlants and refineries were completely new to me. My PhD and early research were in energy too, but that was seismic data and imaging: a lot of science and not a single valve.\nApplied Computing is a startup. From the day I joined, it has been a rollercoaster ride, exciting and a great learning experience. I learned on the job how ammonia and olefins plants work, scoped out the work, understood what the client expected, did research, deployed code, kept it running and wrote it all up.\nSix months in, nothing has changed. I still do a bit of everything: client calls, keeping the scope in check, taking research code to production and keeping it running, plus the evals and monitoring around it."
+   }
+  ]
+ },
+ {
+  "id": "person-01",
+  "question": "What did Aayush build at Jiffy?",
+  "passages": [
+   {
+    "title": "Building Browser Tools with Claude Code, section: Try Them Out",
+    "text": "All tools are at aayushgarg.dev/tools. If you have ideas for useful tools, feel free to reach out."
+   },
+   {
+    "title": "About",
+    "text": "Forward deployed ML engineer at Applied Computing. My path from TU Delft and Shell to Flixstock and Jiffy, and contract work."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Code and Artifacts",
+    "text": "Code: building-from-scratch/grpo\nConfigs: grpo/configs\nTrained Checkpoints: garg-aayush/cs336-grpo-exps\nDatasets: CS336 MATH dataset\nTraining Logs: wandb.ai/garg-aayush/grpo"
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial",
+    "text": "The Transformer architecture has become the workhorse behind modern LLMs. GPT-2/3/4/5, Llama, Claude, Gemini: they all are built on top of the same core architecture or its variants from the 2017 “Attention Is All You Need” paper. I wanted to understand this architecture properly, so I followed Andrej Karpathy’s “Let’s Build GPT from Scratch” video. It’s a 2-hour walkthrough where you start from an empty file and end up with a working Transformer.\nI followed Karpathy’s video and captured each architectural addition as a separate commit. This let me see exactly how each component pulled down the validation loss. In this walkthrough, the training data is ~1M characters of Shakespeare and the goal is to generate Shakespeare-like text.\nComponent\nVal Loss\nCommit\nBaseline\nBigram Model\n~2.49\ne0b5864\nUpdate 1\nSingle Head Self-Attention\n~2.4\n7b0e03a\nUpdate 2\nMulti-Head Attention\n~2.28\n9d2a7b5\nUpdate 3\nFeed-Forward Network\n~2.27\nc4c46ff\nUpdate 4\nResidual Connections\n~2.09\n0239c07\nUpdate 5"
+   }
+  ]
+ },
+ {
+  "id": "person-02",
+  "question": "What GPU does Aayush have in his own workstation?",
+  "passages": [
+   {
+    "title": "Work, section: Gists",
+    "text": "Step-by-Step Guide to setup your own personal GPU server\nA guide to setting up remote SSH access to a personal GPU workstation running Ubuntu, covering SSH keys, firewall setup, and ngrok tunneling.\nManaging multiple CUDA versions using environment modules\nMy notes on installing multiple CUDA versions side by side on Ubuntu and switching between them using `environment-modules`."
+   },
+   {
+    "title": "Step-by-Step Guide to Setup Your Personal GPU Server",
+    "text": "Github Gist Link\nI’ve been using a GPU workstation with an RTX 4090 for almost a year now, and it’s been one of the best decisions I’ve made. With a personal GPU server, you no longer need to rely on cloud-based GPU instances from services like RunPod or Vast.ai every time you want to run a job or try new models. The best part? No stress about recurring GPU instance costs! :-)\nHowever, I rarely work directly on my workstation. Instead, I prefer the flexibility of accessing the GPU remotely using my MacBook, whether I’m working from different locations within my home, from a co-working space, or a cozy cafe in another part of town.\nIn this blog, I will walk you through the steps to configure a personal GPU Ubuntu server.\nFor this guide, I assume you already have a workstation running Ubuntu with a GPU and it is connected to your local network"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Code and Artifacts",
+    "text": "Code: building-from-scratch/grpo\nConfigs: grpo/configs\nTrained Checkpoints: garg-aayush/cs336-grpo-exps\nDatasets: CS336 MATH dataset\nTraining Logs: wandb.ai/garg-aayush/grpo"
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Resources",
+    "text": "I have made all the code, datasets, and model checkpoints publicly accessible.\nCode: building-from-scratch/sft\nDatasets: garg-aayush/sft-cs336-assign5-datasets\nCheckpoints:\nReasoning:\nrun_all: qwen-2.5-math-sft-all-2epoch\nrun_filtered: qwen-2.5-math-sft-filtered-2epoch\nrun_filtered-res-len: qwen-2.5-math-sft-filtered-res-len\nrun_filtered-2epoch: qwen-2.5-math-sft-filtered-2epoch\nInstruction d:\nrun_mask: llama31-8b-sft-mask\nrun_nomask: llama31-8b-sft-nomask\nTraining logs: wandb/sft and wandb/sft_instruct"
+   }
+  ]
+ },
+ {
+  "id": "person-03",
+  "question": "Which course on AI evals did Aayush take, and how is he following it?",
+  "passages": [
+   {
+    "title": "Key Takeaways from Lecture 1: LLM Evaluation Lifecycle",
+    "text": "A couple of months back, I enrolled in AI Evals for Engineers and PMs, a course by Hamel and Shreya. The live cohort for ot ran from July to mid-August, but due to work commitments I couldn’t follow along in real time.\nI have now started following it as a self-paced course and plans to write a blog for each lesson as I progress. This will be my way to capture what I learn and to reflect on the material. In this first blog 🤞, I’ll walk through my key takeaways from introductory Lecture 1."
+   },
+   {
+    "title": "Building Browser Tools with Claude Code, section: Try Them Out",
+    "text": "All tools are at aayushgarg.dev/tools. If you have ideas for useful tools, feel free to reach out."
+   },
+   {
+    "title": "Tools for Better Claude Code and Terminal Experience, section: RepoMix and Jina Reader",
+    "text": "Sometimes you need to provide context as a single file whether for web-based AI interfaces like ChatGPT or Claude where you cannot point at a codebase directly or when you want to feed a webpage content to an LLM.\nRepoMix handles the codebase side. It lets you take a git repo or any local folder and concatenate all the files (based on a pattern) into a single file. You can create a context file for an entire repo or filter it down to just the files relevant to the bug or feature you are working on. It is on similar lines as Karpathy’s rendergit which renders any git repo into a single static HTML page for humans or LLMs.\nJina Reader handles the web side. It converts any HTML page into clean markdown which is much better than feeding raw HTML as context to an LLM. You just need to prepend https://r.jina.ai/ to any URL."
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Resources",
+    "text": "I have made all the code, datasets, and model checkpoints publicly accessible.\nCode: building-from-scratch/sft\nDatasets: garg-aayush/sft-cs336-assign5-datasets\nCheckpoints:\nReasoning:\nrun_all: qwen-2.5-math-sft-all-2epoch\nrun_filtered: qwen-2.5-math-sft-filtered-2epoch\nrun_filtered-res-len: qwen-2.5-math-sft-filtered-res-len\nrun_filtered-2epoch: qwen-2.5-math-sft-filtered-2epoch\nInstruction d:\nrun_mask: llama31-8b-sft-mask\nrun_nomask: llama31-8b-sft-nomask\nTraining logs: wandb/sft and wandb/sft_instruct"
+   }
+  ]
+ },
+ {
+  "id": "person-04",
+  "question": "Has Aayush given an invited talk?",
+  "passages": [
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: Baseline: Bigram Model (e0b5864)",
+    "text": "Karpathy starts with the simplest possible language model: a bigram model. It predicts the next character based only on the current character. No context at all. The tokens aren’t talking to each other.\nThis still works somewhat because some characters naturally follow others (the letter ‘q’ is almost always followed by ‘u’). But the output is complete gibberish because the model has no way to look at what came before.\nResult: ~2.49 validation loss."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Code and Artifacts",
+    "text": "Code: building-from-scratch/grpo\nConfigs: grpo/configs\nTrained Checkpoints: garg-aayush/cs336-grpo-exps\nDatasets: CS336 MATH dataset\nTraining Logs: wandb.ai/garg-aayush/grpo"
+   },
+   {
+    "title": "Building Browser Tools with Claude Code, section: Try Them Out",
+    "text": "All tools are at aayushgarg.dev/tools. If you have ideas for useful tools, feel free to reach out."
+   },
+   {
+    "title": "Multi-class Spectral Clustering with Overlaps for Speaker Diarization, section: Questions",
+    "text": "For any questions about using the code, you can contact me at draj@cs.jhu.edu."
+   }
+  ]
+ },
+ {
+  "id": "near-01",
+  "question": "What exact match score did Claude Sonnet 3.5 get on the ViGGO task?",
+  "passages": [
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Generate the responses for validation dataset",
+    "text": "Similar to my previous blogs, I will evaluate the finetuned model on ViGGO validation dataset and calculate custom performance metrics metrics for a better understanding of finetuned model performance.\nFirst, I generate the responses for the validation dataset:\nNote: Remember to replace “viggo-finetune-1K/2” with the correct adapter ID. You can find the adapter ID in the Predibase dashboard.\nNow, I can generate the evaluation scores using custom evaluation metrics and compare them with previously calculated GPT-4 and Claude 3.5 Sonnet scores:\nplot-finetuned-model\nThe initial finetuning of LLaMA-3-8B using 1,000 random examples from the ViGGO dataset, while not surpassing GPT-4 and Claude 3.5 Sonnet, shows promising results and outperforms several models from our previous blog. Notably, the exact_match score is even better than that of the two best-performing models."
+   },
+   {
+    "title": "Part II: Comparison of Model Performances on Structured Functional Representation Extraction, section: Comparing the models performance",
+    "text": "Compare Models Performance\nBased on the evaluation metric plot:\nClaude Sonnet-3.5 and GPT-4o consistently outperform other models across all metrics.\nClaude Sonnet-3.5 performs better than GPT-4o, aligning with all the twitter chats about its superior performance.\nGemini-1.5-Flash, despite its optimization for speed, maintains competitive performance for less stringent metrics but struggles significantly with exact matches.\nThe performance gap between the top-performing models and others widens sharply for more stringent metrics.\nAs expected, the smaller Llama-3-8B model shows the lowest performance, highlighting the evident size advantage of larger models.\nMistral-8x7B's performance is lower than anticipated, suggesting lower instruction-following capabilities.\nSome key observations\nBased on the quickly eyeballing the generated responses:\nAlmost all models consistently captures straightforward attributes such as player perspective and multiplayer status."
+   },
+   {
+    "title": "Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction, section: Evaluating the performance",
+    "text": "Using the above evaluation strategy, I generate the average evaluation scores for the full dataset.\nGPT-4o Evaluation Metrics\nThe task of generating functional representations from natural language sentences is challenging as seen in the above scores. The best the model can do is to provide the exact match only for 30% of the examples. Even the correct function name evaluation score is only about 80%. These results indicate that while GPT-4o shows some capability in extracting functional representations, there’s significant room for improvement."
+   },
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "In my current job we have quite a few H200 GPU servers :). A couple of weeks back I deployed GLM-5.3-Flash on one of them with the aim of making it my main coding model and the workhorse for development so that I can cut down my Claude Code and Codex usage. If that works, I can even nudge my teammates to use it as well 🙈.\nNo doubt models like Claude Opus 5.5, GPT-6 Astra or GPT-6.1 Sol are the best right now and way ahead of their open-source counterparts for complex tasks. However, no one can ignore the $$ of using them and the anxiety of hitting the limits or draining your credits.\nGLM-5.3-Flash is free, runs on a single 4-GPU H200 server and is good enough for low and medium complexity tasks. It is also quite fast since it is an MoE model (320B total, only 18B active). I serve it with a 512K context window and if needed I can scale it to around 8 to 10 people at the same time without any issues."
+   }
+  ]
+ },
+ {
+  "id": "near-02",
+  "question": "Does he serve GLM-5.3-Flash on the H200s with vLLM or SGLang?",
+  "passages": [
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode, section: The setup",
+    "text": "One effective but simple split or setup based on my experience is this one:\nSol plans and checks, GLM on the H200s reads and edits, and a Sol reviewer only sees risky changes\nI talk to the orchestrator in the main session which runs on Sol. It sends briefs to the explorer and the implementer which run on GLM-5.3-Flash on the H200s and checks their reports itself. The reviewer also runs on Sol and only comes in for risky changes.\nThis is ~/.config/opencode/opencode.json (the base URL is a placeholder and the real file also holds the permission rules and other settings):\nCurrently, the server can be shared with the team and a request can wait in a queue for a few minutes when it is busy so the client timeout is 15 minutes and one session runs at most 3 GLM agents at once."
+   },
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding",
+    "text": "Gemma4 was relased by Google on April 2nd earlier this week and I wanted to see how it performs against Qwen3.5 for local agentic coding. This post is my notes on benchmarking the two model families. I ran two types of tests:\nStandard llama-bench benchmarks for raw prefill and generation speed\nSingle-shot agentic coding tasks using Open Code to see how these models actually perform on real multi-step coding workflows\nQuick Summary:\nModel\nGen tok/s\nTurn(correct)\nCode Quality\nVRAM\nMax Context\nGemma4-26B-A4B\n~135\n3rd\nWeakest\n~21 GB\n256K\nQwen3.5-35B-A3B\n~136\n2nd\nBest structure, wrong API\n~23 GB\n200K\nQwen3.5-27B\n~45\n1st\nCleanest and best overall\n~21 GB\n130K\nGemma4-31B\n~38\n1st\nClean but shallow\n~24 GB\n65K\nMax Context is the largest context size that fits in VRAM with acceptable generation speed.\nMoE models are 3x faster but both dense models got the complex task right on the first try."
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: vLLM Integration: The Debugging Nightmare",
+    "text": "Solution: I switched to the colocate approach, running vLLM on the same device as the training model. I came across this in the excellent HuggingFace blog post on co-located vLLM. Though, this required being more careful about GPU memory (setting appropriate values for gpu_memory_utilization, max_model_len, and max_num_seqs), but it actually works and saves on GPU costs.\nProblem 2: Missing model_executor attribute\nWhen I tried to load updated model weights into the vLLM instance during training, I hit this error:\nThis was really annoying because the attribute clearly existed in the vLLM source code. After much debugging, I found two solutions: - Downgrade to vLLM 0.10.2, or - If using vLLM 0.11.0, set the environment variable VLLM_ENABLE_V1_MULTIPROCESSING=0 at the start of the script\nI went with the environment variable approach since I didn’t want to deal with version conflicts.\nProblem 3: The _orig_mod issue"
+   },
+   {
+    "title": "Part II: Comparison of Model Performances on Structured Functional Representation Extraction, section: Generating the responses",
+    "text": "I used the respective official API calls for the closed models (GPT-4o, Gemini-1.5-flash, Claude-1.5-Sonnet) and the Replicate API client for open-source models (Llama-3-70B, Llama-3-8B, Mistral-8x7B).\nFor detailed information on API endpoints and the process of generating responses for all models, please refer to the Generate_responses_all_llms.ipynb notebook.\nGenerating responses for this experiment had the following associated costs:\nModel/API\nCost\nGPT-4o API\n~ $2.5\nClaude-1.5-Sonnet API\n~ $3.5\nReplicate API\n~ $3\nGemini-1.5-flash API\nFree*\nTotal\n~$9\n_*for limited usage_"
+   }
+  ]
+ },
+ {
+  "id": "near-03",
+  "question": "How much faster was FlashAttention than standard attention in his own benchmarks?",
+  "passages": [
+   {
+    "title": "FlashAttention: Making Attention I/O-Aware, section: Recomputation",
+    "text": "In practice, FlashAttention backward pass is faster than standard attention despite doing more FLOPs, because it eliminates the massive HBM reads and writes of P (remember FlashAttention is memory-bound!). This is the same principle as gradient checkpointing but applied surgically to a single intermediate rather than at the coarse granularity of entire layers."
+   },
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Standard Benchmarks with llama-bench",
+    "text": "llama.cpp has a llama-bench utility that runs standard prefill and generation (decode) benchmarks. It is a quick way to get raw throughput numbers..\nThis is the command I used to run the benchmarks:\nllama-bench flags used\nFlag\nValue\nMeaning\n-ctk\nq8_0\nKV cache keys quantized to 8-bit\n-ctv\nq8_0\nKV cache values quantized to 8-bit\n-fa\n1\nFlash Attention enabled\n-b\n2048\nBatch size (max tokens processed per batch)\n-ub\n512\nMicro-batch size (tokens processed per CUDA kernel call)\n-p\n512,2048,...,65336\nPrefill token counts to sweep\n-n\n128\nDecode (generation) tokens per run\n-r\n3\nRepeat each test 3 times and report mean\n-o\nmd\nOutput as markdown table"
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Reasoning and things I learned along the way",
+    "text": "Why UD-Q4_K_XL quantization? Unsloth’s Dynamic 2.0 quantization selectively upcasts important layers to 8 or 16-bit precision, so you get better quality without paying the full VRAM cost of a higher quant. Benjamin Marie’s benchmarks show UD-Q4_K_XL stays within a 1-point accuracy drop of the original while being ~8GB smaller than comparable quants.\nHybrid architecture and KV cache. Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all."
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial, section: How This Compares to GPT-3",
+    "text": "My Model\nGPT-3\nParameters\n~10M\n175B\nDataset\n~300K tokens\n300B tokens\nArchitecture\nNearly identical\nThe architecture we built is essentially the same as GPT-3. The difference is pure scale: 17,500x more parameters trained on 1 million times more data. By today’s standards, even GPT-3’s 300B tokens is considered modest. Current models train on 1T+ tokens.\nThis is what makes the Transformer architecture so remarkable. The same fundamental design (attention for communication, feed-forward for computation, residual connections, layer norm) scales from a 10M parameter Shakespeare generator to a 175B parameter model!"
+   }
+  ]
+ },
+ {
+  "id": "near-04",
+  "question": "What RMSE did the Kalman smoother reach on the Mauna Loa CO2 data?",
+  "passages": [
+   {
+    "title": "Kalman Filters and Smoothing for Time-Series Data, section: Example 1: Decomposing the Mauna Loa CO_2 Series",
+    "text": "Dataset: The Keeling Curve records atmospheric CO_2 (in ppm) measured at the Mauna Loa Observatory in Hawaii since 1958, and it ships with statsmodels (sm.datasets.co2). Resampled to monthly, it gives 526 points from March 1958 to December 2001 ranging from about 313 to 374 ppm. Two components are visually obvious: a long-term upward trend from fossil fuel emissions and an annual cycle of roughly ± 3 ppm driven by Northern Hemisphere vegetation (plants absorb CO_2 in spring and summer, release it in autumn and winter). The goal is to separate them cleanly.\nThe model. A structural model with a local linear trend and a 12-month seasonal component. The state vector is with dynamics:\nthe level follows a random walk with drift (level_k = level_k-1 + slope_k-1 + η), the slope itself drifts slowly and the seasonal factors obey a sum-to-zero constraint over each 12-month cycle, implemented as a shift register. The observation is simply level plus the current seasonal factor plus noise."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: RL Sharpens Distribution, Does not Expand Model Capability",
+    "text": "This is one of my favorite analyses in the paper. The authors compare Maj@K (majority voting accuracy) and Pass@K (whether any of K samples is correct) for both the Instruct and RL models.\nAt K=64 samples, both models reach similar Pass@K ceilings (around 83-85% on MATH) which indicates that the fundamental capability is the same. However, RL consistently outperforms on Maj@K.\nThis suggests RL isn’t expanding fundamental reasoning abilities. Instead it is sharpening the distribution of the model’s output which boosts the correct responses that were already within the model’s capability."
+   },
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: Finally done…",
+    "text": "And that’s the full derivation! What I find satisfying is that every term in the final loss has a specific purpose. Each one exists because we ran into a specific problem along the way and needed to fix it. I will admit it was not easy to understand all the math and concepts behind the loss. I still do not fully understand every detail but I understand it far better than I did a few days ago.\nI hope this was useful. If you spot any errors in derivation (which I’m sure there are) or have suggestions, feel free to reach out."
+   },
+   {
+    "title": "FlashAttention: Making Attention I/O-Aware, section: Online Softmax",
+    "text": "As hinted before, tiling works naturally for matmul because addition is associative. But attention has a softmax sandwiched between two matmuls and softmax needs two global statistics the row maximum m and the denominator l before any output can be produced. The numerically stable (“safe”) softmax for a row x = (x_1, ..., x_N) is:\nComputing this requires three sequential passes over the data (Milakov & Gimelshein, 2018):\nPass 1 sweeps for the max m_N\nPass 2 uses m_N to accumulate the denominator _N = Σ_j e^x_j - m_N\nPass 3 uses both to emit the final values a_i = e^x_i - m_N/ _N.\nEach pass depends on the result of the previous one. If the full row of logits does not fit in SRAM (which it generally does not for long sequences), each pass must re-read Q and K from HBM to recompute logits on the fly. This causes three passes, three HBM round-trips!\n3 passes to 2: the surrogate denominator"
+   }
+  ]
+ },
+ {
+  "id": "near-05",
+  "question": "Is there a tool on the site for compressing PDF files?",
+  "passages": [
+   {
+    "title": "Tools for Better Claude Code and Terminal Experience, section: yazi",
+    "text": "yazi is a fast terminal file manager with support for previewing different file types including images and PDFs right in the terminal. This is especially useful when you are already deep in a terminal session with Claude Code and need to quickly browse files or check an image without switching to Finder."
+   },
+   {
+    "title": "Building Browser Tools with Claude Code",
+    "text": "I have been an admirer of Simon Willison’s tools site for a while now. On his website you can find more than a hundred single-file HTML + JavaScript tools he has built using LLMs. They are mostly self-contained HTML + JavaScript files.\nI always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using Claude Code and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too."
+   },
+   {
+    "title": "Tools, section: Viewer tools",
+    "text": "HTML Viewer paste HTML, see it rendered live\nPaste or drop HTML code to preview it rendered in a sandboxed iframe. Side-by-side editor and preview with toggleable background.\nMarkdown Viewer live preview with math & code highlighting\nPaste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries.\nJSON Formatter & Viewer format, validate, and explore JSON\nPaste or drop JSON to format with syntax highlighting, collapsible tree view, validation with line-level error reporting, search, and one-click copy.\nDiff Viewer compare text side-by-side with word-level highlighting\nCompare two text blocks with line-level and word-level diff highlighting. Side-by-side and unified diff modes. Requires internet for diff library.\nLaTeX Math Preview scratchpad for previewing LaTeX equations"
+   },
+   {
+    "title": "A Brief Introduction to Claude Agent Skills, section: What Are Agent Skills?",
+    "text": "Since Anthropic released Agent Skills as an open standard in December 2025, skills are rapidly becoming available across different coding agents: GitHub Copilot, Codex CLI, Cursor and more.\nIt is also important to distinguish skills from other customization options like claude.md, MCP servers, and subagents.\nSkills\nClaude.md\nMCP Servers\nSubagents\nWhat it is\nFolders containing instructions, scripts, and resources that teach Claude how to perform specialized tasks\nA markdown file that tells Claude about a specific project\nA protocol that connects Claude to external data sources\nSpecialized AI assistants with fixed roles and their own context window\nScope\nPortable across projects and agents\nProject-specific\nTool/service-specific\nTask-specific\nLives in\n~/.claude/skills/ or .claude/skills/\nRoot of your repository\nExternal servers (GitHub, Slack, databases)\nSpawned during task execution\nExample\nGenerate accessible PDF reports according to company guidelines"
+   }
+  ]
+ },
+ {
+  "id": "near-06",
+  "question": "How much does Context7 cost once you go past the free plan?",
+  "passages": [
+   {
+    "title": "Tools for Better Claude Code and Terminal Experience, section: Context7",
+    "text": "Context7 MCP server provides AI assistants with up-to-date documentation and code examples for various libraries and frameworks. As a developer, I find this genuinely useful as it solves the problem of outdated training data by fetching current docs in real-time. Whether I am writing boilerplate code, setting up tests or working with a library I have not used recently, Context7 ensures the AI has accurate and up to date API references instead of hallucinating outdated patterns.\nThe free plan gives you around 1000 API requests per month which is more than enough for most use cases. This is one MCP server I use regularly and recommend to everyone."
+   },
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: Finally done…",
+    "text": "And that’s the full derivation! What I find satisfying is that every term in the final loss has a specific purpose. Each one exists because we ran into a specific problem along the way and needed to fix it. I will admit it was not easy to understand all the math and concepts behind the loss. I still do not fully understand every detail but I understand it far better than I did a few days ago.\nI hope this was useful. If you spot any errors in derivation (which I’m sure there are) or have suggestions, feel free to reach out."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Reasoning and things I learned along the way",
+    "text": "The chat template fix is critical for OpenCode/Codex. The default Qwen3.5 template throws a 500 error when OpenCode or Codex sends messages where the system message isn’t strictly first. The corrected template removes this restriction. Without it, the server will reject most agentic tool-calling prompts.\nUse Context7 with local models. Smaller models due to the size are more likely to hallucinate APIs or use outdated syntax. They also rely much more heavily on the context you give them. Using Context7 to inject up-to-date documentation into the prompt makes a noticeable difference in code quality."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Summary and Key Takeaways",
+    "text": "SFT initialization does not help in this case.\nIdeally, I should now try to push the accuracy further by training for longer, using curriculum strategies or modifying the GRPO loss itself. But that’s for another time! I think it is enough learning and compute expense for now."
+   }
+  ]
+ },
+ {
+  "id": "near-07",
+  "question": "Where did Aayush do his undergraduate degree?",
+  "passages": [
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Resources",
+    "text": "I have made all the code, datasets, and model checkpoints publicly accessible.\nCode: building-from-scratch/sft\nDatasets: garg-aayush/sft-cs336-assign5-datasets\nCheckpoints:\nReasoning:\nrun_all: qwen-2.5-math-sft-all-2epoch\nrun_filtered: qwen-2.5-math-sft-filtered-2epoch\nrun_filtered-res-len: qwen-2.5-math-sft-filtered-res-len\nrun_filtered-2epoch: qwen-2.5-math-sft-filtered-2epoch\nInstruction d:\nrun_mask: llama31-8b-sft-mask\nrun_nomask: llama31-8b-sft-nomask\nTraining logs: wandb/sft and wandb/sft_instruct"
+   },
+   {
+    "title": "Building Browser Tools with Claude Code",
+    "text": "I have been an admirer of Simon Willison’s tools site for a while now. On his website you can find more than a hundred single-file HTML + JavaScript tools he has built using LLMs. They are mostly self-contained HTML + JavaScript files.\nI always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using Claude Code and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Code and Artifacts",
+    "text": "Code: building-from-scratch/grpo\nConfigs: grpo/configs\nTrained Checkpoints: garg-aayush/cs336-grpo-exps\nDatasets: CS336 MATH dataset\nTraining Logs: wandb.ai/garg-aayush/grpo"
+   },
+   {
+    "title": "Multi-class Spectral Clustering with Overlaps for Speaker Diarization, section: Questions",
+    "text": "For any questions about using the code, you can contact me at draj@cs.jhu.edu."
+   }
+  ]
+ },
+ {
+  "id": "near-08",
+  "question": "How does Qwen3.5-27B score on SWE-bench?",
+  "passages": [
+   {
+    "title": "Notes on Qwen3.5 vs Gemma4 for Local Agentic Coding, section: Notes on llama-bench Results",
+    "text": "As expected, the MoE models dominate both prefill and generation speed.\nGeneration speed for the two MoE models is nearly identical (~165 tok/s). The same story for the two dense models (~45 tok/s) (as memory-bandwidth bound)."
+   },
+   {
+    "title": "Using a local LLM in OpenCode with llama.cpp, section: Step 3: Download the Qwen3.5-27B GGUF model",
+    "text": "uv run ensures you don’t need to install huggingface_hub[cli] into your venv separately."
+   },
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "Based on my experience, I would not ideally switch to it for all tasks but it pairs really well with Sol (or maybe Opus 5.5). Instead of running the whole session with one model, Sol does the planning, writes the briefs, reads the diffs and runs the checks, while GLM reads the code, makes the edits, runs the tests and iterates on failures. Sol also catches things GLM misses. This way the plan limits (or the API bill) go to judgment and most of the tokens go to in-house GPUs.\nNothing here depends on GLM. You can deploy this model or any other one, even something like Qwen3.8-27B on a single GPU."
+   },
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Generate the responses for validation dataset",
+    "text": "Similar to my previous blogs, I will evaluate the finetuned model on ViGGO validation dataset and calculate custom performance metrics metrics for a better understanding of finetuned model performance.\nFirst, I generate the responses for the validation dataset:\nNote: Remember to replace “viggo-finetune-1K/2” with the correct adapter ID. You can find the adapter ID in the Predibase dashboard.\nNow, I can generate the evaluation scores using custom evaluation metrics and compare them with previously calculated GPT-4 and Claude 3.5 Sonnet scores:\nplot-finetuned-model\nThe initial finetuning of LLaMA-3-8B using 1,000 random examples from the ViGGO dataset, while not surpassing GPT-4 and Claude 3.5 Sonnet, shows promising results and outperforms several models from our previous blog. Notably, the exact_match score is even better than that of the two best-performing models."
+   }
+  ]
+ },
+ {
+  "id": "off-01",
+  "question": "How do I set up a CI pipeline with GitLab runners?",
+  "passages": [
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Creating the Dataset: First Challenge",
+    "text": "The original CS336 MATH dataset used for SFT training is not publicly available, so I had to create my own. My dataset creation pipeline had three steps:\nSource problems: I used hiyouga/math12k dataset to create the training set, carefully filtering out any problems that appeared in the validation set to avoid data leakage.\nGenerate reasoning traces: The next and most important step is to generate the reasoning traces for each problem. I used gpt-oss-120b model to generate them via Fireworks Batch Inference API. It costed me around ~$4 to generate the reasoning traces.\nFilter for quality: I also created a subset of around ~3.6K examples by filtering out the reasoning traces that led to wrong answers."
+   },
+   {
+    "title": "Key Insights from DeepSeekMath paper, section: The Iterative Data Curation Pipeline",
+    "text": "As I mentioned earlier, one of the key contributions of this paper is their data curation pipeline that extracts high-quality mathematical content from Common Crawl.\nThe reason I am going into detail here is that you can draw parallels from this approach to create any other domain-specific dataset from publicly available data like Common Crawl. The pipeline is iterative and uses a fastText classifier at its core. Crudely, this is how the pipeline works:"
+   },
+   {
+    "title": "Step-by-Step Guide to Setup Your Personal GPU Server, section: Setting Up Local Remote Access",
+    "text": "It is quite common to setup ssh key-based authentication.\nFor detailed instructions on setting up SSH keys, refer to the DigitalOcean guide on Setting up SSH keys on Ubuntu 20.04."
+   },
+   {
+    "title": "Work",
+    "text": "Open source projects, live tools and gists. Most of the code is on GitHub."
+   }
+  ]
+ },
+ {
+  "id": "off-02",
+  "question": "What is the difference between Box and Rc in Rust?",
+  "passages": [
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Prompt Template Ablation",
+    "text": "Here, I compared the r1_zero prompt (structured <think>...</think> and <answer>...</answer> blocks) against question-only (just {question}), each with a matching reward function.\nQuestion-only starts with much higher accuracy because Qwen2.5-Math-1.5B seems to be pre-trained on math data with \\boxed{} formatting. It already solves nearly half the problems out of the box. In comparison, r1-zero starts near zero (unfamiliar format) but catches up quickly once the model learns the structured format. Finally, r1-zero consistently performs better than question-only by the end.\nr1-zero settles at much lower entropy in comparison to question-only. This is expected since the r1-zero prompt is more structured and constrains the output space\nWinner: R1-zero structured prompt as it provides a dedicated reasoning scratchpad for the model to reason before committing to an answer. Without this, reasoning is interleaved with the answer in less predictable ways."
+   },
+   {
+    "title": "Work, section: Open source GitHub",
+    "text": "building-from-scratch\nMy ongoing repo where I build language models from first principles. So far:\nCharacter-level GPT\nGPT-2 124M reimplementation with RoPE\nBPE tokenizer from scratch (with a Rust encoder for 3.7x speedup)\nLLM inference with KV cache and speculative decoding\nSupervised fine-tuning for reasoning and instruction following\nExpert iteration for self-improvement on math\nGroup Relative Policy Optimization (GRPO)\nCurrently working on a FlashAttention2 implementation from first principles.\ncv-skills\nA Claude Code plugin with skills for classical image processing: format conversion, SVG-to-raster, resize/crop/rotate, color adjustments, blur/sharpen/denoise, edge detection and segmentation, and image compositing with background removal.\nComfyUI-Svg2Raster\nI wrote this ComfyUI custom node package for loading SVG files and rasterizing them into images with configurable width, scale, background color, and border. Uses CairoSVG under the hood.\ntutorials"
+   },
+   {
+    "title": "Understanding GRPO: PPO without the Critic, section: IV: KL Divergence in GRPO",
+    "text": "The KL Divergence is a measure of the difference between two probability distributions. It is defined as:\nIt can simply be estimated as:\nHowever this can be negative for individual samples (when π_θ < π_ref) even though KL divergence is always non-negative. This may lead to high variance in gradient estimates.\nGRPO uses an alternative estimator that is both unbiased and guaranteed non-negative:\nThis estimator can be understood as measuring the gap between log(x) and its tangent line at x=1. Since log is concave. This gap is always non-negative ensuring the KL penalty never incorrectly suggests that diverging from the reference decreases the penalty.\nFor a detailed derivation of why this estimator is unbiased and non-negative, see John Schulman’s excellent blog post on approximating KL divergence."
+   },
+   {
+    "title": "Tools for Better Claude Code and Terminal Experience, section: Prefer Skills Over MCP Servers",
+    "text": "MCP server tool descriptions consume tokens upfront and often hundreds or even thousands of tokens regardless of whether you actually use them in that session. Skills on the other hand use progressive loading where Claude sees only the name and description (~30-100 tokens) at startup and loads the full instructions only when relevant.\nFor example, here is the difference in context usage between Playwright as an MCP server versus Playwright as a skill:\nPlaywright Skills\nPlaywright MCP\nDifference in context usage between Playwright as a skill vs Playwright as an MCP server\nMy recommendation is to use skills whenever possible. For example, Hugging Face Skills and Playwright CLI Skills instead of corresponding mcp servers."
+   }
+  ]
+ },
+ {
+  "id": "off-03",
+  "question": "How do I train a YOLO object detector on my own dataset?",
+  "passages": [
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: Creating the Dataset: First Challenge",
+    "text": "The original CS336 MATH dataset used for SFT training is not publicly available, so I had to create my own. My dataset creation pipeline had three steps:\nSource problems: I used hiyouga/math12k dataset to create the training set, carefully filtering out any problems that appeared in the validation set to avoid data leakage.\nGenerate reasoning traces: The next and most important step is to generate the reasoning traces for each problem. I used gpt-oss-120b model to generate them via Fireworks Batch Inference API. It costed me around ~$4 to generate the reasoning traces.\nFilter for quality: I also created a subset of around ~3.6K examples by filtering out the reasoning traces that led to wrong answers."
+   },
+   {
+    "title": "Part III: Fine-tuning Llama-3-8B for Structured Functional Representation Extraction, section: Task and Dataset",
+    "text": "Similar to my previous blogs, the custom task is to predict the structured functional representation from the given text video game opinions of the ViGGO validation dataset.\nTo make this exercise interesting and challenging for future experiments, I will use a maximum of 1000 examples for fine-tuning any LLM model, instead of the full ~5K train dataset.\nBelow is an example from the randomly selected 1K train dataset:\nAs shown in the graph below, the selected 1K dataset is a fairly representative sample of the full ViGGO train dataset.\nUnderstanding Data Distribution"
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Building the Training Loop",
+    "text": "I followed the same approach as I mentioned in the assignment whiere I wrote and tested the helper functions first and made sure each piece works in isolation. Finally, wired all the helper functions together into the full training loop.\nThe GRPO algorithm has two nested loops:\nOuter loop: sample a batch of prompts, generate G rollouts per prompt via vLLM, compute rewards, normalize advantages within each group\nInner loop: policy gradient updates over the rollout batch (using gradient accumulation to fit on the GPU)\nNote, I have made sure to reuse the functions, data pipelines etc. from the SFT code wherever possible.\nFor the training data, I used the MATH dataset (problems only, no reasoning traces) sourced from this CS336 MATH dataset repo."
+   },
+   {
+    "title": "Deriving the DPO Loss from First Principles, section: V: Deriving the DPO Loss",
+    "text": "The DPO loss is the negative log-likelihood:\nfor implicit reward notation, it can be written as:\nSome key insights from the above DPO loss:\nThe policy implicitly defines its own reward via the log-ratio with the reference. There is no separate reward model.\nThis is just a supervised classification loss on preference pairs with no RL.\nDPO uses the fixed preference dataset D. Thus, no sampling during training.\nNo value function needed since we’re not doing policy gradients\nDPO still optimizes the KL-constrained reward maximization objective but in a different way"
+   }
+  ]
+ },
+ {
+  "id": "off-04",
+  "question": "How does the Raft consensus algorithm elect a leader?",
+  "passages": [
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: IV: Policy Gradient Optimization and REINFORCE Algorithm",
+    "text": "On-Policy Constraint (Sample Inefficiency): REINFORCE requires trajectories sampled from the current policy π_θ. Thus after every gradient update, previously collected trajectories must be discarded and new ones need to be sampled from the updated policy. For LLMs, where each trajectory requires a full forward pass through a billion(s)-parameter model, this is prohibitively expensive especially when we need many small gradient steps to train effectively."
+   },
+   {
+    "title": "Understanding GRPO: PPO without the Critic, section: V: Outcome vs. Process Supervision",
+    "text": "The GRPO formulation presented so far assumes outcome supervision which provides a single reward at the end of each completion with the same advantage assigned to every token. However for complex reasoning tasks knowing only the final answer reward might not be sufficient.\nFrom DeepSeekMath Paper: “Outcome supervision only provides a reward at the end of each output, which may not be sufficient and efficient to supervise the policy in complex mathematical tasks.”\nProcess supervision addresses this by providing rewards at the end of each reasoning step. Given a completion o_i with K_i reasoning steps, a process reward model (PRM) assigns rewards r_i^index(1), ..., r_i^index(K_i) at step boundaries where index(j) is the end token index of the j-th step.\nGRPO extends to process supervision with two modifications:\n1. Normalize across all step rewards in the group:\nwhere R contains all step rewards across all G completions.\n2. Compute advantages as cumulative future rewards:"
+   },
+   {
+    "title": "FlashAttention: Making Attention I/O-Aware, section: Wrapping Up",
+    "text": "The result is an attention algorithm with the same numerical output, dramatically less HBM IO and less memory. It is faster despite doing slightly more work because the bottleneck is memory, not compute."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Quick Recap on GRPO",
+    "text": "GRPO (Group Relative Policy Optimization) is a RL algorithm that eliminates the need for a separate critic/value model by using group-relative advantages. It generates multiple candidate outputs per prompt, scores them and normalizes rewards within the group to get advantages. It also uses ratio clipping (similar to PPO) to prevent the policy from drifting too far from the reference distribution. Instead of imitating expert reasoning traces (SFT), it lets the model discover its own strategies by generating multiple candidate solutions per problem, scoring them and reinforcing the better ones.\nYou can read more about it in the GRPO derivation blog post I wrote a few weeks back and in this blog post."
+   }
+  ]
+ },
+ {
+  "id": "off-05",
+  "question": "What is the best way to shard a PostgreSQL database?",
+  "passages": [
+   {
+    "title": "Pairing GPT-6.1 Sol with a Local Model in OpenCode",
+    "text": "In my current job we have quite a few H200 GPU servers :). A couple of weeks back I deployed GLM-5.3-Flash on one of them with the aim of making it my main coding model and the workhorse for development so that I can cut down my Claude Code and Codex usage. If that works, I can even nudge my teammates to use it as well 🙈.\nNo doubt models like Claude Opus 5.5, GPT-6 Astra or GPT-6.1 Sol are the best right now and way ahead of their open-source counterparts for complex tasks. However, no one can ignore the $$ of using them and the anxiety of hitting the limits or draining your credits.\nGLM-5.3-Flash is free, runs on a single 4-GPU H200 server and is good enough for low and medium complexity tasks. It is also quite fast since it is an MoE model (320B total, only 18B active). I serve it with a 512K context window and if needed I can scale it to around 8 to 10 people at the same time without any issues."
+   },
+   {
+    "title": "GRPO: Building Intuition Through Ablation Studies, section: Summary and Key Takeaways",
+    "text": "Best configuration:\non-policy (epochs_per_rollout_batch=1)\nlr=3e-5\nloss_type=grpo_clip\nuse_std_normalization=True\nr1_zero structured prompt\nbase model (no SFT initialization)\nBest performance: ~0.75 on MATH validation (up from ~3% base model accuracy).\nKey lessons:\nEval reward accuracy is the north star metric. It directly measures what we care about. Especially in the case of reinforcement learning with verifiable rewards.\nHowever, gradient norm and mean_response_length are the two other important metrics to watch. They are the early warning signals for instability and reward collapse.\nBinary math reward is robust to some design choices (length normalization) but sensitive to others (baseline subtraction, learning rate).\nOn-policy training wins in this case, reusing rollouts introduces policy drift that is not worth the compute savings.\nThe R1-zero structured prompt matters. A dedicated reasoning scratchpad produces sharper final policies and higher accuracy."
+   },
+   {
+    "title": "A Brief Introduction to Claude Agent Skills, section: What Are Agent Skills?",
+    "text": "This project uses Next.js 14, Tailwind, and PostgreSQL\nConnect to our PostgreSQL database\nCode review agent with read-only permissions\nUse when\nYou need repeatable domain expertise across multiple projects\nYou are onboarding Claude to a specific codebase\nYou need Claude to access external data or services\nYou want to delegate distinct subtasks to specialized assistants\nThis is how I differential them:\nClaude.md gives Claude context about where it’s working\nMCP gives Claude access to data and services\nSkills give Claude expertise on how to do things well\nSubagents let Claude delegate work to specialized assistants"
+   },
+   {
+    "title": "Building GPT from Scratch: Following Karpathy's Tutorial",
+    "text": "This blog summarizes building the GPT architecture by following Andrej Karpathy's 'Let's Build GPT' tutorial."
+   }
+  ]
+ },
+ {
+  "id": "off-06",
+  "question": "How do I build an iPhone app with SwiftUI?",
+  "passages": [
+   {
+    "title": "Self-Hosted Gemma 4 Chat with Web UI, section: 4. Connect from Your Devices",
+    "text": "Open a browser on your phone or laptop and go to:\nllama.cpp web UI running Gemma 4 on iPhone over Tailscale"
+   },
+   {
+    "title": "Building a Live India Weather Dashboard with Claude Code, section: What I would carry forward",
+    "text": "A few things from this build that I will keep doing:\nBrainstorm before you build: Asking the model to interview you back, with a 95% confidence target, saves a lot of rework downstream. This has always worked for me!\nLet it disagree with you: Mapbox over Google Maps, daily bands over raw sawtooth points, Cloudflare over GitHub Actions. None of those calls were mine. However, make sure your fundamental knowledge is strong enough to nudge it in the right direction.\nIterate from screenshots: A picture of what looks wrong plus one question is usually enough to move forward. I also use playwright mcp to let Claude test the UI (though they at times consume a lot of tokens)."
+   },
+   {
+    "title": "Building Browser Tools with Claude Code, section: Image Tools",
+    "text": "Image Format Converter: Convert between PNG, JPEG, and WebP with transparency handling.\nImage Resizer: Resize imagesby by dimensions, aspect ratio and percentage.\nImage Cropper: Interactive crop with draggable selection and aspect ratio presets.\nBinary Mask Creator: Paint binary black and white masks for AI inpainting and fill models.\nImage Adjust & Transform: Flip, rotate, invert, grayscale, brightness, and contrast adjustments.\nSVG Viewer & Converter: Preview SVGs, inspect metadata, export to raster formats.\nI find the Binary Mask Creator pretty handy, especially when working with inpainting models like FLUX Fill or Ideogram v3. Creating clean masks is usually a bit of a pain using some clunky web app. The SVG Viewer is another one I reach for often to preview and convert SVGs on the go (saves me time).\nBinary Mask Creator\nSVG Viewer & Converter\nBinary Mask Creator and SVG Viewer & Converter"
+   },
+   {
+    "title": "A Brief Introduction to Claude Agent Skills, section: What Makes Skills Valuable",
+    "text": "Moreover, you don’t need to be a developer to create skills. You can use the Skills-Creator skill in the Claude app or Claude Code to build your own skills just by describing (and iterating) what you want."
+   }
+  ]
+ },
+ {
+  "id": "off-07",
+  "question": "How does BERT's masked language modeling objective work?",
+  "passages": [
+   {
+    "title": "Deriving the PPO Loss from First Principles, section: Clipped Surrogate Objective",
+    "text": "LLM Context (from Umar Jamil Video): In language model fine-tuning, the policy π_θ(a_t|s_t) is the probability the model assigns to token a_t given the context s_t (prompt + previously generated tokens). The probability ratio r_t(θ) measures how much more or less likely the fine-tuned model is to generate a particular token compared to the reference policy. Clipping ensures that no single token’s probability can change by more than a factor of (1 ± ε) in a single update iteration, preventing the model from “overreacting” to high-advantage tokens."
+   },
+   {
+    "title": "Deriving the DPO Loss from First Principles, section: I: The RLHF Objective",
+    "text": "Let’s recall the RLHF objective from the PPO blog. The goal of RLHF is to find a policy π_θ that maximizes expected reward while staying close to a reference model π_ref:\nThe first term encourages the model to generate high-reward responses. The second term (KL penalty) prevents the model from drifting too far from the reference which helps avoid reward hacking and maintains language quality.\nAs we saw in the PPO blog, we can’t optimize this objective directly with gradient descent because the expectation E_y ~ π_θ(y|x)[·] requires sampling from the policy and sampling is non-differentiable. This is why we needed reinforcement learning algorithms like REINFORCE and PPO. They provide ways to estimate policy gradients without differentiating through the sampling process.\nWhat if we could reformulate the problem so that we don’t need to sample from the policy during training? This is exactly what DPO will achieve."
+   },
+   {
+    "title": "What I Learned Building SFT from the Ground Up, section: The Prompt Masking Implementation Problem",
+    "text": "I wanted to experiment with prompt masking i.e. masking prompt tokens (labels = -100) so the loss is computed only on response tokens, helping the model focus on generating good responses.\nProblem 1: BPE tokenization boundary issues\nImplementing this led to an interesting debugging session. When I tokenized the prompt separately (ending with \"### Response:\\n\") and compared it to the tokens in the full sequence (prompt + response), the boundary tokens didn’t match. This is a known issue of BPE tokenization: subword merging behavior changes based on context.\nMy first instinct was to try to implement complex boundary detection logic. However, I thought let’s try the simplest fix that works.\nSolution: I decided to drop the last token from the prompt before masking. This is a bit quick fix. However, I might train on one extra formatting token (likely just a newline) but will never accidentally mask response tokens.\nProblem 2: Very short or empty responses"
+   },
+   {
+    "title": "Part II: Comparison of Model Performances on Structured Functional Representation Extraction, section: Introduction",
+    "text": "Claude Sonnet-3.5: Anthropic’s refined language model with enhanced reasoning abilities. It aims to provide more context-aware outputs compared to earlier versions and has recently outperformed GPT-4o on many benchmarks.\nGemini-1.5-Flash: Google DeepMind’s streamlined version of the Gemini model, optimized for faster inference and reduced computational requirements.\nllama-3-70b-instruct: Meta’s large-scale instruction-tuned language model, part of the latest LLaMA 3 family, with 70 billion parameters. It’s designed to follow complex instructions and generate high-quality text across diverse domains.\nmixtral-8x7b-instruct-v0.1: Mistral AI’s instruction-tuned variant of the Mixtral 8x7B model, known for its mixture-of-experts architecture.\nllama-3-8b-instruct: A more compact version of Meta’s LLaMA 3 family, with 8 billion parameters, optimized for instruction following."
+   }
+  ]
+ }
+]

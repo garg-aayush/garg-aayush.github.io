@@ -29,7 +29,7 @@ Implementation sketch: a `fillShortGapsByTime(points, key, maxGapMs)` pass befor
 
 ## Search
 
-Stage 1 (the clean passage index, BM25 and the first scores) is built; the plan, decisions and every measurement are in `_devlog/local-search/journal.md`, and the scores are in `_devlog/local-search/evals/results/`.
+Stage 1 (the clean passage index, BM25 and the first scores) and stage 2 (the static embedding table) are built; stage 3 (answers from the results) was measured on 2026-11-12 and not shipped. The plan, decisions and every measurement are in `_devlog/local-search/journal.md`, the search scores are in `_devlog/local-search/evals/results/` and the answer scores in `_devlog/local-search/evals/answers/results/`.
 
 ### Review the evaluation set
 `_devlog/local-search/evals/questions.json` has 40 queries (36 answerable, 4 with no answer), chosen on 2026-11-11 at 30 to 40 because the site is small. It awaits Aayush's review: the six judgments listed at the end of its README, and queries in his own words, since his phrasing is the closest thing to a real visitor the set has. If a query or judgment changes, rescore every run with `node _devlog/local-search/evals/run-eval.mjs`.
@@ -45,6 +45,9 @@ The 14 tools are indexed from their own visible text, which is only labels and b
 
 ### Stage 2 follow-ups
 Stage 2 is built (BM25 plus the potion static table, fused over the top 10 of each list; see the journal). Open: commit `static/search/` (the 7.2 MB table and the vocabulary) if Aayush agrees, since a full render fails without them; decide what the page shows for queries the site cannot answer (the hybrid always returns the 10 nearest pages, so "No results" now appears only for words the table does not know); look again at the fusion cut-off, because the held-out set did not confirm the development result (full lists 0.78 recall at 5, top 10 0.72, see the journal); write a new held-out set, because `questions-holdout.json` has now been scored once; the phone and real-network costs are unmeasured.
+
+### Revisit answers later?
+No answer feature ships: none of four small models passed the rule (decline at least 13 of 15 unanswerable questions and be faithful on at least 15 of 30 answerable ones). They extract a nearby fact instead of declining. The journal entry "2026-11-12, stage 3: result and decision" has the scores, examples and limits. Possibilities, none planned: pass more than one passage per page (9 of the 10 retrieval misses had the right page in the top four), test a retrieval score gate offline on the stored retrieval in `evals/answers/results/retrieval.json`, a larger or decline-trained model (ruled out on 2026-11-11), or a stricter prompt. Re-run the questions with `evals/answers/harness/run-answers.mjs` and score with `evals/answers/results/score.mjs`.
 
 ### Measure on a phone
 The stage 1 and stage 2 costs were measured in Chromium on a laptop only.

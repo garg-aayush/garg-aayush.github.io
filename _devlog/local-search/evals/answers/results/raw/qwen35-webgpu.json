@@ -1,0 +1,402 @@
+{
+ "run": {
+  "identity": {
+   "model": "qwen35",
+   "repo": "onnx-community/Qwen3.5-0.8B-Text-ONNX",
+   "revision": "25cdf33f386b487a25f3d743e86442517bdb77ff",
+   "dtype": "q4f16",
+   "backend": "webgpu",
+   "settingsSha": "62cb2d476409",
+   "promptSha": "c61a73325154",
+   "itemsSha": "6031b010a4cc"
+  },
+  "settings": {
+   "chatTemplateArgs": {
+    "enable_thinking": false
+   },
+   "doSample": false,
+   "maxNewTokens": 100,
+   "maxSentences": 2,
+   "repetitionPenalty": 1
+  },
+  "prompt": {
+   "file": "prompt.mjs",
+   "sha": "c61a73325154",
+   "system": "You answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.",
+   "refusal": "This site does not seem to cover that."
+  },
+  "environment": {
+   "node": "v24.22.0",
+   "transformersJs": "4.3.2",
+   "onnxruntimeWeb": "1.31.0-dev.20260914-8d85527a0",
+   "playwrightCore": "1.64.1",
+   "machine": {
+    "os": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M5 Pro",
+    "cores": 15,
+    "memoryGB": 24
+   },
+   "browser": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "crossOriginIsolated": false,
+    "hardwareConcurrency": 15,
+    "adapter": {
+     "vendor": "apple",
+     "architecture": "metal-3",
+     "device": "",
+     "description": "",
+     "isFallbackAdapter": false
+    },
+    "shaderF16": true,
+    "features": [
+     "bgra8unorm-storage",
+     "clip-distances",
+     "core-features-and-limits",
+     "depth-clip-control",
+     "depth32float-stencil8",
+     "dual-source-blending",
+     "float32-blendable",
+     "float32-filterable",
+     "indirect-first-instance",
+     "primitive-index",
+     "rg11b10ufloat-renderable",
+     "shader-f16",
+     "subgroup-size-control",
+     "subgroups",
+     "texture-component-swizzle",
+     "texture-compression-astc",
+     "texture-compression-astc-sliced-3d",
+     "texture-compression-bc",
+     "texture-compression-bc-sliced-3d",
+     "texture-compression-etc2",
+     "texture-formats-tier1",
+     "texture-formats-tier2",
+     "timestamp-query"
+    ],
+    "limits": {
+     "maxBufferSize": 4294967292,
+     "maxStorageBufferBindingSize": 4294967292,
+     "maxComputeWorkgroupStorageSize": 32768
+    }
+   }
+  }
+ },
+ "items": [
+  {
+   "id": "fact-01",
+   "answer": "The provided text does not mention ngrok pricing, so this question cannot be answered from the passages.",
+   "tokens": 23,
+   "ms": 564,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-02",
+   "answer": "The passages do not contain the specific hyperparameters (epochs, rank, learning_rate) used to fine-tune Llama-3-8B on Predibase.",
+   "tokens": 36,
+   "ms": 663,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-03",
+   "answer": "According to the text, filtering out incorrect reasoning traces boosted the model's accuracy from 42% to 52%.",
+   "tokens": 28,
+   "ms": 613,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-04",
+   "answer": "The text states that DeepSeekMath-7B achieves 51.7% on the competition-level MATH benchmark.",
+   "tokens": 28,
+   "ms": 598,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-05",
+   "answer": "PPO requires the model to be in memory for every token it processes during the training phase.",
+   "tokens": 22,
+   "ms": 457,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-06",
+   "answer": "SRAM is on-chip memory that is nearly 4000 times smaller in capacity than HBM, while HBM is the GPU's main (slow) memory that sits off the chip.",
+   "tokens": 44,
+   "ms": 849,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-07",
+   "answer": "The dashboard shows data for major Indian cities, and it updates every 15 minutes.",
+   "tokens": 21,
+   "ms": 391,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-08",
+   "answer": "No, the models did not truly follow test-driven development, as they claimed red-green methodology but wrote integration tests without using mocks or genuinely failing tests first.",
+   "tokens": 34,
+   "ms": 689,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-09",
+   "answer": "The text does not specify the exact token share between GPT-6.1 Sol and the GLM model, only that they are paired together in OpenCode.",
+   "tokens": 36,
+   "ms": 556,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-10",
+   "answer": "No, the Markdown Viewer tool requires internet connection to function.",
+   "tokens": 15,
+   "ms": 362,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-11",
+   "answer": "The text states that the architecture was \"essentially the same as GPT-3\" but was \"17,500x more parameters trained on 1 million times more data.\"",
+   "tokens": 42,
+   "ms": 666,
+   "stop": "eos"
+  },
+  {
+   "id": "fact-12",
+   "answer": "The text does not contain information about the stages of the JSALT 2020 pipeline for multi-speaker meetings.",
+   "tokens": 28,
+   "ms": 528,
+   "stop": "eos"
+  },
+  {
+   "id": "how-01",
+   "answer": "He switched to per-token loss normalization to make the gradients more stable and reduce the impact of sequence length on token gradients.",
+   "tokens": 27,
+   "ms": 514,
+   "stop": "eos"
+  },
+  {
+   "id": "how-02",
+   "answer": "FlashAttention makes the backward pass faster by reusing the saved Q, K, and V tiles instead of recomputing the entire matrix from scratch, which saves memory and reduces the number of forward passes required.",
+   "tokens": 45,
+   "ms": 733,
+   "stop": "eos"
+  },
+  {
+   "id": "how-03",
+   "answer": "According to the text, DPO gets away without a reward model or reinforcement learning because it reformulates the RLHF objective into a simple classification loss, which eliminates the need for explicit reward modeling or reinforcement learning.",
+   "tokens": 45,
+   "ms": 726,
+   "stop": "eos"
+  },
+  {
+   "id": "how-04",
+   "answer": "He disabled the memory tricks that only exist to fit on 24 GB (gradient checkpointing, 8-bit AdamW) and used larger microbatches (4 instead of 1) for better tensor core utilization.",
+   "tokens": 48,
+   "ms": 906,
+   "stop": "eos"
+  },
+  {
+   "id": "how-05",
+   "answer": "Qwen3.5-27B uses a Gated DeltaNet architecture that maintains a fixed-size state regardless of context length, allowing it to fit within the 24 GB VRAM limit even with 64K context.",
+   "tokens": 51,
+   "ms": 929,
+   "stop": "eos"
+  },
+  {
+   "id": "how-06",
+   "answer": "The user prefers the local GLM setup in OpenCode because it is easier to have the main session running on Sol or Opus 5.5 while the subagents handle the work locally, which is a limitation of the other platforms mentioned in the text.",
+   "tokens": 55,
+   "ms": 875,
+   "stop": "eos"
+  },
+  {
+   "id": "how-07",
+   "answer": "When the sensor is unreliable, the gain shrinks toward zero, causing the filter to mostly trust its own prediction.",
+   "tokens": 26,
+   "ms": 608,
+   "stop": "eos"
+  },
+  {
+   "id": "how-08",
+   "answer": "The implementation of the method was an overlap detector and a modified spectral clustering method for overlap-aware diarization.",
+   "tokens": 24,
+   "ms": 441,
+   "stop": "eos"
+  },
+  {
+   "id": "broad-01",
+   "answer": "Expert iteration achieved the highest MATH accuracy at 47.1%, while SFT was 53.4% and GRPO was 75%.",
+   "tokens": 36,
+   "ms": 674,
+   "stop": "eos"
+  },
+  {
+   "id": "broad-02",
+   "answer": "Aayush developed deep learning super-resolution methods to remove spatial aliasing from seismic data.",
+   "tokens": 21,
+   "ms": 492,
+   "stop": "eos"
+  },
+  {
+   "id": "broad-03",
+   "answer": "Yes, fine-tuning a smaller open model like Phi or Gemma on the ViGGO dataset was used to compare with GPT-4o, and the results showed that a fine-tuned smaller model could compete with or surpass the performance of GPT-4o.",
+   "tokens": 59,
+   "ms": 986,
+   "stop": "eos"
+  },
+  {
+   "id": "broad-04",
+   "answer": "Kalman filters are a specific approach mentioned in the text that helps with denoising, filling gaps, and separating trends in time-series data.",
+   "tokens": 32,
+   "ms": 627,
+   "stop": "eos"
+  },
+  {
+   "id": "broad-05",
+   "answer": "He has used vLLM to offload the KV cache and weights to CPU during training, which frees up GPU memory for the backward pass.",
+   "tokens": 32,
+   "ms": 636,
+   "stop": "eos"
+  },
+  {
+   "id": "broad-06",
+   "answer": "The site includes tools like Image Cropper, Binary Mask Creator, and SVG Viewer & Converter that help when working with AI image models.",
+   "tokens": 30,
+   "ms": 576,
+   "stop": "eos"
+  },
+  {
+   "id": "person-01",
+   "answer": "Aayush built a GPT-4 model from scratch at Jiffy.",
+   "tokens": 20,
+   "ms": 493,
+   "stop": "eos"
+  },
+  {
+   "id": "person-02",
+   "answer": "Aayush has an RTX 4090 in his own workstation.",
+   "tokens": 19,
+   "ms": 505,
+   "stop": "eos"
+  },
+  {
+   "id": "person-03",
+   "answer": "Aayush enrolled in the course \"AI Evals for Engineers and PMs\" and follows it as a self-paced course where he plans to write a blog for each lesson as he progresses.",
+   "tokens": 42,
+   "ms": 809,
+   "stop": "eos"
+  },
+  {
+   "id": "person-04",
+   "answer": "No, Aayush has not given an invited talk.",
+   "tokens": 15,
+   "ms": 292,
+   "stop": "eos"
+  },
+  {
+   "id": "near-01",
+   "answer": "The text does not state the exact match score for Claude Sonnet 3.5 on the ViGGO task.",
+   "tokens": 27,
+   "ms": 633,
+   "stop": "eos"
+  },
+  {
+   "id": "near-02",
+   "answer": "The text mentions that the reviewer runs on Sol and only comes in for risky changes, but it does not specify which model (GLM-5.3-Flash or SGLang) is being used for the SGLang part of the setup.",
+   "tokens": 54,
+   "ms": 995,
+   "stop": "eos"
+  },
+  {
+   "id": "near-03",
+   "answer": "FlashAttention was faster than standard attention in his own benchmarks because it eliminated the massive HBM reads and writes of P, which is a memory-bound operation.",
+   "tokens": 34,
+   "ms": 773,
+   "stop": "eos"
+  },
+  {
+   "id": "near-04",
+   "answer": "The provided text does not contain the specific RMSE value the Kalman smoother reached on the Mauna Loa CO2 data.",
+   "tokens": 28,
+   "ms": 639,
+   "stop": "eos"
+  },
+  {
+   "id": "near-05",
+   "answer": "No, the site does not list a tool specifically for compressing PDF files.",
+   "tokens": 19,
+   "ms": 444,
+   "stop": "eos"
+  },
+  {
+   "id": "near-06",
+   "answer": "The free plan gives you around 1000 API requests per month, which is more than enough for most use cases.",
+   "tokens": 29,
+   "ms": 529,
+   "stop": "eos"
+  },
+  {
+   "id": "near-07",
+   "answer": "The provided text does not contain information about Aayush's undergraduate degree.",
+   "tokens": 18,
+   "ms": 393,
+   "stop": "eos"
+  },
+  {
+   "id": "near-08",
+   "answer": "The provided text does not contain information regarding the scores of Qwen3.5-27B on SWE-bench.",
+   "tokens": 29,
+   "ms": 673,
+   "stop": "eos"
+  },
+  {
+   "id": "off-01",
+   "answer": "This site does not seem to cover that.",
+   "tokens": 12,
+   "ms": 348,
+   "stop": "eos"
+  },
+  {
+   "id": "off-02",
+   "answer": "The provided text does not contain information about the difference between Box and Rc in Rust.",
+   "tokens": 20,
+   "ms": 573,
+   "stop": "eos"
+  },
+  {
+   "id": "off-03",
+   "answer": "This site does not seem to cover that.",
+   "tokens": 12,
+   "ms": 407,
+   "stop": "eos"
+  },
+  {
+   "id": "off-04",
+   "answer": "The Raft consensus algorithm elects a leader by having each node send a message to the leader, and the leader then sends a message to the next node in the chain.",
+   "tokens": 38,
+   "ms": 650,
+   "stop": "eos"
+  },
+  {
+   "id": "off-05",
+   "answer": "The provided text does not contain information about PostgreSQL database sharding.",
+   "tokens": 16,
+   "ms": 448,
+   "stop": "eos"
+  },
+  {
+   "id": "off-06",
+   "answer": "You can use the Skills-Creator skill in the Claude app to build your own skills just by describing what you want.",
+   "tokens": 27,
+   "ms": 530,
+   "stop": "eos"
+  },
+  {
+   "id": "off-07",
+   "answer": "BERT's masked language modeling objective uses a conditional probability distribution where the model predicts the next token based on the masked context, effectively treating the masked tokens as the target distribution for the model to learn.",
+   "tokens": 42,
+   "ms": 890,
+   "stop": "eos"
+  }
+ ]
+}

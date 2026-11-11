@@ -1,0 +1,299 @@
+{
+ "qwen3": {
+  "label": "qwen3",
+  "revision": "58ca03a5e7b354b480b1a82b34bde8dc7b854cc0",
+  "dtype": "q4f16",
+  "backend": "webgpu",
+  "adapter": "apple metal-3",
+  "loadMs": 2731,
+  "loadBytesModelFiles": 578918293,
+  "itemsDone": 45,
+  "itemsFailed": [],
+  "itemsTotal": 45,
+  "empty": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0,
+   "ids": []
+  },
+  "refusalExact": {
+   "n": 8,
+   "answerable": 5,
+   "unanswerable": 3
+  },
+  "refusalHeuristic": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0,
+   "ids": []
+  },
+  "stop": {
+   "eos": 44,
+   "sentences": 1
+  },
+  "answerChars": {
+   "min": 38,
+   "median": 122,
+   "mean": 138.6,
+   "max": 395
+  },
+  "answerTokens": {
+   "min": 10,
+   "median": 29,
+   "mean": 32.5,
+   "max": 75
+  },
+  "itemMs": {
+   "min": 320,
+   "median": 719,
+   "mean": 797.2,
+   "max": 1850
+  },
+  "firstTokenMs": {
+   "min": 244,
+   "median": 432,
+   "mean": 513.9,
+   "max": 1732
+  },
+  "decodeTokensPerSecond": {
+   "min": 77.8,
+   "median": 111.6,
+   "mean": 111.9,
+   "max": 138
+  },
+  "promptTokens": {
+   "min": 403,
+   "median": 782,
+   "mean": 775.9,
+   "max": 1197
+  },
+  "runMs": 39757,
+  "peakBrowserMemoryGB": 7.51
+ },
+ "granite": {
+  "label": "granite",
+  "revision": "62fc8f345c8aed0e1a28f856dc7e79b4cdb55cae",
+  "dtype": "q4f16",
+  "backend": "webgpu",
+  "adapter": "apple metal-3",
+  "loadMs": 757,
+  "loadBytesModelFiles": 0,
+  "itemsDone": 45,
+  "itemsFailed": [],
+  "itemsTotal": 45,
+  "empty": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0,
+   "ids": []
+  },
+  "refusalExact": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0
+  },
+  "refusalHeuristic": {
+   "n": 2,
+   "answerable": 0,
+   "unanswerable": 2,
+   "ids": [
+    "near-06",
+    "near-08"
+   ]
+  },
+  "stop": {
+   "eos": 32,
+   "sentences": 13
+  },
+  "answerChars": {
+   "min": 41,
+   "median": 164,
+   "mean": 164.2,
+   "max": 357
+  },
+  "answerTokens": {
+   "min": 13,
+   "median": 35,
+   "mean": 37,
+   "max": 85
+  },
+  "itemMs": {
+   "min": 166,
+   "median": 412,
+   "mean": 420.4,
+   "max": 932
+  },
+  "firstTokenMs": {
+   "min": 102,
+   "median": 183,
+   "mean": 202.4,
+   "max": 516
+  },
+  "decodeTokensPerSecond": {
+   "min": 142.9,
+   "median": 165.5,
+   "mean": 166.8,
+   "max": 192.2
+  },
+  "promptTokens": {
+   "min": 392,
+   "median": 759,
+   "mean": 752.7,
+   "max": 1058
+  },
+  "runMs": 20240,
+  "peakBrowserMemoryGB": 8.34
+ },
+ "lfm": {
+  "label": "lfm",
+  "revision": "7dd4999565b0342c381ba90a3d8fc467d6df19c4",
+  "dtype": "q4f16",
+  "backend": "webgpu",
+  "adapter": "apple metal-3",
+  "loadMs": 879,
+  "loadBytesModelFiles": 258451788,
+  "itemsDone": 45,
+  "itemsFailed": [],
+  "itemsTotal": 45,
+  "empty": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0,
+   "ids": []
+  },
+  "refusalExact": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0
+  },
+  "refusalHeuristic": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0,
+   "ids": []
+  },
+  "stop": {
+   "eos": 45
+  },
+  "answerChars": {
+   "min": 3,
+   "median": 78,
+   "mean": 105.3,
+   "max": 454
+  },
+  "answerTokens": {
+   "min": 2,
+   "median": 20,
+   "mean": 25,
+   "max": 86
+  },
+  "itemMs": {
+   "min": 91,
+   "median": 185,
+   "mean": 193.4,
+   "max": 460
+  },
+  "firstTokenMs": {
+   "min": 53,
+   "median": 99,
+   "mean": 98.8,
+   "max": 137
+  },
+  "decodeTokensPerSecond": {
+   "min": 177,
+   "median": 267.8,
+   "mean": 256.6,
+   "max": 298.1
+  },
+  "promptTokens": {
+   "min": 414,
+   "median": 796,
+   "mean": 790.9,
+   "max": 1097
+  },
+  "runMs": 10085,
+  "peakBrowserMemoryGB": 2.21
+ },
+ "qwen35": {
+  "label": "qwen35",
+  "revision": "25cdf33f386b487a25f3d743e86442517bdb77ff",
+  "dtype": "q4f16",
+  "backend": "webgpu",
+  "adapter": "apple metal-3",
+  "loadMs": 1588,
+  "loadBytesModelFiles": 489167661,
+  "itemsDone": 45,
+  "itemsFailed": [],
+  "itemsTotal": 45,
+  "empty": {
+   "n": 0,
+   "answerable": 0,
+   "unanswerable": 0,
+   "ids": []
+  },
+  "refusalExact": {
+   "n": 2,
+   "answerable": 0,
+   "unanswerable": 2
+  },
+  "refusalHeuristic": {
+   "n": 11,
+   "answerable": 4,
+   "unanswerable": 7,
+   "ids": [
+    "fact-01",
+    "fact-02",
+    "fact-09",
+    "fact-12",
+    "near-01",
+    "near-02",
+    "near-04",
+    "near-07",
+    "near-08",
+    "off-02",
+    "off-05"
+   ]
+  },
+  "stop": {
+   "eos": 45
+  },
+  "answerChars": {
+   "min": 38,
+   "median": 113,
+   "mean": 125.3,
+   "max": 245
+  },
+  "answerTokens": {
+   "min": 12,
+   "median": 28,
+   "mean": 30.9,
+   "max": 59
+  },
+  "itemMs": {
+   "min": 292,
+   "median": 608,
+   "mean": 615.2,
+   "max": 995
+  },
+  "firstTokenMs": {
+   "min": 130,
+   "median": 262,
+   "mean": 257.9,
+   "max": 398
+  },
+  "decodeTokensPerSecond": {
+   "min": 60.4,
+   "median": 87,
+   "mean": 84.4,
+   "max": 101.7
+  },
+  "promptTokens": {
+   "min": 409,
+   "median": 793,
+   "mean": 788.3,
+   "max": 1219
+  },
+  "runMs": 30076,
+  "peakBrowserMemoryGB": 3.88
+ }
+}
