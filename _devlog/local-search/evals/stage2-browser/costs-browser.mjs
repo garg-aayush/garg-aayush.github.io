@@ -1,4 +1,4 @@
-// What the meaning search costs in Chromium on this machine: file sizes as sent, the time from the first focus until it is ready (cold and warm cache, with and without an emulated slow link), per query time for keyword and hybrid ranking, and memory.
+// What the meaning search costs in Chromium on this machine: file sizes as sent, the time from the first keystroke until it is ready (cold and warm cache, with and without an emulated slow link), per query time for keyword and hybrid ranking, and memory.
 // Usage (Node 24.22.0, after quarto render, Playwright installed): node costs-browser.mjs
 // A phone was not measured. GitHub Pages' own compression of these files was not observed: the sizes are Node's gzip (level 9) and brotli (quality 11), and the throttled runs use brotli at quality 5 or no compression, which brackets it.
 import { createReadStream, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -51,7 +51,7 @@ function serve({ port, maxAge, compress }) {
 const browser = await chromium.launch();
 const phoneless = { viewport: { width: 390, height: 844 } };
 
-// Fresh context: first focus of the box until the status says meaning is included. Returns the time and what the browser fetched.
+// Fresh context: first keystroke in the box until the status says meaning is included. Returns the time and what the browser fetched.
 // route: false leaves the page without request interception, which in Chromium switches off the HTTP cache, so the warm cache runs need it
 async function readyTime(url, { context, throttle, route = true } = {}) {
   const ctx = context ?? await browser.newContext(phoneless);
@@ -69,7 +69,9 @@ async function readyTime(url, { context, throttle, route = true } = {}) {
     const watcher = new MutationObserver(() => { if (mode.textContent.includes('meaning')) { watcher.disconnect(); resolve(performance.now() - start); } });
     watcher.observe(mode, { childList: true, characterData: true, subtree: true });
     setTimeout(() => reject(new Error('not ready in 120 s')), 120000);
-    document.querySelector('.search-input').focus();
+    const input = document.querySelector('.search-input');
+    input.value = 'a';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
   }));
   const resources = await page.evaluate(() => performance.getEntriesByType('resource').filter(entry => /search-vectors|\.bin|vocab/.test(entry.name)).map(entry => ({ file: entry.name.replace(/^.*\//, '').replace(/\?.*/, ''), start: Math.round(entry.startTime), end: Math.round(entry.responseEnd), transfer: entry.transferSize, decoded: entry.decodedBodySize })));
   return { elapsed, resources, page, ctx, cdp };
@@ -151,6 +153,7 @@ async function measure(blockVectors) {
   if (blockVectors) await page.route('**/search-vectors.json*', route => route.abort());
   const cdp = await ctx.newCDPSession(page);
   await page.goto(`${timing.url}/search/`);
+  await page.locator('.search-input').pressSequentially('a');
   await page.waitForFunction(blocked => blocked || document.querySelector('.search-mode').textContent.includes('meaning'), blockVectors, { timeout: 20000 });
   await page.waitForTimeout(300);
   await cdp.send('HeapProfiler.collectGarbage');

@@ -12,8 +12,8 @@ for (const width of [1280, 390]) {
   await page.route('**/gtag/js**', route => route.fulfill({ status: 200, body: '' }));
   await page.goto(`${url}/search/`);
   await page.waitForFunction(() => document.fonts.status === 'loaded');
-  // On a phone the box is not focused, so focus it, which is the first use
-  await page.locator('.search-input').focus();
+  // The first keystroke starts the meaning files
+  await page.locator('.search-input').pressSequentially('a');
   await page.waitForFunction(() => document.querySelector('.search-mode').textContent.includes('meaning'));
   await page.screenshot({ path: join(out, `${width}-empty.png`), fullPage: true });
   for (const [name, query] of [['attention', 'attention'], ['photo', 'make a photo black and white'], ['now', 'what does he do now']]) {

@@ -233,13 +233,23 @@ export function fuse(lists, { k = 60, tops = [], weights = [] } = {}) {
     .sort((a, b) => b.score - a.score || (a.ranks[0] ?? Infinity) - (b.ranks[0] ?? Infinity) || a.order - b.order);
 }
 
-// How the keyword and meaning rankings are combined: reciprocal rank fusion with k = 60 over the first 10 pages of each list. Fusing the whole lists let BM25's long tail of pages that share one common word outvote good meaning ranks (see _devlog/local-search/journal.md).
-export const FUSION = { k: 60, tops: [10, 10] };
+// How the keyword and meaning rankings are combined: reciprocal rank fusion with k = 60 over the first 10 pages of each list. Fusing the whole lists let BM25's long tail of pages that share one common word outvote good meaning ranks (see _devlog/local-search/journal.md). nearest is how many pages a query with no keyword match gets, all by meaning.
+export const FUSION = { k: 60, tops: [10, 10], nearest: 5 };
 
-// Keyword and meaning together, in the shape of rankTerms. query is the unit length vector of the query text. A query with no keyword term has no rows.
+// Keyword and meaning together, in the shape of rankTerms. query is the unit length vector of the query text. The fused rows come first; every other page that matches a keyword follows in keyword order (ranks holds only its keyword rank), so a page that literally matches is never dropped. A query with no keyword term has no rows, and one with no keyword match gets its FUSION.nearest closest pages by meaning (no row has a keyword rank).
 export function rankHybrid(index, vectors, analysis, query) {
   if (!analysis.terms.length) return [];
-  return fuse([rankTerms(index, analysis), rankVectors(index, vectors, query)], FUSION);
+  const keyword = rankTerms(index, analysis);
+  const rows = fuse([keyword, rankVectors(index, vectors, query)], FUSION);
+  if (!keyword.length) return rows.slice(0, FUSION.nearest);
+  const fused = new Set(rows.map(row => row.order));
+  keyword.forEach((row, i) => { if (!fused.has(row.order)) rows.push({ ...row, ranks: [i + 1] }); });
+  return rows;
+}
+
+// How a page's path joins the index to the page list: no fragment, and a folder means its index.html. Used by the page and by scripts/build-search-index.mjs.
+export function pageKey(href) {
+  return String(href).split('#')[0].replace(/^\//, '').replace(/(^|\/)$/, '$1index.html');
 }
 
 // The [start, end] offsets of the words in text that match the query, for highlighting

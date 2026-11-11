@@ -1,5 +1,6 @@
 // The placeholder ranking of step one, kept as a baseline. This is static/js/search.js as it was before BM25 (the cleaning of Quarto's search.json and rankPages), lifted out of the DOM so run-eval.mjs can score it. Do not improve it: it exists to be compared with.
-import { decodeEntities, pageKey } from '../../../scripts/build-search-index.mjs';
+import { decodeEntities } from '../../../scripts/build-search-index.mjs';
+import { pageKey } from '../../../static/js/search-rank.js';
 
 const WORD = '[\\p{L}\\p{N}]';
 

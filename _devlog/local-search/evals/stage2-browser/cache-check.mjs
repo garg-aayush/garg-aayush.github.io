@@ -26,14 +26,14 @@ const server = createServer((request, response) => {
 }).listen(4299, '127.0.0.1');
 
 const profile = mkdtempSync(join(tmpdir(), 'cache-check-'));
-const lines = ['# HTTP cache between visits', '', `Chromium with a persistent profile, two visits to /search/, a server sending Cache-Control: max-age=600 and an ETag. Requests the server saw for the three meaning files after the first focus of the box:`, ''];
+const lines = ['# HTTP cache between visits', '', `Chromium with a persistent profile, two visits to /search/, a server sending Cache-Control: max-age=600 and an ETag. Requests the server saw for the three meaning files after the first keystroke in the box:`, ''];
 for (const visit of [1, 2]) {
   const context = await chromium.launchPersistentContext(profile, { headless: true, viewport: { width: 390, height: 844 } });
   const page = context.pages()[0] ?? await context.newPage();
   await page.goto('http://127.0.0.1:4299/search/');
   await page.waitForLoadState('networkidle');
   log.length = 0;
-  await page.locator('.search-input').focus();
+  await page.locator('.search-input').pressSequentially('a');
   await page.waitForFunction(() => document.querySelector('.search-mode').textContent.includes('meaning'), null, { timeout: 30000 });
   const seen = log.filter(entry => /search-vectors|\.bin|vocab/.test(entry));
   lines.push(`- Visit ${visit}: ${seen.length ? seen.join(', ') : 'none, all three served from the browser cache'}`);

@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { parse, parseFragment } from 'parse5';
 import { DOMParser } from '@xmldom/xmldom';
 import { base64ToBytes, VECTORS_VERSION } from '../static/js/search-embed.js';
-import { INDEX_VERSION } from '../static/js/search-rank.js';
-import { hashPages, pageKey, records } from './build-search-index.mjs';
+import { INDEX_VERSION, pageKey } from '../static/js/search-rank.js';
+import { hashPages, records } from './build-search-index.mjs';
 import { embedPassages, loadTable } from './build-search-vectors.mjs';
 
 const projectDir = fileURLToPath(new URL('../', import.meta.url));

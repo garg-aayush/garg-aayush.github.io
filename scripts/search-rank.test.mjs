@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { FUSION, INDEX_VERSION, analyzeQuery, createIndex, fuse, matchRanges, passages, rankHybrid, rankVectors, search, stem, tokenize } from '../static/js/search-rank.js';
+import { FUSION, INDEX_VERSION, analyzeQuery, createIndex, fuse, matchRanges, pageKey, passages, rankHybrid, rankTerms, rankVectors, search, stem, tokenize } from '../static/js/search-rank.js';
 import { SCHEMA_VERSION } from './build-search-index.mjs';
 
 const data = {
@@ -17,6 +17,12 @@ const keys = query => search(index, query).map(row => row.page.key);
 
 test('the module and the builder agree on the index version', () => {
   assert.equal(INDEX_VERSION, SCHEMA_VERSION);
+});
+
+test('joins a page to the index by its path: no fragment, and a folder means its index.html', () => {
+  assert.equal(pageKey('tools/'), 'tools/index.html');
+  assert.equal(pageKey('/posts/a/index.html#x'), 'posts/a/index.html');
+  assert.equal(pageKey('projects.html'), 'projects.html');
 });
 
 test('tokenizes to lowercase words', () => {
@@ -140,10 +146,42 @@ test('fuses ranked lists by reciprocal rank, takes each list only as far as its 
 });
 
 test('the page fusion is reciprocal rank fusion with k 60 over the first 10 pages of each list, and it needs a keyword term', () => {
-  assert.deepEqual(FUSION, { k: 60, tops: [10, 10] });
+  assert.deepEqual(FUSION, { k: 60, tops: [10, 10], nearest: 5 });
   const analysis = analyzeQuery(index, 'seismic', options);
   const rows = rankHybrid(index, vectors, analysis, [1, 0]);
   assert.deepEqual(rows.map(row => row.page.key), ['about.html', 'flash.html', 'kalman.html', 'weather.html']);
   assert.equal(rows[0].ranks[0], 1);
   assert.deepEqual(rankHybrid(index, vectors, analyzeQuery(index, '?!', options), [1, 0]), [], 'no word, nothing to rank');
+});
+
+// Twelve pages that all say "image", with meaning and keywords agreeing on their order: the fusion keeps the first 10 of each list, so the last two are the keyword matches that used to vanish
+const many = {
+  pages: Array.from({ length: 12 }, (_, i) => ({ h: `p${i}.html`, t: `Page ${i}`, d: `Description ${i}.`, p: [['', '', `The image tool number ${i}.`]] })),
+};
+const manyIndex = createIndex(many, options);
+// A description then its one passage for each page; page i points further from the query [1, 0] as i grows
+const manyVectors = { dimensions: 2, rows: Float32Array.from(many.pages.flatMap((_, i) => { const angle = i * 0.1; return [Math.cos(angle), Math.sin(angle), Math.cos(angle), Math.sin(angle)]; })) };
+
+test('a page that matches a keyword stays in the list after the fusion, after the fused rows and in keyword order', () => {
+  const analysis = analyzeQuery(manyIndex, 'image', options);
+  const keyword = rankTerms(manyIndex, analysis);
+  assert.equal(keyword.length, 12);
+  const fused = fuse([keyword, rankVectors(manyIndex, manyVectors, [1, 0])], FUSION);
+  assert.equal(fused.length, 10, 'the fusion alone drops two keyword matches');
+  const rows = rankHybrid(manyIndex, manyVectors, analysis, [1, 0]);
+  assert.equal(rows.length, 12, 'no keyword match is lost');
+  assert.deepEqual(rows.slice(0, 10).map(row => row.order), fused.map(row => row.order), 'the fused order is unchanged');
+  assert.deepEqual(rows.slice(10).map(row => row.order), keyword.slice(10).map(row => row.order), 'the rest follow in keyword order');
+  assert.deepEqual(rows.slice(10).map(row => row.ranks), [[11], [12]], 'with their keyword rank only');
+  assert.deepEqual(rows.slice(10).map(row => row.doc), keyword.slice(10).map(row => row.doc));
+});
+
+test('a query that matches no keyword gets its five closest pages by meaning, none with a keyword rank', () => {
+  const analysis = analyzeQuery(manyIndex, 'zzzzqq', options);
+  assert.equal(analysis.terms.length, 1);
+  const rows = rankHybrid(manyIndex, manyVectors, analysis, [1, 0]);
+  assert.equal(rows.length, FUSION.nearest);
+  assert.deepEqual(rows.map(row => row.order), [0, 1, 2, 3, 4]);
+  assert.ok(rows.every(row => row.ranks[0] === undefined), 'meaning only');
+  assert.deepEqual(rankHybrid(manyIndex, manyVectors, analysis, [0, 0]), [], 'a query the table does not know has nothing near it');
 });

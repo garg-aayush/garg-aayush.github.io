@@ -1,10 +1,13 @@
 // Search page (search/index.qmd only). Everything runs in the browser and nothing the visitor types leaves the page: the only requests are the site's own files, search-index.json at once and, after the first use of the search box, the meaning files. Words and settings are in the page's JSON block; the page data comes from the two listings in search/index.qmd, the text from search-index.json, the keyword ranking from search-rank.js, and the meaning vectors from search-embed.js and the files that scripts/build-search-vectors.mjs and scripts/make-search-table.mjs write.
-import { INDEX_VERSION, analyzeQuery, createIndex, matchRanges, rankHybrid, rankTerms } from './search-rank.js';
+import { INDEX_VERSION, analyzeQuery, createIndex, matchRanges, pageKey, rankHybrid, rankTerms } from './search-rank.js';
 import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVocab } from './search-embed.js';
 
 (function () {
   var app = document.querySelector('.search-app');
   if (!app) return;
+
+  // The markup hides the controls, so with JavaScript off only the note shows
+  app.querySelector('.search-live').hidden = false;
 
   var copy = JSON.parse(app.querySelector('.search-copy').textContent);
   var input = app.querySelector('.search-input');
@@ -26,11 +29,6 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
   // Quarto passes titles and descriptions through Markdown, so they can carry entities.
   function plain(value) {
     return new DOMParser().parseFromString(value || '', 'text/html').body.textContent || '';
-  }
-
-  // Pages join to the index by path: no fragment, and a folder means its index.html.
-  function pageKey(href) {
-    return String(href).split('#')[0].replace(/^\//, '').replace(/(^|\/)$/, '$1index.html');
   }
 
   // Page data: the listings give every page's metadata and the index adds its text later.
@@ -62,7 +60,7 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
   // Set once the meaning files have loaded and match the index: { embedder, vectors }
   var meaning = null;
 
-  // One row per page, best first. Each row links to the section of its best passage and shows that passage.
+  // One row per page, best first. Each row links to the section of its best passage and shows that passage. meaningOnly marks a row with no keyword match, which only the meaning ranking found.
   function rankPages(analysis, query) {
     var items = [];
     var ranked = meaning ? rankHybrid(ranker, meaning.vectors, analysis, meaning.embedder.embed(query)) : rankTerms(ranker, analysis);
@@ -72,6 +70,7 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
       var text = (row.doc.text || page.description).replace(/\s+/g, ' ');
       items.push({
         page: page,
+        meaningOnly: Boolean(row.ranks) && row.ranks[0] === undefined,
         href: row.doc.anchor ? page.href.split('#')[0] + '#' + row.doc.anchor : page.href,
         text: text,
         ranges: matchRanges(ranker, analysis, text),
@@ -114,7 +113,7 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     var read = page.read ? '<span class="post-read">' + esc(page.read) + '</span>' : '';
     var detail = item.detail ? '<p class="post-desc">' + item.detail + '</p>' : '';
     var title = item.titleRanges ? highlight(page.title, item.titleRanges, 0, page.title.length) : esc(page.title);
-    return '<li class="post-row' + (page.date ? '' : ' is-page') + '">' + date +
+    return '<li class="post-row' + (page.date ? '' : ' is-page') + '" data-page="' + page.order + '">' + date +
       '<div class="post-main"><h3 class="post-title no-anchor"><a href="' + esc(copy.root + (item.href || page.href)) + '" class="title-link no-arrow no-external">' + title + '</a></h3>' + detail + '</div>' +
       category + read + '</li>';
   }
@@ -151,6 +150,11 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     update();
   }
 
+  // The name and the number are two spans, which a screen reader would run together, so each button gets one spoken name
+  function describe(button, name, number, one, many) {
+    button.setAttribute('aria-label', fill(number === 1 ? one : many, { name: name, count: number }));
+  }
+
   var filters = [copy.all].concat(copy.sections).map(function (name) {
     var button = choice(name, function () { setSection(name); });
     button.dataset.name = name;
@@ -166,6 +170,7 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     var button = choice(name, function () { setTopic(name); });
     button.dataset.name = name;
     button.lastChild.textContent = categories[name];
+    describe(button, name, categories[name], copy.topicLabelOne, copy.topicLabel);
     topicList.append(button);
     return button;
   });
@@ -181,6 +186,8 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     var searching = analysis.terms.length > 0;
     var everything = pages.map(function (page) { return { page: page }; });
     var base = searching ? rankPages(analysis, query) : everything;
+    // No keyword matched, so the rows are the pages closest by meaning
+    var nearest = searching && base.length > 0 && base.every(function (item) { return item.meaningOnly; });
 
     // Without a query the filters count every page, so any section can be picked from a topic
     var counts = {};
@@ -202,6 +209,7 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
       var name = button.dataset.name;
       var number = counts[name] || 0;
       button.lastChild.textContent = number;
+      describe(button, name, number, copy.choiceLabelOne, copy.choiceLabel);
       button.disabled = number === 0;
       setPressed(button, name === state.section);
     });
@@ -213,20 +221,38 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
       if (searching) item.detail = snippet(item);
       else if (!latest) item.detail = esc(item.page.description);
     });
-    rows.innerHTML = shown.map(rowHtml).join('');
+    drawRows(shown.map(rowHtml).join(''));
 
     var title = latest ? copy.latest : state.topic || (state.section !== copy.all ? state.section : '');
-    heading.textContent = searching ? '' : title;
+    setText(heading, searching ? '' : title);
     heading.hidden = searching || !title;
-    if (latest) countEl.textContent = '';
-    else if (!total) countEl.textContent = fill(copy.none, { query: query.trim() });
-    else if (limited) countEl.textContent = fill(copy.countBest, { shown: shown.length, count: total });
-    else countEl.textContent = total === 1 ? copy.countOne : fill(copy.count, { count: total });
+    if (latest) setText(countEl, '');
+    else if (!total) setText(countEl, fill(copy.none, { query: query.trim() }));
+    else if (nearest) setText(countEl, fill(total === 1 ? copy.nearestOne : copy.nearest, { query: query.trim(), count: total }));
+    else if (limited) setText(countEl, fill(copy.countBest, { shown: shown.length, count: total }));
+    else setText(countEl, total === 1 ? copy.countOne : fill(copy.count, { count: total }));
 
     // The control shows only when a search has more rows than the best few
     more.hidden = !(searching && total > copy.bestCount);
-    more.textContent = state.expanded ? fill(copy.showBest, { shown: copy.bestCount }) : fill(copy.showAll, { count: total });
+    setText(more, state.expanded ? fill(copy.showBest, { shown: copy.bestCount }) : fill(copy.showAll, { count: total }));
     more.setAttribute('aria-expanded', String(state.expanded));
+  }
+
+  // Writing the same text again would make a screen reader announce it again
+  function setText(element, text) {
+    if (element.textContent !== text) element.textContent = text;
+  }
+
+  // Rows are only redrawn when they changed, and a visitor who has moved into a result keeps their place: focus goes back to the same page's link if it is still listed.
+  var drawn = '';
+  function drawRows(html) {
+    if (html === drawn) return;
+    var row = rows.contains(document.activeElement) ? document.activeElement.closest('li') : null;
+    var page = row ? row.getAttribute('data-page') : null;
+    rows.innerHTML = html;
+    drawn = html;
+    var back = page === null ? null : rows.querySelector('li[data-page="' + page + '"] .post-title a');
+    if (back) back.focus({ preventScroll: true });
   }
 
   function resultLinks() {
@@ -279,7 +305,7 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     } else if (event.key.length === 1 && at !== -1) input.focus();
   });
 
-  // Meaning search. The table, its vocabulary and the passage vectors are fetched in the background the first time the search box is used (focused, or a first keystroke), never before and never on another page. Typing is not held up: keyword search answers until they are ready, and if anything fails or does not match the index, the page stays on keyword search with no message.
+  // Meaning search. The table, its vocabulary and the passage vectors are fetched in the background on the first keystroke, never before (the box is focused on a desktop, which is not use) and never on another page. Typing is not held up: keyword search answers until they are ready, and if anything fails or does not match the index, the page stays on keyword search with no message. A visitor who asked the browser to save data, or is on a 2g connection, stays on keyword search.
   var indexHash = '';
   var used = false;
   var started = false;
@@ -334,12 +360,16 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     }, function () {});
   }
 
-  function firstUse() {
+  function slowConnection() {
+    var connection = navigator.connection;
+    return Boolean(connection && (connection.saveData || connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g'));
+  }
+
+  input.addEventListener('input', function () {
+    if (slowConnection()) return;
     used = true;
     useMeaning();
-  }
-  input.addEventListener('focus', firstUse);
-  input.addEventListener('input', firstUse);
+  });
 
   // Phones keep the keyboard closed until the visitor taps the field.
   if (window.matchMedia('(min-width: 768px) and (pointer: fine)').matches) input.focus();

@@ -22,6 +22,7 @@ async function openPage(blockVectors) {
   await page.route('**/gtag/js**', route => route.fulfill({ status: 200, body: '' }));
   if (blockVectors) await page.route('**/search-vectors.json*', route => route.abort());
   await page.goto(`${base}/search/`);
+  await page.locator('.search-input').pressSequentially('a');
   await page.waitForFunction(blocked => blocked || document.querySelector('.search-mode').textContent.includes('meaning'), blockVectors, { timeout: 20000 });
   if (blockVectors) await page.waitForTimeout(300);
   return page;

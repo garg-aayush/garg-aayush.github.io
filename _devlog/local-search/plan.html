@@ -203,7 +203,7 @@
       </tbody>
     </table>
     </div>
-    From <code>evals/answers/results/summary.md</code>; the other 5 answers to the 15 unanswerable questions from Qwen3.5 and the 12 to 14 from each other model were all unsupported. On the 20 answerable questions where retrieval supplied a supporting quote: faithful 10, 8 (judge B the same), 10 and 13 of 20 for the four models in the order above.</dd>
+    From the journal entry "2026-11-12, stage 3: result and decision" (the numbers come from <code>score.mjs</code> run on <code>labels-a.json</code> and <code>labels-b.json</code>); the other 5 answers to the 15 unanswerable questions from Qwen3.5 and the 12 to 14 from each other model were all unsupported. On the 20 answerable questions where retrieval supplied a supporting quote: faithful 10, 8 (judge B the same), 10 and 13 of 20 for the four models in the order above.</dd>
   <dt>Works</dt><dd>Questions one passage answers in a sentence: all four models gave the 51.7% DeepSeekMath score; for the filtered SFT run Qwen3-0.6B and Qwen3.5 gave "42% to 52%" while LFM2.5 and Granite gave another run's figure. Retrieval supplied the supporting passage for 20 of 30 answerable questions (rank 1 for 15).</dd>
   <dt>Does not</dt><dd>Decline. Of 60 answers to the 15 unanswerable questions, 43 were answers and all unsupported: an outside-knowledge answer (Qwen3-0.6B on how Raft elects a leader), a sentence from an unrelated passage presented as the answer (Qwen3.5 on SwiftUI), the free-plan quota given as the price of the paid plan (Qwen3.5 on Context7). Retrieval missed the supporting quote for 10 of 30 answerable questions: for 9 the right page was in the top four but one passage per page showed another section; for 1 it ranked 7th. The stricter measure (80 percent faithful and at most 10 percent unsupported on the 20 hit questions) is met by none: the best is 65 percent faithful and 25 percent unsupported (Qwen3.5).</dd>
   <dt>Speed and size</dt><dd>WebGPU, one laptop: first token 72 to 328 ms and 85 to 267 tokens per second on a 570 token prompt; the 45 questions took 10 to 40 s in all. Downloads 255 to 570 MB. Single threaded WebAssembly loads only Granite (4.1 tokens per second) and Qwen3-0.6B (2.2); LFM2.5-350M and Qwen3.5 are WebGPU only. Qwen3-0.6B's file is above the 512 MiB Cache Storage limit Chromium enforced here and is not cached by the default caching, so it downloads again on every visit. Phone, other browsers and a real network not measured.</dd>
@@ -404,7 +404,7 @@ flowchart TD
 <p class="note">The potion timings are for any variant of the table. The runtime the transformer models need in a browser (a 26.9 MB WebAssembly file, 4.70 MB with brotli) is from the research file, not measured. The queries were written by a model that had just read every page, so they are probably easier than real ones. The set's README lists six judgments for Aayush to review.</p>
 
 <h3>Answers (stage 3)</h3>
-<p>Search scores cannot judge an answer, so stage 3 had its own set and labels. Run on 2026-11-12; the scores are in the stage 3 block above and the tables in <code>evals/answers/results/summary.md</code>.</p>
+<p>Search scores cannot judge an answer, so stage 3 had its own set and labels. Run on 2026-11-12; the scores are in the stage 3 block above and the tables in the journal entry "2026-11-12, stage 3: result and decision" and from <code>score.mjs</code> with the two labels files, <code>labels-a.json</code> and <code>labels-b.json</code>.</p>
 <ul>
   <li><strong>Questions.</strong> 45 in <code>evals/answers/questions.json</code>: 30 answerable (12 fact, 8 how, 6 broad, 4 person) and 15 the site does not answer (8 near misses, 7 off-topic), written before any model ran and without looking at retrieval.</li>
   <li><strong>Labels.</strong> Faithful (every claim is in the passages), unsupported (a claim is not, even if true) or non-answer (a decline), against the passages the model was given. On the unanswerable half a non-answer is the right result.</li>
@@ -439,7 +439,7 @@ flowchart TD
   <li><strong>Review the six search judgments</strong> listed in <code>evals/README.md</code>; every stage 1 and 2 score depends on them.</li>
 </ol>
 
-<p class="note">Sources: <code>_devlog/local-search/journal.md</code>, <code>evals/README.md</code>, <code>evals/results/</code>, <code>evals/answers/results/summary.md</code>, <code>research/2026-11-11-embedding-models.md</code>, <code>research/2026-11-11-answer-models.md</code>, <code>.github/workflows/quarto-publish.yml</code>, and the model repositories and documentation linked from the research files.</p>
+<p class="note">Sources: <code>_devlog/local-search/journal.md</code>, <code>evals/README.md</code>, <code>evals/results/</code>, <code>evals/answers/results/score.mjs</code> with <code>labels-a.json</code> and <code>labels-b.json</code>, <code>research/2026-11-11-embedding-models.md</code>, <code>research/2026-11-11-answer-models.md</code>, <code>.github/workflows/quarto-publish.yml</code>, and the model repositories and documentation linked from the research files.</p>
 
 </main>
 

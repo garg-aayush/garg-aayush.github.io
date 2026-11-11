@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { pageKey } from '../static/js/search-rank.js';
 
 const projectDir = fileURLToPath(new URL('../', import.meta.url));
 
@@ -243,11 +244,6 @@ export function extractPassages(html, { quarto } = {}) {
   });
 }
 
-// Joins the page's href to a file path: no fragment, and a folder means its index.html.
-export function pageKey(href) {
-  return String(href).split('#')[0].replace(/^\//, '').replace(/(^|\/)$/, '$1index.html');
-}
-
 export function records(html) {
   const found = [];
   for (const match of html.matchAll(/<script type="application\/json" class="search-records">([\s\S]*?)<\/script>/g)) found.push(...JSON.parse(match[1]));
@@ -260,7 +256,7 @@ export function hashPages(pages) {
   return createHash('sha256').update(JSON.stringify(pages)).digest('hex').slice(0, 16);
 }
 
-// complete: a full render. A missing search page or listed page is then an error; a partial render skips what is absent.
+// complete: a full render. A missing search page or listed page is then an error; a partial render skips what is absent. A page whose text cannot be extracted keeps its title and description and is listed in failed, so one malformed page does not fail the render (npm run check:site still fails on it).
 export async function buildSearchIndex(outputDir, { complete = false } = {}) {
   let searchPage;
   try {
@@ -271,6 +267,7 @@ export async function buildSearchIndex(outputDir, { complete = false } = {}) {
   }
   const pages = [];
   const missing = [];
+  const failed = [];
   for (const record of records(searchPage)) {
     const key = pageKey(record.href);
     const page = { h: key, t: plain(record.title), d: plain(record.description), p: [] };
@@ -283,26 +280,31 @@ export async function buildSearchIndex(outputDir, { complete = false } = {}) {
         missing.push(key);
         continue;
       }
-      page.p = extractPassages(html);
+      try {
+        page.p = extractPassages(html);
+      } catch (error) {
+        failed.push({ key, message: error.message });
+      }
     }
     pages.push(page);
   }
   if (complete && missing.length) throw new Error(`Search index: listed pages are missing from the render: ${missing.join(', ')}`);
-  return { v: SCHEMA_VERSION, hash: hashPages(pages), pages, missing };
+  return { v: SCHEMA_VERSION, hash: hashPages(pages), pages, missing, failed };
 }
 
 export async function writeSearchIndex(outputDir, options) {
   const index = await buildSearchIndex(outputDir, options);
   if (!index) return null;
-  const { missing, ...data } = index;
+  const { missing, failed, ...data } = index;
   await writeFile(join(outputDir, 'search-index.json'), JSON.stringify(data));
-  return { ...data, missing };
+  return { ...data, missing, failed };
 }
 
 if (import.meta.main) {
   const outputDir = resolve(projectDir, process.argv[2] ?? process.env.QUARTO_PROJECT_OUTPUT_DIR ?? '_site');
   const started = performance.now();
   const result = await writeSearchIndex(outputDir, { complete: process.env.QUARTO_PROJECT_RENDER_ALL === '1' });
+  for (const { key, message } of result?.failed ?? []) console.error(`Search index: could not read the text of ${key} (${message}); indexed with its title and description only`);
   if (process.env.QUARTO_PROJECT_SCRIPT_QUIET !== '1') {
     if (!result) console.log('Search index: no rendered search page, skipped');
     else {

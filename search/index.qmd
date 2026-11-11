@@ -25,7 +25,7 @@ listing:
     contents:
       - ../posts/20*.qmd
       - ../posts/20*/index.qmd
-  # Every other page, in the order the filters list them. Fields: title, href (from the site root, so projects.html, not ../projects.html), section (one of the names in the script settings below), description. Add match-body: false to match only the title and description of a page whose own text is interface chrome.
+  # Every other page, in the order the filters list them. Fields: title, href (a path from the site root, so projects.html, not ../projects.html and not an external URL), section (one of the names in the script settings below), description. Add match-body: false to match only the title and description of a page whose own text is interface chrome.
   - id: search-pages
     template: ../_templates/search-records.ejs
     sort: false
@@ -123,26 +123,28 @@ listing:
 
 ```{=html}
 <div class="search-app">
-  <div class="search-field">
-    <input class="search-input" type="search" placeholder="Search the site" aria-label="Search the site" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-    <button class="search-clear" type="button" hidden>Clear</button>
+  <div class="search-live" hidden>
+    <div class="search-field">
+      <input class="search-input" type="search" placeholder="Search the site" aria-label="Search the site" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <button class="search-clear" type="button" hidden>Clear</button>
+    </div>
+    <div class="search-bar">
+      <div class="search-filters" role="group" aria-label="Filter by section"></div>
+      <p class="search-mode">Keyword search</p>
+    </div>
+    <div class="search-topics" hidden>
+      <span class="search-topics-label">Topics</span>
+      <div class="search-topic-list" role="group" aria-label="Topics"></div>
+    </div>
+    <div class="search-head">
+      <h2 class="search-heading no-anchor" hidden></h2>
+      <p class="search-count" role="status" aria-live="polite"></p>
+    </div>
+    <ol class="list post-rows search-rows"></ol>
+    <button class="search-more" type="button" aria-expanded="false" hidden></button>
   </div>
-  <div class="search-bar">
-    <div class="search-filters" role="group" aria-label="Filter by section"></div>
-    <p class="search-mode">Keyword search</p>
-  </div>
-  <div class="search-topics" hidden>
-    <span class="search-topics-label">Topics</span>
-    <div class="search-topic-list" role="group" aria-label="Topics"></div>
-  </div>
-  <div class="search-head">
-    <h2 class="search-heading no-anchor" hidden></h2>
-    <p class="search-count" role="status" aria-live="polite"></p>
-  </div>
-  <ol class="list post-rows search-rows"></ol>
-  <button class="search-more" type="button" aria-expanded="false" hidden></button>
   <noscript><p class="search-note">Search needs JavaScript.</p></noscript>
-  <!-- Words and settings for static/js/search.js. root is the path from this page to the site root, put in front of every result link, and indexUrl is the passage index that scripts/build-search-index.mjs writes after every render. {count}, {shown} and {query} are filled in by the script. vectorsUrl is the file of passage vectors that scripts/build-search-vectors.mjs writes next to the index; it names the embedding table and vocabulary in static/search, and the page uses meaning search only when all three match the index. bestCount is how many rows a search lists before the Show all control. all and sections are the filter names, and a page's section must be one of sections. The stop words are left out of a query unless it has nothing else. -->
+  <!-- Words and settings for static/js/search.js. root is the path from this page to the site root, put in front of every result link, and indexUrl is the passage index that scripts/build-search-index.mjs writes after every render. {count}, {shown}, {name} and {query} are filled in by the script. The controls start hidden and the script shows them, so with JavaScript off only the note shows. none is for a keyword-only search with no match; nearest is for a search with no keyword match once the meaning files have loaded, which lists the few pages closest by meaning. The choice labels are the spoken names of the filter and topic buttons. vectorsUrl is the file of passage vectors that scripts/build-search-vectors.mjs writes next to the index; it names the embedding table and vocabulary in static/search, and the page uses meaning search only when all three match the index. bestCount is how many rows a search lists before the Show all control. all and sections are the filter names, and a page's section must be one of sections. The stop words are left out of a query unless it has nothing else. -->
   <script type="application/json" class="search-copy">
   {
     "root": "../",
@@ -159,6 +161,12 @@ listing:
     "showAll": "Show all {count} results",
     "showBest": "Show the best {shown}",
     "none": "No results for \"{query}\". Try a shorter phrase or pick a topic.",
+    "nearest": "No exact matches for \"{query}\". These {count} pages are the closest by meaning.",
+    "nearestOne": "No exact matches for \"{query}\". This page is the closest by meaning.",
+    "choiceLabel": "{name}, {count} results",
+    "choiceLabelOne": "{name}, 1 result",
+    "topicLabel": "{name}, {count} posts",
+    "topicLabelOne": "{name}, 1 post",
     "modeHybrid": "Keyword and meaning search",
     "modeFallback": "Titles and descriptions only",
     "stopWords": ["a", "an", "and", "are", "as", "at", "be", "by", "do", "does", "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where", "which", "who", "why", "with", "you", "your"]

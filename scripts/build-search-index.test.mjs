@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
-import { buildSearchIndex, decodeEntities, extractPassages, hashPages, mathToText, pageKey, parseHtml, writeSearchIndex, SCHEMA_VERSION } from './build-search-index.mjs';
+import { buildSearchIndex, decodeEntities, extractPassages, hashPages, mathToText, parseHtml, writeSearchIndex, SCHEMA_VERSION } from './build-search-index.mjs';
 
 const quarto = body => `<html><body><nav id="TOC">Page contents</nav><main class="content" id="quarto-document-content">
 <header id="title-block-header" class="quarto-title-block"><h1 class="title">Post title</h1><div class="description">Header words</div><p class="article-byline">Aayush Garg 8 min read</p></header>
@@ -93,8 +93,6 @@ test('parses void elements, raw text, entities and implied end tags', () => {
   assert.equal(items.length, 2);
   assert.equal(decodeEntities('Two &amp; &#x41; &larr; &unknown;'), 'Two & A ← &unknown;');
   assert.equal(tree.children.length, 3);
-  assert.equal(pageKey('tools/'), 'tools/index.html');
-  assert.equal(pageKey('/posts/a/index.html#x'), 'posts/a/index.html');
 });
 
 async function site(t, files) {
@@ -149,4 +147,27 @@ test('writes search-index.json and honors the Quarto output directory from the C
   const written = JSON.parse(await readFile(join(dir, 'search-index.json'), 'utf8'));
   assert.equal(written.pages[0].p[0][2], 'Alpha body.');
   assert.equal(written.missing, undefined);
+});
+
+// Nested far deeper than any real page: the text extraction overflows the stack, which is the kind of failure one malformed page can cause
+const malformed = `<main id="quarto-document-content">${'<div>'.repeat(30000)}Lost words</main>`;
+
+test('a page whose text cannot be extracted keeps its title and description, is reported, and does not fail the render', async t => {
+  const dir = await site(t, { 'search/index.html': records(listing.slice(0, 1)), 'a.html': malformed });
+  const index = await buildSearchIndex(dir, { complete: true });
+  assert.deepEqual(index.pages, [{ h: 'a.html', t: 'Alpha & Omega', d: 'About alpha', p: [] }]);
+  assert.equal(index.failed.length, 1);
+  assert.equal(index.failed[0].key, 'a.html');
+});
+
+test('the build step warns on stderr about a page it could not read and still writes the index', async t => {
+  const dir = await site(t, { 'search/index.html': records(listing.slice(0, 1)), 'a.html': malformed });
+  const result = spawnSync(process.execPath, [fileURLToPath(new URL('./build-search-index.mjs', import.meta.url))], {
+    cwd: tmpdir(),
+    env: { ...process.env, QUARTO_PROJECT_OUTPUT_DIR: dir, QUARTO_PROJECT_RENDER_ALL: '1' },
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stderr, /Search index: could not read the text of a\.html .*title and description only/);
+  assert.equal(JSON.parse(await readFile(join(dir, 'search-index.json'), 'utf8')).pages[0].p.length, 0);
 });

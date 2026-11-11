@@ -1,4 +1,4 @@
-/* Owns the search page (search.qmd, body classes pg search-page). The page shell comes from pages.css and the result rows are the post rows of home.css; this file adds the field, the filters and the snippet. */
+/* Owns the search page (search/index.qmd, body classes pg search-page). The page shell comes from pages.css and the result rows are the post rows of home.css; this file adds the field, the filters and the snippet. */
 
 .search-page .quarto-title-block {
   margin-bottom: var(--space-16);
@@ -11,11 +11,11 @@
 }
 
 /* The field: one line, the clear control inside its right edge */
-.search-field {
+.search-page .search-field {
   position: relative;
 }
 
-.search-input {
+.search-page .search-input {
   display: block;
   width: 100%;
   min-height: var(--touch-target);
@@ -32,22 +32,22 @@
   appearance: none;
 }
 
-.search-input::placeholder {
+.search-page .search-input::placeholder {
   color: var(--text-muted);
   opacity: 1;
 }
 
-.search-input:focus {
+.search-page .search-input:focus {
   border-color: var(--accent);
 }
 
 /* The page has its own clear control */
-.search-input::-webkit-search-cancel-button {
+.search-page .search-input::-webkit-search-cancel-button {
   -webkit-appearance: none;
   display: none;
 }
 
-.search-clear {
+.search-page .search-clear {
   position: absolute;
   top: 0;
   right: 0;
@@ -63,12 +63,12 @@
   cursor: pointer;
 }
 
-.search-clear:hover {
+.search-page .search-clear:hover {
   color: var(--text-primary);
 }
 
 /* The filters on the left, the status on the right; on a phone the status wraps below */
-.search-bar {
+.search-page .search-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -77,30 +77,30 @@
   margin-top: var(--space-8);
 }
 
-.search-filters,
-.search-topic-list {
+.search-page .search-filters,
+.search-page .search-topic-list {
   display: flex;
   flex-wrap: wrap;
 }
 
 /* The first filter, text and underline, starts at the column edge */
-.search-filters .search-choice:first-child {
+.search-page .search-filters .search-choice:first-child {
   padding-left: 0;
 }
 
 /* The topics follow their label, so the first button's padding is pulled back against it */
-.search-topic-list {
+.search-page .search-topic-list {
   margin-left: calc(-1 * var(--space-8));
 }
 
-.search-mode {
+.search-page .search-mode {
   margin: 0;
   font-size: var(--fs-label);
   color: var(--text-muted);
 }
 
 /* Section filters and topics: plain text buttons, the selected one in the heading color with an Accent underline like the navbar */
-.search-choice {
+.search-page .search-choice {
   display: inline-flex;
   align-items: baseline;
   gap: var(--space-4);
@@ -116,50 +116,50 @@
   cursor: pointer;
 }
 
-.search-choice:hover:not(:disabled) {
+.search-page .search-choice:hover:not(:disabled) {
   color: var(--text-primary);
 }
 
-.search-choice.is-active {
+.search-page .search-choice.is-active {
   border-bottom-color: var(--accent);
   color: var(--text-primary);
 }
 
-.search-choice:disabled {
+.search-page .search-choice:disabled {
   color: var(--text-dim);
   cursor: default;
 }
 
-.search-choice-count {
+.search-page .search-choice-count {
   font-size: var(--fs-label);
   font-variant-numeric: tabular-nums;
 }
 
-.search-topics {
+.search-page .search-topics {
   display: flex;
   align-items: baseline;
   gap: var(--space-12);
 }
 
-.search-topics-label {
+.search-page .search-topics-label {
   flex: none;
   font-size: var(--fs-label);
   color: var(--text-muted);
 }
 
-.search-topic-list {
+.search-page .search-topic-list {
   flex: 1;
   min-width: 0;
 }
 
 /* A second line of choices, a little shorter than the filters */
-.search-topic-list .search-choice {
+.search-page .search-topic-list .search-choice {
   min-height: calc(var(--touch-target) - var(--space-8));
   line-height: calc(var(--touch-target) - var(--space-8));
 }
 
 /* The heading and the count share a line; with the heading hidden the count stands alone at the left */
-.search-head {
+.search-page .search-head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -167,25 +167,25 @@
   margin: var(--space-16) 0 var(--space-12);
 }
 
-.search-heading {
+.search-page .search-heading {
   margin: 0;
   font-size: var(--fs-item);
   line-height: 1.35;
 }
 
-.search-count {
+.search-page .search-count {
   margin: 0;
   font-size: var(--fs-label);
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
 }
 
-.search-count:empty {
+.search-page .search-count:empty {
   display: none;
 }
 
 /* Under a long result list: a text button, in the filters' type */
-.search-more {
+.search-page .search-more {
   display: block;
   min-height: var(--touch-target);
   margin-top: var(--space-8);
@@ -200,15 +200,15 @@
   cursor: pointer;
 }
 
-.search-more:hover {
+.search-page .search-more:hover {
   color: var(--text-primary);
 }
 
-.search-more[hidden] {
+.search-page .search-more[hidden] {
   display: none;
 }
 
-.search-note {
+.search-page .search-note {
   margin: var(--space-24) 0 0;
   color: var(--text-muted);
 }
@@ -228,10 +228,8 @@
       "date date"
       "main main";
   }
-}
 
-@media (max-width: 600px) {
-  .search-mode {
+  .search-page .search-mode {
     margin-bottom: var(--space-8);
   }
 }

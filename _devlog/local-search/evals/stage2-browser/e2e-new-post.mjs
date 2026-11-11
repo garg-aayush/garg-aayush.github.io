@@ -41,6 +41,7 @@ async function search(query, { keywordOnly = false } = {}) {
   await page.route('**/gtag/js**', route => route.fulfill({ status: 200, body: '' }));
   if (keywordOnly) await page.route('**/search-vectors.json*', route => route.abort());
   await page.goto(`http://127.0.0.1:${port}/search/`);
+  await page.locator('.search-input').pressSequentially('a');
   await page.waitForFunction(blocked => blocked || document.querySelector('.search-mode').textContent.includes('meaning'), keywordOnly, { timeout: 20000 });
   await page.locator('.search-input').fill(query);
   const more = page.locator('.search-more');
