@@ -1,0 +1,442 @@
+{
+ "model": "qwen35",
+ "label": "Qwen3.5-0.8B (text)",
+ "repo": "onnx-community/Qwen3.5-0.8B-Text-ONNX",
+ "revision": "25cdf33f386b487a25f3d743e86442517bdb77ff",
+ "dtype": "q4f16",
+ "backend": "webgpu",
+ "mode": "headless",
+ "reps": 3,
+ "date": "2026-11-11T18:44:59.545Z",
+ "prompt": {
+  "file": "prompt.mjs",
+  "sha": "c61a73325154",
+  "system": "You answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.",
+  "refusal": "This site does not seem to cover that."
+ },
+ "speedPrompt": {
+  "question": "Describe everything these passages say about the weather station.",
+  "settings": {
+   "chatTemplateArgs": {
+    "enable_thinking": false
+   },
+   "doSample": false,
+   "maxNewTokens": 60,
+   "maxSentences": 0,
+   "repetitionPenalty": 1,
+   "minNewTokens": 60
+  }
+ },
+ "cold": {
+  "label": "qwen35/webgpu/cold",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": true,
+   "wallMs": 1614,
+   "tokenizerMs": 249,
+   "lastFileDoneMs": 1042,
+   "sessionInitMs": 570,
+   "bytesModelFiles": 489167661,
+   "bytesRuntime": 26914834,
+   "files": {
+    "tokenizer.json": {
+     "loaded": 19226111,
+     "total": 19226111
+    },
+    "tokenizer_config.json": {
+     "loaded": 10027,
+     "total": 10027
+    },
+    "config.json": {
+     "loaded": 1989,
+     "total": 1989
+    },
+    "onnx/model_q4f16.onnx": {
+     "loaded": 597442,
+     "total": 597442
+    },
+    "onnx/model_q4f16.onnx_data": {
+     "loaded": 469331968,
+     "total": 469331968
+    },
+    "generation_config.json": {
+     "loaded": 120,
+     "total": 120
+    }
+   },
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 3518152704,
+   "byType": {
+    "browser": 237699072,
+    "gpu-process": 524533760,
+    "utility": 186695680,
+    "renderer": 2569224192
+   }
+  },
+  "firstGeneration": {
+   "promptTokens": 578,
+   "tokens": 60,
+   "ms": 1053,
+   "ttftMs": 235,
+   "decodeTokensPerSecond": 72.9
+  },
+  "speedRuns": [
+   {
+    "promptTokens": 578,
+    "tokens": 60,
+    "ms": 874,
+    "ttftMs": 181,
+    "decodeTokensPerSecond": 85.2,
+    "raw": "The weather station is a small wooden structure with a magnetometer, an anemometer, and a temperature/humidity sensor housed in a plastic box with a solar panel and cable glands. It is powered by a lithium battery that lasts weeks without draining, and the system is designed to sleep for most of"
+   },
+   {
+    "promptTokens": 578,
+    "tokens": 60,
+    "ms": 787,
+    "ttftMs": 180,
+    "decodeTokensPerSecond": 97.3,
+    "raw": "The weather station is a small wooden structure with a magnetometer, an anemometer, and a temperature/humidity sensor housed in a plastic box with a solar panel and cable glands. It is powered by a lithium battery that lasts weeks without draining, and the system is designed to sleep for most of"
+   },
+   {
+    "promptTokens": 578,
+    "tokens": 60,
+    "ms": 899,
+    "ttftMs": 181,
+    "decodeTokensPerSecond": 82.3,
+    "raw": "The weather station is a small wooden structure with a magnetometer, an anemometer, and a temperature/humidity sensor housed in a plastic box with a solar panel and cable glands. It is powered by a lithium battery that lasts weeks without draining, and the system is designed to sleep for most of"
+   }
+  ],
+  "speed": {
+   "promptTokens": 578,
+   "tokens": 60,
+   "ttftMsMedian": 181,
+   "decodeTokensPerSecondMedian": 85.2,
+   "prefillTokensPerSecondMedian": 3193
+  },
+  "memoryAfterGenerate": {
+   "total": 2710290432,
+   "byType": {
+    "browser": 232243200,
+    "gpu-process": 518766592,
+    "utility": 186417152,
+    "renderer": 1772863488
+   }
+  },
+  "sanity": [
+   {
+    "id": "sanity-answerable",
+    "question": "How often does the weather station save a reading?",
+    "answer": "The weather station saves a reading every ten minutes.",
+    "raw": "The weather station saves a reading every ten minutes.\n",
+    "tokens": 13,
+    "stop": "eos",
+    "ms": 313,
+    "ttftMs": 182,
+    "promptTokens": 578,
+    "prompt": "<|im_start|>system\nYou answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.<|im_end|>\n<|im_start|>user\nPassages:\n\n[1] Backyard weather station: overview\nThe backyard weather station sits on a fence post behind the shed. It measures air temperature, humidity, air pressure and wind speed. A small board wakes up every ten minutes, takes one reading of each sensor, writes it as a line of text to a memory card and goes back to sleep. Once an hour it also joins the home wifi and uploads the last six lines to a personal server, so the chart on the page is never more than an hour old. The first version saved a reading every minute, but the memory card filled up in a few weeks, so the interval was changed.\n\n[2] Backyard weather station: the mast\nThe wind sensor is a three cup anemometer fixed to the top of a two metre wooden mast, well above the fence so that the shed does not shelter it. The cups spin a small magnet past a switch, and the board counts the pulses over a few seconds to get a speed. The mast is held by two guy wires and has been through two winter storms without moving. The temperature and humidity sensor lives in a white stack of plastic plates that shades it from direct sun and still lets the air through.\n\n[3] Sourdough diary: feeding the starter\nThe sourdough starter lives in a glass jar on the kitchen shelf and is fed once a day with equal weights of flour and water. Before each feeding most of it is thrown away, so the jar never holds more than about a hundred grams. A rubber band around the jar marks the level, which makes it easy to see how far the starter rose overnight. In winter it rises slowly and gets a warmer spot near the oven; in summer it can double within four hours and is kept in the fridge between bakes.\n\n[4] Station power and enclosure\nThe electronics sit in a grey plastic box with a gasket lid, screwed to the post under a small roof of corrugated plastic. A solar panel the size of a paperback charges a single lithium battery through a charge controller. Because the board sleeps almost all the time, the battery lasted through a whole week of cloud in November without dropping below half. Cable glands keep rain out where the sensor wires enter the box, and a packet of silica gel inside the lid is replaced each spring.\n\nQuestion: How often does the weather station save a reading?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+   },
+   {
+    "id": "sanity-partial",
+    "question": "Which sensor measures the wind speed and how accurate is it?",
+    "answer": "The wind sensor is a three-cup anemometer mounted on a wooden mast that spins past a switch to count pulses, making it accurate for measuring wind speed.",
+    "raw": "The wind sensor is a three-cup anemometer mounted on a wooden mast that spins past a switch to count pulses, making it accurate for measuring wind speed.\n",
+    "tokens": 36,
+    "stop": "eos",
+    "ms": 596,
+    "ttftMs": 181,
+    "promptTokens": 580
+   },
+   {
+    "id": "sanity-unanswerable",
+    "question": "Which programming language is the station's firmware written in?",
+    "answer": "The text does not mention the programming language used for the firmware.",
+    "raw": "The text does not mention the programming language used for the firmware.\n",
+    "tokens": 16,
+    "stop": "eos",
+    "ms": 361,
+    "ttftMs": 182,
+    "promptTokens": 579
+   }
+  ],
+  "peakMemory": {
+   "bytes": 2887991296,
+   "byProcessType": {
+    "browser": 236126208,
+    "gpu-process": 376684544,
+    "utility": 186466304,
+    "renderer": 2088714240
+   }
+  },
+  "serverTotals": {
+   "model": 489167661,
+   "runtime": 27502751,
+   "requests": 16
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ "environment": {
+  "node": "v24.22.0",
+  "transformersJs": "4.3.2",
+  "onnxruntimeWeb": "1.31.0-dev.20260914-8d85527a0",
+  "playwrightCore": "1.64.1",
+  "machine": {
+   "os": "darwin",
+   "arch": "arm64",
+   "cpu": "Apple M5 Pro",
+   "cores": 15,
+   "memoryGB": 24
+  },
+  "browser": {
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "shaderF16": true,
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  }
+ },
+ "cache": {
+  "label": "qwen35/webgpu/from-cache",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": true,
+   "wallMs": 869,
+   "tokenizerMs": 207,
+   "lastFileDoneMs": 352,
+   "sessionInitMs": 516,
+   "bytesModelFiles": 0,
+   "bytesRuntime": 0,
+   "files": {
+    "tokenizer.json": {
+     "loaded": 19226111,
+     "total": 19226111
+    },
+    "tokenizer_config.json": {
+     "loaded": 10027,
+     "total": 10027
+    },
+    "config.json": {
+     "loaded": 1989,
+     "total": 1989
+    },
+    "onnx/model_q4f16.onnx": {
+     "loaded": 597442,
+     "total": 597442
+    },
+    "onnx/model_q4f16.onnx_data": {
+     "loaded": 469331968,
+     "total": 469331968
+    },
+    "generation_config.json": {
+     "loaded": 120,
+     "total": 120
+    }
+   },
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 3645997056,
+   "byType": {
+    "browser": 232767488,
+    "gpu-process": 713965568,
+    "utility": 189448192,
+    "renderer": 2509815808
+   }
+  },
+  "firstGeneration": {
+   "promptTokens": 578,
+   "tokens": 60,
+   "ms": 1000,
+   "ttftMs": 219,
+   "decodeTokensPerSecond": 76.4
+  },
+  "speedRuns": [
+   {
+    "promptTokens": 578,
+    "tokens": 60,
+    "ms": 842,
+    "ttftMs": 179,
+    "decodeTokensPerSecond": 89.2,
+    "raw": "The weather station is a small wooden structure with a magnetometer, an anemometer, and a temperature/humidity sensor housed in a plastic box with a solar panel and cable glands. It is powered by a lithium battery that lasts weeks without draining, and the system is designed to sleep for most of"
+   },
+   {
+    "promptTokens": 578,
+    "tokens": 60,
+    "ms": 870,
+    "ttftMs": 180,
+    "decodeTokensPerSecond": 85.8,
+    "raw": "The weather station is a small wooden structure with a magnetometer, an anemometer, and a temperature/humidity sensor housed in a plastic box with a solar panel and cable glands. It is powered by a lithium battery that lasts weeks without draining, and the system is designed to sleep for most of"
+   },
+   {
+    "promptTokens": 578,
+    "tokens": 60,
+    "ms": 844,
+    "ttftMs": 180,
+    "decodeTokensPerSecond": 89,
+    "raw": "The weather station is a small wooden structure with a magnetometer, an anemometer, and a temperature/humidity sensor housed in a plastic box with a solar panel and cable glands. It is powered by a lithium battery that lasts weeks without draining, and the system is designed to sleep for most of"
+   }
+  ],
+  "speed": {
+   "promptTokens": 578,
+   "tokens": 60,
+   "ttftMsMedian": 180,
+   "decodeTokensPerSecondMedian": 89,
+   "prefillTokensPerSecondMedian": 3211
+  },
+  "memoryAfterGenerate": {
+   "total": 3540156416,
+   "byType": {
+    "browser": 234668032,
+    "gpu-process": 684703744,
+    "utility": 189759488,
+    "renderer": 2431025152
+   }
+  },
+  "peakMemory": {
+   "bytes": 3694657536,
+   "byProcessType": {
+    "browser": 232685568,
+    "gpu-process": 571260928,
+    "utility": 189448192,
+    "renderer": 2701262848
+   }
+  },
+  "serverTotals": {
+   "model": 0,
+   "runtime": 587917,
+   "requests": 4
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ }
+}

@@ -1,0 +1,173 @@
+{
+ "model": "lfm",
+ "label": "LFM2.5-350M",
+ "repo": "onnx-community/LFM2.5-350M-ONNX",
+ "revision": "7dd4999565b0342c381ba90a3d8fc467d6df19c4",
+ "dtype": "q4f16",
+ "backend": "wasm",
+ "mode": "headless",
+ "reps": 1,
+ "date": "2026-11-11T18:45:28.811Z",
+ "prompt": {
+  "file": "prompt.mjs",
+  "sha": "c61a73325154",
+  "system": "You answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.",
+  "refusal": "This site does not seem to cover that."
+ },
+ "speedPrompt": {
+  "question": "Describe everything these passages say about the weather station.",
+  "settings": {
+   "chatTemplateArgs": {},
+   "doSample": false,
+   "maxNewTokens": 60,
+   "maxSentences": 0,
+   "repetitionPenalty": 1,
+   "minNewTokens": 60
+  }
+ },
+ "cold": {
+  "label": "lfm/wasm/cold",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": false,
+   "error": {
+    "message": "Can't create a session. ERROR_CODE: 9, ERROR_MESSAGE: Failed to find kernel for com.microsoft.GatherBlockQuantized(1) (node:'/model/embed_tokens/Gather_Quant' ep:'CPUExecutionProvider'). Kernel not found",
+    "stack": "Error: Can't create a session. ERROR_CODE: 9, ERROR_MESSAGE: Failed to find kernel for com.microsoft.GatherBlockQuantized(1) (node:'/model/embed_tokens/Gather_Quant' ep:'CPUExecutionProvider'). Kernel not found\n    at ze (http://localhost:37573/runtime/transformers.min.js:15:31333)\n    at pm (http://localhost:37573/runtime/transformers.min.js:16:22185)\n    at async uS.loadModel (http://localhost:37573/runtime/transformers.min.js:16:35074)\n    at async Jd.createInferenceSessionHandler (http://localhost:37573/runtime/transformers.min.js:16:36795)\n    at async RT.create (http://localhost:37573/runtime/transformers.min.js:11:49080)\n    at async iu (http://localhost:37573/runtime/transformers.min.js:16:53598)\n    at async http://localhost:37573/runtime/transformers.min.js:40:18082\n    at async Promise.all (index 0)\n    at async cM (http://localhost:37573/runtime/transformers.min.js:40:17939)\n    at async Promise.all (index 0)"
+   },
+   "wallMs": 728,
+   "tokenizerMs": null,
+   "lastFileDoneMs": null,
+   "sessionInitMs": null,
+   "bytesModelFiles": 258451788,
+   "bytesRuntime": 26914834,
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 1846755328,
+   "byType": {
+    "browser": 237092864,
+    "gpu-process": 152272896,
+    "utility": 186662912,
+    "renderer": 1270726656
+   }
+  },
+  "peakMemory": {
+   "bytes": 1552105472,
+   "byProcessType": {
+    "browser": 241156096,
+    "gpu-process": 152272896,
+    "utility": 186302464,
+    "renderer": 972374016
+   }
+  },
+  "serverTotals": {
+   "model": 258451788,
+   "runtime": 27502751,
+   "requests": 16
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ "environment": {
+  "node": "v24.22.0",
+  "transformersJs": "4.3.2",
+  "onnxruntimeWeb": "1.31.0-dev.20260914-8d85527a0",
+  "playwrightCore": "1.64.1",
+  "machine": {
+   "os": "darwin",
+   "arch": "arm64",
+   "cpu": "Apple M5 Pro",
+   "cores": 15,
+   "memoryGB": 24
+  },
+  "browser": {
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "shaderF16": true,
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  }
+ }
+}

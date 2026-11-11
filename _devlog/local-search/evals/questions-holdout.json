@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "written": "2026-11-11",
+  "grades": { "2": "answers the query", "1": "also useful" },
+  "questions": [
+    {
+      "id": "h-lookup-01",
+      "query": "katex",
+      "type": "lookup",
+      "relevant": [
+        { "href": "tools/latex-preview.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 },
+        { "href": "tools/markdown-viewer.html", "grade": 1 }
+      ],
+      "why": "The LaTeX Math Preview description says 'rendered instantly with KaTeX'. The catalog repeats that line. The Markdown Viewer loads KaTeX for its math support, but only in a script tag; its visible text says 'LaTeX math'."
+    },
+    {
+      "id": "h-lookup-02",
+      "query": "mauna loa co2",
+      "type": "lookup",
+      "relevant": [
+        { "href": "posts/2026-07-15-kalman-filters-time-series/index.html", "grade": 2, "section": "example-co2-decomposition" }
+      ],
+      "why": "Example 1 of the Kalman post decomposes the Mauna Loa CO2 series into trend, seasonal and residual. No other page names Mauna Loa."
+    },
+    {
+      "id": "h-topic-01",
+      "query": "gpu memory hierarchy",
+      "type": "topic",
+      "relevant": [
+        { "href": "posts/2026-03-27-flash-attention/index.html", "grade": 2, "section": "the-gpu-memory-hierarchy" }
+      ],
+      "why": "The FlashAttention post opens with a section on HBM vs on-chip SRAM, their sizes and bandwidth. The GRPO post's 'GPU Memory Optimization' is about fitting a model in 24 GB, not the hierarchy, so it is not listed."
+    },
+    {
+      "id": "h-topic-02",
+      "query": "prompt masking",
+      "type": "topic",
+      "relevant": [
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "grade": 2, "section": "the-prompt-masking-implementation-problem" },
+        { "href": "posts/2025-12-30-deriving-dpo-loss.html", "grade": 1 }
+      ],
+      "why": "The SFT post has a section on masking prompt tokens (labels = -100) and the BPE boundary bug it caused. The DPO post's log-probability steps mention summing 'with masking' over response tokens only."
+    },
+    {
+      "id": "h-question-01",
+      "query": "what learning rate works for expert iteration",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2026-01-23-expert-iteration/index.html", "grade": 2, "section": "finding-the-right-learning-rate" }
+      ],
+      "why": "The section compares constant 7e-5 (overfits) and 1e-5 (too slow) and settles on an adaptive learning rate and batch size keyed to the number of filtered examples. The GRPO post has a learning rate sweep but for GRPO, so it is not listed."
+    },
+    {
+      "id": "h-question-02",
+      "query": "how do i add web search to a local model",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2026-04-03-self-hosted-gemma4-chat/index.html", "grade": 2, "section": "create-the-mcp-config" }
+      ],
+      "why": "The Gemma 4 chat post sets up web search through an Exa MCP server in llama.cpp's web UI, with a system prompt so the model actually uses it. No other page covers this."
+    },
+    {
+      "id": "h-question-03",
+      "query": "why did he move the weather job off github actions",
+      "type": "question",
+      "relevant": [
+        { "href": "posts/2026-04-29-india-weather-with-claude/index.html", "grade": 2, "section": "stage-3-moving-the-cron-from-github-actions-to-cloudflare" }
+      ],
+      "why": "Stage 3 of the weather post: the free-tier GitHub Actions cron fired 40 minutes to an hour late, so the job moved to Cloudflare Workers. The weather page itself does not explain this."
+    },
+    {
+      "id": "h-paraphrase-01",
+      "query": "tiny chatgpt clone step by step",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "posts/2025-09-08-building-gpt-from-scratch.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "The post builds a small GPT from a bigram model upward, one commit per component, following Karpathy's video. No query word appears on the post: 'tiny', 'chatgpt', 'clone' and 'step' are all absent. Work lists the character-level GPT in building-from-scratch (shares only 'step')."
+    },
+    {
+      "id": "h-paraphrase-02",
+      "query": "is delhi smoggy today",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "india-weather.html", "grade": 2 },
+        { "href": "posts/2026-04-29-india-weather-with-claude/index.html", "grade": 1 }
+      ],
+      "why": "The weather page shows live AQI per metro with a 'Worst air' ranking, and Delhi is one of its cities (from its data files, not the .qmd). No query word is in india-weather.qmd or the search entry; the page body is also excluded from matching. The weather post explains the AQI dashboard but shares none of the words either."
+    },
+    {
+      "id": "h-paraphrase-03",
+      "query": "research on imaging rocks underground with sound",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "publications.html", "grade": 2 },
+        { "href": "about.html", "grade": 1 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "Publications lists the seismic papers (wavefield inversion, reservoir elastic parameters, subsurface data). None of the query words is in publications.qmd ('research' is only in its search entry description). About shares 'research' and 'imaging' (Shell seismic research, subsurface imaging); Work shares 'research' (spatial-alias-removal on seismic data)."
+    },
+    {
+      "id": "h-paraphrase-04",
+      "query": "spot what changed between two drafts",
+      "type": "paraphrase",
+      "relevant": [
+        { "href": "tools/diff-viewer.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 }
+      ],
+      "why": "The Diff Viewer compares two texts with line and word highlighting. Its page source shares none of the query words; its search entry description shares 'two', and the catalog shares 'two' and 'between'. 'Diff' and 'compare' are not in the query."
+    },
+    {
+      "id": "h-partial-01",
+      "query": "speculative decod",
+      "type": "partial",
+      "relevant": [
+        { "href": "projects.html", "grade": 2 }
+      ],
+      "why": "Half-typed 'decoding'. Work lists 'LLM inference with KV cache and speculative decoding' under building-from-scratch. No post covers it."
+    },
+    {
+      "id": "h-partial-02",
+      "query": "base 64",
+      "type": "partial",
+      "relevant": [
+        { "href": "tools/base64.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 },
+        { "href": "posts/2026-03-20-browser-tools/index.html", "grade": 1 }
+      ],
+      "why": "Split spelling of 'Base64'. 'base' prefixes 'base64' but '64' never appears as its own word. The browser tools post says why the Base64 tool is used with image APIs, so it is grade 1 beside the catalog."
+    },
+    {
+      "id": "h-tool-01",
+      "query": "shrink an image to half its size",
+      "type": "tool",
+      "relevant": [
+        { "href": "tools/image-resizer.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 }
+      ],
+      "why": "The Image Resizer scales by percentage (25, 50, 75 percent presets) or dimensions. Shared words: 'image' and 'size'; 'shrink' and 'half' are absent."
+    },
+    {
+      "id": "h-tool-02",
+      "query": "turn a png into webp",
+      "type": "tool",
+      "relevant": [
+        { "href": "tools/image-converter.html", "grade": 2 },
+        { "href": "tools/index.html", "grade": 1 }
+      ],
+      "why": "The Image Format Converter converts between PNG, JPEG and WebP. The SVG Viewer also exports WebP but only from SVG, and the Claude skills post's image skill is not a browser tool, so neither is listed."
+    },
+    {
+      "id": "h-person-01",
+      "query": "did he do freelance work",
+      "type": "person",
+      "relevant": [
+        { "href": "about.html", "grade": 2 }
+      ],
+      "why": "About has a 'Contract work' section: part-time consulting for Renderwolf and SixSense. 'Freelance' is not on the site; only 'work' matches."
+    },
+    {
+      "id": "h-person-02",
+      "query": "list of his papers",
+      "type": "person",
+      "relevant": [
+        { "href": "publications.html", "grade": 2 },
+        { "href": "projects.html", "grade": 1 }
+      ],
+      "why": "Publications lists his journal papers and conference talks by year. Work ends with a Publications section that links there."
+    },
+    {
+      "id": "h-multi-01",
+      "query": "tailscale setup",
+      "type": "multi",
+      "relevant": [
+        { "href": "posts/2026-03-29-local-llm-opencode/index.html", "grade": 2, "section": "step-2-install-tailscale-on-both-machines" },
+        { "href": "posts/2026-04-03-self-hosted-gemma4-chat/index.html", "grade": 2 }
+      ],
+      "why": "Both posts install Tailscale to reach a home GPU box: the OpenCode post step by step on the 4090 and a MacBook, the Gemma post for access from any device. The remote GPU server post uses ngrok instead, so it is not listed."
+    },
+    {
+      "id": "h-none-01",
+      "query": "fine-tuning whisper",
+      "type": "none",
+      "relevant": [],
+      "why": "'Whisper' appears nowhere. Near misses: the JSALT and spectral clustering pages cover ASR and diarization with Kaldi and ESPNet, and several posts fine-tune LLMs, but nothing fine-tunes a speech model."
+    },
+    {
+      "id": "h-none-02",
+      "query": "vision transformer from scratch",
+      "type": "none",
+      "relevant": [],
+      "why": "No page mentions ViT or 'vision transformer'. Near misses: the GPT from scratch post builds a text transformer, and About mentions transformer backbones for chip defect classification without explaining them."
+    }
+  ]
+}

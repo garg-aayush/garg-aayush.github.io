@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "written": "2026-11-12",
+  "labels": {
+    "faithful": "every claim is supported by the retrieved passages and the answer addresses the question",
+    "unsupported": "at least one claim is not in the retrieved passages, including true facts from the model's own knowledge",
+    "non-answer": "declines, or says the passages do not cover the question"
+  },
+  "answerable": [
+    {
+      "id": "fact-01",
+      "question": "How much does ngrok cost if I want an SSH port that stays the same after my GPU server reboots?",
+      "kind": "fact",
+      "reference": "A paid ngrok personal account at $10 a month, which lets you reserve a TCP endpoint. On the free account ngrok gives a new port every time the workstation boots.",
+      "support": [
+        { "href": "posts/2024-06-30-remote-gpu-server.html", "section": "setting-up-external-remote-access", "quote": "For a dedicated TCP endpoint port that doesn't change on reboot, you need a paid ngrok personal account (`$10/month`)." },
+        { "href": "posts/2024-06-30-remote-gpu-server.html", "section": "setting-up-external-remote-access", "quote": "With a free account, ngrok assigns a new port (YYYY) each time your workstation boots." }
+      ]
+    },
+    {
+      "id": "fact-02",
+      "question": "What hyperparameters did he use to fine-tune Llama-3-8B on Predibase?",
+      "kind": "fact",
+      "reference": "He fine-tuned the base llama-3-8b with LoRA for 3 epochs, rank 16 and a learning rate of 2e-4.",
+      "support": [
+        { "href": "posts/2024-07-15-finetune-llama3-8B-predibase.html", "section": "setup-and-finetune", "quote": "I fine-tune the base `llama-3-8b` model with the following parameters: `epochs=3`, `rank=16`, and `learning_rate=2e-4`." }
+      ]
+    },
+    {
+      "id": "fact-03",
+      "question": "How much did filtering out wrong reasoning traces help his SFT run on Qwen2.5-Math?",
+      "kind": "fact",
+      "reference": "Training only on traces that reached the correct answer raised reward accuracy from 42% to 52%, about a 10 point gain.",
+      "support": [
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "section": "results", "quote": "Filtering out incorrect reasoning traces boosted accuracy from 42% to 52%." },
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "quote": "**Data quality matters**: Filtering incorrect traces gave me a 10% accuracy boost." }
+      ]
+    },
+    {
+      "id": "fact-04",
+      "question": "What does DeepSeekMath-7B score on the MATH benchmark?",
+      "kind": "fact",
+      "reference": "51.7% on the competition-level MATH benchmark.",
+      "support": [
+        { "href": "posts/2026-01-06-review-deepseek-math.html", "quote": "As shown below, DeepseekMath-7B achieves 51.7% on the competition-level" }
+      ]
+    },
+    {
+      "id": "fact-05",
+      "question": "How many models does PPO need in memory at once when fine-tuning an LLM?",
+      "kind": "fact",
+      "reference": "Four: the policy, the critic, the reference model and the reward model.",
+      "support": [
+        { "href": "posts/2026-01-01-understanding-grpo.html", "section": "the-value-function-problem-in-ppo", "quote": "In practice, PPO requires four models to be resident in memory at the same time: the policy, the critic, the reference model and the reward model." }
+      ]
+    },
+    {
+      "id": "fact-06",
+      "question": "How does on-chip SRAM compare with HBM on an A100?",
+      "kind": "fact",
+      "reference": "An A100 has about 80 GB of HBM at about 2 TB/s and about 20 MB of SRAM at about 19 TB/s, so SRAM has roughly 10 times the bandwidth but is nearly 4000 times smaller.",
+      "support": [
+        { "href": "posts/2026-03-27-flash-attention/index.html", "section": "the-gpu-memory-hierarchy", "quote": "An A100 has about 80 GB of HBM with a bandwidth of ~2 TB/s." },
+        { "href": "posts/2026-03-27-flash-attention/index.html", "section": "the-gpu-memory-hierarchy", "quote": "A A100 has about ~20 MB total (spread across 108 SMs) with ~19 TB/s bandwidth. This is roughly **10x** the bandwidth of HBM but nearly **4000x** smaller in capacity." }
+      ]
+    },
+    {
+      "id": "fact-07",
+      "question": "How many cities does the India weather dashboard show, and how often is it updated?",
+      "kind": "fact",
+      "reference": "20 Indian metropolitan cities on a map, with live temperature, humidity and AQI refreshed every 15 minutes.",
+      "support": [
+        { "href": "posts/2026-04-29-india-weather-with-claude/index.html", "section": "what-it-does", "quote": "I have picked 20 Indian metropolitan cities and displayed them on an interactive map, with live temperature, humidity and AQI refreshed every 15 minutes" }
+      ]
+    },
+    {
+      "id": "fact-08",
+      "question": "In his Qwen3.5 vs Gemma 4 coding test, did any model really follow test-driven development?",
+      "kind": "fact",
+      "reference": "No. All four models claimed red-green TDD, but each wrote integration tests that hit the real API instead of failing tests first.",
+      "support": [
+        { "href": "posts/2026-04-05-qwen35-vs-gemma4/index.html", "section": "code-quality", "quote": "**None of the models truly followed TDD.** All of them claimed red-green methodology in their summaries but wrote integration tests that hit the real API." }
+      ]
+    },
+    {
+      "id": "fact-09",
+      "question": "When he pairs GPT-6.1 Sol with a self-hosted GLM model in OpenCode, what share of the tokens goes to GLM?",
+      "kind": "fact",
+      "reference": "On bigger implementation tasks roughly 70 to 75% of the tokens go to GLM and only 20 to 25% to Sol; even his small example sent about 60% to GLM.",
+      "support": [
+        { "href": "posts/2026-11-01-gpt-local-model-opencode/index.html", "section": "an-example", "quote": "In my experience on bigger implementation tasks the share is higher: roughly ~70-75% of the tokens go to GLM and only ~20-25% to Sol." },
+        { "href": "posts/2026-11-01-gpt-local-model-opencode/index.html", "section": "an-example", "quote": "even this toy task sent about 60% of the tokens to GLM" }
+      ]
+    },
+    {
+      "id": "fact-10",
+      "question": "Does the Markdown Viewer tool work without an internet connection?",
+      "kind": "fact",
+      "reference": "No. The Markdown Viewer needs internet access to load its CDN libraries.",
+      "support": [
+        { "href": "tools/index.html", "quote": "Paste or drop Markdown for live GFM-rendered preview with syntax-highlighted code blocks and LaTeX math support. Export rendered HTML. Requires internet for CDN libraries." }
+      ]
+    },
+    {
+      "id": "fact-11",
+      "question": "How big was the Shakespeare GPT he built compared with GPT-3?",
+      "kind": "fact",
+      "reference": "About 10M parameters against GPT-3's 175B, with a nearly identical architecture. GPT-3 has 17,500 times more parameters and was trained on a million times more data.",
+      "support": [
+        { "href": "posts/2025-09-08-building-gpt-from-scratch.html", "section": "how-this-compares-to-gpt-3", "quote": "The architecture we built is essentially the same as GPT-3. The difference is pure scale: 17,500x more parameters trained on 1 million times more data." },
+        { "href": "posts/2025-09-08-building-gpt-from-scratch.html", "section": "how-this-compares-to-gpt-3", "quote": "scales from a 10M parameter Shakespeare generator to a 175B parameter model!" }
+      ]
+    },
+    {
+      "id": "fact-12",
+      "question": "What are the stages of the JSALT 2020 pipeline for multi-speaker meetings?",
+      "kind": "fact",
+      "reference": "Three stages in sequence: speech separation, speaker diarization, and speech recognition (ASR).",
+      "support": [
+        { "href": "pages/jsalt.html", "section": "summary-of-our-pipeline", "quote": "Our speech processing pipeline consists of the following 3 stages in sequence." },
+        { "href": "pages/jsalt.html", "section": "summary-of-our-pipeline", "quote": "**Speech separation**" },
+        { "href": "pages/jsalt.html", "section": "summary-of-our-pipeline", "quote": "**Speaker diarization**" },
+        { "href": "pages/jsalt.html", "section": "summary-of-our-pipeline", "quote": "**Speech recognition (ASR)**" }
+      ]
+    },
+    {
+      "id": "how-01",
+      "question": "Why did he switch to per-token loss normalization when training SFT?",
+      "kind": "how",
+      "reference": "With sequence-level normalization, longer sequences contributed more to the gradient than short ones, which made gradient updates high variance and unstable. Normalizing by the number of response tokens made the gradients much more stable and slightly improved accuracy.",
+      "support": [
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "section": "the-training-loop-per-token-vs.-sequence-loss", "quote": "with variable-length sequences (my training examples ranged from short to quite long), longer sequences contribute more to the gradient than shorter ones. This creates high variance in gradient updates." },
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "section": "the-training-loop-per-token-vs.-sequence-loss", "quote": "The difference was noticeable with subtle improved accuracy. More importantly, the gradients became much more stable with per-token normalization." }
+      ]
+    },
+    {
+      "id": "how-02",
+      "question": "Why is FlashAttention's backward pass faster even though it recomputes the attention matrix?",
+      "kind": "how",
+      "reference": "Attention is memory-bound, so the extra compute costs little, while not storing the N by N probability matrix removes the large HBM reads and writes that dominate standard attention.",
+      "support": [
+        { "href": "posts/2026-03-27-flash-attention/index.html", "section": "recomputation", "quote": "In practice, FlashAttention backward pass is *faster* than standard attention despite doing more FLOPs, because it eliminates the massive HBM reads and writes of $P$ (remember FlashAttention is memory-bound!)." },
+        { "href": "posts/2026-03-27-flash-attention/index.html", "section": "recomputation", "quote": "This trades memory for compute. Since, standard attention is memory-bound, the additional compute is small in comparison." }
+      ]
+    },
+    {
+      "id": "how-03",
+      "question": "How does DPO get away without a reward model or reinforcement learning?",
+      "kind": "how",
+      "reference": "DPO optimizes the same KL-constrained objective as PPO-based RLHF but turns it into a single supervised classification loss on preference pairs. Because the Bradley-Terry model depends only on reward differences, the intractable partition function cancels, so no sampling, value function or clipping is needed.",
+      "support": [
+        { "href": "posts/2025-12-30-deriving-dpo-loss.html", "quote": "The key insight is that DPO implicitly optimizes the **same** objective as PPO-based RLHF (reward maximization with a KL-divergence constraint) but it replaces the entire reward model + PPO loop with a single supervised objective on preference pairs. There is no sampling during training, no value function, no clipping, just a classification loss!" },
+        { "href": "posts/2025-12-30-deriving-dpo-loss.html", "section": "conclusion", "quote": "The derivation hinges on one observation that the Bradley-Terry model only cares about reward differences and this causes the intractable partition function from analytical solution to cancel out completely." }
+      ]
+    },
+    {
+      "id": "how-04",
+      "question": "How did he fit GRPO training on a single 24 GB RTX 4090?",
+      "kind": "how",
+      "reference": "He tracked peak memory and used gradient checkpointing, vLLM sleep mode to offload vLLM's KV cache and weights to CPU while training, and the 8-bit AdamW optimizer, with a microbatch size of 1 and gradient accumulation.",
+      "support": [
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "gpu-memory-optimization-fitting-on-24-gb", "quote": "The simplest one is to enable gradient checkpointing which recomputes activations during backward pass instead of storing them." },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "gpu-memory-optimization-fitting-on-24-gb", "quote": "This is quite a nice trick to offload vLLM KV cache and weights to CPU during the training phase (when vLLM is not generating)." },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "gpu-memory-optimization-fitting-on-24-gb", "quote": "I added an option to use bitsandbytes `AdamW8bit` optimizer instead of the default `AdamW` optimizer." },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "gpu-memory-optimization-fitting-on-24-gb", "quote": "After all the above optimization tricks, I was able to successfully train with `rollout_batch_size=256`, `group_size=8`, `gradient_accumulation_steps=256` (microbatch size = 1) on 24 GB." }
+      ]
+    },
+    {
+      "id": "how-05",
+      "question": "Why can Qwen3.5-27B run with a 64K context on a 24 GB card?",
+      "kind": "how",
+      "reference": "Qwen3.5 is a hybrid model: only every fourth layer uses standard attention and the rest use Gated DeltaNet with a fixed-size state, so its KV cache is far smaller than a pure transformer's.",
+      "support": [
+        { "href": "posts/2026-03-29-local-llm-opencode/index.html", "section": "reasoning-and-things-i-learned-along-the-way", "quote": "Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all." }
+      ]
+    },
+    {
+      "id": "how-06",
+      "question": "Why does he run the GPT plus local GLM setup in OpenCode instead of Claude Code or Codex?",
+      "kind": "how",
+      "reference": "Claude Code and Codex subagents cannot point at a different endpoint: Codex still sends a subagent's requests to OpenAI, so his GLM subagent failed, and Claude Code subagents can change model but not endpoint. In OpenCode every agent or subagent can use a model from a different provider.",
+      "support": [
+        { "href": "posts/2026-11-01-gpt-local-model-opencode/index.html", "section": "which-harness-to-use", "quote": "Codex picks up the role but still sends its requests to OpenAI so the subagent fails right away" },
+        { "href": "posts/2026-11-01-gpt-local-model-opencode/index.html", "section": "which-harness-to-use", "quote": "Claude Code has the same limitation: a subagent can pick a different model but not a different endpoint" },
+        { "href": "posts/2026-11-01-gpt-local-model-opencode/index.html", "section": "which-harness-to-use", "quote": "every agent or subagent can have its own model from a different provider which is the one most important feature this setup needs" }
+      ]
+    },
+    {
+      "id": "how-07",
+      "question": "What does the Kalman gain do when the sensor is unreliable?",
+      "kind": "how",
+      "reference": "When measurement noise is large the gain shrinks toward zero, so the filter mostly trusts its own prediction rather than the measurement.",
+      "support": [
+        { "href": "posts/2026-07-15-kalman-filters-time-series/index.html", "section": "the-kalman-gain-is-a-trust-dial", "quote": "When the measurement noise $R$ is large (an unreliable sensor), $K_k$ shrinks toward zero and the filter mostly trusts its own prediction." }
+      ]
+    },
+    {
+      "id": "how-08",
+      "question": "How was spectral clustering changed to handle overlapping speakers in the SLT 2021 diarization work?",
+      "kind": "how",
+      "reference": "An overlap detector feeds a modified version of scikit-learn's spectral clustering: the discretize step takes an extra overlap vector and uses it to give overlapping segments a second speaker label.",
+      "support": [
+        { "href": "pages/overlap-aware-sc.html", "quote": "The code consists of two parts: overlap detector, and our modified spectral clustering method for overlap-aware diarization." },
+        { "href": "pages/overlap-aware-sc.html", "quote": "We have implemented the diarization recipe in Kaldi, and modified scikit-learn's spectral clustering class for our modification." },
+        { "href": "pages/overlap-aware-sc.html", "section": "where-to-find-the-clustering-implementation", "quote": "by adding an additional argument which specifies the overlap vector. The vector is used in L141-148 to assign a second label to the overlapping segments." }
+      ]
+    },
+    {
+      "id": "broad-01",
+      "question": "Which approach got Qwen2.5-Math-1.5B the highest MATH accuracy: SFT, expert iteration or GRPO?",
+      "kind": "broad",
+      "reference": "GRPO, at about 75% on MATH validation from a base of about 3%. His best SFT run reached 53.4% and his best expert iteration run 47.1%.",
+      "support": [
+        { "href": "posts/2026-01-23-expert-iteration/index.html", "section": "comparison-to-sft-experiments", "quote": "Expert Iteration reached 47.1% accuracy which is around 6% below SFT's 53.4%" },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "summary-and-key-takeaways", "quote": "**Best performance:** ~0.75 on MATH validation (up from ~3% base model accuracy)." }
+      ]
+    },
+    {
+      "id": "broad-02",
+      "question": "What deep learning work has Aayush done on seismic data?",
+      "kind": "broad",
+      "reference": "At Shell he built denoising models for seismic data, uncertainty quantification for subsurface imaging and learned Hessian operators for wave-equation optimization. At TU Delft he used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data 2x in the spatial direction and remove spatial aliasing, published in 2019 in First Break.",
+      "support": [
+        { "href": "about.html", "quote": "Applied deep learning across Shell's seismic research: denoising models for seismic data, uncertainty quantification for subsurface imaging, and learned Hessian operators for wave-equation optimization." },
+        { "href": "projects.html", "quote": "I used deep learning super-resolution (SRCNN, EDSR, VDSR) to upscale seismic data by 2x in the spatial direction and remove spatial aliasing. This work was published as a paper back in 2019, built during my time at TU Delft and University of Amsterdam." },
+        { "href": "publications.html", "quote": "Spatial aliasing removal using deep learning super-resolution" },
+        { "href": "publications.html", "quote": "[First Break, 37(9), 87-92]" }
+      ]
+    },
+    {
+      "id": "broad-03",
+      "question": "Did fine-tuning a small open model beat GPT-4o on the ViGGO extraction task?",
+      "kind": "broad",
+      "reference": "Partly. GPT-4o with few-shot prompting got an exact match on only about 30% of examples. A Llama-3-8B fine-tuned on at most 1,000 examples, after a clearer prompt template, surpassed GPT-4o on exact match and function name match, but did not match GPT-4 and Claude 3.5 Sonnet on every metric.",
+      "support": [
+        { "href": "posts/2024-07-03-baseline-gpt4o-structured-data.html", "section": "evaluating-the-performance", "quote": "The best the model can do is to provide the exact match only for **30%** of the examples." },
+        { "href": "posts/2024-07-15-finetune-llama3-8B-predibase.html", "section": "task-and-dataset", "quote": "I will use a maximum of 1000 examples for fine-tuning any LLM model" },
+        { "href": "posts/2024-07-15-finetune-llama3-8B-predibase.html", "section": "improved-performance-with-updated-prompt-template", "quote": "Notably, the model now surpasses GPT-4o's scores for `exact_match` and `function_name_match`." },
+        { "href": "posts/2024-07-15-finetune-llama3-8B-predibase.html", "quote": "Although the fine-tuned llama-3-8b model doesn't match the performance of GPT-4 and Sonnet 3.5 on all metrics." }
+      ]
+    },
+    {
+      "id": "broad-04",
+      "question": "How does time-series data come into Aayush's current job, and where does the Kalman filter fit?",
+      "kind": "broad",
+      "reference": "At Applied Computing he deploys AI for live process plants, which includes monitoring the time-series models they deploy, and time-series data is an important part of that work. He uses the Kalman filter mainly as a preprocessing tool (denoising, decomposition, gap filling), while actual predictions come from ML-based forecasting models.",
+      "support": [
+        { "href": "about.html", "quote": "Behind that sit ever-improving evals, monitoring for the time-series models we deploy, a reasoning layer that explains each recommendation to operators" },
+        { "href": "posts/2026-07-15-kalman-filters-time-series/index.html", "quote": "An important part of my current work involves time-series data." },
+        { "href": "posts/2026-07-15-kalman-filters-time-series/index.html", "section": "wrapping-up", "quote": "Most of the value I get from the Kalman filter has nothing to do with using it as the final forecasting model. It is a pre-processing workhorse" },
+        { "href": "posts/2026-07-15-kalman-filters-time-series/index.html", "section": "beyond-linear-and-gaussian", "quote": "For actual predictions we anyway rely on ML-based forecasting models." }
+      ]
+    },
+    {
+      "id": "broad-05",
+      "question": "How has he used vLLM inside his own training runs?",
+      "kind": "broad",
+      "reference": "For SFT he ran vLLM colocated on the training GPU for fast intermediate evaluation. For GRPO he reused that colocate setup to run training, evaluation and rollout generation on one GPU, and turned on vLLM sleep mode to offload its KV cache and weights to CPU during the training phase.",
+      "support": [
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "section": "vllm-integration-the-debugging-nightmare", "quote": "I wanted to run intermediate evaluations during training using vLLM for fast inference." },
+        { "href": "posts/2025-12-28-sft-from-scratch.html", "section": "vllm-integration-the-debugging-nightmare", "quote": "I switched to the `colocate` approach, running vLLM on the same device as the training model." },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "building-the-training-loop", "quote": "I used the same vLLM colocate setup and workarounds as I did for SFT" },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "building-the-training-loop", "quote": "This allowed me to run the training loop and intermediate evaluations and rollout generations on a single GPU." },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "gpu-memory-optimization-fitting-on-24-gb", "quote": "This is quite a nice trick to offload vLLM KV cache and weights to CPU during the training phase (when vLLM is not generating)." }
+      ]
+    },
+    {
+      "id": "broad-06",
+      "question": "Which tools on the site help when working with AI image models?",
+      "kind": "broad",
+      "reference": "The Binary Mask Creator paints black-and-white masks for AI inpainting models, and the Base64 Encoder/Decoder helps with LLM and image generation APIs that return or require base64 encoded images.",
+      "support": [
+        { "href": "posts/2026-03-20-browser-tools/index.html", "section": "image-tools", "quote": "I find the Binary Mask Creator pretty handy, especially when working with inpainting models like" },
+        { "href": "posts/2026-03-20-browser-tools/index.html", "section": "data-tools", "quote": "The Base64 tool is another one I use often when working with llm/image-gen APIs, sometimes they send back base64 encoded images or require base64 encoded images as input" },
+        { "href": "tools/index.html", "quote": "Paint binary black-and-white masks for AI inpainting with brush, eraser, undo, and invert options." }
+      ]
+    },
+    {
+      "id": "person-01",
+      "question": "What did Aayush build at Jiffy?",
+      "kind": "person",
+      "reference": "He built and ran the image enhancement pipeline behind a DTF printing business, turning more than 40K daily uploads into print-ready artwork, and Smart Redraw, a multi-agent system for real-time AI edits. He also fine-tuned LLMs and VLMs and maintained the GPU inference stack.",
+      "support": [
+        { "href": "about.html", "quote": "Built and ran the image enhancement pipeline behind a $100M+ DTF printing business, turning 40K+ daily uploads into print-ready artwork, and Smart Redraw, a multi-agent system that replaced multi-day manual edits with real-time AI edits." },
+        { "href": "about.html", "quote": "Fine-tuned LLMs and VLMs and optimized their prompts with DSPy. Maintained and optimized the GPU inference stack for open-source LLM and vision models, for both latency and cost." }
+      ]
+    },
+    {
+      "id": "person-02",
+      "question": "What GPU does Aayush have in his own workstation?",
+      "kind": "person",
+      "reference": "An RTX 4090 with 24 GB of VRAM.",
+      "support": [
+        { "href": "posts/2024-06-30-remote-gpu-server.html", "quote": "I've been using a GPU workstation with an RTX 4090 for almost a year now" },
+        { "href": "posts/2026-02-26-grpo-from-scratch/index.html", "section": "gpu-memory-optimization-fitting-on-24-gb", "quote": "I wrote the training code and tested it on my personal RTX 4090 with 24 GB of VRAM." }
+      ]
+    },
+    {
+      "id": "person-03",
+      "question": "Which course on AI evals did Aayush take, and how is he following it?",
+      "kind": "person",
+      "reference": "AI Evals for Engineers and PMs, by Hamel and Shreya. He missed the live cohort because of work and is following it self-paced, writing a post for each lesson.",
+      "support": [
+        { "href": "posts/2025-09-02-llm-evaluation-lifecycle.html", "quote": "I enrolled in [AI Evals for Engineers and PMs](https://maven.com/parlance-labs/evals), a course by [Hamel](https://hamel.dev/) and [Shreya](https://www.sh-reya.com/)." },
+        { "href": "posts/2025-09-02-llm-evaluation-lifecycle.html", "quote": "I have now started following it as a self-paced course and plans to write a blog for each lesson as I progress." }
+      ]
+    },
+    {
+      "id": "person-04",
+      "question": "Has Aayush given an invited talk?",
+      "kind": "person",
+      "reference": "Yes. He was an invited speaker at the FWI workshop of the 82nd EAGE Conference and Exhibition, on target-oriented elastic parameter estimation from surface seismic data using JMI-res.",
+      "support": [
+        { "href": "publications.html", "quote": "Target-oriented elastic parameter models estimation from surface seismic data using JMI-res" },
+        { "href": "publications.html", "quote": "Invited speaker for FWI workshop in [82nd EAGE Conference and Exhibition]" }
+      ]
+    }
+  ],
+  "unanswerable": [
+    {
+      "id": "near-01",
+      "question": "What exact match score did Claude Sonnet 3.5 get on the ViGGO task?",
+      "kind": "near-miss",
+      "why": "The comparison post says in prose that Claude Sonnet 3.5 performed best, but its scores are only in a plot image. No passage gives a number for it. The only exact match figure in text is GPT-4o's 30% in Part I.",
+      "nearest": ["posts/2024-07-09-compare-models-structured-data.html", "posts/2024-07-15-finetune-llama3-8B-predibase.html", "posts/2024-07-03-baseline-gpt4o-structured-data.html"]
+    },
+    {
+      "id": "near-02",
+      "question": "Does he serve GLM-5.3-Flash on the H200s with vLLM or SGLang?",
+      "kind": "near-miss",
+      "why": "The post says the model runs on a 4-GPU H200 server with a 512K context, then defers the deployment: \"How the model is deployed on the H200s is a separate post maybe for another day.\" Neither vLLM nor SGLang is named there; vLLM appears only in the SFT and GRPO training posts, and SGLang nowhere.",
+      "nearest": ["posts/2026-11-01-gpt-local-model-opencode/index.html", "posts/2026-03-29-local-llm-opencode/index.html"]
+    },
+    {
+      "id": "near-03",
+      "question": "How much faster was FlashAttention than standard attention in his own benchmarks?",
+      "kind": "near-miss",
+      "why": "The FlashAttention post explains why it is faster and gives IO complexity and A100 memory numbers, but runs no benchmark and reports no speedup. It says PyTorch and Triton implementations are planned, and Work says a FlashAttention2 implementation is in progress.",
+      "nearest": ["posts/2026-03-27-flash-attention/index.html", "projects.html"]
+    },
+    {
+      "id": "near-04",
+      "question": "What RMSE did the Kalman smoother reach on the Mauna Loa CO2 data?",
+      "kind": "near-miss",
+      "why": "RMSE is reported only for the AirPassengers gap filling (8.7, 6.3 and 26.3). For CO2 the post gives the residual standard deviation (about 0.09 ppm) and the fitted variances, which a model could wrongly pass off as an RMSE.",
+      "nearest": ["posts/2026-07-15-kalman-filters-time-series/index.html"]
+    },
+    {
+      "id": "near-05",
+      "question": "Is there a tool on the site for compressing PDF files?",
+      "kind": "near-miss",
+      "why": "The catalog has image, viewer and data tools, none for PDFs. File size optimization is mentioned only for images, in the Claude skills post's image editing skill, and the browser tools post mentions PDFs only as OCR input.",
+      "nearest": ["tools/index.html", "posts/2026-03-20-browser-tools/index.html", "posts/2026-01-13-claude-skills/index.html", "tools/image-converter.html"]
+    },
+    {
+      "id": "near-06",
+      "question": "How much does Context7 cost once you go past the free plan?",
+      "kind": "near-miss",
+      "why": "The Claude Code tools post says only that the free plan gives about 1000 API requests a month. No paid price is given anywhere; the other two mentions are setup notes in the local model posts.",
+      "nearest": ["posts/2026-02-12-cc-tools/index.html", "posts/2026-03-29-local-llm-opencode/index.html", "posts/2026-04-05-qwen35-vs-gemma4/index.html"]
+    },
+    {
+      "id": "near-07",
+      "question": "Where did Aayush do his undergraduate degree?",
+      "kind": "near-miss",
+      "why": "About lists experience from the TU Delft PhD (2015 to 2019) onward and Work mentions University of Amsterdam for the aliasing paper. No page names a bachelor's or other earlier degree.",
+      "nearest": ["about.html", "publications.html", "projects.html"]
+    },
+    {
+      "id": "near-08",
+      "question": "How does Qwen3.5-27B score on SWE-bench?",
+      "kind": "near-miss",
+      "why": "The Qwen vs Gemma post reports llama-bench speeds and two one-prompt coding tasks, and the OpenCode post links outside benchmarks without giving numbers. SWE-bench is not mentioned anywhere.",
+      "nearest": ["posts/2026-04-05-qwen35-vs-gemma4/index.html", "posts/2026-03-29-local-llm-opencode/index.html"]
+    },
+    {
+      "id": "off-01",
+      "question": "How do I set up a CI pipeline with GitLab runners?",
+      "kind": "off-topic",
+      "why": "GitLab does not appear on the site. The only CI is a GitHub Actions workflow that publishes the ComfyUI node and the GitHub Actions cron in the weather post.",
+      "nearest": ["posts/2025-09-10-build-custom-comfyui-node.html", "posts/2026-04-29-india-weather-with-claude/index.html"]
+    },
+    {
+      "id": "off-02",
+      "question": "What is the difference between Box and Rc in Rust?",
+      "kind": "off-topic",
+      "why": "Rust appears once, on Work, as the language of a BPE encoder. Nothing on the site discusses Rust itself.",
+      "nearest": ["projects.html"]
+    },
+    {
+      "id": "off-03",
+      "question": "How do I train a YOLO object detector on my own dataset?",
+      "kind": "off-topic",
+      "why": "YOLO and object detection are not on the site. The closest is chip defect classification in the SixSense contract on About and the PyTorch training templates on Work.",
+      "nearest": ["about.html", "projects.html"]
+    },
+    {
+      "id": "off-04",
+      "question": "How does the Raft consensus algorithm elect a leader?",
+      "kind": "off-topic",
+      "why": "No page covers distributed systems or consensus. The word \"leader\" appears only in unrelated senses (leaderboard, label leader lines, the orchestrator that leads agents).",
+      "nearest": ["posts/2026-11-01-gpt-local-model-opencode/index.html", "india-weather.html"]
+    },
+    {
+      "id": "off-05",
+      "question": "What is the best way to shard a PostgreSQL database?",
+      "kind": "off-topic",
+      "why": "PostgreSQL appears only as example text in the skills comparison table. Databases and sharding are not discussed.",
+      "nearest": ["posts/2026-01-13-claude-skills/index.html"]
+    },
+    {
+      "id": "off-06",
+      "question": "How do I build an iPhone app with SwiftUI?",
+      "kind": "off-topic",
+      "why": "SwiftUI and app development are not on the site. The iPhone appears only as a device used to open the self-hosted Gemma 4 chat in a browser.",
+      "nearest": ["posts/2026-04-03-self-hosted-gemma4-chat/index.html", "tools/index.html"]
+    },
+    {
+      "id": "off-07",
+      "question": "How does BERT's masked language modeling objective work?",
+      "kind": "off-topic",
+      "why": "BERT is not on the site. The posts cover decoder-only GPT models; masking appears as the causal attention mask and as prompt masking in SFT, neither of which answers this.",
+      "nearest": ["posts/2025-12-28-sft-from-scratch.html", "posts/2025-09-08-building-gpt-from-scratch.html"]
+    }
+  ]
+}

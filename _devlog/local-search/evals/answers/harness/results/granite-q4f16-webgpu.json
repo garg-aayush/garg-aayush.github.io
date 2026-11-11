@@ -1,0 +1,440 @@
+{
+ "model": "granite",
+ "label": "Granite 4.0 350M",
+ "repo": "onnx-community/granite-4.0-350m-ONNX-web",
+ "revision": "62fc8f345c8aed0e1a28f856dc7e79b4cdb55cae",
+ "dtype": "q4f16",
+ "backend": "webgpu",
+ "mode": "headless",
+ "reps": 3,
+ "date": "2026-11-11T18:42:55.956Z",
+ "prompt": {
+  "file": "prompt.mjs",
+  "sha": "c61a73325154",
+  "system": "You answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.",
+  "refusal": "This site does not seem to cover that."
+ },
+ "speedPrompt": {
+  "question": "Describe everything these passages say about the weather station.",
+  "settings": {
+   "chatTemplateArgs": {},
+   "doSample": false,
+   "maxNewTokens": 60,
+   "maxSentences": 0,
+   "repetitionPenalty": 1,
+   "minNewTokens": 60
+  }
+ },
+ "cold": {
+  "label": "granite/webgpu/cold",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": true,
+   "wallMs": 1463,
+   "tokenizerMs": 84,
+   "lastFileDoneMs": 693,
+   "sessionInitMs": 761,
+   "bytesModelFiles": 354642712,
+   "bytesRuntime": 26914834,
+   "files": {
+    "tokenizer.json": {
+     "loaded": 4131199,
+     "total": 4131199
+    },
+    "tokenizer_config.json": {
+     "loaded": 24747,
+     "total": 24747
+    },
+    "config.json": {
+     "loaded": 2018,
+     "total": 2018
+    },
+    "onnx/model_q4f16.onnx": {
+     "loaded": 274549,
+     "total": 274549
+    },
+    "onnx/model_q4f16.onnx_data": {
+     "loaded": 350210048,
+     "total": 350210048
+    },
+    "generation_config.json": {
+     "loaded": 147,
+     "total": 147
+    }
+   },
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 3211509760,
+   "byType": {
+    "browser": 214286336,
+    "gpu-process": 797310976,
+    "utility": 177766400,
+    "renderer": 2022146048
+   }
+  },
+  "firstGeneration": {
+   "promptTokens": 569,
+   "tokens": 60,
+   "ms": 1091,
+   "ttftMs": 656,
+   "decodeTokensPerSecond": 138
+  },
+  "speedRuns": [
+   {
+    "promptTokens": 569,
+    "tokens": 60,
+    "ms": 488,
+    "ttftMs": 150,
+    "decodeTokensPerSecond": 175.1,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed. It also has a wind sensor that counts the speed of wind over a few seconds. The wind sensor is a three cup anemometer fixed to a two-meter wooden mast. The mast is held by two guy wires and"
+   },
+   {
+    "promptTokens": 569,
+    "tokens": 60,
+    "ms": 468,
+    "ttftMs": 142,
+    "decodeTokensPerSecond": 181.8,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed. It also has a wind sensor that counts the speed of wind over a few seconds. The wind sensor is a three cup anemometer fixed to a two-meter wooden mast. The mast is held by two guy wires and"
+   },
+   {
+    "promptTokens": 569,
+    "tokens": 60,
+    "ms": 445,
+    "ttftMs": 138,
+    "decodeTokensPerSecond": 193.1,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed. It also has a wind sensor that counts the speed of wind over a few seconds. The wind sensor is a three cup anemometer fixed to a two-meter wooden mast. The mast is held by two guy wires and"
+   }
+  ],
+  "speed": {
+   "promptTokens": 569,
+   "tokens": 60,
+   "ttftMsMedian": 142,
+   "decodeTokensPerSecondMedian": 181.8,
+   "prefillTokensPerSecondMedian": 4007
+  },
+  "memoryAfterGenerate": {
+   "total": 3122102272,
+   "byType": {
+    "browser": 184729600,
+    "gpu-process": 742424576,
+    "utility": 146407424,
+    "renderer": 2048540672
+   }
+  },
+  "sanity": [
+   {
+    "id": "sanity-answerable",
+    "question": "How often does the weather station save a reading?",
+    "answer": "The weather station saves a reading every minute.",
+    "raw": "The weather station saves a reading every minute.",
+    "tokens": 10,
+    "stop": "eos",
+    "ms": 202,
+    "ttftMs": 146,
+    "promptTokens": 569,
+    "prompt": "<|start_of_role|>system<|end_of_role|>You answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Passages:\n\n[1] Backyard weather station: overview\nThe backyard weather station sits on a fence post behind the shed. It measures air temperature, humidity, air pressure and wind speed. A small board wakes up every ten minutes, takes one reading of each sensor, writes it as a line of text to a memory card and goes back to sleep. Once an hour it also joins the home wifi and uploads the last six lines to a personal server, so the chart on the page is never more than an hour old. The first version saved a reading every minute, but the memory card filled up in a few weeks, so the interval was changed.\n\n[2] Backyard weather station: the mast\nThe wind sensor is a three cup anemometer fixed to the top of a two metre wooden mast, well above the fence so that the shed does not shelter it. The cups spin a small magnet past a switch, and the board counts the pulses over a few seconds to get a speed. The mast is held by two guy wires and has been through two winter storms without moving. The temperature and humidity sensor lives in a white stack of plastic plates that shades it from direct sun and still lets the air through.\n\n[3] Sourdough diary: feeding the starter\nThe sourdough starter lives in a glass jar on the kitchen shelf and is fed once a day with equal weights of flour and water. Before each feeding most of it is thrown away, so the jar never holds more than about a hundred grams. A rubber band around the jar marks the level, which makes it easy to see how far the starter rose overnight. In winter it rises slowly and gets a warmer spot near the oven; in summer it can double within four hours and is kept in the fridge between bakes.\n\n[4] Station power and enclosure\nThe electronics sit in a grey plastic box with a gasket lid, screwed to the post under a small roof of corrugated plastic. A solar panel the size of a paperback charges a single lithium battery through a charge controller. Because the board sleeps almost all the time, the battery lasted through a whole week of cloud in November without dropping below half. Cable glands keep rain out where the sensor wires enter the box, and a packet of silica gel inside the lid is replaced each spring.\n\nQuestion: How often does the weather station save a reading?<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>"
+   },
+   {
+    "id": "sanity-partial",
+    "question": "Which sensor measures the wind speed and how accurate is it?",
+    "answer": "The wind sensor measures wind speed and is how accurate it is. It is a three cup anemometer fixed to the top of a two-meter wooden mast, which is well above the fence so that the shed does not shelter it.",
+    "raw": "The wind sensor measures wind speed and is how accurate it is. It is a three cup anemometer fixed to the top of a two-meter wooden mast, which is well above the fence so that the shed does not shelter it. The",
+    "tokens": 48,
+    "stop": "sentences",
+    "ms": 444,
+    "ttftMs": 190,
+    "promptTokens": 571
+   },
+   {
+    "id": "sanity-unanswerable",
+    "question": "Which programming language is the station's firmware written in?",
+    "answer": "The station's firmware is written in Python.",
+    "raw": "The station's firmware is written in Python.",
+    "tokens": 10,
+    "stop": "eos",
+    "ms": 212,
+    "ttftMs": 145,
+    "promptTokens": 570
+   }
+  ],
+  "peakMemory": {
+   "bytes": 3794599936,
+   "byProcessType": {
+    "browser": 184057856,
+    "gpu-process": 970194944,
+    "utility": 146407424,
+    "renderer": 2493939712
+   }
+  },
+  "serverTotals": {
+   "model": 354642712,
+   "runtime": 27502751,
+   "requests": 16
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ "environment": {
+  "node": "v24.22.0",
+  "transformersJs": "4.3.2",
+  "onnxruntimeWeb": "1.31.0-dev.20260914-8d85527a0",
+  "playwrightCore": "1.64.1",
+  "machine": {
+   "os": "darwin",
+   "arch": "arm64",
+   "cpu": "Apple M5 Pro",
+   "cores": 15,
+   "memoryGB": 24
+  },
+  "browser": {
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "shaderF16": true,
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  }
+ },
+ "cache": {
+  "label": "granite/webgpu/from-cache",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": true,
+   "wallMs": 708,
+   "tokenizerMs": 62,
+   "lastFileDoneMs": 178,
+   "sessionInitMs": 528,
+   "bytesModelFiles": 0,
+   "bytesRuntime": 0,
+   "files": {
+    "tokenizer.json": {
+     "loaded": 4131199,
+     "total": 4131199
+    },
+    "tokenizer_config.json": {
+     "loaded": 24747,
+     "total": 24747
+    },
+    "config.json": {
+     "loaded": 2018,
+     "total": 2018
+    },
+    "onnx/model_q4f16.onnx": {
+     "loaded": 274549,
+     "total": 274549
+    },
+    "onnx/model_q4f16.onnx_data": {
+     "loaded": 350210048,
+     "total": 350210048
+    },
+    "generation_config.json": {
+     "loaded": 147,
+     "total": 147
+    }
+   },
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 3838820352,
+   "byType": {
+    "browser": 230506496,
+    "gpu-process": 985317376,
+    "utility": 188940288,
+    "renderer": 2434056192
+   }
+  },
+  "firstGeneration": {
+   "promptTokens": 569,
+   "tokens": 60,
+   "ms": 597,
+   "ttftMs": 229,
+   "decodeTokensPerSecond": 163.3
+  },
+  "speedRuns": [
+   {
+    "promptTokens": 569,
+    "tokens": 60,
+    "ms": 499,
+    "ttftMs": 168,
+    "decodeTokensPerSecond": 178.9,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed. It also has a wind sensor that counts the speed of wind over a few seconds. The wind sensor is a three cup anemometer fixed to a two-meter wooden mast. The mast is held by two guy wires and"
+   },
+   {
+    "promptTokens": 569,
+    "tokens": 60,
+    "ms": 453,
+    "ttftMs": 137,
+    "decodeTokensPerSecond": 187.4,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed. It also has a wind sensor that counts the speed of wind over a few seconds. The wind sensor is a three cup anemometer fixed to a two-meter wooden mast. The mast is held by two guy wires and"
+   },
+   {
+    "promptTokens": 569,
+    "tokens": 60,
+    "ms": 503,
+    "ttftMs": 191,
+    "decodeTokensPerSecond": 189.6,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed. It also has a wind sensor that counts the speed of wind over a few seconds. The wind sensor is a three cup anemometer fixed to a two-meter wooden mast. The mast is held by two guy wires and"
+   }
+  ],
+  "speed": {
+   "promptTokens": 569,
+   "tokens": 60,
+   "ttftMsMedian": 168,
+   "decodeTokensPerSecondMedian": 187.4,
+   "prefillTokensPerSecondMedian": 3387
+  },
+  "memoryAfterGenerate": {
+   "total": 3070427136,
+   "byType": {
+    "browser": 231948288,
+    "gpu-process": 547520512,
+    "utility": 189399040,
+    "renderer": 2101559296
+   }
+  },
+  "peakMemory": {
+   "bytes": 4156833792,
+   "byProcessType": {
+    "browser": 230752256,
+    "gpu-process": 1065385984,
+    "utility": 189202432,
+    "renderer": 2671493120
+   }
+  },
+  "serverTotals": {
+   "model": 0,
+   "runtime": 587917,
+   "requests": 4
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ }
+}

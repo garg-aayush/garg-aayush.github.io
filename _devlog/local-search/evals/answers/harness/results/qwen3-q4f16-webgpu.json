@@ -1,0 +1,438 @@
+{
+ "model": "qwen3",
+ "label": "Qwen3-0.6B",
+ "repo": "onnx-community/Qwen3-0.6B-ONNX",
+ "revision": "58ca03a5e7b354b480b1a82b34bde8dc7b854cc0",
+ "dtype": "q4f16",
+ "backend": "webgpu",
+ "mode": "headless",
+ "reps": 3,
+ "date": "2026-11-11T18:44:25.075Z",
+ "prompt": {
+  "file": "prompt.mjs",
+  "sha": "c61a73325154",
+  "system": "You answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.",
+  "refusal": "This site does not seem to cover that."
+ },
+ "speedPrompt": {
+  "question": "Describe everything these passages say about the weather station.",
+  "settings": {
+   "chatTemplateArgs": {
+    "enable_thinking": false
+   },
+   "doSample": false,
+   "maxNewTokens": 60,
+   "maxSentences": 0,
+   "repetitionPenalty": 1,
+   "minNewTokens": 60
+  }
+ },
+ "cold": {
+  "label": "qwen3/webgpu/cold",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": true,
+   "wallMs": 2402,
+   "tokenizerMs": 141,
+   "lastFileDoneMs": 884,
+   "sessionInitMs": 1497,
+   "bytesModelFiles": 578918293,
+   "bytesRuntime": 26914834,
+   "files": {
+    "tokenizer.json": {
+     "loaded": 9117040,
+     "total": 9117040
+    },
+    "tokenizer_config.json": {
+     "loaded": 10369,
+     "total": 10369
+    },
+    "config.json": {
+     "loaded": 912,
+     "total": 912
+    },
+    "onnx/model_q4f16.onnx": {
+     "loaded": 569789750,
+     "total": 569789750
+    },
+    "generation_config.json": {
+     "loaded": 219,
+     "total": 219
+    }
+   },
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "warning: Unable to add response to browser cache: UnknownError: Failed to execute 'put' on 'Cache': Unexpected internal error.."
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 3936206848,
+   "byType": {
+    "browser": 160907264,
+    "gpu-process": 768442368,
+    "utility": 140967936,
+    "renderer": 2865889280
+   }
+  },
+  "firstGeneration": {
+   "promptTokens": 573,
+   "tokens": 60,
+   "ms": 1001,
+   "ttftMs": 470,
+   "decodeTokensPerSecond": 113.7
+  },
+  "speedRuns": [
+   {
+    "promptTokens": 573,
+    "tokens": 60,
+    "ms": 717,
+    "ttftMs": 269,
+    "decodeTokensPerSecond": 132.2,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed, with a small board that records data every ten minutes and uploads it to a server. It uses a memory card and a personal server to keep the data up-to-date. The wind sensor is a three-cup anem"
+   },
+   {
+    "promptTokens": 573,
+    "tokens": 60,
+    "ms": 809,
+    "ttftMs": 328,
+    "decodeTokensPerSecond": 122.9,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed, with a small board that records data every ten minutes and uploads it to a server. It uses a memory card and a personal server to keep the data up-to-date. The wind sensor is a three-cup anem"
+   },
+   {
+    "promptTokens": 573,
+    "tokens": 60,
+    "ms": 847,
+    "ttftMs": 383,
+    "decodeTokensPerSecond": 127.5,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed, with a small board that records data every ten minutes and uploads it to a server. It uses a memory card and a personal server to keep the data up-to-date. The wind sensor is a three-cup anem"
+   }
+  ],
+  "speed": {
+   "promptTokens": 573,
+   "tokens": 60,
+   "ttftMsMedian": 328,
+   "decodeTokensPerSecondMedian": 127.5,
+   "prefillTokensPerSecondMedian": 1747
+  },
+  "memoryAfterGenerate": {
+   "total": 3341762560,
+   "byType": {
+    "browser": 165625856,
+    "gpu-process": 833486848,
+    "utility": 139837440,
+    "renderer": 2202812416
+   }
+  },
+  "sanity": [
+   {
+    "id": "sanity-answerable",
+    "question": "How often does the weather station save a reading?",
+    "answer": "The weather station saves a reading every minute.",
+    "raw": "The weather station saves a reading every minute.",
+    "tokens": 10,
+    "stop": "eos",
+    "ms": 383,
+    "ttftMs": 298,
+    "promptTokens": 573,
+    "prompt": "<|im_start|>system\nYou answer questions about a personal website using only the numbered passages from it that the user gives you. Answer in at most two sentences, in plain words, using only facts stated in the passages. Do not add anything from your own knowledge. If the passages do not contain the answer, reply with exactly this sentence and nothing else: This site does not seem to cover that.<|im_end|>\n<|im_start|>user\nPassages:\n\n[1] Backyard weather station: overview\nThe backyard weather station sits on a fence post behind the shed. It measures air temperature, humidity, air pressure and wind speed. A small board wakes up every ten minutes, takes one reading of each sensor, writes it as a line of text to a memory card and goes back to sleep. Once an hour it also joins the home wifi and uploads the last six lines to a personal server, so the chart on the page is never more than an hour old. The first version saved a reading every minute, but the memory card filled up in a few weeks, so the interval was changed.\n\n[2] Backyard weather station: the mast\nThe wind sensor is a three cup anemometer fixed to the top of a two metre wooden mast, well above the fence so that the shed does not shelter it. The cups spin a small magnet past a switch, and the board counts the pulses over a few seconds to get a speed. The mast is held by two guy wires and has been through two winter storms without moving. The temperature and humidity sensor lives in a white stack of plastic plates that shades it from direct sun and still lets the air through.\n\n[3] Sourdough diary: feeding the starter\nThe sourdough starter lives in a glass jar on the kitchen shelf and is fed once a day with equal weights of flour and water. Before each feeding most of it is thrown away, so the jar never holds more than about a hundred grams. A rubber band around the jar marks the level, which makes it easy to see how far the starter rose overnight. In winter it rises slowly and gets a warmer spot near the oven; in summer it can double within four hours and is kept in the fridge between bakes.\n\n[4] Station power and enclosure\nThe electronics sit in a grey plastic box with a gasket lid, screwed to the post under a small roof of corrugated plastic. A solar panel the size of a paperback charges a single lithium battery through a charge controller. Because the board sleeps almost all the time, the battery lasted through a whole week of cloud in November without dropping below half. Cable glands keep rain out where the sensor wires enter the box, and a packet of silica gel inside the lid is replaced each spring.\n\nQuestion: How often does the weather station save a reading?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+   },
+   {
+    "id": "sanity-partial",
+    "question": "Which sensor measures the wind speed and how accurate is it?",
+    "answer": "The wind sensor in the backyard weather station measures wind speed and is accurate.",
+    "raw": "The wind sensor in the backyard weather station measures wind speed and is accurate.",
+    "tokens": 16,
+    "stop": "eos",
+    "ms": 391,
+    "ttftMs": 259,
+    "promptTokens": 575
+   },
+   {
+    "id": "sanity-unanswerable",
+    "question": "Which programming language is the station's firmware written in?",
+    "answer": "The station's firmware is written in a programming language.",
+    "raw": "The station's firmware is written in a programming language.",
+    "tokens": 12,
+    "stop": "eos",
+    "ms": 332,
+    "ttftMs": 233,
+    "promptTokens": 574
+   }
+  ],
+  "peakMemory": {
+   "bytes": 4977278976,
+   "byProcessType": {
+    "browser": 159891456,
+    "gpu-process": 1163280384,
+    "utility": 140902400,
+    "renderer": 3513204736
+   }
+  },
+  "serverTotals": {
+   "model": 578918293,
+   "runtime": 27502751,
+   "requests": 14
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: Unable to add response to browser cache: UnknownError: Failed to execute 'put' on 'Cache': Unexpected internal error.."
+  ]
+ },
+ "environment": {
+  "node": "v24.22.0",
+  "transformersJs": "4.3.2",
+  "onnxruntimeWeb": "1.31.0-dev.20260914-8d85527a0",
+  "playwrightCore": "1.64.1",
+  "machine": {
+   "os": "darwin",
+   "arch": "arm64",
+   "cpu": "Apple M5 Pro",
+   "cores": 15,
+   "memoryGB": 24
+  },
+  "browser": {
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "shaderF16": true,
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  }
+ },
+ "cache": {
+  "label": "qwen3/webgpu/from-cache",
+  "probe": {
+   "crossOriginIsolated": false,
+   "hardwareConcurrency": 15,
+   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+   "hasNavigatorGpu": true,
+   "adapter": {
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false
+   },
+   "features": [
+    "bgra8unorm-storage",
+    "clip-distances",
+    "core-features-and-limits",
+    "depth-clip-control",
+    "depth32float-stencil8",
+    "dual-source-blending",
+    "float32-blendable",
+    "float32-filterable",
+    "indirect-first-instance",
+    "primitive-index",
+    "rg11b10ufloat-renderable",
+    "shader-f16",
+    "subgroup-size-control",
+    "subgroups",
+    "texture-component-swizzle",
+    "texture-compression-astc",
+    "texture-compression-astc-sliced-3d",
+    "texture-compression-bc",
+    "texture-compression-bc-sliced-3d",
+    "texture-compression-etc2",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "timestamp-query"
+   ],
+   "shaderF16": true,
+   "limits": {
+    "maxBufferSize": 4294967292,
+    "maxStorageBufferBindingSize": 4294967292,
+    "maxComputeWorkgroupStorageSize": 32768
+   }
+  },
+  "load": {
+   "ok": true,
+   "wallMs": 1832,
+   "tokenizerMs": 127,
+   "lastFileDoneMs": 834,
+   "sessionInitMs": 996,
+   "bytesModelFiles": 569789751,
+   "bytesRuntime": 0,
+   "files": {
+    "tokenizer.json": {
+     "loaded": 9117040,
+     "total": 9117040
+    },
+    "tokenizer_config.json": {
+     "loaded": 10369,
+     "total": 10369
+    },
+    "config.json": {
+     "loaded": 912,
+     "total": 912
+    },
+    "onnx/model_q4f16.onnx": {
+     "loaded": 569789750,
+     "total": 569789750
+    },
+    "generation_config.json": {
+     "loaded": 219,
+     "total": 219
+    }
+   },
+   "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "warning: Unable to add response to browser cache: UnknownError: Failed to execute 'put' on 'Cache': Unexpected internal error.."
+   ]
+  },
+  "memoryAfterLoad": {
+   "total": 5718671360,
+   "byType": {
+    "browser": 227475456,
+    "gpu-process": 912031744,
+    "utility": 188645376,
+    "renderer": 4390518784
+   }
+  },
+  "firstGeneration": {
+   "promptTokens": 573,
+   "tokens": 60,
+   "ms": 956,
+   "ttftMs": 412,
+   "decodeTokensPerSecond": 109.8
+  },
+  "speedRuns": [
+   {
+    "promptTokens": 573,
+    "tokens": 60,
+    "ms": 719,
+    "ttftMs": 254,
+    "decodeTokensPerSecond": 127.2,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed, with a small board that records data every ten minutes and uploads it to a server. It uses a memory card and a personal server to keep the data up-to-date. The wind sensor is a three-cup anem"
+   },
+   {
+    "promptTokens": 573,
+    "tokens": 60,
+    "ms": 706,
+    "ttftMs": 239,
+    "decodeTokensPerSecond": 126.5,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed, with a small board that records data every ten minutes and uploads it to a server. It uses a memory card and a personal server to keep the data up-to-date. The wind sensor is a three-cup anem"
+   },
+   {
+    "promptTokens": 573,
+    "tokens": 60,
+    "ms": 762,
+    "ttftMs": 303,
+    "decodeTokensPerSecond": 128.7,
+    "raw": "The weather station measures air temperature, humidity, air pressure, and wind speed, with a small board that records data every ten minutes and uploads it to a server. It uses a memory card and a personal server to keep the data up-to-date. The wind sensor is a three-cup anem"
+   }
+  ],
+  "speed": {
+   "promptTokens": 573,
+   "tokens": 60,
+   "ttftMsMedian": 254,
+   "decodeTokensPerSecondMedian": 127.2,
+   "prefillTokensPerSecondMedian": 2256
+  },
+  "memoryAfterGenerate": {
+   "total": 3708616704,
+   "byType": {
+    "browser": 184238080,
+    "gpu-process": 764674048,
+    "utility": 150126592,
+    "renderer": 2609577984
+   }
+  },
+  "peakMemory": {
+   "bytes": 4337139712,
+   "byProcessType": {
+    "browser": 230932480,
+    "gpu-process": 150208512,
+    "utility": 189366272,
+    "renderer": 3766632448
+   }
+  },
+  "serverTotals": {
+   "model": 569789751,
+   "runtime": 587917,
+   "requests": 6
+  },
+  "consoleMessages": [
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: Unable to add response to browser cache: UnknownError: Failed to execute 'put' on 'Cache': Unexpected internal error.."
+  ]
+ }
+}
