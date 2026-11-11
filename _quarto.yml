@@ -24,6 +24,8 @@ website:
   description: "Personal website"
   site-url: "https://aayushgarg.dev"
   google-analytics: "G-16JWTLXJNG"
+  # The search page at /search/ is the site's search. Quarto's own overlay, its magnifier and its f, / and s shortcuts are off; static/js/site.js sends / to the page.
+  search: false
   favicon: "static/img/favicon.png"
   open-graph: true
   twitter-card:
@@ -41,6 +43,9 @@ website:
         href: tools/
       - text: About
         href: about.qmd
+      - icon: search
+        href: search/
+        aria-label: Search
   page-footer:
     left: "© 2026 Aayush Garg"
     right:

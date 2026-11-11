@@ -371,8 +371,13 @@ import { VECTORS_VERSION, base64ToBytes, createEmbedder, dequantizeRows, parseVo
     useMeaning();
   });
 
-  // Phones keep the keyboard closed until the visitor taps the field.
-  if (window.matchMedia('(min-width: 768px) and (pointer: fine)').matches) input.focus();
+  // Phones keep the keyboard closed until the visitor taps the field, unless they came here with / from another page (static/js/site.js leaves the flag).
+  var arrived = false;
+  try {
+    arrived = sessionStorage.getItem('search-focus') === '1';
+    sessionStorage.removeItem('search-focus');
+  } catch (error) { /* storage blocked */ }
+  if (arrived || window.matchMedia('(min-width: 768px) and (pointer: fine)').matches) input.focus();
 
   update();
   fetch(copy.indexUrl)

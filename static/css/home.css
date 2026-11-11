@@ -24,6 +24,11 @@
   max-width: 34em;
 }
 
+/* The Search link between the description and the category chips */
+.writing .writing-search {
+  margin: 0 0 var(--space-16);
+}
+
 /* Rows come from listing templates as plain lists */
 .post-rows {
   margin: 0;

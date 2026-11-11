@@ -4,12 +4,6 @@ page-layout: full
 body-classes: pg search-page
 sidebar: false
 toc: false
-# The page is unlisted for now: no navbar entry, out of Quarto's own search index, noindex, and analytics off. Quarto ignores a page-level analytics opt-out, so the early flag below is what stops it.
-search: false
-include-in-header:
-  - text: |
-      <meta name="robots" content="noindex, nofollow">
-      <script>window['ga-disable-G-16JWTLXJNG'] = true;</script>
 include-after-body:
   - text: |
       <script type="module" src="/static/js/search.js"></script>

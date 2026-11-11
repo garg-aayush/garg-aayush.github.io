@@ -29,7 +29,7 @@ Implementation sketch: a `fillShortGapsByTime(points, key, maxGapMs)` pass befor
 
 ## Search
 
-Stage 1 (the clean passage index, BM25 and the first scores) and stage 2 (the static embedding table) are built; stage 3 (answers from the results) was measured on 2026-11-12 and not shipped. The plan, decisions and every measurement are in `_devlog/local-search/journal.md`, the search scores are in `_devlog/local-search/evals/results/` and the answer scores in `_devlog/local-search/evals/answers/results/`.
+The page is live at `/search/` (2026-11-12): the navbar icon, `/` from any page and a link on the Writing page lead to it. Stage 1 (the clean passage index, BM25 and the first scores) and stage 2 (the static embedding table) are built; stage 3 (answers from the results) was measured on 2026-11-12 and not shipped. The plan, decisions and every measurement are in `_devlog/local-search/journal.md`, the search scores are in `_devlog/local-search/evals/results/` and the answer scores in `_devlog/local-search/evals/answers/results/`.
 
 ### Review the evaluation set
 `_devlog/local-search/evals/questions.json` has 40 queries (36 answerable, 4 with no answer), chosen on 2026-11-11 at 30 to 40 because the site is small. It awaits Aayush's review: the six judgments listed at the end of its README, and queries in his own words, since his phrasing is the closest thing to a real visitor the set has. If a query or judgment changes, rescore every run with `node _devlog/local-search/evals/run-eval.mjs`.
@@ -54,13 +54,3 @@ No answer feature ships: none of four small models passed the rule (decline at l
 
 ### Measure on a phone
 The stage 1 and stage 2 costs were measured in Chromium on a laptop only.
-
-### Go live with the search page at `/search/`
-The page is unlisted for now: no navbar entry, no link from any page, `noindex`, and the analytics opt-out. Aayush decided on 2026-11-11 that it lives at `/search/`, that the navbar magnifier is the main way in, and that the Writing page gets a small "Search" link when it goes live. Do these in order, because until the last one lands there should be one search, not two:
-
-1. Stop depending on Quarto's `search.json`. Done in stage 1: the page loads `search-index.json`. Measured on Quarto 1.10.18: with `website: search: false` Quarto still writes `search.json`, byte for byte the same, so turning its overlay off does not break the page.
-2. Point the navbar magnifier at `/search/` and retire Quarto's overlay. `website: search: false` removes the overlay, its magnifier and its scripts, and a navbar item `- icon: search`, `href: search/`, `aria-label: Search` puts a plain magnifier link in its place. Its `f`, `/` and `s` shortcuts can be changed on their own with `website: search: keyboard-shortcut:` (`[]` turns all three off, `["/"]` keeps only `/`). Today, with focus on the page body and the field empty, `/` focuses the page's field and the overlay stays closed, but `s` and `f` open the overlay; with focus in the field all three type normally.
-3. Make `/` on any page go to `/search/` with the field focused, in the site-wide `static/js/site.js`, ignoring the key inside fields and with modifiers. Quarto's own handler cannot do this, so turn its shortcuts off first.
-4. Add a small "Search" link to the Writing page.
-5. Remove `noindex` and the analytics opt-out from `search/index.qmd`.
-6. Check `sitemap.xml` (it already lists `/search/index.html`) and the feeds.

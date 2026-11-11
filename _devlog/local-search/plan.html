@@ -98,7 +98,7 @@
 <main>
 
 <h1>Local search plan</h1>
-<p class="dek">Browser-local search for aayushgarg.dev, in Aayush's three stages, written for review. Rewritten 2026-11-11 from the journal (<code>_devlog/local-search/journal.md</code>), the scored runs in <code>evals/results/</code> and two research files: <a href="research/2026-11-11-embedding-models.md"><code>research/2026-11-11-embedding-models.md</code></a> (stage 2) and <a href="research/2026-11-11-answer-models.md"><code>research/2026-11-11-answer-models.md</code></a> (stage 3), where every model fact has its source. Updated 2026-11-12 with the stage 3 result: measured, not shipped.</p>
+<p class="dek">Browser-local search for aayushgarg.dev, in Aayush's three stages, written for review. Rewritten 2026-11-11 from the journal (<code>_devlog/local-search/journal.md</code>), the scored runs in <code>evals/results/</code> and two research files: <a href="research/2026-11-11-embedding-models.md"><code>research/2026-11-11-embedding-models.md</code></a> (stage 2) and <a href="research/2026-11-11-answer-models.md"><code>research/2026-11-11-answer-models.md</code></a> (stage 3), where every model fact has its source. Updated 2026-11-12 with the stage 3 result: measured, not shipped. The page is live at <code>/search/</code> as stages 1 and 2 (keyword plus meaning), from 2026-11-12.</p>
 
 <ul class="legend" aria-label="Status labels">
   <li><span class="st st-d">Decided</span> Aayush said so</li>
@@ -161,7 +161,7 @@
   <dt>Does not</dt><dd>9 of 36 answerable queries need meaning: five paraphrases ("patching holes in a chart that repeats every year"), a tool by its effect ("make a photo black and white"), two person questions ("what does he do now", "has he worked in oil and gas") and the British spelling "diarisation". The four no-answer queries return 28, 31, 9 and 2 pages.</dd>
   <dt>Fallback</dt><dd>Titles and descriptions only, if the index cannot be read.</dd>
   <dt>Exit test</dt><dd>Met: one variant wired into the page with tests, and every run in the journal.</dd>
-  <dt>Status</dt><dd><span class="st st-x">Done</span> The page address and entry points are <span class="st st-d">Decided</span> (<code>/search/</code>, the navbar magnifier replacing Quarto's overlay, <code>/</code> from any page, a link on the Writing page); go-live waits on the checklist in <code>TODO.md</code>.</dd>
+  <dt>Status</dt><dd><span class="st st-x">Done</span> The page address and entry points are <span class="st st-d">Decided</span> (<code>/search/</code>, the navbar magnifier replacing Quarto's overlay, <code>/</code> from any page, a link on the Writing page); it went live on 2026-11-12 (journal entry "2026-11-12, going live").</dd>
 </dl>
 
 <h3>Stage 2: keyword plus semantic search</h3>
@@ -184,7 +184,7 @@
   <dt>Exit test</dt><dd>A model ships only if it fixes queries BM25 misses without breaking ones it gets; ties go to the smaller download. Met by the potion table offline and in the browser (development: five queries fixed, none broken; held-out: one fixed, none broken).</dd>
   <dt>Built</dt><dd>BM25 plus <code>potion-base-8M</code> as an int8 table at 256 dimensions, fused by reciprocal rank fusion (k 60) over the first 10 pages of each list, loaded on first use of the search box without asking. Passage vectors are made on every render by <code>scripts/build-search-vectors.mjs</code> from the committed table in <code>static/search/</code>: no model download, no npm install and no cache in the deploy. <code>npm run check:site</code> fails if the index or the vectors miss a page or do not match. Adding or editing a post needs no search step (shown end to end in <code>results/stage2-browser/e2e-new-post.md</code>); a page that is not a post needs one entry in <code>search/index.qmd</code>.</dd>
   <dt>Browser test results</dt><dd>(1) The browser's query vector matches Node's for 60 queries (cosine 1.000000000) and the rankings are identical. (2) The three files are 7,952,080 bytes raw and 5,697,447 with brotli; ready 32.5 ms after the first focus locally, 4.7 s at 10 Mbit/s and 29 s at 1.6 Mbit/s with brotli; typing stays responsive (0.36 ms per keystroke through the whole handler). Phone and GitHub Pages' compression not measured. (3) A failed or mismatched load leaves keyword search working. (4) Per-query time on a phone was not measured; in Chromium on a laptop 0.11 ms. (5) In a Chromium profile with a disk cache a second visit within the max-age made no request; a changed index or table has a new URL; other browsers not checked. (6) Typing: the first page changes about once per typed word against 0.47 for BM25, and the replay MRR equals BM25's (0.68); the flicker is in the first rows.</dd>
-  <dt>Status</dt><dd><span class="st st-x">Done</span> built and measured in Chromium, uncommitted. Open: commit <code>static/search/</code> (7.2 MB), the fusion cut-off (held-out disagrees), what to show for queries the site cannot answer, phone and real network.</dd>
+  <dt>Status</dt><dd><span class="st st-x">Done</span> built, measured in Chromium and live. Open: the fusion cut-off (held-out disagrees), what to show for queries the site cannot answer, phone and real network.</dd>
 </dl>
 
 <h3>Stage 3: answers from the search results</h3>
