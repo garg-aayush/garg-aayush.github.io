@@ -97,7 +97,7 @@ listing:
       - title: About
         href: about.html
         section: About
-        description: Forward deployed ML engineer at Applied Computing. My path from TU Delft and Shell to Flixstock and Jiffy, and contract work.
+        description: Principal forward deployed ML engineer at Applied Computing. My path from TU Delft and Shell to Flixstock and Jiffy, and contract work.
       - title: Publications
         href: publications.html
         section: Research
