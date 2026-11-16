@@ -1,7 +1,7 @@
 <%
 // One row per stage, used by the homepage path and the About experience. The page's CSS decides the layout.
 // Quarto runs this as a lodash template, so <%= prints raw text and <%- would escape the markup.
-// Reads dates, title, optional role, description (Markdown works), optional href (links the title), optional badge (marks the current stage and shows as a pill by the dates), optional span (a column weight, set as --tl-span on the row) and optional milestones from a YAML item.
+// Reads dates, title, optional role (or roles, a list of role and dates for several titles at one company), description (Markdown works), optional href (links the title), optional badge (marks the current stage and shows as a pill by the dates), optional span (a column weight, set as --tl-span on the row) and optional milestones from a YAML item.
 // Each milestone has name, dates (shown), start (YYYY-MM, places it on the stage's time scale as --tl-at), role and note (raw like description, so Markdown or HTML links work). The page's CSS decides how the role and note are revealed.
 // A stage's scale runs from its first milestone start to the next stage's first milestone start, so the last stage has no scale and spaces its places evenly.
 const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -35,7 +35,7 @@ const rows = items.map((item, index) => {
 <p class="tl-dates">${esc(item.dates)}${badge}</p>
 <div class="tl-body">
 <h3 class="tl-title no-anchor">${title}</h3>
-${item.role ? `<p class="tl-role">${esc(item.role)}</p>` : ""}
+${(item.roles ?? (item.role ? [{ role: item.role }] : [])).map((r) => `<p class="tl-role">${esc(r.role)}${r.dates ? ` <span class="tl-role-dates">${esc(r.dates)}</span>` : ""}</p>`).join("\n")}
 <p class="tl-text">${item.description ?? ""}</p>${has ? `
 <ul class="tl-milestones">
 ${list.map(milestone).join("\n")}
