@@ -657,6 +657,24 @@ h2:has(> .sec-head) {
   color: var(--text-muted);
 }
 
+.tl-role + .tl-role {
+  margin-top: 0;
+}
+
+/* Flex so dates that wrap under a long role start flush left */
+.tl-role:has(.tl-role-dates) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-8);
+}
+
+.tl-role-dates {
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .tl-text {
   max-width: 62ch;
   margin-top: var(--space-8);
