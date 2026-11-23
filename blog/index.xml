@@ -10,7 +10,253 @@
 <atom:link href="https://aayushgarg.dev/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>From-scratch LLM builds, deep dives and practical AI engineering.</description>
 <generator>quarto-1.10.18</generator>
-<lastBuildDate>Sun, 01 Nov 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 23 Nov 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Running Inkling-2-Mini on an RTX 4090 with llama.cpp</title>
+  <link>https://aayushgarg.dev/posts/2026-11-23-inkling2-mini-llamacpp/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Last week <a href="https://thinkingmachines.ai/">Thinking Machines Lab</a> released <a href="https://huggingface.co/thinkingmachines/Inkling-2-Mini">Inkling-2-Mini</a>. Since its release it has been getting a lot of attention (rightly so!). Firstly, because it is the best model you can run on your local machine with as little as ~12 GB VRAM, sort of dethroning <a href="https://unsloth.ai/docs/models/qwen3.8">Qwen3.8-27B</a> as the go-to local model. Secondly, because it is a sparse MoE model with 26.4B total parameters and 3.4B active (~5.4B effective active parameters per token to account for looping). Local inference is mostly memory-bandwidth bound, so only activating a small fraction of the weights per token gives you the best of both worlds: the capability of a ~26B model at the generation speed of a much smaller one.</p>
+<p>I can genuinely say that it is the best local model since Qwen3.8 and honestly I can even go as far as saying that it feels on par with Claude Sonnet 5.5 to me.</p>
+<p>In one of my earlier posts this year, I walked through <a href="https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/index.html">deploying a local model on a 24 GB GPU</a> on my RTX 4090 workstation and using it from my Mac. I followed the same approach here, though I am using the <a href="https://unsloth.ai/docs/desktop">Unsloth desktop app</a> instead of OpenCode. It is a great app for local LLM inference, very easy to set up and switch between models. I would highly recommend giving it a try. If you like, you can also hook it up to OpenCode like in my Qwen post, though I have not tried it there yet.</p>
+<p>Inkling-2-Mini supports up to a 1M token context window but on a 24 GB card VRAM decides how much you actually get. Before settling on a daily setup for coding agents, I wanted to find the best context length and server settings for a 4090 with acceptable performance. This is a quick post walking through what I tested and the configs I ended up with.</p>
+<section id="benchmarking" class="level2">
+<h2 class="anchored" data-anchor-id="benchmarking">Benchmarking</h2>
+<p>When deploying a coding model on 24 GB of VRAM, three things decide whether it feels good to use:</p>
+<ul>
+<li><strong>Max usable context:</strong> how much context fits in VRAM without running out of memory mid-session.</li>
+<li><strong>Time to first token (TTFT):</strong> how long you wait for the model to read your prompt and start replying.</li>
+<li><strong>Generation speed (tok/s) at long context:</strong> how fast it writes code as the session grows, especially once you pass 64K-100K tokens.</li>
+</ul>
+<p>In llama.cpp there are a few flags you end up tuning to balance speed against context size:</p>
+<ul>
+<li><strong>KV cache precision (16-bit vs 8-bit):</strong> By default llama.cpp uses a 16-bit KV cache. Switching to 8-bit (<code>--cache-type-k q8_0 --cache-type-v q8_0</code>) roughly cuts KV cache memory in half so you can fit a lot more context on the same card.</li>
+<li><strong>Speculative decoding (DSpark draft model):</strong> If a model supports MTP or has a draft model available, you can use speculative decoding to speed up generation. For Inkling-2-Mini there is a tiny 0.4 GB DSpark draft model so I tested it here. It gives a nice speed boost on shorter contexts but costs some vram and adds overhead once the context gets large.</li>
+<li><strong>Micro-batch size (<code>-ub</code>):</strong> This controls how many prompt tokens hit the GPU at once during prefill. On an 8K prompt <code>-ub 512</code> was the sweet spot at ~3,000 tok/s while going higher slightly slowed prefill down and cut into usable context.</li>
+<li><strong>Concurrent slots (<code>--parallel</code>):</strong> Each slot splits your vram and throughput. Since I am running on a single 24 GB card and is the only person using this server, it is always best to set it to <code>--parallel 1</code>.</li>
+</ul>
+</section>
+<section id="benchmark-results" class="level2">
+<h2 class="anchored" data-anchor-id="benchmark-results">Benchmark results</h2>
+<p>All numbers below are from single runs on my RTX 4090, using slices of real C++ source code (from the llama.cpp repo) to fill the context instead of synthetic dummy tokens.</p>
+<section id="how-much-context-fits-on-24-gb" class="level3">
+<h3 class="anchored" data-anchor-id="how-much-context-fits-on-24-gb">How much context fits on 24 GB</h3>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-11-23/max-context.svg" class="img-fluid" alt="Horizontal bar chart comparing the largest context window that survived a full session across four setups: 262K for 8-bit KV, 229K for 8-bit KV with DSpark, 180K for 16-bit KV and 139K for 16-bit KV with DSpark."></p>
+<p>Testing a single prompt can trick you on 24 GB: with a 16-bit KV cache the server took one 196K prompt, then ran out of GPU memory later in the session. The chart above shows the largest context that actually survived a full multi-turn session.</p>
+<blockquote class="blockquote">
+<p>Switching to an 8-bit KV cache pushes usable context from 180K to 262K tokens while DSpark trades away roughly 30-40K tokens of vram headroom on either cache type.</p>
+</blockquote>
+</section>
+<section id="time-to-first-token-ttft" class="level3">
+<h3 class="anchored" data-anchor-id="time-to-first-token-ttft">Time to first token (TTFT)</h3>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-11-23/ttft-vs-context.svg" class="img-fluid" alt="Line chart of cold time to first token vs prompt size for three setups, plus a dashed line showing cached follow-up turns staying under 1 second."></p>
+<p>Each line stops where that setup runs out of VRAM, and all three track almost identically until then. In a 12-turn tool calling session starting at 41K tokens, only the first cold turn felt slow (15.8 s) while turns 2-12 reused the prompt cache and finished in a median of 1.6-1.9 s.</p>
+<blockquote class="blockquote">
+<p>Cold time to first token depends almost entirely on prompt size and barely changes across setups, while cached follow-up turns stay under 1 s at every depth.</p>
+</blockquote>
+</section>
+<section id="code-generation-speed-as-context-grows" class="level3">
+<h3 class="anchored" data-anchor-id="code-generation-speed-as-context-grows">Code generation speed as context grows</h3>
+<p><img src="https://aayushgarg.dev/static/img/blog-2026-11-23/code-speed-vs-context.svg" class="img-fluid" alt="Line chart of code generation speed in tokens per second from 0 to 160K tokens of code in context across three setups."></p>
+<p>To see how generation holds up in a real coding session, I asked four coding questions behind 0 to 160K tokens of code at low thinking effort. On short prompts DSpark makes a clear difference, though that lead shrinks as context grows and by 120K both 16-bit KV + DSpark and plain 8-bit KV are basically tied. The surprise was 8-bit KV + DSpark: you might expect the best of both worlds, but past 64K it actually falls behind plain 8-bit KV.</p>
+<blockquote class="blockquote">
+<p>DSpark gives a ~30% speed boost on short contexts but on an 8-bit KV cache it actually falls behind plain 8-bit KV past 64K.</p>
+</blockquote>
+</section>
+<section id="thinking-effort-and-tool-calls" class="level3">
+<h3 class="anchored" data-anchor-id="thinking-effort-and-tool-calls">Thinking effort and tool calls</h3>
+<p>A couple of smaller things came up while testing that are worth knowing before you set this up:</p>
+<ul>
+<li><strong>Keep <code>--reasoning-effort low</code> as the default:</strong> In my tests, <code>low</code> kept replies snappy while still letting any client bump it up with <code>"reasoning_effort": "high"</code> when needed. Not sure but setting effort to <code>none</code> still made the model think and was actually slower than <code>low</code> and <code>--reasoning-budget 0</code> broke tool calling pretty badly.</li>
+<li><strong>Switching effort mid-session clears the prompt cache once:</strong> Changing thinking effort partway through a 40K toks session made the server reread the whole history</li>
+</ul>
+</section>
+</section>
+<section id="possible-configuration-options" class="level2">
+<h2 class="anchored" data-anchor-id="possible-configuration-options">Possible configuration options</h2>
+<p>Putting all of that together, here are the three configs that make sense on a 24 GB card:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Config</th>
+<th>Setup</th>
+<th>Context</th>
+<th>Speed at 0 / 64K / 120K / 160K (tok/s)</th>
+<th>Peak VRAM</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Fast</strong></td>
+<td>16-bit KV + DSpark</td>
+<td>131K</td>
+<td>103 / 71 / 61 / n/a</td>
+<td>22.6 GB</td>
+</tr>
+<tr class="even">
+<td><strong>Long context</strong></td>
+<td>8-bit KV</td>
+<td>262K</td>
+<td>76 / 66 / 59 / 55</td>
+<td>22.4 GB</td>
+</tr>
+<tr class="odd">
+<td><strong>Balanced</strong></td>
+<td>8-bit KV + DSpark</td>
+<td>196K</td>
+<td>98 / 62 / 49 / 43</td>
+<td>23.2 GB</td>
+</tr>
+</tbody>
+</table>
+<p>Honestly, for most people the real choice is between the first two:</p>
+<ul>
+<li><strong>Fast (131K)</strong> is what I am running right now. It is the fastest setup as long as your sessions stay under roughly 64K tokens and it still matches Long context (262K) at 120K.</li>
+<li><strong>Long context (262K)</strong> is what you should pick if your sessions regularly go past 131K tokens. Just keep in mind that a cold 256K prompt takes around 144 s before the first token shows up.</li>
+<li><strong>Balanced (196K)</strong> really only makes sense if you do not want to restart the server and want both &gt;131K context and fast replies on short prompts. On raw speed it is slower than Fast (131K) at every depth, slower than Long context (262K) past 64K and leaves the least VRAM spare.</li>
+</ul>
+<section id="running-it-with-llama.cpp" class="level3">
+<h3 class="anchored" data-anchor-id="running-it-with-llama.cpp">Running it with llama.cpp</h3>
+<p>To install Unsloth’s llama.cpp build and download the <code>UD-Q4_K_XL</code> quant (17.6 GB) and <code>Q8_0</code> DSpark drafter (0.4 GB), follow the steps in <a href="https://unsloth.ai/docs/models/inkling-2-mini">Unsloth’s Inkling-2-Mini guide</a>. Once that is set up, here is the final config I am using (<strong>Fast</strong>, 131K context):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">BIN</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>~/llama.cpp-unsloth/b12631</span>
+<span id="cb1-2"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">MODELS</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>~/MODELS/unsloth/Inkling-2-Mini-GGUF</span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">export</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">LD_LIBRARY_PATH</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$BIN</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${LD_LIBRARY_PATH</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:-</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$BIN</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/llama-server</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-m</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$MODELS</span>/Inkling-2-Mini-UD-Q4_K_XL.gguf <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--model-draft</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$MODELS</span>/dspark-Inkling-2-Mini-Q8_0.gguf <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--spec-type</span> draft-dspark <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--spec-draft-n-max</span> 2 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--n-gpu-layers-draft</span> 99 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-c</span> 131072 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ub</span> 512 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ngl</span> 99 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-fa</span> on <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parallel</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--jinja</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--reasoning-effort</span> low <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--temp</span> 1.0 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--top-p</span> 1.0 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--top-k</span> 0 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--min-p</span> 0.0 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--alias</span> inkling-2-mini <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--host</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>YOUR_GPU_SERVER_IP<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> --port 8080 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--no-slots</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--no-webui</span></span></code></pre></div></div>
+<ul>
+<li>If you want <strong>Long context (262K)</strong> instead, drop the <code>--model-draft</code> and <code>--spec-type</code> lines, add <code>--cache-type-k q8_0 --cache-type-v q8_0</code> and change <code>-c</code> to <code>262144</code>.</li>
+<li>If you want <strong>Balanced (196K)</strong>, keep the DSpark flags, add the same 8-bit cache flags and set <code>-c 196608</code>.</li>
+</ul>
+<p>All three configs leave only 0.8-1.6 GB of VRAM free, so try not to run anything else heavy on the GPU at the same time 🙈.</p>
+
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>Local LLMs</category>
+  <guid>https://aayushgarg.dev/posts/2026-11-23-inkling2-mini-llamacpp/</guid>
+  <pubDate>Mon, 23 Nov 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://aayushgarg.dev/static/img/blog-2026-11-23/code-speed-card.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Pairing GPT-6.1 Sol with a Local Model in OpenCode</title>
   <link>https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/</link>
@@ -7102,131 +7348,6 @@ font-style: inherit;">"Load SVG Image"</span>,</span>
   <category>Transformers</category>
   <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-09-08-building-gpt-from-scratch.html</guid>
   <pubDate>Mon, 08 Sep 2025 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Key Takeaways from Lecture 1: LLM Evaluation Lifecycle</title>
-  <link>https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>A couple of months back, I enrolled in <a href="https://maven.com/parlance-labs/evals">AI Evals for Engineers and PMs</a>, a course by <a href="https://hamel.dev/">Hamel</a> and <a href="https://www.sh-reya.com/">Shreya</a>. The live cohort for ot ran from July to mid-August, but due to work commitments I couldn’t follow along in real time.</p>
-<p>I have now started following it as a self-paced course and plans to write a blog for each lesson as I progress. This will be my way to capture what I learn and to reflect on the material. In this first blog 🤞, I’ll walk through my key takeaways from introductory <strong>Lecture 1</strong>.</p>
-<section id="key-takeaways" class="level1">
-<h1>Key Takeaways</h1>
-<section id="evaluation-isnt-optional-but-fundamental" class="level2">
-<h2 class="anchored" data-anchor-id="evaluation-isnt-optional-but-fundamental">1. Evaluation isn’t Optional but Fundamental</h2>
-<p>Anyone who has built or worked with LLM pipelines knows that their outputs are open-ended, subjective, and unstructured (unless you enforce it). If you rely on ad-hoc checks which I have been guilty of, it often leads to knee-jerk fixes. Moreover, it completely miss the long-term need of continuous tracking which is essential for improving your pipeline reliability and usefulness. This is why <strong>Evaluation—the systematic measurement of an LLM pipeline quality—is critical!</strong></p>
-</section>
-<section id="the-three-gulfs" class="level2">
-<h2 class="anchored" data-anchor-id="the-three-gulfs">2. The Three Gulfs</h2>
-<p>The below image beautifully captures and categorizes the challenges associated with any LLM application: <img src="https://aayushgarg.dev/static/img/blog-2025-09-02/three-gulfs.png" class="img-fluid" alt="Three gulfs"></p>
-<ul>
-<li><p><strong>Gulf of Comprehension</strong>: This is a result of limited understanding of the input data (user queries) and the pipeline’s outputs (behavior). Bridging it requires examining examples to identify common failure modes. This brings it own challenge: <strong>“How to manually review every input or output to identify failure modes?”</strong></p></li>
-<li><p><strong>Gulf of Specification</strong>: It refers to the difficulty of translating a user’s high-level intent into unambiguous precise instructions for the LLM. Bridging it requires writing detailed prompts that captures “true intent” which in itself is challenging due to <strong>ambiguous nature of natural language.</strong></p></li>
-<li><p><strong>Gulf of Generalizaton</strong>: This is due to LLMs unexpected and inconsistent behavior on new or unusual (out of distribution) inputs. Bridging it requires a good understanding of your LLM model capabilities. This leads to the question: <strong>“How to improve LLM model?”</strong></p></li>
-</ul>
-</section>
-<section id="analyze-measure-improve-lifecycle" class="level2">
-<h2 class="anchored" data-anchor-id="analyze-measure-improve-lifecycle">3. Analyze → Measure → Improve Lifecycle</h2>
-<p>Hamel and Shreya introduced a structured way to bridge the above gulfs: <strong>Analyze → Measure → Improve</strong> lifecycle.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://aayushgarg.dev/static/img/blog-2025-09-02/pitfalls.png" class="img-fluid figure-img"></p>
-<figcaption>Analyze → Measure → Improve Lifecycle</figcaption>
-</figure>
-</div>
-<p>However, the most important takeaways for me was not what each phase means but the <strong>pitfalls</strong> that often derail them:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 48%">
-<col style="width: 45%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Phase</th>
-<th>Pitfalls</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Analyze</strong></td>
-<td>Outsourcing annotation; looking at too few examples and forming shaky hypotheses</td>
-<td>This is where you learn the most. Spend <strong>~75–80%</strong> of your time here—good analysis sets up everything else.</td>
-</tr>
-<tr class="even">
-<td><strong>Measure</strong></td>
-<td>Misaligned or poorly designed LLM judges; “overfitting” by testing judges on the same examples used in the judge prompt</td>
-<td>In this phase, you need the rigor of data science. <strong>NEVER</strong> leak test data into judge prompts.</td>
-</tr>
-<tr class="odd">
-<td><strong>Improve</strong></td>
-<td>Prematurely jumping to fixes; defaulting to the most complex solution first (fine-tuning, bigger models)</td>
-<td><strong>Start simple</strong>. Prompt tweaks and improvements often go a long way before heavier changes are needed.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="llms-are-imperfectprompt-iteratively" class="level2">
-<h2 class="anchored" data-anchor-id="llms-are-imperfectprompt-iteratively">4. LLMs are Imperfect—Prompt Iteratively</h2>
-<p>When we write prompts it’s easy to ignore that LLMs are non-deterministic, prompt-sensitive and can confidently hallucinate. Thus, always remember: <strong><em>“LLMs are powerful but imperfect components. Leverage strengths, anticipate weaknesses.”</em></strong></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://aayushgarg.dev/static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg" class="img-fluid figure-img"></p>
-<figcaption>LLM Strengths vs.&nbsp;Weaknesses</figcaption>
-</figure>
-</div>
-<p><strong>Effective prompting starts with you.</strong> You should not delegate the prompting to an LLM or you will miss important failure modes. Instead, write your own draft prompt and if needed, use an LLM only to polish clarity.</p>
-<p>From there on, treat prompting as an iterative process where the first draft is a starting point which you refine based on observed outputs.</p>
-</section>
-<section id="reference-based-vs-reference-free-metrics" class="level2">
-<h2 class="anchored" data-anchor-id="reference-based-vs-reference-free-metrics">5. Reference-based vs Reference-free Metrics</h2>
-<p>The evaluation metrics broadly fall into two categories: <strong>reference-free</strong> and <strong>reference-based</strong>. Both of them are useful but in different contexts.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 44%">
-<col style="width: 44%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th><strong>Reference-Free</strong></th>
-<th><strong>Reference-Based</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>What it means</strong></td>
-<td>Evaluates properties of the output itself (no golden answer required)</td>
-<td>Compares output against a golden reference or ground truth</td>
-</tr>
-<tr class="even">
-<td><strong>When to use</strong></td>
-<td>Creative or open-ended tasks, formatting/structure checks, validity tests</td>
-<td>Tasks with clearly defined correct answers (e.g., factual QA, deterministic outputs)</td>
-</tr>
-<tr class="odd">
-<td><strong>Examples</strong></td>
-<td>- Does the output follow the JSON format?<br>- Does generated code/SQL run without errors?</td>
-<td>- Exact match against a gold SQL query<br>- ROUGE/BLEU score for text generation</td>
-</tr>
-</tbody>
-</table>
-
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>Paper Notes</category>
-  <guid isPermaLink="false">https://garg-aayush.github.io/posts/2025-09-02-llm-evaluation-lifecycle.html</guid>
-  <pubDate>Tue, 02 Sep 2025 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
