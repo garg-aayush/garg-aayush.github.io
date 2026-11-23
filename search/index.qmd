@@ -17,6 +17,7 @@ listing:
     fields: [date, title, description, categories, reading-time]
     date-format: "D MMM YYYY"
     sort: "date desc"
+    page-size: 999
     contents:
       - ../posts/20*.qmd
       - ../posts/20*/index.qmd
@@ -24,6 +25,7 @@ listing:
   - id: search-pages
     template: ../_templates/search-records.ejs
     sort: false
+    page-size: 999
     contents:
       - title: Work
         href: projects.html
@@ -164,7 +166,7 @@ listing:
     "topicLabelOne": "{name}, 1 post",
     "modeHybrid": "Keyword and meaning search",
     "modeFallback": "Titles and descriptions only",
-    "stopWords": ["a", "an", "and", "are", "as", "at", "be", "by", "do", "does", "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where", "which", "who", "why", "with", "you", "your"]
+    "stopWords": ["a", "an", "and", "are", "as", "at", "be", "by", "do", "does", "for", "from", "has", "have", "he", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where", "which", "who", "why", "with", "you", "your"]
   }
   </script>
 </div>
