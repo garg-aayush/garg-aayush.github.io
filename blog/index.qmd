@@ -12,6 +12,7 @@ listing:
     template-params:
       all: All
       label: Categories
+    page-size: 999
     contents: &posts
       - "../posts/20*.qmd"
       - "../posts/20*/index.qmd"
@@ -25,6 +26,7 @@ listing:
     fields: [date, title, description, categories, reading-time]
     date-format: "D MMM YYYY"
     sort: "date desc"
+    page-size: 999
     contents: *posts
 ---
 

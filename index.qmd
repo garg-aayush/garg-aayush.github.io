@@ -36,6 +36,7 @@ listing:
     date-format: "D MMM YYYY"
     sort: "date desc"
     max-items: 1
+    page-size: 999
     contents:
       - posts/20*.qmd
       - posts/20*/index.qmd
@@ -93,6 +94,7 @@ listing:
     date-format: "D MMM YYYY"
     sort: "date desc"
     max-items: 5
+    page-size: 999
     contents:
       - posts/20*.qmd
       - posts/20*/index.qmd
