@@ -34,6 +34,8 @@ In llama.cpp there are a few flags you end up tuning to balance speed against co
 
 ## Benchmark results
 
+> **Note (24 Nov 2026):** These benchmarks were run on Unsloth's `b12631-mix-acc0843` build, one release before their [23 Nov update](https://unsloth.ai/docs/models/inkling-2-mini) (`b12649-mix-c7059d6`). The newer build brings faster decoding and a Q8_0 KV cache fix so you should expect better speeds if you follow their guide today. I might rerun these benchmarks on the newer build later.
+
 All numbers below are from single runs on my RTX 4090, using slices of real C++ source code (from the llama.cpp repo) to fill the context instead of synthetic dummy tokens.
 
 ### How much context fits on 24 GB
