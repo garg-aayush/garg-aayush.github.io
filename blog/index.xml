@@ -42,6 +42,9 @@
 </section>
 <section id="benchmark-results" class="level2">
 <h2 class="anchored" data-anchor-id="benchmark-results">Benchmark results</h2>
+<blockquote class="blockquote">
+<p><strong>Note (24 Nov 2026):</strong> These benchmarks were run on Unsloth’s <code>b12631-mix-acc0843</code> build, one release before their <a href="https://unsloth.ai/docs/models/inkling-2-mini">23 Nov update</a> (<code>b12649-mix-c7059d6</code>). The newer build brings faster decoding and a Q8_0 KV cache fix so you should expect better speeds if you follow their guide today. I might rerun these benchmarks on the newer build later.</p>
+</blockquote>
 <p>All numbers below are from single runs on my RTX 4090, using slices of real C++ source code (from the llama.cpp repo) to fill the context instead of synthetic dummy tokens.</p>
 <section id="how-much-context-fits-on-24-gb" class="level3">
 <h3 class="anchored" data-anchor-id="how-much-context-fits-on-24-gb">How much context fits on 24 GB</h3>
