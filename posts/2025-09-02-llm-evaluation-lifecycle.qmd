@@ -12,13 +12,13 @@ A couple of months back, I enrolled in [AI Evals for Engineers and PMs](https://
 
 I have now started following it as a self-paced course and plans to write a blog for each lesson as I progress. This will be my way to capture what I learn and to reflect on the material. In this first blog 🤞, I’ll walk through my key takeaways from introductory **Lecture 1**. 
 
-# Key Takeaways
+## Key Takeaways
 
-## 1. Evaluation isn’t Optional but Fundamental
+### 1. Evaluation isn’t Optional but Fundamental
 
 Anyone who has built or worked with LLM pipelines knows that their outputs are open-ended, subjective, and unstructured (unless you enforce it). If you rely on ad-hoc checks which I have been guilty of, it often leads to knee-jerk fixes. Moreover, it completely miss the long-term need of continuous tracking which is essential for improving your pipeline reliability and usefulness. This is why **Evaluation—the systematic measurement of an LLM pipeline quality—is critical!**
 
-## 2. The Three Gulfs
+### 2. The Three Gulfs
 The below image beautifully captures and categorizes the challenges associated with any LLM application:
 ![Three gulfs](/static/img/blog-2025-09-02/three-gulfs.png)
 
@@ -28,11 +28,11 @@ The below image beautifully captures and categorizes the challenges associated w
 
 * **Gulf of Generalizaton**: This is due to LLMs unexpected and inconsistent behavior on new or unusual (out of distribution) inputs. Bridging it requires a good understanding of your LLM model capabilities. This leads to the question: **"How to improve LLM model?"**
 
-## 3. Analyze → Measure → Improve Lifecycle
+### 3. Analyze → Measure → Improve Lifecycle
 
 Hamel and Shreya introduced a structured way to bridge the above gulfs: **Analyze → Measure → Improve** lifecycle. 
 
-![Analyze → Measure → Improve Lifecycle](/static/img/blog-2025-09-02/pitfalls.png)
+![Analyze → Measure → Improve Lifecycle](/static/img/blog-2025-09-02/pitfalls.png){fig-alt="Diagram of the Analyze, Measure and Improve LLM evaluation lifecycle and common pitfalls"}
 
 However, the most important takeaways for me was not what each phase means but the **pitfalls** that often derail them:
 
@@ -43,16 +43,16 @@ However, the most important takeaways for me was not what each phase means but t
 | **Improve** | Prematurely jumping to fixes; defaulting to the most complex solution first (fine-tuning, bigger models) | **Start simple**. Prompt tweaks and improvements often go a long way before heavier changes are needed. |
 
 
-## 4. LLMs are Imperfect—Prompt Iteratively
+### 4. LLMs are Imperfect—Prompt Iteratively
 When we write prompts it’s easy to ignore that LLMs are non-deterministic, prompt-sensitive and can confidently hallucinate. Thus, always remember: **_“LLMs are powerful but imperfect components. Leverage strengths, anticipate weaknesses.”_**
 
-![LLM Strengths vs. Weaknesses](/static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg)
+![LLM Strengths vs. Weaknesses](/static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg){fig-alt="Slide summarizing LLM strengths and weaknesses in production systems"}
 
 **Effective prompting starts with you.** You should not delegate the prompting to an LLM or you will miss important failure modes. Instead, write your own draft prompt and if needed, use an LLM only to polish clarity. 
 
 From there on, treat prompting as an iterative process where the first draft is a starting point which you refine based on observed outputs.
 
-## 5. Reference-based vs Reference-free Metrics
+### 5. Reference-based vs Reference-free Metrics
 The evaluation metrics broadly fall into two categories: **reference-free** and **reference-based**. Both of them are useful but in different contexts.
 
 |                     | **Reference-Free**                                                                 | **Reference-Based**                                                                 |

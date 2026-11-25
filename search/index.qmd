@@ -5,6 +5,9 @@ page-layout: full
 body-classes: pg search-page
 sidebar: false
 toc: false
+include-in-header:
+  - text: |
+      <meta name="robots" content="noindex, follow">
 include-after-body:
   - text: |
       <script type="module" src="/static/js/search.js"></script>
@@ -104,18 +107,6 @@ listing:
         href: publications.html
         section: Research
         description: Journal papers and conference talks from my PhD and research years.
-      - title: DOVER-Lap
-        href: pages/doverlap.html
-        section: Research
-        description: The code for DOVER-Lap, publicly available under the MIT license.
-      - title: "Integration of speech separation, diarization, and recognition for multi-speaker meetings"
-        href: pages/jsalt.html
-        section: Research
-        description: How to reproduce and extend our pipeline of speech separation, diarization and ASR, with separated audio files and end-to-end recipes.
-      - title: Multi-class Spectral Clustering with Overlaps for Speaker Diarization
-        href: pages/overlap-aware-sc.html
-        section: Research
-        description: The implementation of our SLT 2021 paper, an overlap detector and a modified spectral clustering method for overlap-aware diarization.
 ---
 
 ```{=html}

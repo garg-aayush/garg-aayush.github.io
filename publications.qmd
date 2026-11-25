@@ -1,5 +1,6 @@
 ---
 title: "Publications"
+description: "Journal papers and conference talks from my PhD and research years."
 page-layout: full
 body-classes: pg
 sidebar: false

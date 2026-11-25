@@ -1,5 +1,6 @@
 ---
 title: "About"
+description-meta: "Principal forward deployed ML engineer at Applied Computing. Background across Jiffy, Flixstock, Shell and TU Delft."
 page-layout: full
 body-classes: pg
 sidebar: false

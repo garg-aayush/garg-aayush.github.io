@@ -25,7 +25,7 @@ Ideally I would love to use this pattern in Claude Code or Codex since I am more
 
 For example in Codex I set up a `glm_implementer` agent role pointing at the GLM server. Codex picks up the role but still sends its requests to OpenAI so the subagent fails right away with `The 'coder-glm' model is not supported when using Codex with a ChatGPT account.`
 
-![Codex spawns the glm_implementer role and the subagent fails right away](/static/img/blog-2026-11-01/codex-subagent-error.jpg)
+![Codex spawns the glm_implementer role and the subagent fails right away](/static/img/blog-2026-11-01/codex-subagent-error.jpg){fig-alt="Terminal screenshot showing Codex spawning the glm_implementer subagent role and failing immediately"}
 
 This turns out to be documented in Codex's [subagent docs](https://learn.chatgpt.com/docs/agent-configuration/subagents) and there are open issues asking for it ([#40858](https://github.com/openai/codex/issues/40858), [#47752](https://github.com/openai/codex/issues/47752)) to be resolved. Claude Code has the same limitation: a subagent can pick a different model but not a different endpoint ([docs](https://code.claude.com/docs/en/sub-agents)).
 
@@ -41,7 +41,7 @@ One reason I use Sol (or any ChatGPT model) as the main model is the login. Open
 
 One effective but simple split or setup based on my experience is this one:
 
-![Sol plans and checks, GLM on the H200s reads and edits, and a Sol reviewer only sees risky changes](/static/img/blog-2026-11-01/agent-split.svg)
+![Sol plans and checks, GLM on the H200s reads and edits, and a Sol reviewer only sees risky changes](/static/img/blog-2026-11-01/agent-split.svg){fig-alt="Diagram of the split coding agent architecture: Sol plans and checks, local GLM on H200 GPUs reads and edits files, and a Sol reviewer checks risky changes"}
 
 I talk to the orchestrator in the main session which runs on Sol. It sends briefs to the explorer and the implementer which run on GLM-5.3-Flash on the H200s and checks their reports itself. The reviewer also runs on Sol and only comes in for risky changes.
 
@@ -118,11 +118,11 @@ Note, you also need to set up permissions because OpenCode does not sandbox the 
 
 I cannot share my real sessions (that is client work) so here for the sake of completion I have added a very simple one. In this case, I asked the orchestrator to add a `longest_word(text)` function with tests to a tiny Python module. It handed the task to the implementer, then ran `git diff`, `python3 -m unittest` and `git diff --check` itself. It also caught that the new test used "Hello, World! It's me.", where hello and world tie at five letters, so it sent the same implementer back to strengthen it ("Hi, WONDERFUL world!") and signed off once the 7 tests passed.
 
-![The orchestrator hands the task to the implementer, runs the checks itself and sends the implementer back once](/static/img/blog-2026-11-01/opencode-delegation.jpg)
+![The orchestrator hands the task to the implementer, runs the checks itself and sends the implementer back once](/static/img/blog-2026-11-01/opencode-delegation.jpg){fig-alt="OpenCode session showing the orchestrator delegating a task to the local implementer, running checks and requesting one revision"}
 
 After the run, `opencode stats --project . --models --cost` shows GLM with 104.6k tokens and Sol with 68.2k so even this toy task sent about 60% of the tokens to GLM (GLM shows \$0.00 only because no price is set for a custom model).
 
-![Tokens and cost per model after the run](/static/img/blog-2026-11-01/opencode-usage.jpg)
+![Tokens and cost per model after the run](/static/img/blog-2026-11-01/opencode-usage.jpg){fig-alt="Usage breakdown showing tokens and API cost per model after the OpenCode run"}
 
 In my experience on bigger implementation tasks the share is higher: roughly ~70-75% of the tokens go to GLM and only ~20-25% to Sol.
 

@@ -124,7 +124,7 @@ The algorithm achieves this through five interdependent fixes:
 
 These fixes are not independent. Fusion needs tiling (intermediates are too large for SRAM otherwise). Tiling needs online softmax (softmax is not directly associative). Recomputation needs $L$ (the backward pass must recover $P$ without storing it). I will walk through each fix in turn, building up the complete algorithm.
 
-![](/static/img/blog-2026-03-27/flashattention.png){width=100%}
+![](/static/img/blog-2026-03-27/flashattention.png){width=100% fig-alt="Diagram from Dao et al. showing the GPU memory hierarchy, tiled Q, K, V blocks in SRAM and fused FlashAttention kernel execution"}
 <p align="center"><em>Left: GPU memory hierarchy. Center: FlashAttention tiled computation with Q, K, V blocks loaded into SRAM. Right: FlashAttention fuses all attention ops into a single kernel, eliminating separate HBM round-trips. (Source: <a href="https://arxiv.org/abs/2205.14135">Dao et al., 2022</a>)</em></p>
 
 

@@ -18,6 +18,7 @@ paths:
   - "scripts/build-search-index.mjs"
   - "scripts/build-search-vectors.mjs"
   - "scripts/make-search-table.mjs"
+  - "scripts/inject-seo-metadata.mjs"
   - "static/search/**"
   - "scripts/legacy-feed-guids.json"
 ---

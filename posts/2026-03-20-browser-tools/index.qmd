@@ -12,7 +12,7 @@ I have been an admirer of Simon Willison's [tools site](https://tools.simonwilli
 
 I always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using [Claude Code](https://claude.ai/code) and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too.
 
-![](/static/img/blog-2026-03-20/tools_preview.jpg){width=100%}
+![](/static/img/blog-2026-03-20/tools_preview.jpg){width=100% fig-alt="Screenshot of the browser-based tools index page listing image, viewer and data utilities"}
 
 ## The Tools
 
@@ -55,7 +55,7 @@ The HTML and Markdown viewers comes in handy especially if you are working with 
 
 The YAML/JSON converter I like a lot, especially when working with training configs. The Base64 tool is another one I use often when working with llm/image-gen APIs, sometimes they send back base64 encoded images or require base64 encoded images as input and I can directly do that here.
 
-![](/static/img/blog-2026-03-20/yaml2json.jpg){width=100%}
+![](/static/img/blog-2026-03-20/yaml2json.jpg){width=100% fig-alt="Screenshot of the browser-based YAML to JSON converter tool"}
 
 > For what it is worth, I do have all of these set up as skills in my Claude Code setup too. But it is always nice to have something in the browser where you can quickly drag and drop an image and get the **result without opening a terminal session or burning tokens**.
 

@@ -90,11 +90,11 @@ test('the Writing page has a small Search link under its description', async ({ 
   expect(new URL(await link.evaluate(a => a.href)).pathname).toBe('/search/');
 });
 
-test('the search page is an ordinary page: it can be indexed, analytics is on, and typing sends nothing', async ({ page }) => {
+test('the search page is noindex with analytics on, and typing sends nothing', async ({ page }) => {
   const sent = [];
   page.on('request', request => sent.push(`${request.method()} ${request.url()} ${request.postData() ?? ''}`));
   await page.goto('/search/');
-  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow');
   expect(await page.evaluate(() => window['ga-disable-G-16JWTLXJNG']), 'the analytics opt-out is gone').toBeUndefined();
   expect(await page.evaluate(() => Array.isArray(window.dataLayer) && window.dataLayer.length > 0), 'the analytics snippet is present').toBe(true);
   await expect(page.locator('.search-mode')).toBeVisible();

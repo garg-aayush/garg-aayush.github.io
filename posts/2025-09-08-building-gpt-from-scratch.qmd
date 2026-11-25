@@ -23,7 +23,7 @@ I followed Karpathy's video and captured each architectural addition as a separa
 | Update 6 | Pre-LayerNorm (modern) | ~2.076 | [`4f5bef8`](https://github.com/garg-aayush/building-from-scratch/commit/4f5bef8) |
 | Update 7 | Scaling Up + Dropout | ~1.48 | [`d4141d7`](https://github.com/garg-aayush/building-from-scratch/commit/d4141d7) |
 
-![Loss Curves](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/loss_curves.png)
+![Loss Curves](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/loss_curves.png){fig-alt="Training and validation loss curves for the character-level GPT model built from scratch"}
 
 You can find all the code and notebooks in the repo: [building-from-scratch/basic-gpt](https://github.com/garg-aayush/building-from-scratch/tree/main/basic-gpt)
 
@@ -58,7 +58,7 @@ Tokens have a lot to talk about. One head might look for consonants, another for
 
 > **Note**: This is similar to grouped convolutions. Instead of one large convolution, you do it in groups. With 4 heads of 8 dimensions each, we get the same total dimensionality (32) but with 4 separate communication channels. Each head can specialize in different patterns.
 
-![Multi-Head Attention](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/MHA.png)
+![Multi-Head Attention](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/MHA.png){fig-alt="Diagram of multi-head self-attention with query, key, value projections and output concatenation"}
 
 **Result**: ~2.28 validation loss.
 
@@ -68,7 +68,7 @@ The FFN layer addresses a key problem. Until now, "the tokens looked at each oth
 
 Self-attention is the **communication** phase. Tokens gather data from each other. But then they need to **compute** on that data individually. That's what the feed-forward network does. It operates on a per-token level. All the tokens process their gathered information independently.
 
-![Feed-Forward Network](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/FFN.png)
+![Feed-Forward Network](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/FFN.png){fig-alt="Diagram of the position-wise feed-forward network inside a Transformer block"}
 
 So the Transformer block becomes: **communicate** (attention) → **compute** (feed-forward). This pattern repeats for every layer.
 

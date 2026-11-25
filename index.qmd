@@ -1,11 +1,17 @@
 ---
 title: "Aayush Garg"
 description: "Principal Forward Deployed ML Engineer building and deploying AI models and a reasoning layer that help refineries and plants run better."
+image: /static/img/og-default.jpg
+image-alt: "Aayush Garg, Principal forward deployed ML engineer at Applied Computing: I build and deploy AI systems, from first principles to production."
 title-block-style: none
 page-layout: full
 body-classes: home
 toc: false
 sidebar: false
+format:
+  html:
+    template-partials:
+      - _partials/home/title-block.html
 # Fills the []{.build-month} span in the Now box header with the month of the build
 filters:
   - _filters/build-month.lua
@@ -89,7 +95,8 @@ listing:
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
-    feed: true
+    feed:
+      items: 100
     fields: [date, title, categories, reading-time]
     date-format: "D MMM YYYY"
     sort: "date desc"

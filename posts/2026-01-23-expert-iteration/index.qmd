@@ -22,7 +22,7 @@ The [Self-taught Reasoner (STaR)](https://arxiv.org/abs/2203.14465) uses Expert 
 
 I see Expert Iteration for LLMs as **SFT on self-generated, filtered data, repeated iteratively** as shown in this loop:
 
-![](/static/img/blog-2026-01-23/expert-iteration-diagram.png)
+![](/static/img/blog-2026-01-23/expert-iteration-diagram.png){fig-alt="Diagram of the Expert Iteration loop: sample rollouts, filter correct answers and run supervised fine-tuning iteratively"}
 
 > Note: STaR paper retrains from the base pretrained model at each iteration to avoid overfitting and introduces rationalization for failed problems. The approach used here (following the CS336 assignment) does not uses rationalization and continues training from the previous iteration checkpoint.
 
@@ -80,7 +80,7 @@ Expert Iteration training approach differs from standard SFT because the number 
 
 My initial experiments with a constant `7e-5` showed overfitting with val. accuracy plateauing and then declining. Using a `lr=1e-5` avoided overfitting but resulted in extremely slow learning.
 
-![](/static/img/blog-2026-01-23/lr_sweep_ei_acc.png){fig-align="center" width=70%}
+![](/static/img/blog-2026-01-23/lr_sweep_ei_acc.png){fig-align="center" width=70% fig-alt="Validation accuracy across Expert Iteration steps for different learning rate schedules"}
 
 > **Note**: All accuracy values reported in the current and following sections is on the validation data.
 
@@ -105,7 +105,7 @@ I ran two experiments:
 - **Single-trace**: Keep only 1 correct trace per question (randomly selected if multiple are correct)
 - **Multi-trace**: Keep all correct traces per question
 
-![](/static/img/blog-2026-01-23/sampling_strategy_ei_acc.png){fig-align="center" width=70%}
+![](/static/img/blog-2026-01-23/sampling_strategy_ei_acc.png){fig-align="center" width=70% fig-alt="Validation accuracy comparing single-trace versus multi-trace filtering in Expert Iteration"}
 
 Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.
 
@@ -118,7 +118,7 @@ The assignment suggests to vary the batch size $D$ and rollout count $R$ to unde
 - **$D$ (batch_per_ei)**: ${512, 1024, 2048}$
 - **$R$ (num_rollouts)**: ${2, 4}$
 
-![](/static/img/blog-2026-01-23/ei_grid_plot.png)
+![](/static/img/blog-2026-01-23/ei_grid_plot.png){fig-alt="Grid of Expert Iteration validation accuracy curves across batch sizes D and rollout counts R"}
 
 Looking at the results, some observations stand out:
 
@@ -138,7 +138,7 @@ This aligns with an observation from the [STaR paper](https://arxiv.org/abs/2203
 
 To better understand the above accuracy results, I also tracked the **filter rate (correct rollouts / total rollouts)** across iterations for different experiments.
 
-![](/static/img/blog-2026-01-23/ei_filter_rate_plot.png)
+![](/static/img/blog-2026-01-23/ei_filter_rate_plot.png){fig-alt="Plot of Expert Iteration filter rate (correct rollouts divided by total rollouts) across iterations"}
 
 A few things stand out:
 
@@ -152,7 +152,7 @@ A few things stand out:
 
 So far, all my experiments used just 1 epoch of SFT per expert iteration step. I wanted to see if I could push accuracy even higher and the simplest way to check this is by training for more epochs per iteration. I ran additional experiments with 2 epochs per iteration for two batch sizes: $D=512$ and $D=1024$ (both with $R=4$).
 
-![](/static/img/blog-2026-01-23/ei_multiepoch_plot.png)
+![](/static/img/blog-2026-01-23/ei_multiepoch_plot.png){fig-alt="Validation accuracy comparing 1 epoch versus 2 epochs per Expert Iteration step for D=512 and D=1024"}
 
 Training for 2 epochs per iteration consistently outperforms 1 epoch across both configurations. My understanding is that with a large rollout count $R$ the filtered dataset is already diverse enough that training for multiple epochs extracts more signal without memorizing. This improved learning leads to better filter rates and accuracy in subsequent iterations.
 

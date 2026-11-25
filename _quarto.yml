@@ -6,12 +6,12 @@ project:
     - node scripts/place-article-end.mjs
     - node scripts/build-search-index.mjs
     - node scripts/build-search-vectors.mjs
+    - node scripts/inject-seo-metadata.mjs
   render:
     - index.qmd
     - about.qmd
     - publications.qmd
     - blog/index.qmd
-    - pages/*.qmd
     - posts/*.qmd
     - posts/*/index.qmd
     - projects.qmd
@@ -21,12 +21,13 @@ project:
 
 website:
   title: "Aayush Garg"
-  description: "Personal website"
+  description: "ML engineer writing about building language models from scratch, local AI inference and practical ML engineering."
   site-url: "https://aayushgarg.dev"
   google-analytics: "G-16JWTLXJNG"
   # The search page at /search/ is the site's search. Quarto's own overlay, its magnifier and its f, / and s shortcuts are off; static/js/site.js sends / to the page.
   search: false
   favicon: "static/img/favicon.png"
+  image: "/static/img/og-default.jpg"
   open-graph: true
   twitter-card:
     card-style: summary_large_image
@@ -73,6 +74,7 @@ format:
     include-in-header:
       - text: |
           <link rel="preload" href="/static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+          <link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="/blog/index.xml">
     include-after-body:
       - text: |
           <script src="/static/js/site.js"></script>

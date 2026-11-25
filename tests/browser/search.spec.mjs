@@ -157,11 +157,11 @@ test('a query with no keyword match lists the five nearest pages by meaning unde
 
 test('a word the site has no page for in the wording, but means the same as, is found by meaning alone', async ({ page }) => {
   await page.goto('/search/');
-  await page.locator('.search-input').fill('diarisation');
+  await page.locator('.search-input').fill('colouring');
   await expect(page.locator('.search-mode')).toHaveText(hybrid);
-  await expect(page.locator('.search-count')).toHaveText(/No exact matches for "diarisation"/);
+  await expect(page.locator('.search-count')).toHaveText(/No exact matches for "colouring"/);
   const titles = await rows(page).allTextContents();
-  expect(titles.some(title => /Spectral Clustering|Integration of speech separation/.test(title)), titles.join(' | ')).toBe(true);
+  expect(titles.some(title => /Image Adjust & Transform|Binary Mask Creator/.test(title)), titles.join(' | ')).toBe(true);
 });
 
 test('a long query lists its best 8 rows, and Show all lists the rest with the counts unchanged', async ({ page }) => {

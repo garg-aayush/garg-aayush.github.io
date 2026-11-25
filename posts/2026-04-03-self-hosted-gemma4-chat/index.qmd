@@ -157,7 +157,7 @@ Open a browser on your phone or laptop and go to:
 http://<YOUR_TAILSCALE_IP>:8001
 ```
 
-![llama.cpp web UI running Gemma 4 on iPhone over Tailscale](/static/img/blog-2026-04-03/snapshot-iphone.jpg){width=50%}
+![llama.cpp web UI running Gemma 4 on iPhone over Tailscale](/static/img/blog-2026-04-03/snapshot-iphone.jpg){width=50% fig-alt="Screenshot of the llama.cpp web chat interface running Gemma 4 on an iPhone over Tailscale"}
 
 ## 5. Verify Web Search Is Working
 

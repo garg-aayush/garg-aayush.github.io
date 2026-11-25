@@ -73,7 +73,7 @@ For this dashboard the back-and-forth helped me take the important decisions ear
 - It also laid out the cadence logic for me: a GitHub Actions cron every 15 minutes that writes a single JSON to a `data` branch on the same repo which the page then reads on load. 
 - By the end of the session I had a page that was live with 8 metros, a marker plus card UI and a working live tile and the data was being fetched every 15 minutes.
 
-![](/static/img/blog-2026-04-29/stage1_snap.jpg){width=100%}
+![](/static/img/blog-2026-04-29/stage1_snap.jpg){width=100% fig-alt="First working version of the India Weather dashboard showing 8 metro markers and live weather cards"}
 
 *Full Claude Code conversation for this stage: [stage-1-brainstorm-and-v1.txt](https://gist.github.com/garg-aayush/ad4dce3170fddcefdfb75eabc5b15620).*
 
@@ -81,7 +81,7 @@ For this dashboard the back-and-forth helped me take the important decisions ear
 
 The next thing that I wanted to do was to add history charts under the map. I wanted to be able to view the history of the temperature, humidity and AQI for each city over certain time periods. This is the first version that I made conversationally with Claude:
 
-![](/static/img/blog-2026-04-29/stage2_hischarts.jpg){width=60%}
+![](/static/img/blog-2026-04-29/stage2_hischarts.jpg){width=60% fig-alt="Early history charts showing noisy hourly sawtooth waves across 7-day and 30-day views"}
 
 Obviously, this was not the best way to view the values. The 7d and 30d views looked terrible with the day-night cycle turning every chart into a sawtooth. Next, I sent Claude the screenshot and asked one question:
 
@@ -89,7 +89,7 @@ Obviously, this was not the best way to view the values. The 7d and 30d views lo
 
 Claude pointed me at the weather.com pattern where weather apps aggregate the values by day, show a min/max bands with a daily mean line for temp and humidity, and color the AQI bars by EPA category. A second daily cron rebuilds the 30-day window from Open-Meteo each run which looked much nicer:
 
-![](/static/img/blog-2026-04-29/stage2_hischarts_better.jpg){width=60%}
+![](/static/img/blog-2026-04-29/stage2_hischarts_better.jpg){width=60% fig-alt="Redesigned daily history charts with min-max bands, daily mean lines and EPA-colored AQI bars"}
 
 Finally, I improved the UI by fixing a few small issues. Some of them you can see below:
 
@@ -112,11 +112,11 @@ Finally, I improved the UI by fixing a few small issues. Some of them you can se
 
 After the dashboard was deployed I noticed the live tile timestamps were drifting. The label said "every 15 minutes" but the GitHub Actions free-tier cron was firing erratically, sometimes 40 mins or even >1 hour late. This is usually the case with the free-tier cron jobs on GitHub Actions.
 
-![](/static/img/blog-2026-04-29/stage3_github_actions.jpg){width=80%}
+![](/static/img/blog-2026-04-29/stage3_github_actions.jpg){width=80% fig-alt="GitHub Actions workflow run history showing irregular 40 to 60 minute delays on a 15-minute cron schedule"}
 
 I decided to move the cron to Cloudflare Workers which has a free tier and fires within seconds of schedule.
 
-![](/static/img/blog-2026-04-29/stage3_cloudflare.jpg){width=100%}
+![](/static/img/blog-2026-04-29/stage3_cloudflare.jpg){width=100% fig-alt="Cloudflare Worker cron trigger logs firing reliably every 15 minutes"}
 
 The interesting thing for me here is that I had never used Cloudflare workers for cron jobs before. Given how good these assistants are at writing code, it wrote the code, walked me through setup steps and the live cadence has been working well since. **Even unfamiliar backend infra is something you can prompt your way through** (obviously you should have the fundamental knowledge to nudge it in the right direction).
 
