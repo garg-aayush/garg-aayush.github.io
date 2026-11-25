@@ -6,6 +6,7 @@ project:
     - node scripts/place-article-end.mjs
     - node scripts/build-search-index.mjs
     - node scripts/build-search-vectors.mjs
+    - node scripts/inject-seo-metadata.mjs
   render:
     - index.qmd
     - about.qmd
