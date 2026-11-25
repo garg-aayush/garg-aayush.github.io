@@ -18,10 +18,10 @@ ComfyUI does not natively support vector graphics like [SVGs](https://en.wikiped
 Thus, I built [Svg2Raster](https://github.com/garg-aayush/ComfyUI-Svg2Raster), a small custom node package that makes it easy to use SVGs with other nodes.
 ![SVG2Raster](/static/img/blog-2025-09-10/workflow.png)
 
-# Writing your Custom ComfyUI Node
+## Writing your Custom ComfyUI Node
 So here I am assuming that you are fairly comfortable using ComfyUI and you already have ComfyUI installed locally on your system/cloud instance.
 
-## Step 1: Validate the core logic first
+### Step 1: Validate the core logic first
 I prefer not to start with the ComfyUI node API. First, I like to write a simple Python notebook to test the functionalities I actually need. This validates your core code logic and packages in isolation. 
 
 In my case, I needed a way to read, rasterize and manipulate the SVGs. Thus, I tested all the relevant operations using the core packages [CairoSVG](https://cairosvg.org/) and [Pillow](https://python-pillow.org/). 
@@ -48,7 +48,7 @@ If you want to see all the code snippets (width/height controls, color and borde
 
 **Once you have a working standalone script or code, wrapping it as a ComfyUI node is mostly boilerplate.**
 
-## Step 2: Understand the Anatomy of a Custom Node
+### Step 2: Understand the Anatomy of a Custom Node
 
 Every ComfyUI node is a Python class with specific methods that ComfyUI expects. Here are the essential components:
 
@@ -84,7 +84,7 @@ class LoadSVG:
 This is a minimal ComfyUI node class explanation that I believe is good enough to start writing your own nodes. If you want more details, check the official ComfyUI custom node [documentation](https://docs.comfy.org/custom-nodes/overview).
 
 
-## Step 3: Implementing the **LoadSVGImage** Node
+### Step 3: Implementing the **LoadSVGImage** Node
 
 First, I set up the file structure in ComfyUI's `custom_nodes` folder for my nodes package:
 ```bash
@@ -168,7 +168,7 @@ Similarly, I also wrote a `RasterizeSVG` class for manipulating the loaded SVG. 
 That's how you implement a node. Write a standalone functionality script, wrap it in the ComfyUI class structure, handle the tensor conversions, add the helper methods, and register it with the mappings.
 
 
-## Step 4: Testing Your Custom Node in ComfyUI
+### Step 4: Testing Your Custom Node in ComfyUI
 
 Once you are done implementing, testing is straightforward.
 
@@ -178,7 +178,7 @@ Once you are done implementing, testing is straightforward.
 
 **Note**: I have also added the installation steps [here](https://github.com/garg-aayush/ComfyUI-Svg2Raster?tab=readme-ov-file#installation).
 
-## Step 5: Sharing and Publishing Your Node
+### Step 5: Sharing and Publishing Your Node
 Once everything worked, I created a GitHub repo for the nodes. You can see how I structured mine in the [Svg2Raster](https://github.com/garg-aayush/ComfyUI-Svg2Raster) repo.
 
 Some Essential files in the repo are:

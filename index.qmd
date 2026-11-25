@@ -6,6 +6,10 @@ page-layout: full
 body-classes: home
 toc: false
 sidebar: false
+format:
+  html:
+    template-partials:
+      - _partials/home/title-block.html
 # Fills the []{.build-month} span in the Now box header with the month of the build
 filters:
   - _filters/build-month.lua
