@@ -26,6 +26,7 @@ website:
   # The search page at /search/ is the site's search. Quarto's own overlay, its magnifier and its f, / and s shortcuts are off; static/js/site.js sends / to the page.
   search: false
   favicon: "static/img/favicon.png"
+  image: "/static/img/og-default.jpg"
   open-graph: true
   twitter-card:
     card-style: summary_large_image

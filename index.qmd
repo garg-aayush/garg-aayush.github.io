@@ -1,6 +1,8 @@
 ---
 title: "Aayush Garg"
 description: "Principal Forward Deployed ML Engineer building and deploying AI models and a reasoning layer that help refineries and plants run better."
+image: /static/img/og-default.jpg
+image-alt: "Aayush Garg, Principal forward deployed ML engineer at Applied Computing: I build and deploy AI systems, from first principles to production."
 title-block-style: none
 page-layout: full
 body-classes: home

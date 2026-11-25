@@ -4,6 +4,8 @@ tags: ["Kalman Filter", "Kalman Smoothing", "State-Space Models", "Time Series",
 categories: [Time Series]
 mathjax: true
 description: "A first-principles walkthrough of Kalman filtering and smoothing for time-series work: denoising, decomposition, forecasting and gap filling with examples"
+image: /static/img/blog-2026-07-15/state-space-card.jpg
+image-alt: "Diagram of a linear state-space model showing hidden states transitioning via F with process noise w and emitting observed measurements via H with measurement noise v"
 date: 2026-07-15
 permalink: /2026-07-15-kalman-filters-time-series/
 ---
