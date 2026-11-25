@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-03-20">
 <meta name="description" content="Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code.">
 
@@ -70,6 +71,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
 
 <link rel="stylesheet" href="../../static/fonts/fonts.css">
@@ -83,10 +85,16 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta property="og:description" content="Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-03-20/tools_preview.jpg">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="Screenshot of the browser-based tools index page listing image, viewer and data utilities">
 <meta name="twitter:title" content="Building Browser Tools with Claude Code – Aayush Garg">
 <meta name="twitter:description" content="Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code.">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-03-20/tools_preview.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="Screenshot of the browser-based tools index page listing image, viewer and data utilities">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-03-20-browser-tools/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-03-20-browser-tools/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Building Browser Tools with Claude Code","url":"https://aayushgarg.dev/posts/2026-03-20-browser-tools/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-03-20-browser-tools/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"Introducing the browser-based tools section on my website, client-side utilities for images, data, and viewing, built almost entirely with Claude Code.","datePublished":"2026-03-20","image":"https://aayushgarg.dev/static/img/blog-2026-03-20/tools_preview.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -178,7 +186,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </details></nav>
 <p>I have been an admirer of Simon Willison’s <a href="https://tools.simonwillison.net/">tools site</a> for a while now. On his website you can find more than a hundred single-file HTML + JavaScript tools he has built using LLMs. They are mostly self-contained HTML + JavaScript files.</p>
 <p>I always wanted something of my own, specific tools that I use often and would be handy to have on my website. Though I never got around to actually writing them. I am an AI/ML engineer and HTML and JavaScript are not my strongest suits. A few days ago I decided to just start building them using <a href="https://claude.ai/code">Claude Code</a> and see how far I could get. Below are some of the tools I have built for myself and you might find them useful too.</p>
-<p><img src="../../static/img/blog-2026-03-20/tools_preview.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="../../static/img/blog-2026-03-20/tools_preview.jpg" class="img-fluid" style="width:100.0%" alt="Screenshot of the browser-based tools index page listing image, viewer and data utilities"></p>
 <section id="the-tools" class="level2">
 <h2 class="anchored" data-anchor-id="the-tools">The Tools</h2>
 <p>Here is what is there so far, grouped by category. All tools support drag-and-drop for file input and run entirely in the browser (nothing leaves your machine).</p>
@@ -226,7 +234,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li><a href="../../tools/url-encoder.html"><strong>URL Encoder/Decoder</strong></a>: Percent encode and decode useful for API calls and debugging.</li>
 </ul>
 <p>The YAML/JSON converter I like a lot, especially when working with training configs. The Base64 tool is another one I use often when working with llm/image-gen APIs, sometimes they send back base64 encoded images or require base64 encoded images as input and I can directly do that here.</p>
-<p><img src="../../static/img/blog-2026-03-20/yaml2json.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="../../static/img/blog-2026-03-20/yaml2json.jpg" class="img-fluid" style="width:100.0%" alt="Screenshot of the browser-based YAML to JSON converter tool"></p>
 <blockquote class="blockquote">
 <p>For what it is worth, I do have all of these set up as skills in my Claude Code setup too. But it is always nice to have something in the browser where you can quickly drag and drop an image and get the <strong>result without opening a terminal session or burning tokens</strong>.</p>
 </blockquote>

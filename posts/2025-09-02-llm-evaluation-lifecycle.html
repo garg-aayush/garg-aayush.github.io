@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="description" content="Here, I discuss the key ideas/takeaways around the systematic evaluation and metrics, “Three Gulfs” and effective prompting.">
 
 <title>Key Takeaways from Lecture 1: LLM Evaluation Lifecycle – Aayush Garg</title>
@@ -69,6 +70,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
 
 <link rel="stylesheet" href="../static/fonts/fonts.css">
@@ -92,6 +94,10 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:image:alt" content="Three gulfs">
 <meta name="twitter:image-height" content="1704">
 <meta name="twitter:image-width" content="2734">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Key Takeaways from Lecture 1: LLM Evaluation Lifecycle","url":"https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"Here, I discuss the key ideas/takeaways around the systematic evaluation and metrics, “Three Gulfs” and effective prompting.","image":"https://aayushgarg.dev/static/img/blog-2025-09-02/three-gulfs.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -181,14 +187,14 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </details></nav>
 <p>A couple of months back, I enrolled in <a href="https://maven.com/parlance-labs/evals">AI Evals for Engineers and PMs</a>, a course by <a href="https://hamel.dev/">Hamel</a> and <a href="https://www.sh-reya.com/">Shreya</a>. The live cohort for ot ran from July to mid-August, but due to work commitments I couldn’t follow along in real time.</p>
 <p>I have now started following it as a self-paced course and plans to write a blog for each lesson as I progress. This will be my way to capture what I learn and to reflect on the material. In this first blog 🤞, I’ll walk through my key takeaways from introductory <strong>Lecture 1</strong>.</p>
-<section id="key-takeaways" class="level1">
-<h1>Key Takeaways</h1>
-<section id="evaluation-isnt-optional-but-fundamental" class="level2">
-<h2 class="anchored" data-anchor-id="evaluation-isnt-optional-but-fundamental">1. Evaluation isn’t Optional but Fundamental</h2>
+<section id="key-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h2>
+<section id="evaluation-isnt-optional-but-fundamental" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-isnt-optional-but-fundamental">1. Evaluation isn’t Optional but Fundamental</h3>
 <p>Anyone who has built or worked with LLM pipelines knows that their outputs are open-ended, subjective, and unstructured (unless you enforce it). If you rely on ad-hoc checks which I have been guilty of, it often leads to knee-jerk fixes. Moreover, it completely miss the long-term need of continuous tracking which is essential for improving your pipeline reliability and usefulness. This is why <strong>Evaluation—the systematic measurement of an LLM pipeline quality—is critical!</strong></p>
 </section>
-<section id="the-three-gulfs" class="level2">
-<h2 class="anchored" data-anchor-id="the-three-gulfs">2. The Three Gulfs</h2>
+<section id="the-three-gulfs" class="level3">
+<h3 class="anchored" data-anchor-id="the-three-gulfs">2. The Three Gulfs</h3>
 <p>The below image beautifully captures and categorizes the challenges associated with any LLM application: <img src="../static/img/blog-2025-09-02/three-gulfs.png" class="img-fluid" alt="Three gulfs"></p>
 <ul>
 <li><p><strong>Gulf of Comprehension</strong>: This is a result of limited understanding of the input data (user queries) and the pipeline’s outputs (behavior). Bridging it requires examining examples to identify common failure modes. This brings it own challenge: <strong>“How to manually review every input or output to identify failure modes?”</strong></p></li>
@@ -196,12 +202,12 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li><p><strong>Gulf of Generalizaton</strong>: This is due to LLMs unexpected and inconsistent behavior on new or unusual (out of distribution) inputs. Bridging it requires a good understanding of your LLM model capabilities. This leads to the question: <strong>“How to improve LLM model?”</strong></p></li>
 </ul>
 </section>
-<section id="analyze-measure-improve-lifecycle" class="level2">
-<h2 class="anchored" data-anchor-id="analyze-measure-improve-lifecycle">3. Analyze → Measure → Improve Lifecycle</h2>
+<section id="analyze-measure-improve-lifecycle" class="level3">
+<h3 class="anchored" data-anchor-id="analyze-measure-improve-lifecycle">3. Analyze → Measure → Improve Lifecycle</h3>
 <p>Hamel and Shreya introduced a structured way to bridge the above gulfs: <strong>Analyze → Measure → Improve</strong> lifecycle.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../static/img/blog-2025-09-02/pitfalls.png" class="img-fluid figure-img"></p>
+<p><img src="../static/img/blog-2025-09-02/pitfalls.png" class="img-fluid figure-img" alt="Diagram of the Analyze, Measure and Improve LLM evaluation lifecycle and common pitfalls"></p>
 <figcaption>Analyze → Measure → Improve Lifecycle</figcaption>
 </figure>
 </div>
@@ -238,20 +244,20 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </tbody>
 </table>
 </section>
-<section id="llms-are-imperfectprompt-iteratively" class="level2">
-<h2 class="anchored" data-anchor-id="llms-are-imperfectprompt-iteratively">4. LLMs are Imperfect—Prompt Iteratively</h2>
+<section id="llms-are-imperfectprompt-iteratively" class="level3">
+<h3 class="anchored" data-anchor-id="llms-are-imperfectprompt-iteratively">4. LLMs are Imperfect—Prompt Iteratively</h3>
 <p>When we write prompts it’s easy to ignore that LLMs are non-deterministic, prompt-sensitive and can confidently hallucinate. Thus, always remember: <strong><em>“LLMs are powerful but imperfect components. Leverage strengths, anticipate weaknesses.”</em></strong></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg" class="img-fluid figure-img"></p>
+<p><img src="../static/img/blog-2025-09-02/llm-strengths-weaknesses.jpg" class="img-fluid figure-img" alt="Slide summarizing LLM strengths and weaknesses in production systems"></p>
 <figcaption>LLM Strengths vs.&nbsp;Weaknesses</figcaption>
 </figure>
 </div>
 <p><strong>Effective prompting starts with you.</strong> You should not delegate the prompting to an LLM or you will miss important failure modes. Instead, write your own draft prompt and if needed, use an LLM only to polish clarity.</p>
 <p>From there on, treat prompting as an iterative process where the first draft is a starting point which you refine based on observed outputs.</p>
 </section>
-<section id="reference-based-vs-reference-free-metrics" class="level2">
-<h2 class="anchored" data-anchor-id="reference-based-vs-reference-free-metrics">5. Reference-based vs Reference-free Metrics</h2>
+<section id="reference-based-vs-reference-free-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="reference-based-vs-reference-free-metrics">5. Reference-based vs Reference-free Metrics</h3>
 <p>The evaluation metrics broadly fall into two categories: <strong>reference-free</strong> and <strong>reference-based</strong>. Both of them are useful but in different contexts.</p>
 <table class="caption-top table">
 <colgroup>

@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2025-12-30">
 <meta name="description" content="A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.">
 
@@ -70,6 +71,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -110,10 +112,16 @@ window.Quarto = {
 <link rel="stylesheet" href="../static/css/search.css">
 <meta property="og:title" content="Deriving the DPO Loss from First Principles – Aayush Garg">
 <meta property="og:description" content="A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta property="og:site_name" content="Aayush Garg">
 <meta name="twitter:title" content="Deriving the DPO Loss from First Principles – Aayush Garg">
 <meta name="twitter:description" content="A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Deriving the DPO Loss from First Principles","url":"https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"A step-by-step derivation of the Direct Preference Optimization (DPO) loss, showing how it reformulates the RLHF objective into a simple classification loss without requiring explicit reward modeling or reinforcement learning.","datePublished":"2025-12-30","image":"https://aayushgarg.dev/static/img/og-default.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">

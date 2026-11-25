@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="description" content="This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.">
 
 <title>Building GPT from Scratch: Following Karpathy’s Tutorial – Aayush Garg</title>
@@ -69,6 +70,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
 
 <link rel="stylesheet" href="../static/fonts/fonts.css">
@@ -80,10 +82,16 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <link rel="stylesheet" href="../static/css/search.css">
 <meta property="og:title" content="Building GPT from Scratch: Following Karpathy’s Tutorial – Aayush Garg">
 <meta property="og:description" content="This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta property="og:site_name" content="Aayush Garg">
 <meta name="twitter:title" content="Building GPT from Scratch: Following Karpathy’s Tutorial – Aayush Garg">
 <meta name="twitter:description" content="This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2025-09-08-building-gpt-from-scratch.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2025-09-08-building-gpt-from-scratch.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Building GPT from Scratch: Following Karpathy’s Tutorial","url":"https://aayushgarg.dev/posts/2025-09-08-building-gpt-from-scratch.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2025-09-08-building-gpt-from-scratch.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.","image":"https://aayushgarg.dev/static/img/og-default.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -161,7 +169,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <div class="description">This blog summarizes building the GPT architecture by following Andrej Karpathy’s ‘Let’s Build GPT’ tutorial.</div>
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
-  <span>6 min read</span>
+  <span>7 min read</span>
   <span>9 sections</span>
 </p>
 </header>
@@ -244,7 +252,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </table>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/loss_curves.png" class="img-fluid figure-img"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/loss_curves.png" class="img-fluid figure-img" alt="Training and validation loss curves for the character-level GPT model built from scratch"></p>
 <figcaption>Loss Curves</figcaption>
 </figure>
 </div>
@@ -275,7 +283,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </blockquote>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/MHA.png" class="img-fluid figure-img"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/MHA.png" class="img-fluid figure-img" alt="Diagram of multi-head self-attention with query, key, value projections and output concatenation"></p>
 <figcaption>Multi-Head Attention</figcaption>
 </figure>
 </div>
@@ -287,7 +295,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>Self-attention is the <strong>communication</strong> phase. Tokens gather data from each other. But then they need to <strong>compute</strong> on that data individually. That’s what the feed-forward network does. It operates on a per-token level. All the tokens process their gathered information independently.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/FFN.png" class="img-fluid figure-img"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/basic-gpt/images/FFN.png" class="img-fluid figure-img" alt="Diagram of the position-wise feed-forward network inside a Transformer block"></p>
 <figcaption>Feed-Forward Network</figcaption>
 </figure>
 </div>

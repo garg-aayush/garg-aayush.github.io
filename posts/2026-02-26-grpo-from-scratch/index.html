@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-02-26">
 <meta name="description" content="My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.">
 
@@ -70,6 +71,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
 
 <link rel="stylesheet" href="../../static/fonts/fonts.css">
@@ -81,10 +83,16 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <link rel="stylesheet" href="../../static/css/search.css">
 <meta property="og:title" content="GRPO: Building Intuition Through Ablation Studies – Aayush Garg">
 <meta property="og:description" content="My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta property="og:site_name" content="Aayush Garg">
 <meta name="twitter:title" content="GRPO: Building Intuition Through Ablation Studies – Aayush Garg">
 <meta name="twitter:description" content="My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"GRPO: Building Intuition Through Ablation Studies","url":"https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"My implementation of GRPO from scratch for Qwen2.5-Math-1.5B with verifiable math rewards and running multiple ablation studies on learning rate, baselines, off-policy training etc to build intuition on what matters in GRPO training.","datePublished":"2026-02-26","image":"https://aayushgarg.dev/static/img/og-default.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -304,7 +312,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h3 class="anchored" data-anchor-id="learning-rate-sweep">Learning Rate Sweep</h3>
 <p>The learning rate is the most critical hyperparameter to get right first. It determines whether the policy updates are large enough to learn but not so large to cause the policy to collapse. Moreover, unlike supervised learning where a bad <code>lr</code> just causes loss divergence, in GRPO a high <code>lr</code> can cause the policy to collapse onto degenerate outputs before learning anything useful.</p>
 <p>To find the right <code>lr</code>, I ran a log-spaced search from <code>1e-6</code> to <code>1e-4</code> for 100 steps each on H100.</p>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/lr_sweep/lr_sweep.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/lr_sweep/lr_sweep.png" class="img-fluid" alt="GRPO learning rate sweep plots from 1e-6 to 1e-4 showing evaluation reward accuracy, gradient norm and response length"></p>
 <ul>
 <li><code>1e-6</code> and <code>3e-6</code> barely move the eval reward accuracy. The gradient signal is too small to update the policy meaningfully.</li>
 <li><code>1e-4</code> shows policy collapse with mean response length spikes and token entropy dropping to near zero.</li>
@@ -317,7 +325,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="baseline-ablation" class="level3">
 <h3 class="anchored" data-anchor-id="baseline-ablation">Baseline Ablation</h3>
 <p>The vanilla REINFORCE gradient has notoriously high variance. A common technique is to subtract a baseline (the group mean reward) from the advantage which reduces variance without introducing bias. Here I tested whether that variance reduction actually matters in practice.</p>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/baselines/baseline_ablation.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/baselines/baseline_ablation.png" class="img-fluid" alt="Ablation plots comparing vanilla REINFORCE with and without a group mean reward baseline"></p>
 <ul>
 <li><code>reinforce_with_baseline</code>: evaluation reward accuracy steadily climbs to ~0.61 with stable gradient norm and consistent mean response length around 300-350 tokens.</li>
 <li>Both <code>no_baseline</code> runs peak early then decline. Their gradient norm is way high and seems to keep increasing, and both suffer rapid response length collapse after some steps.</li>
@@ -334,7 +342,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li><code>constant</code>: divide by a fixed constant (<code>max_gen_len</code>=1024). Every token gets the same gradient magnitude regardless of sequence length (used in DeepSeek).</li>
 <li><code>microbatch</code>: normalize by the longest response in the current microbatch. This is a middle ground between <code>mean</code> and <code>constant</code>.</li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/length_normalization/length_normalization.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/length_normalization/length_normalization.png" class="img-fluid" alt="Ablation plots comparing mean, constant and microbatch length normalization modes in GRPO"></p>
 <ul>
 <li>All three modes converge to similar final reward accuracy and mean response length.</li>
 <li>The main difference is in gradient norm. <code>constant</code> produces consistently lower norms in comparison to <code>microbatch</code> and <code>mean</code>. This is expected since <code>constant</code> divides everything by 1024 (max generation length), which is 2-2.5x larger than typical response length.</li>
@@ -346,7 +354,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="standard-deviation-normalization" class="level3">
 <h3 class="anchored" data-anchor-id="standard-deviation-normalization">Standard Deviation Normalization</h3>
 <p>The standard GRPO advantage computation divides by the group standard deviation: <code>advantage_i = (reward_i - mean(group)) / (std(group) + eps)</code>. But <a href="https://arxiv.org/abs/2503.20783">Dr.&nbsp;GRPO</a> argued that this can introduce unwanted biases where groups with low variance (too easy or too hard questions where all rollouts get the same reward) produce near-zero std deviation, inflating their advantages disproportionately. They proposed removing the division entirely. This ablation tests whether removing that division actually helps.</p>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/std_dev/std_dev_normalization.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/std_dev/std_dev_normalization.png" class="img-fluid" alt="Ablation plots comparing GRPO advantage computation with and without group standard deviation normalization"></p>
 <ul>
 <li><strong>With std normalization</strong>: reaches higher final reward accuracy (~0.72).</li>
 <li><strong>Without</strong>: plateaus at ~0.65, but gradient norms are lower and more stable.</li>
@@ -362,7 +370,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="broad-sweep-50-steps" class="level4">
 <h4 class="anchored" data-anchor-id="broad-sweep-50-steps">Broad sweep (50 steps)</h4>
 <p>First, I ran a broad sweep over 6 configs varying <code>epochs_per_rollout_batch</code> and <code>train_batch_size</code> ranging from on-policy (1 optimizer step per GRPO step) to aggressive off-policy (16 optimizer steps per GRPO step). All runs use <code>grpo_clip</code> loss, <code>lr=3e-5</code>.</p>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_sweep/off_policy_sweep.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_sweep/off_policy_sweep.png" class="img-fluid" alt="Broad sweep of 6 on-policy and off-policy GRPO configurations showing collapse on aggressive 16-step updates"></p>
 <ul>
 <li>Most configs converge to ~0.55-0.65. The clear outlier is <code>e4_tb64_ga16</code> (16 opt steps/GRPO). It collapses mid-way with gradient norm spikes and response length collapsing to ~100 tokens. <strong>This is a classic failure mode where the policy drifts too far from the rollout distribution and the model learns to produce minimal outputs.</strong></li>
 <li>Mild off-policy (2 opt steps/GRPO) works as well as on-policy.</li>
@@ -374,7 +382,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="full-sweep-200-steps" class="level4">
 <h4 class="anchored" data-anchor-id="full-sweep-200-steps">Full sweep (200 steps)</h4>
 <p>I then selected the three most promising configs (on-policy and two mild off-policy) for full 200 step training.</p>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_full_sweep/off_policy_full_sweep.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_full_sweep/off_policy_full_sweep.png" class="img-fluid" alt="200-step GRPO training curves comparing on-policy training against two mild off-policy configurations"></p>
 <ul>
 <li>On-policy (<code>e1_tb256_ga64</code>) is consistently the best. It converges fastest and maintains highest reward accuracy (~0.65-0.75). The two mild off-policy configs track slightly behind it.</li>
 <li><code>e2_tb256_ga64</code> (2 epochs) shows higher gradient norm variance with spikes but doesn’t destabilize.</li>
@@ -387,7 +395,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="prompt-template-ablation" class="level3">
 <h3 class="anchored" data-anchor-id="prompt-template-ablation">Prompt Template Ablation</h3>
 <p>Here, I compared the <code>r1_zero</code> prompt (structured <code>&lt;think&gt;...&lt;/think&gt;</code> and <code>&lt;answer&gt;...&lt;/answer&gt;</code> blocks) against question-only (just <code>{question}</code>), each with a matching reward function.</p>
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/prompt_ablation/prompt_ablation.png" class="img-fluid"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/prompt_ablation/prompt_ablation.png" class="img-fluid" alt="Ablation curves comparing the structured r1_zero prompt against a question-only prompt during GRPO"></p>
 <ul>
 <li>Question-only starts with much higher accuracy because Qwen2.5-Math-1.5B seems to be pre-trained on math data with <code>\boxed{}</code> formatting. It already solves nearly half the problems out of the box. In comparison, r1-zero starts near zero (unfamiliar format) but catches up quickly once the model learns the structured format. Finally, r1-zero consistently performs better than question-only by the end.</li>
 <li>r1-zero settles at much lower entropy in comparison to question-only. This is expected since the r1-zero prompt is more structured and constrains the output space</li>
@@ -402,7 +410,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>I ran five runs: base model (no SFT), three SFT checkpoints (early/mid/final) and final with lower <code>lr</code>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/sft_grpo/sft_grpo.png" class="img-fluid figure-img"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/sft_grpo/sft_grpo.png" class="img-fluid figure-img" alt="SFT to GRPO sweep showing evaluation reward, format reward and policy entropy"></p>
 <figcaption>SFT -&gt; GRPO sweep: eval reward, format reward, entropy</figcaption>
 </figure>
 </div>

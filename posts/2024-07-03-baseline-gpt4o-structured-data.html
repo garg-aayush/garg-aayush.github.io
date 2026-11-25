@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="description" content="This blog gives a detailed walkthrough of structured data extraction using OpenAI’s GPT-4o model.">
 
 <title>Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction – Aayush Garg</title>
@@ -104,6 +105,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
 
 <link rel="stylesheet" href="../static/fonts/fonts.css">
@@ -117,14 +119,20 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta property="og:description" content="This blog gives a detailed walkthrough of structured data extraction using OpenAI’s GPT-4o model.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="Bar chart of baseline GPT-4o evaluation metrics for structured functional representation extraction">
 <meta property="og:image:height" content="1400">
 <meta property="og:image:width" content="2297">
 <meta name="twitter:title" content="Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction – Aayush Garg">
 <meta name="twitter:description" content="This blog gives a detailed walkthrough of structured data extraction using OpenAI’s GPT-4o model.">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="Bar chart of baseline GPT-4o evaluation metrics for structured functional representation extraction">
 <meta name="twitter:image-height" content="1400">
 <meta name="twitter:image-width" content="2297">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2024-07-03-baseline-gpt4o-structured-data.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2024-07-03-baseline-gpt4o-structured-data.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Part I: Baseline Evaluation of GPT-4o for Functional Representation Extraction","url":"https://aayushgarg.dev/posts/2024-07-03-baseline-gpt4o-structured-data.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2024-07-03-baseline-gpt4o-structured-data.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"This blog gives a detailed walkthrough of structured data extraction using OpenAI’s GPT-4o model.","image":"https://aayushgarg.dev/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -352,7 +360,7 @@ verify_attribute(name[Crysis], developer[Crytek Frankfurt], rating[good], player
 <p>Using the above evaluation strategy, I generate the average evaluation scores for the full dataset.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png" class="img-fluid figure-img"></p>
+<p><img src="../static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png" class="img-fluid figure-img" alt="Bar chart of baseline GPT-4o evaluation metrics for structured functional representation extraction"></p>
 <figcaption>GPT-4o Evaluation Metrics</figcaption>
 </figure>
 </div>

@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-03-29">
 <meta name="description" content="Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).">
 
@@ -105,6 +106,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
 
 <link rel="stylesheet" href="../../static/fonts/fonts.css">
@@ -118,14 +120,20 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta property="og:description" content="Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-03-29/tailscale-status.png">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="Terminal output of tailscale status showing the GPU workstation and MacBook connected on the same tailnet">
 <meta property="og:image:height" content="352">
 <meta property="og:image:width" content="1666">
 <meta name="twitter:title" content="Using a local LLM in OpenCode with llama.cpp – Aayush Garg">
 <meta name="twitter:description" content="Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-03-29/tailscale-status.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="Terminal output of tailscale status showing the GPU workstation and MacBook connected on the same tailnet">
 <meta name="twitter:image-height" content="352">
 <meta name="twitter:image-width" content="1666">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Using a local LLM in OpenCode with llama.cpp","url":"https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).","datePublished":"2026-03-29","image":"https://aayushgarg.dev/static/img/blog-2026-03-29/tailscale-status.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -211,7 +219,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <div class="description">Step-by-step setup for running a quantized Qwen3.5-27B model on a remote GPU via llama.cpp, exposing it over Tailscale and using it as a provider in OpenCode (optionally with Codex).</div>
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
-  <span>11 min read</span>
+  <span>12 min read</span>
   <span>9 sections</span>
 </p>
 </header>
@@ -275,7 +283,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Open the app, log in from the menu bar icon, then:</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tailscale up <span class="at">--ssh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>If everything worked, you should be able to ping your GPU machine from your MacBook using the Tailscale IP and see both devices connected to your tailscale VPN:</p>
-<p><img src="../../static/img/blog-2026-03-29/tailscale-status.png" class="img-fluid" style="width:75.0%"></p>
+<p><img src="../../static/img/blog-2026-03-29/tailscale-status.png" class="img-fluid" style="width:75.0%" alt="Terminal output of tailscale status showing the GPU workstation and MacBook connected on the same tailnet"></p>
 </section>
 </section>
 <section id="step-3-download-the-qwen3.5-27b-gguf-model" class="level2">
@@ -313,7 +321,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="st">      {"role": "user", "content": "What is 2+2?"}</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="st">    ]</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="st">  }'</span> <span class="kw">|</span> <span class="ex">python3</span> <span class="at">-m</span> json.tool</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><img src="../../static/img/blog-2026-03-29/local-server-test.png" class="img-fluid" style="width:100.0%"></p>
+<p><img src="../../static/img/blog-2026-03-29/local-server-test.png" class="img-fluid" style="width:100.0%" alt="Terminal test confirming the local llama.cpp server responds to an OpenAI-compatible API request"></p>
 </section>
 <section id="step-5-start-the-server-on-the-tailscale-ip" class="level2">
 <h2 class="anchored" data-anchor-id="step-5-start-the-server-on-the-tailscale-ip">Step 5: Start the server on the Tailscale IP</h2>
@@ -495,7 +503,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>If everything worked, you should see the local model available in OpenCode’s model selector:</p>
-<p><img src="../../static/img/blog-2026-03-29/models-in-opencode.png" class="img-fluid" style="width:50.0%"></p>
+<p><img src="../../static/img/blog-2026-03-29/models-in-opencode.png" class="img-fluid" style="width:50.0%" alt="OpenCode model selector showing the self-hosted local model available for coding sessions"></p>
 </section>
 <section id="trying-it-out" class="level2">
 <h2 class="anchored" data-anchor-id="trying-it-out">Trying it out</h2>
@@ -547,7 +555,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li><strong>Why llama.cpp?</strong> I started with the <a href="https://unsloth.ai/docs/models/qwen3.5">Unsloth guide</a> which uses llama.cpp with the GGUF format. Since I am setting this up locally for myself, llama.cpp felt like an easier choice than vLLM.</li>
 <li><strong>Why Qwen3.5-27B over 35B-A3B?</strong> The MoE variant is 3-5x faster (~60-100 tok/s) because only 3B parameters are active per token but the 27B has all 27B parameters active and <a href="https://www.reddit.com/r/LocalLLaMA/comments/1rivckt/visualizing_all_qwen_35_vs_qwen_3_benchmarks/">consistently scores higher across benchmarks</a>. For coding tasks, I preferred quality.</li>
 <li><strong>Why UD-Q4_K_XL quantization?</strong> <a href="https://unsloth.ai/blog/dynamic-v2">Unsloth’s Dynamic 2.0</a> quantization selectively upcasts important layers to 8 or 16-bit precision, so you get better quality without paying the full VRAM cost of a higher quant. <a href="https://kaitchup.substack.com/p/summary-of-qwen35-gguf-evaluations">Benjamin Marie’s benchmarks</a> show UD-Q4_K_XL stays within a 1-point accuracy drop of the original while being ~8GB smaller than comparable quants.</li>
-<li><strong>Hybrid architecture and KV cache.</strong> Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all. <img src="../../static/img/blog-2026-03-29/kv-cache-comparison.png" class="img-fluid" style="width:75.0%"></li>
+<li><strong>Hybrid architecture and KV cache.</strong> Qwen3.5 uses a Gated DeltaNet + Gated Attention hybrid architecture. Only every 4th layer has standard attention (16 out of 64 for 27B) and the rest use DeltaNet which maintains a fixed-size state regardless of context length. This makes the KV cache dramatically smaller than a pure transformer of the same size which is why 64K context fits on a 24 GB card at all. <img src="../../static/img/blog-2026-03-29/kv-cache-comparison.png" class="img-fluid" style="width:75.0%" alt="Comparison showing how Qwen3.5 hybrid Gated DeltaNet and attention architecture reduces KV cache size versus a pure transformer"></li>
 <li><strong>KV cache type.</strong> Qwen3.5 is trained in bfloat16, so bf16 is a better choice than llama.cpp’s default f16 given it has a better dynamic range. This <a href="https://www.reddit.com/r/LocalLLaMA/comments/1ryoab7/qwen_35_27b_quantize_kv_cache_or_not/">r/LocalLLaMA discussion</a> mentions that <code>q8_0</code> doesn’t seem to hurt quality too much but I haven’t tested it myself and decided to go with the safe option of <code>bf16</code>.</li>
 <li><strong>Start with a small context size.</strong> Begin with <code>--ctx-size 16384</code> to verify everything works (correct IP, template path, model loading) before committing more VRAM. The server starts faster with a smaller KV cache, so you can iterate quickly on configuration issues.</li>
 <li><strong>Use <code>-j4</code> instead of <code>-j</code> when building llama.cpp.</strong> The <code>-j</code> flag without a number spawns as many parallel compiler processes as it can. This can lead to an OOM kill (Error 137). Limiting to <code>-j4/2/8</code> depending on your available RAM avoids this.</li>

@@ -1,151 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://aayushgarg.dev/search/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.144Z</lastmod>
+    <loc>https://aayushgarg.dev/tools/</loc>
+    <lastmod>2026-11-25T12:58:28.109Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/tools/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.335Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-11-23-inkling2-mini-llamacpp/</loc>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-11-23-inkling2-mini-llamacpp/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.142Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-07-15-kalman-filters-time-series/</loc>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-07-15-kalman-filters-time-series/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.142Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-04-05-qwen35-vs-gemma4/</loc>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-04-05-qwen35-vs-gemma4/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-03-20-browser-tools/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-03-20-browser-tools/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-02-12-cc-tools/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-02-12-cc-tools/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
-  </url>
-  <url>
-    <loc>https://aayushgarg.dev/posts/2026-01-13-claude-skills/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-01-13-claude-skills/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2025-12-28-sft-from-scratch.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2025-09-10-build-custom-comfyui-node.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2025-09-02-llm-evaluation-lifecycle.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2024-07-09-compare-models-structured-data.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2024-06-30-remote-gpu-server.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/pages/overlap-aware-sc.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
-  </url>
-  <url>
-    <loc>https://aayushgarg.dev/pages/doverlap.html</loc>
-    <lastmod>2026-11-25T09:34:23.139Z</lastmod>
-  </url>
-  <url>
-    <loc>https://aayushgarg.dev/publications.html</loc>
-    <lastmod>2026-11-25T09:34:23.142Z</lastmod>
-  </url>
-  <url>
-    <loc>https://aayushgarg.dev/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.139Z</lastmod>
+    <loc>https://aayushgarg.dev/blog/</loc>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/about.html</loc>
-    <lastmod>2026-11-25T09:34:23.139Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/blog/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.139Z</lastmod>
+    <loc>https://aayushgarg.dev/</loc>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/pages/jsalt.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <loc>https://aayushgarg.dev/publications.html</loc>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2024-05-19-manage-multiple-cuda.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2024-07-03-baseline-gpt4o-structured-data.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2024-07-15-finetune-llama3-8B-predibase.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2025-09-08-building-gpt-from-scratch.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2025-12-25-deriving-ppo-loss.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2025-12-30-deriving-dpo-loss.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/posts/2026-01-06-review-deepseek-math.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-01-23-expert-iteration/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.140Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-01-23-expert-iteration/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-02-26-grpo-from-scratch/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-03-27-flash-attention/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-03-27-flash-attention/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-04-03-self-hosted-gemma4-chat/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-04-03-self-hosted-gemma4-chat/</loc>
+    <lastmod>2026-11-25T12:58:27.934Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.141Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/</loc>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
-    <loc>https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/index.html</loc>
-    <lastmod>2026-11-25T09:34:23.142Z</lastmod>
+    <loc>https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/</loc>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/projects.html</loc>
-    <lastmod>2026-11-25T09:34:23.142Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.935Z</lastmod>
   </url>
   <url>
     <loc>https://aayushgarg.dev/india-weather.html</loc>
-    <lastmod>2026-11-25T09:34:23.139Z</lastmod>
+    <lastmod>2026-11-25T12:58:27.933Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/base64.html</loc>
+    <lastmod>2026-11-25T12:59:15.763Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/diff-viewer.html</loc>
+    <lastmod>2026-11-25T12:59:15.764Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/html-viewer.html</loc>
+    <lastmod>2026-11-25T12:59:15.765Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/image-converter.html</loc>
+    <lastmod>2026-11-25T12:59:15.765Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/image-cropper.html</loc>
+    <lastmod>2026-11-25T12:59:15.766Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/image-mask-creator.html</loc>
+    <lastmod>2026-11-25T12:59:15.766Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/image-operations.html</loc>
+    <lastmod>2026-11-25T12:59:15.767Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/image-resizer.html</loc>
+    <lastmod>2026-11-25T12:59:15.767Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/json-formatter.html</loc>
+    <lastmod>2026-11-25T12:59:15.768Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/latex-preview.html</loc>
+    <lastmod>2026-11-25T12:59:15.769Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/markdown-viewer.html</loc>
+    <lastmod>2026-11-25T12:59:15.769Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/svg-viewer.html</loc>
+    <lastmod>2026-11-25T12:59:15.770Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/url-encoder.html</loc>
+    <lastmod>2026-11-25T12:59:15.771Z</lastmod>
+  </url>
+  <url>
+    <loc>https://aayushgarg.dev/tools/yaml-json-converter.html</loc>
+    <lastmod>2026-11-25T12:59:15.771Z</lastmod>
   </url>
 </urlset>

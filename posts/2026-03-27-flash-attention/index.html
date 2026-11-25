@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-03-27">
 <meta name="description" content="Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware">
 
@@ -70,6 +71,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -112,14 +114,20 @@ window.Quarto = {
 <meta property="og:description" content="Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-03-27/flashattention.png">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="Diagram from Dao et al. showing the GPU memory hierarchy, tiled Q, K, V blocks in SRAM and fused FlashAttention kernel execution">
 <meta property="og:image:height" content="874">
 <meta property="og:image:width" content="2450">
 <meta name="twitter:title" content="FlashAttention: Making Attention I/O-Aware – Aayush Garg">
 <meta name="twitter:description" content="Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-03-27/flashattention.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="Diagram from Dao et al. showing the GPU memory hierarchy, tiled Q, K, V blocks in SRAM and fused FlashAttention kernel execution">
 <meta name="twitter:image-height" content="874">
 <meta name="twitter:image-width" content="2450">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-03-27-flash-attention/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-03-27-flash-attention/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"FlashAttention: Making Attention I/O-Aware","url":"https://aayushgarg.dev/posts/2026-03-27-flash-attention/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-03-27-flash-attention/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"Understanding FlashAttention from first principles: how operator fusion, tiling, recomputation, and online softmax make attention IO-aware","datePublished":"2026-03-27","image":"https://aayushgarg.dev/static/img/blog-2026-03-27/flashattention.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -321,7 +329,7 @@ O = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d}}\right) V
 <li><strong>The logsumexp value <span class="math inline">\(L\)</span></strong>: a single scalar per query row that encodes everything needed to recover <span class="math inline">\(P\)</span> during the backward pass.</li>
 </ol>
 <p>These fixes are not independent. Fusion needs tiling (intermediates are too large for SRAM otherwise). Tiling needs online softmax (softmax is not directly associative). Recomputation needs <span class="math inline">\(L\)</span> (the backward pass must recover <span class="math inline">\(P\)</span> without storing it). I will walk through each fix in turn, building up the complete algorithm.</p>
-<img src="../../static/img/blog-2026-03-27/flashattention.png" class="img-fluid" style="width:100.0%">
+<img src="../../static/img/blog-2026-03-27/flashattention.png" class="img-fluid" style="width:100.0%" alt="Diagram from Dao et al. showing the GPU memory hierarchy, tiled Q, K, V blocks in SRAM and fused FlashAttention kernel execution">
 <p align="center">
 <em>Left: GPU memory hierarchy. Center: FlashAttention tiled computation with Q, K, V blocks loaded into SRAM. Right: FlashAttention fuses all attention ops into a single kernel, eliminating separate HBM round-trips. (Source: <a href="https://arxiv.org/abs/2205.14135">Dao et al., 2022</a>)</em>
 </p>

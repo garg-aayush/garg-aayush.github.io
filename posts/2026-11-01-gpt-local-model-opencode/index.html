@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="description" content="How I set up OpenCode so GPT-6.1 Sol plans and checks while a self-hosted GLM-5.3-Flash writes the code and does most of the work">
 
 <title>Pairing GPT-6.1 Sol with a Local Model in OpenCode – Aayush Garg</title>
@@ -104,6 +105,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
 
 <link rel="stylesheet" href="../../static/fonts/fonts.css">
@@ -123,6 +125,10 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-11-01/agent-split-card.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image:alt" content="Diagram of the split: a Sol orchestrator and reviewer, with an explorer and an implementer on GLM-5.3-Flash">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Pairing GPT-6.1 Sol with a Local Model in OpenCode","url":"https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-11-01-gpt-local-model-opencode/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"How I set up OpenCode so GPT-6.1 Sol plans and checks while a self-hosted GLM-5.3-Flash writes the code and does most of the work","image":"https://aayushgarg.dev/static/img/blog-2026-11-01/agent-split-card.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -194,7 +200,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <div class="description">How I set up OpenCode so GPT-6.1 Sol plans and checks while a self-hosted GLM-5.3-Flash writes the code and does most of the work</div>
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
-  <span>8 min read</span>
+  <span>9 min read</span>
   <span>3 sections</span>
 </p>
 </header>
@@ -220,7 +226,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>For example in Codex I set up a <code>glm_implementer</code> agent role pointing at the GLM server. Codex picks up the role but still sends its requests to OpenAI so the subagent fails right away with <code>The 'coder-glm' model is not supported when using Codex with a ChatGPT account.</code></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../../static/img/blog-2026-11-01/codex-subagent-error.jpg" class="img-fluid figure-img"></p>
+<p><img src="../../static/img/blog-2026-11-01/codex-subagent-error.jpg" class="img-fluid figure-img" alt="Terminal screenshot showing Codex spawning the glm_implementer subagent role and failing immediately"></p>
 <figcaption>Codex spawns the glm_implementer role and the subagent fails right away</figcaption>
 </figure>
 </div>
@@ -237,7 +243,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>One effective but simple split or setup based on my experience is this one:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../../static/img/blog-2026-11-01/agent-split.svg" class="img-fluid figure-img"></p>
+<p><img src="../../static/img/blog-2026-11-01/agent-split.svg" class="img-fluid figure-img" alt="Diagram of the split coding agent architecture: Sol plans and checks, local GLM on H200 GPUs reads and edits files, and a Sol reviewer checks risky changes"></p>
 <figcaption>Sol plans and checks, GLM on the H200s reads and edits, and a Sol reviewer only sees risky changes</figcaption>
 </figure>
 </div>
@@ -304,14 +310,14 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>I cannot share my real sessions (that is client work) so here for the sake of completion I have added a very simple one. In this case, I asked the orchestrator to add a <code>longest_word(text)</code> function with tests to a tiny Python module. It handed the task to the implementer, then ran <code>git diff</code>, <code>python3 -m unittest</code> and <code>git diff --check</code> itself. It also caught that the new test used “Hello, World! It’s me.”, where hello and world tie at five letters, so it sent the same implementer back to strengthen it (“Hi, WONDERFUL world!”) and signed off once the 7 tests passed.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../../static/img/blog-2026-11-01/opencode-delegation.jpg" class="img-fluid figure-img"></p>
+<p><img src="../../static/img/blog-2026-11-01/opencode-delegation.jpg" class="img-fluid figure-img" alt="OpenCode session showing the orchestrator delegating a task to the local implementer, running checks and requesting one revision"></p>
 <figcaption>The orchestrator hands the task to the implementer, runs the checks itself and sends the implementer back once</figcaption>
 </figure>
 </div>
 <p>After the run, <code>opencode stats --project . --models --cost</code> shows GLM with 104.6k tokens and Sol with 68.2k so even this toy task sent about 60% of the tokens to GLM (GLM shows $0.00 only because no price is set for a custom model).</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../../static/img/blog-2026-11-01/opencode-usage.jpg" class="img-fluid figure-img"></p>
+<p><img src="../../static/img/blog-2026-11-01/opencode-usage.jpg" class="img-fluid figure-img" alt="Usage breakdown showing tokens and API cost per model after the OpenCode run"></p>
 <figcaption>Tokens and cost per model after the run</figcaption>
 </figure>
 </div>

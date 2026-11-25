@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-01-23">
 <meta name="description" content="Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.">
 
@@ -70,6 +71,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -112,14 +114,20 @@ window.Quarto = {
 <meta property="og:description" content="Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-01-23/expert-iteration-diagram.png">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="Diagram of the Expert Iteration loop: sample rollouts, filter correct answers and run supervised fine-tuning iteratively">
 <meta property="og:image:height" content="640">
 <meta property="og:image:width" content="1400">
 <meta name="twitter:title" content="Expert Iteration for Math Reasoning – Aayush Garg">
 <meta name="twitter:description" content="Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-01-23/expert-iteration-diagram.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="Diagram of the Expert Iteration loop: sample rollouts, filter correct answers and run supervised fine-tuning iteratively">
 <meta name="twitter:image-height" content="640">
 <meta name="twitter:image-width" content="1400">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-01-23-expert-iteration/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-01-23-expert-iteration/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Expert Iteration for Math Reasoning","url":"https://aayushgarg.dev/posts/2026-01-23-expert-iteration/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-01-23-expert-iteration/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"Blogpost discussing experiments with Expert Iteration for math reasoning, covering hyperparameter tuning, training dynamics and comparison with SFT.","datePublished":"2026-01-23","image":"https://aayushgarg.dev/static/img/blog-2026-01-23/expert-iteration-diagram.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -240,7 +248,7 @@ window.Quarto = {
 <p>Here, the filtering step acts as the “expert”. It identifies which of the model own generations are correct. <strong>The model then learns to imitate its own best behaviors.</strong></p>
 </blockquote>
 <p>I see Expert Iteration for LLMs as <strong>SFT on self-generated, filtered data, repeated iteratively</strong> as shown in this loop:</p>
-<p><img src="../../static/img/blog-2026-01-23/expert-iteration-diagram.png" class="img-fluid"></p>
+<p><img src="../../static/img/blog-2026-01-23/expert-iteration-diagram.png" class="img-fluid" alt="Diagram of the Expert Iteration loop: sample rollouts, filter correct answers and run supervised fine-tuning iteratively"></p>
 <blockquote class="blockquote">
 <p>Note: STaR paper retrains from the base pretrained model at each iteration to avoid overfitting and introduces rationalization for failed problems. The approach used here (following the CS336 assignment) does not uses rationalization and continues training from the previous iteration checkpoint.</p>
 </blockquote>
@@ -313,7 +321,7 @@ window.Quarto = {
 <p>My initial experiments with a constant <code>7e-5</code> showed overfitting with val. accuracy plateauing and then declining. Using a <code>lr=1e-5</code> avoided overfitting but resulted in extremely slow learning.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../../static/img/blog-2026-01-23/lr_sweep_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<p><img src="../../static/img/blog-2026-01-23/lr_sweep_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Validation accuracy across Expert Iteration steps for different learning rate schedules"></p>
 </figure>
 </div>
 <blockquote class="blockquote">
@@ -361,7 +369,7 @@ window.Quarto = {
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../../static/img/blog-2026-01-23/sampling_strategy_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+<p><img src="../../static/img/blog-2026-01-23/sampling_strategy_ei_acc.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%" alt="Validation accuracy comparing single-trace versus multi-trace filtering in Expert Iteration"></p>
 </figure>
 </div>
 <p>Multi-trace sampling reaches higher accuracy compared to single-trace. Interestingly, single-trace starts faster but plateaus early while multi-trace continues improving. My understanding is diverse reasoning paths to the same answer provide a richer training signal.</p>
@@ -377,7 +385,7 @@ window.Quarto = {
 <li><strong><span class="math inline">\(D\)</span> (batch_per_ei)</strong>: <span class="math inline">\({512, 1024, 2048}\)</span></li>
 <li><strong><span class="math inline">\(R\)</span> (num_rollouts)</strong>: <span class="math inline">\({2, 4}\)</span></li>
 </ul>
-<p><img src="../../static/img/blog-2026-01-23/ei_grid_plot.png" class="img-fluid"></p>
+<p><img src="../../static/img/blog-2026-01-23/ei_grid_plot.png" class="img-fluid" alt="Grid of Expert Iteration validation accuracy curves across batch sizes D and rollout counts R"></p>
 <p>Looking at the results, some observations stand out:</p>
 <ul>
 <li><p>The best configuration is <span class="math inline">\(D=1024, R=4\)</span> achieving <strong>41.7%</strong> accuracy.</p></li>
@@ -396,7 +404,7 @@ window.Quarto = {
 <section id="filter-rate-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="filter-rate-analysis">Filter Rate Analysis</h3>
 <p>To better understand the above accuracy results, I also tracked the <strong>filter rate (correct rollouts / total rollouts)</strong> across iterations for different experiments.</p>
-<p><img src="../../static/img/blog-2026-01-23/ei_filter_rate_plot.png" class="img-fluid"></p>
+<p><img src="../../static/img/blog-2026-01-23/ei_filter_rate_plot.png" class="img-fluid" alt="Plot of Expert Iteration filter rate (correct rollouts divided by total rollouts) across iterations"></p>
 <p>A few things stand out:</p>
 <ul>
 <li><p>The filter rate increase across iterations as the model improves, generating more correct solutions. This in turn provides more training signal and improves the model. <strong>This is the core mechanism behind Expert Iteration.</strong></p></li>
@@ -410,7 +418,7 @@ window.Quarto = {
 <section id="pushing-accuracy-with-multi-epoch-training" class="level2">
 <h2 class="anchored" data-anchor-id="pushing-accuracy-with-multi-epoch-training">Pushing Accuracy with Multi-Epoch Training</h2>
 <p>So far, all my experiments used just 1 epoch of SFT per expert iteration step. I wanted to see if I could push accuracy even higher and the simplest way to check this is by training for more epochs per iteration. I ran additional experiments with 2 epochs per iteration for two batch sizes: <span class="math inline">\(D=512\)</span> and <span class="math inline">\(D=1024\)</span> (both with <span class="math inline">\(R=4\)</span>).</p>
-<p><img src="../../static/img/blog-2026-01-23/ei_multiepoch_plot.png" class="img-fluid"></p>
+<p><img src="../../static/img/blog-2026-01-23/ei_multiepoch_plot.png" class="img-fluid" alt="Validation accuracy comparing 1 epoch versus 2 epochs per Expert Iteration step for D=512 and D=1024"></p>
 <p>Training for 2 epochs per iteration consistently outperforms 1 epoch across both configurations. My understanding is that with a large rollout count <span class="math inline">\(R\)</span> the filtered dataset is already diverse enough that training for multiple epochs extracts more signal without memorizing. This improved learning leads to better filter rates and accuracy in subsequent iterations.</p>
 </section>
 <section id="comparison-to-sft-experiments" class="level2">

@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-02-12">
 <meta name="description" content="A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.">
 
@@ -105,6 +106,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
 
 <link rel="stylesheet" href="../../static/fonts/fonts.css">
@@ -118,10 +120,16 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta property="og:description" content="A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-02-12/codexbar-snapshot.jpg">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="CodexBar menu bar dropdown showing session and weekly AI provider usage limits">
 <meta name="twitter:title" content="Tools for Better Claude Code and Terminal Experience – Aayush Garg">
 <meta name="twitter:description" content="A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-02-12/codexbar-snapshot.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="CodexBar menu bar dropdown showing session and weekly AI provider usage limits">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-02-12-cc-tools/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-02-12-cc-tools/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Tools for Better Claude Code and Terminal Experience","url":"https://aayushgarg.dev/posts/2026-02-12-cc-tools/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-02-12-cc-tools/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.","datePublished":"2026-02-12","image":"https://aayushgarg.dev/static/img/blog-2026-02-12/codexbar-snapshot.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -210,7 +218,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <div class="description">A handful of simple tools and practices that have stuck with me while using Claude Code and other AI coding assistants, from tracking usage and managing context to terminal upgrades and the llm CLI.</div>
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
-  <span>8 min read</span>
+  <span>9 min read</span>
   <span>6 sections</span>
 </p>
 </header>
@@ -233,11 +241,11 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="codexbar" class="level3">
 <h3 class="anchored" data-anchor-id="codexbar">CodexBar</h3>
 <p><a href="https://github.com/steipete/CodexBar">CodexBar</a> is a lightweight menu bar app that tracks usage and limits across different AI providers. It shows session and weekly limits (credits) right in the menu bar. This is genuinely useful as you always know where you stand.</p>
-<p><img src="../../static/img/blog-2026-02-12/codexbar-snapshot.jpg" class="img-fluid" style="width:40.0%"></p>
+<p><img src="../../static/img/blog-2026-02-12/codexbar-snapshot.jpg" class="img-fluid" style="width:40.0%" alt="CodexBar menu bar dropdown showing session and weekly AI provider usage limits"></p>
 </section>
 <section id="ccusage" class="level3">
 <h3 class="anchored" data-anchor-id="ccusage">ccusage</h3>
-<p><a href="https://github.com/ryoppippi/ccusage">ccusage</a> is a cli tool for analyzing claude code usage from local json files. It gives you session wise, daily and monthly breakdowns of your usage. It is useful for understanding your consumption patterns and keeping an eye on how much you are actually using. Most importantly, it is a great tool to have inline usage info in claude code. <img src="../../static/img/blog-2026-02-12/ccusage-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><a href="https://github.com/ryoppippi/ccusage">ccusage</a> is a cli tool for analyzing claude code usage from local json files. It gives you session wise, daily and monthly breakdowns of your usage. It is useful for understanding your consumption patterns and keeping an eye on how much you are actually using. Most importantly, it is a great tool to have inline usage info in claude code. <img src="../../static/img/blog-2026-02-12/ccusage-snapshot.jpg" class="img-fluid" style="width:100.0%" alt="Terminal screenshot showing ccusage inline token and cost breakdown in Claude Code"></p>
 </section>
 </section>
 <section id="managing-your-ai-context" class="level2">
@@ -247,7 +255,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h3 class="anchored" data-anchor-id="context-commands-context-clear-compact">Context Commands: <code>/context</code>, <code>/clear</code>, <code>/compact</code></h3>
 <p>Most of us are aware of these three Claude Code commands but more often than not, maybe out of habit, we dont use them often enough and end up hitting the session limit.</p>
 <ul>
-<li><strong><code>/context</code></strong> — it provides a great visualization of your current conversation context usage as a colored grid. <strong>I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.</strong> <img src="../../static/img/blog-2026-02-12/context-snapshot.jpg" class="img-fluid" style="width:75.0%"></li>
+<li><strong><code>/context</code></strong> — it provides a great visualization of your current conversation context usage as a colored grid. <strong>I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.</strong> <img src="../../static/img/blog-2026-02-12/context-snapshot.jpg" class="img-fluid" style="width:75.0%" alt="Claude Code /context output showing context window usage across tools, skills, MCP servers and messages"></li>
 <li><strong><code>/clear</code></strong> — this completely resets your conversation history. <strong>I use it between unrelated tasks to start fresh with an empty context window avoiding both context degradation and session limit.</strong></li>
 <li><strong><code>/compact [instructions]</code></strong> — It summarizes your conversation to free up context space while preserving important information.</li>
 </ul>
@@ -333,17 +341,17 @@ pycode [-x|--exec] &lt;task&gt;         Generate a Python script from a task des
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> lla=<span class="st">'eza -alh --git --sort=modified --icons'</span> <span class="co"># list view with hidden files</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ll=<span class="st">'eza -lh --git --sort=modified --icons'</span>    <span class="co"># list view sorted by timestamp</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> lt=<span class="st">'eza -lh --git --sort=modified --tree --level=2 --icons'</span> <span class="co"># tree view</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><img src="../../static/img/blog-2026-02-12/eza-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
+<p><img src="../../static/img/blog-2026-02-12/eza-snapshot.jpg" class="img-fluid" style="width:75.0%" alt="Terminal screenshot of eza listing directory contents with icons, permissions and git status"></p>
 </section>
 <section id="bat" class="level3">
 <h3 class="anchored" data-anchor-id="bat">bat</h3>
 <p><a href="https://github.com/sharkdp/bat">bat</a> is simly <code>cat</code> with syntax highlighting, line numbers and git integration. It automatically detects the file type and renders accordingly.</p>
-<p><img src="../../static/img/blog-2026-02-12/bat-snapshot.jpg" class="img-fluid" style="width:75.0%"></p>
+<p><img src="../../static/img/blog-2026-02-12/bat-snapshot.jpg" class="img-fluid" style="width:75.0%" alt="Terminal screenshot of bat displaying a source file with line numbers and syntax highlighting"></p>
 </section>
 <section id="yazi" class="level3">
 <h3 class="anchored" data-anchor-id="yazi">yazi</h3>
 <p><a href="https://github.com/sxyazi/yazi">yazi</a> is a fast terminal file manager with support for previewing different file types including images and PDFs right in the terminal. <strong>This is especially useful when you are already deep in a terminal session with Claude Code and need to quickly browse files or check an image without switching to Finder.</strong></p>
-<p><img src="../../static/img/blog-2026-02-12/yazi-snapshot.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="../../static/img/blog-2026-02-12/yazi-snapshot.jpg" class="img-fluid" style="width:100.0%" alt="Terminal screenshot of the yazi file manager previewing files directly in the terminal"></p>
 </section>
 </section>
 <section id="wrapping-up" class="level2">

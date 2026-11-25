@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="description" content="A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.">
 
 <title>What I Learned Building SFT from the Ground Up – Aayush Garg</title>
@@ -104,6 +105,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
 
 <link rel="stylesheet" href="../static/fonts/fonts.css">
@@ -115,10 +117,16 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <link rel="stylesheet" href="../static/css/search.css">
 <meta property="og:title" content="What I Learned Building SFT from the Ground Up – Aayush Garg">
 <meta property="og:description" content="A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.">
+<meta property="og:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta property="og:site_name" content="Aayush Garg">
 <meta name="twitter:title" content="What I Learned Building SFT from the Ground Up – Aayush Garg">
 <meta name="twitter:description" content="A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.">
+<meta name="twitter:image" content="https://aayushgarg.dev/static/img/og-default.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2025-12-28-sft-from-scratch.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2025-12-28-sft-from-scratch.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"What I Learned Building SFT from the Ground Up","url":"https://aayushgarg.dev/posts/2025-12-28-sft-from-scratch.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2025-12-28-sft-from-scratch.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"A hands-on journey implementing SFT from scratch, covering reasoning SFT with Qwen2.5-Math and instruction SFT with Llama-3.1-8B, along with debugging lessons learned.","image":"https://aayushgarg.dev/static/img/og-default.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -315,7 +323,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>After all that debugging, here’s what the training runs achieved:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/sft_train_reasoning_results.png" class="img-fluid figure-img"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/sft_train_reasoning_results.png" class="img-fluid figure-img" alt="Plot of reasoning supervised fine-tuning accuracy and training curves"></p>
 <figcaption>Reasoning SFT Results</figcaption>
 </figure>
 </div>
@@ -388,7 +396,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>I ran two experiments: one with prompt masking (<code>mask</code>) and one without (<code>no-mask</code>).</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/instruct_finetune_results_comparison.png" class="img-fluid figure-img"></p>
+<p><img src="https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/instruct_finetune_results_comparison.png" class="img-fluid figure-img" alt="Comparison plot of instruction fine-tuning evaluation results across training runs"></p>
 <figcaption>Instruction Fine-tuning Comparison</figcaption>
 </figure>
 </div>

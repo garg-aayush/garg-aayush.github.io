@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="description" content="Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline">
 
 <title>Key Insights from DeepSeekMath paper – Aayush Garg</title>
@@ -69,6 +70,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
 
 <link rel="stylesheet" href="../static/fonts/fonts.css">
@@ -82,14 +84,20 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta property="og:description" content="Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-01-06/image1-benchmark.png">
 <meta property="og:site_name" content="Aayush Garg">
+<meta property="og:image:alt" content="MATH benchmark comparison showing DeepSeekMath-7B reaching 51.7 percent against open-source and frontier models">
 <meta property="og:image:height" content="1072">
 <meta property="og:image:width" content="2218">
 <meta name="twitter:title" content="Key Insights from DeepSeekMath paper – Aayush Garg">
 <meta name="twitter:description" content="Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-01-06/image1-benchmark.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="MATH benchmark comparison showing DeepSeekMath-7B reaching 51.7 percent against open-source and frontier models">
 <meta name="twitter:image-height" content="1072">
 <meta name="twitter:image-width" content="2218">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-01-06-review-deepseek-math.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-01-06-review-deepseek-math.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Key Insights from DeepSeekMath paper","url":"https://aayushgarg.dev/posts/2026-01-06-review-deepseek-math.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-01-06-review-deepseek-math.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline","image":"https://aayushgarg.dev/static/img/blog-2026-01-06/image1-benchmark.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -175,7 +183,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <div class="description">Notes and takeaways from the DeepSeekMath paper including a deep dive into their iterative data curation pipeline</div>
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
-  <span>6 min read</span>
+  <span>7 min read</span>
   <span>3 sections</span>
 </p>
 </header>
@@ -190,7 +198,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </details></nav>
 <p>Over the weekend, I finished reading the <a href="https://arxiv.org/abs/2402.03300">DeepSeekMath</a> paper which introduced GRPO (the RL algorithm I covered in my <a href="https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html">previous post</a>). Below are my thoughts and key takeaways from the paper.</p>
 <p>In this paper, the authors show that a small domain-specific model (7B parameters) can approach the performance of SOTA general models like GPT-4 on competition-level math when it is pre-trained on a sufficiently large, well-curated math corpus (120B tokens) and then reinforced with RL. It outperform major open-source models available at that time including same or larger size math-specialized models like <a href="https://arxiv.org/abs/2308.09583">WizardMath-v1.1 7B</a>, <a href="https://arxiv.org/abs/2310.10631">Llemma 34B</a> and <a href="https://arxiv.org/abs/2309.12284">MetaMath 70B</a>. As shown below, DeepseekMath-7B achieves 51.7% on the competition-level <a href="https://arxiv.org/abs/2103.03874">MATH benchmark</a>.</p>
-<p><img src="../static/img/blog-2026-01-06/image1-benchmark.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image1-benchmark.png" class="img-fluid" alt="MATH benchmark comparison showing DeepSeekMath-7B reaching 51.7 percent against open-source and frontier models"></p>
 <blockquote class="blockquote">
 <p>In a nutshell: <strong>data quality and domain-specific pre-training are more critical for mathematical reasoning than sheer parameter count</strong>.</p>
 </blockquote>
@@ -204,7 +212,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li><p>Firstly, they created the pre-training corpus from the Common Crawl which shows that if you use a well-thought data curation pipeline you can extract a high-quality domain-specific data from the public Common Crawl data.</p></li>
 <li><p>Secondly, the resulting corpus is substantially larger than <a href="https://arxiv.org/abs/2310.06786">OpenWebMath</a> (roughly 9 times larger), reinforcing the point that <em>scale matters</em>, as long as quality is maintained.</p></li>
 </ol>
-<p><img src="../static/img/blog-2026-01-06/image2-math-datacorpus-comparison.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image2-math-datacorpus-comparison.png" class="img-fluid" alt="Comparison of DeepSeekMath corpus size and performance against OpenWebMath and other math pre-training datasets"></p>
 <blockquote class="blockquote">
 <p>Note, I will go deeper into the pipeline later in this post because I feel it is broadly reusable beyond math.</p>
 </blockquote>
@@ -213,7 +221,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h3 class="anchored" data-anchor-id="grpo-ppo-without-the-critic">GRPO: PPO Without the Critic</h3>
 <p>The second major novelty is their <strong>more memory-efficient alternative to <a href="https://arxiv.org/abs/1707.06347">PPO</a></strong>: <strong>GRPO (Group Relative Policy Optimization)</strong>.</p>
 <p>At a high level, GRPO removes the need to train a separate critic (value) model. Instead of learning a value function for advantage estimation, GRPO samples a <em>group</em> of multiple completions per prompt (64 in their experiments) and uses the normalized average reward of the group as the baseline. This significantly reduces memory and compute overhead while preserving the stability mechanisms associated with PPO (clipping and KL regularization).</p>
-<p><img src="../static/img/blog-2026-01-06/image3-grpo.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image3-grpo.png" class="img-fluid" alt="Diagram comparing PPO with a critic value model against GRPO using group relative advantage estimation"></p>
 <blockquote class="blockquote">
 <p>For a detailed explanation of GRPO, see my <a href="https://aayushgarg.dev/posts/2026-01-01-understanding-grpo.html">previous post on Understanding GRPO</a>.</p>
 </blockquote>
@@ -228,7 +236,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="arxiv-papers-are-surprisingly-ineffective" class="level3">
 <h3 class="anchored" data-anchor-id="arxiv-papers-are-surprisingly-ineffective">ArXiv Papers are Surprisingly Ineffective</h3>
 <p>ArXiv papers are often a default ingredient in many math pre-training recipes, but the authors report that pre-training on arXiv content was not helpful in their setup. In some cases, it led to no improvement or even to worse performance.</p>
-<p><img src="../static/img/blog-2026-01-06/image4-archive.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image4-archive.png" class="img-fluid" alt="Benchmark results showing pre-training on arXiv papers did not improve math reasoning in DeepSeekMath experiments"></p>
 <p>Note, the authors have been cautious claiming it to be definitely true and rather presented it as an empirical finding that requires more studies to confirm it.</p>
 <blockquote class="blockquote">
 <p>Still, I found this interesting. It suggests arXiv-style technical writing might be more useful for formal exposition (or informalization) than for improving competition-style problem solving.</p>
@@ -238,7 +246,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h3 class="anchored" data-anchor-id="online-rl-training-is-superior-to-offline">Online RL Training is Superior to Offline</h3>
 <p>Sampling training data from the real-time policy model (online) significantly outperforms sampling from the initial SFT model (offline).</p>
 <p>In their experiments, Online <a href="https://arxiv.org/abs/2308.01825">Rejection Sampling Fine-Tuning (RFT)</a> significantly outperformed standard (offline) RFT on both <a href="https://arxiv.org/abs/2110.14168">GSM8K</a> and MATH benchmarks. While the two methods perform similarly in the early stages of training, Online RFT gains a distinct advantage as training progresses.</p>
-<p><img src="../static/img/blog-2026-01-06/image5-online-offline.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image5-online-offline.png" class="img-fluid" alt="Comparison of Online RFT versus offline RFT performance on GSM8K and MATH over training steps"></p>
 <blockquote class="blockquote">
 <p>As the policy diverges from the initial SFT model, data sampled from SFT becomes less relevant to the current model’s decision boundaries. Early on when the policy is close to SFT, it doesn’t matter much. Later, this staleness hurts the performance.</p>
 </blockquote>
@@ -247,7 +255,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h3 class="anchored" data-anchor-id="rl-sharpens-distribution-does-not-expand-model-capability">RL Sharpens Distribution, Does not Expand Model Capability</h3>
 <p>This is one of my favorite analyses in the paper. The authors compare <strong>Maj@K</strong> (majority voting accuracy) and <strong>Pass@K</strong> (whether any of K samples is correct) for both the Instruct and RL models.</p>
 <p>At K=64 samples, both models reach similar Pass@K ceilings (around 83-85% on MATH) which indicates that the fundamental capability is the same. However, RL consistently outperforms on Maj@K.</p>
-<p><img src="../static/img/blog-2026-01-06/image6-majpass.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image6-majpass.png" class="img-fluid" alt="Comparison of Pass@K and Maj@K curves on MATH showing RL improves Maj@K while Pass@K ceilings stay similar"></p>
 <blockquote class="blockquote">
 <p>This suggests RL isn’t expanding fundamental reasoning abilities. Instead it is sharpening the distribution of the model’s output which boosts the correct responses that were already within the model’s capability.</p>
 </blockquote>
@@ -257,7 +265,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="the-iterative-data-curation-pipeline">The Iterative Data Curation Pipeline</h2>
 <p>As I mentioned earlier, one of the key contributions of this paper is their data curation pipeline that extracts high-quality mathematical content from Common Crawl.</p>
 <p>The reason I am going into detail here is that you can <strong>draw parallels from this approach to create any other domain-specific dataset from publicly available data like Common Crawl</strong>. The pipeline is iterative and uses a fastText classifier at its core. Crudely, this is how the pipeline works:</p>
-<p><img src="../static/img/blog-2026-01-06/image7-data-pipeline.png" class="img-fluid"></p>
+<p><img src="../static/img/blog-2026-01-06/image7-data-pipeline.png" class="img-fluid" alt="Diagram of the iterative fastText data filtering pipeline used to mine math pages from Common Crawl"></p>
 <section id="train-a-fasttext-classifier" class="level3">
 <h3 class="anchored" data-anchor-id="train-a-fasttext-classifier">1) Train a fastText Classifier</h3>
 <p>They start with <a href="https://huggingface.co/datasets/open-web-math/open-web-math">OpenWebMath</a> as a seed corpus (high-quality math web text). Using this seed, they build a binary classification dataset:</p>

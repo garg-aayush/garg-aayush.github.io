@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2025-09-10">
 <meta name="description" content="A practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.">
 
@@ -105,6 +106,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../blog/index.xml">
 
 
 <link rel="stylesheet" href="../static/fonts/fonts.css">
@@ -128,6 +130,10 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:image:alt" content="SVG2Raster">
 <meta name="twitter:image-height" content="1322">
 <meta name="twitter:image-width" content="2056">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2025-09-10-build-custom-comfyui-node.html">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2025-09-10-build-custom-comfyui-node.html">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"A Guide to Building Custom Nodes in ComfyUI","url":"https://aayushgarg.dev/posts/2025-09-10-build-custom-comfyui-node.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2025-09-10-build-custom-comfyui-node.html"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"A practical guide to quickly building custom ComfyUI nodes. Here I use my SVG2Raster node package as an example.","datePublished":"2025-09-10","image":"https://aayushgarg.dev/static/img/blog-2025-09-10/workflow.png"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -206,13 +212,14 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
   <span>7 min read</span>
-  <span>1 section</span>
+  <span>2 sections</span>
 </p>
 </header>
 
 
 <nav class="article-toc-mobile" aria-label="Contents"><details><summary>Contents</summary>
 <ul>
+<li><a href="#svg2raster"><span>Svg2Raster</span></a></li>
 <li><a href="#writing-your-custom-comfyui-node">Writing your Custom ComfyUI Node</a></li>
 </ul>
 </details></nav>
@@ -223,11 +230,11 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>ComfyUI does not natively support vector graphics like <a href="https://en.wikipedia.org/wiki/SVG">SVGs</a>. I often work with them and needed lightweight nodes to load (SVG-&gt;JPEGs/PNGs) and manipulate SVGs in ComfyUI.</p>
 <p>Thus, I built <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a>, a small custom node package that makes it easy to use SVGs with other nodes. <img src="../static/img/blog-2025-09-10/workflow.png" class="img-fluid" alt="SVG2Raster"></p>
 </section>
-<section id="writing-your-custom-comfyui-node" class="level1">
-<h1>Writing your Custom ComfyUI Node</h1>
+<section id="writing-your-custom-comfyui-node" class="level2">
+<h2 class="anchored" data-anchor-id="writing-your-custom-comfyui-node">Writing your Custom ComfyUI Node</h2>
 <p>So here I am assuming that you are fairly comfortable using ComfyUI and you already have ComfyUI installed locally on your system/cloud instance.</p>
-<section id="step-1-validate-the-core-logic-first" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-validate-the-core-logic-first">Step 1: Validate the core logic first</h2>
+<section id="step-1-validate-the-core-logic-first" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-validate-the-core-logic-first">Step 1: Validate the core logic first</h3>
 <p>I prefer not to start with the ComfyUI node API. First, I like to write a simple Python notebook to test the functionalities I actually need. This validates your core code logic and packages in isolation.</p>
 <p>In my case, I needed a way to read, rasterize and manipulate the SVGs. Thus, I tested all the relevant operations using the core packages <a href="https://cairosvg.org/">CairoSVG</a> and <a href="https://python-pillow.org/">Pillow</a>.</p>
 <p>For example:</p>
@@ -248,8 +255,8 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>If you want to see all the code snippets (width/height controls, color and border manipulations etc.), please check out the full <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster/blob/main/svg2png.ipynb">notebook</a>.</p>
 <p><strong>Once you have a working standalone script or code, wrapping it as a ComfyUI node is mostly boilerplate.</strong></p>
 </section>
-<section id="step-2-understand-the-anatomy-of-a-custom-node" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-understand-the-anatomy-of-a-custom-node">Step 2: Understand the Anatomy of a Custom Node</h2>
+<section id="step-2-understand-the-anatomy-of-a-custom-node" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-understand-the-anatomy-of-a-custom-node">Step 2: Understand the Anatomy of a Custom Node</h3>
 <p>Every ComfyUI node is a Python class with specific methods that ComfyUI expects. Here are the essential components:</p>
 <table class="caption-top table">
 <thead>
@@ -301,8 +308,8 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (image_tensor, svg_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This is a minimal ComfyUI node class explanation that I believe is good enough to start writing your own nodes. If you want more details, check the official ComfyUI custom node <a href="https://docs.comfy.org/custom-nodes/overview">documentation</a>.</p>
 </section>
-<section id="step-3-implementing-the-loadsvgimage-node" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-implementing-the-loadsvgimage-node">Step 3: Implementing the <strong>LoadSVGImage</strong> Node</h2>
+<section id="step-3-implementing-the-loadsvgimage-node" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-implementing-the-loadsvgimage-node">Step 3: Implementing the <strong>LoadSVGImage</strong> Node</h3>
 <p>First, I set up the file structure in ComfyUI’s <code>custom_nodes</code> folder for my nodes package:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ComfyUI/custom_nodes</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> svg2raster</span>
@@ -364,8 +371,8 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>Similarly, I also wrote a <code>RasterizeSVG</code> class for manipulating the loaded SVG. It takes the SVG text from <code>LoadSVGImage</code> and lets you adjust scale, dimensions, borders, and more. You will see the pattern is identical: define inputs, process with CairoSVG/PIL, convert to tensor, return.</p>
 <p>That’s how you implement a node. Write a standalone functionality script, wrap it in the ComfyUI class structure, handle the tensor conversions, add the helper methods, and register it with the mappings.</p>
 </section>
-<section id="step-4-testing-your-custom-node-in-comfyui" class="level2">
-<h2 class="anchored" data-anchor-id="step-4-testing-your-custom-node-in-comfyui">Step 4: Testing Your Custom Node in ComfyUI</h2>
+<section id="step-4-testing-your-custom-node-in-comfyui" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-testing-your-custom-node-in-comfyui">Step 4: Testing Your Custom Node in ComfyUI</h3>
 <p>Once you are done implementing, testing is straightforward.</p>
 <ol type="1">
 <li>Ensure all your dependencies are installed, including <code>CairoSVG</code>:</li>
@@ -374,8 +381,8 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </ol>
 <p><strong>Note</strong>: I have also added the installation steps <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster?tab=readme-ov-file#installation">here</a>.</p>
 </section>
-<section id="step-5-sharing-and-publishing-your-node" class="level2">
-<h2 class="anchored" data-anchor-id="step-5-sharing-and-publishing-your-node">Step 5: Sharing and Publishing Your Node</h2>
+<section id="step-5-sharing-and-publishing-your-node" class="level3">
+<h3 class="anchored" data-anchor-id="step-5-sharing-and-publishing-your-node">Step 5: Sharing and Publishing Your Node</h3>
 <p>Once everything worked, I created a GitHub repo for the nodes. You can see how I structured mine in the <a href="https://github.com/garg-aayush/ComfyUI-Svg2Raster">Svg2Raster</a> repo.</p>
 <p>Some Essential files in the repo are:</p>
 <table class="caption-top table">

@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Aayush Garg">
 <meta name="dcterms.date" content="2026-04-29">
 <meta name="description" content="A short reflection on prompting Claude Code in stages to build a live India weather and AQI dashboard for my portfolio site.">
 
@@ -70,6 +71,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </script>
 <style>html{ scroll-behavior: smooth; }</style>
 <link rel="preload" href="../../static/fonts/source-serif-4-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="alternate" type="application/rss+xml" title="Aayush Garg" href="../../blog/index.xml">
 
 
 <link rel="stylesheet" href="../../static/fonts/fonts.css">
@@ -89,6 +91,10 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image:alt" content="Live India weather map">
+<link rel="canonical" href="https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/">
+<meta property="og:url" content="https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/">
+<meta property="og:type" content="article">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Building a Live India Weather Dashboard with Claude Code","url":"https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/","mainEntityOfPage":{"@type":"WebPage","@id":"https://aayushgarg.dev/posts/2026-04-29-india-weather-with-claude/"},"author":{"@type":"Person","@id":"https://aayushgarg.dev/#person","name":"Aayush Garg","url":"https://aayushgarg.dev/"},"description":"A short reflection on prompting Claude Code in stages to build a live India weather and AQI dashboard for my portfolio site.","datePublished":"2026-04-29","image":"https://aayushgarg.dev/static/img/blog-2026-04-29/weather_dashboard_snap1.jpg"}</script>
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -277,19 +283,19 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li>It also laid out the cadence logic for me: a GitHub Actions cron every 15 minutes that writes a single JSON to a <code>data</code> branch on the same repo which the page then reads on load.</li>
 <li>By the end of the session I had a page that was live with 8 metros, a marker plus card UI and a working live tile and the data was being fetched every 15 minutes.</li>
 </ul>
-<p><img src="../../static/img/blog-2026-04-29/stage1_snap.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="../../static/img/blog-2026-04-29/stage1_snap.jpg" class="img-fluid" style="width:100.0%" alt="First working version of the India Weather dashboard showing 8 metro markers and live weather cards"></p>
 <p><em>Full Claude Code conversation for this stage: <a href="https://gist.github.com/garg-aayush/ad4dce3170fddcefdfb75eabc5b15620">stage-1-brainstorm-and-v1.txt</a>.</em></p>
 </section>
 <section id="stage-2-improving-the-dashboard-with-history-charts-and-ui-fixes" class="level2">
 <h2 class="anchored" data-anchor-id="stage-2-improving-the-dashboard-with-history-charts-and-ui-fixes">Stage 2: improving the dashboard with history charts and UI fixes</h2>
 <p>The next thing that I wanted to do was to add history charts under the map. I wanted to be able to view the history of the temperature, humidity and AQI for each city over certain time periods. This is the first version that I made conversationally with Claude:</p>
-<p><img src="../../static/img/blog-2026-04-29/stage2_hischarts.jpg" class="img-fluid" style="width:60.0%"></p>
+<p><img src="../../static/img/blog-2026-04-29/stage2_hischarts.jpg" class="img-fluid" style="width:60.0%" alt="Early history charts showing noisy hourly sawtooth waves across 7-day and 30-day views"></p>
 <p>Obviously, this was not the best way to view the values. The 7d and 30d views looked terrible with the day-night cycle turning every chart into a sawtooth. Next, I sent Claude the screenshot and asked one question:</p>
 <blockquote class="blockquote">
 <p>Currently, this is how the values look over the 7d and 30d period, I dont think that is the best way to view the values. What is the standard way to show these values?</p>
 </blockquote>
 <p>Claude pointed me at the weather.com pattern where weather apps aggregate the values by day, show a min/max bands with a daily mean line for temp and humidity, and color the AQI bars by EPA category. A second daily cron rebuilds the 30-day window from Open-Meteo each run which looked much nicer:</p>
-<p><img src="../../static/img/blog-2026-04-29/stage2_hischarts_better.jpg" class="img-fluid" style="width:60.0%"></p>
+<p><img src="../../static/img/blog-2026-04-29/stage2_hischarts_better.jpg" class="img-fluid" style="width:60.0%" alt="Redesigned daily history charts with min-max bands, daily mean lines and EPA-colored AQI bars"></p>
 <p>Finally, I improved the UI by fixing a few small issues. Some of them you can see below:</p>
 <table align="center">
 <tbody><tr>
@@ -315,9 +321,9 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <section id="stage-3-moving-the-cron-from-github-actions-to-cloudflare" class="level2">
 <h2 class="anchored" data-anchor-id="stage-3-moving-the-cron-from-github-actions-to-cloudflare">Stage 3: moving the cron from GitHub Actions to Cloudflare</h2>
 <p>After the dashboard was deployed I noticed the live tile timestamps were drifting. The label said “every 15 minutes” but the GitHub Actions free-tier cron was firing erratically, sometimes 40 mins or even &gt;1 hour late. This is usually the case with the free-tier cron jobs on GitHub Actions.</p>
-<p><img src="../../static/img/blog-2026-04-29/stage3_github_actions.jpg" class="img-fluid" style="width:80.0%"></p>
+<p><img src="../../static/img/blog-2026-04-29/stage3_github_actions.jpg" class="img-fluid" style="width:80.0%" alt="GitHub Actions workflow run history showing irregular 40 to 60 minute delays on a 15-minute cron schedule"></p>
 <p>I decided to move the cron to Cloudflare Workers which has a free tier and fires within seconds of schedule.</p>
-<p><img src="../../static/img/blog-2026-04-29/stage3_cloudflare.jpg" class="img-fluid" style="width:100.0%"></p>
+<p><img src="../../static/img/blog-2026-04-29/stage3_cloudflare.jpg" class="img-fluid" style="width:100.0%" alt="Cloudflare Worker cron trigger logs firing reliably every 15 minutes"></p>
 <p>The interesting thing for me here is that I had never used Cloudflare workers for cron jobs before. Given how good these assistants are at writing code, it wrote the code, walked me through setup steps and the live cadence has been working well since. <strong>Even unfamiliar backend infra is something you can prompt your way through</strong> (obviously you should have the fundamental knowledge to nudge it in the right direction).</p>
 <p><em>Full Claude Code conversation for this stage: <a href="https://gist.github.com/garg-aayush/aae13309e3c8c8ab42499b2eb9987b7c">Cloudflare Worker migration</a>.</em></p>
 </section>
