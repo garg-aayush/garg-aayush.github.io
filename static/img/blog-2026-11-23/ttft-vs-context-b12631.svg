@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 392" width="700" height="392">
+  <title>Time to first token vs prompt size</title>
+  <desc>On build b12631, cold prompt time to first token grows with prompt size until each setup hits its VRAM ceiling: 146 s at 259K for 8-bit KV, 125 s at 226K for 8-bit KV + DSpark, 58 s at 136K for 16-bit KV + DSpark. Cached follow-up turns stay under 1 second.</desc>
+  <defs>
+    <style>
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+      .title { font-size: 16px; font-weight: 600; fill: #F5F5F7; }
+      .subtitle { font-size: 12.5px; font-weight: 400; fill: #86868B; }
+      .label { font-size: 13px; font-weight: 500; fill: #DADADF; }
+      .val { font-size: 13px; font-weight: 600; fill: #F5F5F7; }
+      .val-sm { font-size: 12px; font-weight: 600; fill: #F5F5F7; }
+      .tick { font-size: 11.5px; font-weight: 400; fill: #86868B; }
+      .axis-title { font-size: 12px; font-weight: 400; fill: #A6A6AB; }
+      .legend { font-size: 12.5px; font-weight: 500; fill: #DADADF; }
+      .note { font-size: 11.5px; font-weight: 400; fill: #A6A6AB; }
+      .note-dim { font-size: 11px; font-weight: 400; fill: #86868B; }
+    </style>
+  </defs>
+  <rect width="700" height="392" fill="#161618"/>
+  <text class="title" x="28" y="34">Time to first token vs prompt size</text>
+  <text class="subtitle" x="28" y="54">Build b12631: cold prompts (solid) compared with cached follow-up turns (dashed), in seconds</text>
+  <line x1="28" y1="76" x2="46" y2="76" stroke="#3B9EFF" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="37" cy="76" r="3.5" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <text class="legend" x="53" y="80">16-bit KV + DSpark</text>
+  <line x1="199" y1="76" x2="217" y2="76" stroke="#F0884D" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="208" cy="76" r="3.5" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <text class="legend" x="224" y="80">8-bit KV</text>
+  <line x1="301" y1="76" x2="319" y2="76" stroke="#52C48A" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="310" cy="76" r="3.5" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <text class="legend" x="326" y="80">8-bit KV + DSpark</text>
+  <line x1="64" y1="336.0" x2="668" y2="336.0" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="54" y="340.0" text-anchor="end">0</text>
+  <line x1="64" y1="291.4" x2="668" y2="291.4" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="54" y="295.4" text-anchor="end">50</text>
+  <line x1="64" y1="246.8" x2="668" y2="246.8" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="54" y="250.8" text-anchor="end">100</text>
+  <line x1="64" y1="202.2" x2="668" y2="202.2" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="54" y="206.2" text-anchor="end">150</text>
+  <line x1="64" y1="157.5" x2="668" y2="157.5" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="54" y="161.5" text-anchor="end">200</text>
+  <line x1="64" y1="112.9" x2="668" y2="112.9" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="54" y="116.9" text-anchor="end">250 s</text>
+  <line x1="64.0" y1="336" x2="64.0" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="64.0" y="355" text-anchor="middle">0</text>
+  <line x1="162.6" y1="336" x2="162.6" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="162.6" y="355" text-anchor="middle">64K</text>
+  <line x1="261.2" y1="336" x2="261.2" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="261.2" y="355" text-anchor="middle">128K</text>
+  <line x1="359.8" y1="336" x2="359.8" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="359.8" y="355" text-anchor="middle">192K</text>
+  <line x1="458.4" y1="336" x2="458.4" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="458.4" y="355" text-anchor="middle">256K</text>
+  <line x1="557.1" y1="336" x2="557.1" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="557.1" y="355" text-anchor="middle">320K</text>
+  <line x1="655.7" y1="336" x2="655.7" y2="340" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="655.7" y="355" text-anchor="middle">384K</text>
+  <text class="axis-title" x="366.0" y="378" text-anchor="middle">Prompt size (tokens)</text>
+  <polyline points="65.6,335.8 67.2,335.8 70.3,335.8 76.4,335.8 88.8,335.8 113.4,335.7 138.1,335.7 162.7,335.7 212.0,335.6 261.3,335.6 310.6,335.5 359.9,335.5 409.2,335.4 458.5,335.3 463.4,335.3" fill="none" stroke="#86868B" stroke-width="2" stroke-dasharray="6 5"/>
+  <text class="note" x="664" y="327.1" text-anchor="end">Cached follow-up turns: 0.2-0.74 s</text>
+  <polyline points="65.6,335.7 67.1,335.4 70.2,334.8 76.4,333.5 88.7,331.1 113.4,325.8 138.0,320.1 162.7,313.9 212.0,300.5 261.3,285.1 310.6,268.4 359.9,249.9 409.2,229.7 458.5,207.8 463.4,205.6" fill="none" stroke="#F0884D" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="65.6" cy="335.7" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="67.1" cy="335.4" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="70.2" cy="334.8" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="76.4" cy="333.5" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="88.7" cy="331.1" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="113.4" cy="325.8" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="138.0" cy="320.1" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="162.7" cy="313.9" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="212.0" cy="300.5" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="261.3" cy="285.1" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="310.6" cy="268.4" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="359.9" cy="249.9" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="409.2" cy="229.7" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="458.5" cy="207.8" r="2.8" fill="#F0884D" stroke="#161618" stroke-width="1"/>
+  <circle cx="463.4" cy="205.6" r="4.5" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <text class="val-sm" x="453.4" y="194.6" text-anchor="end" style="fill:#F0884D">146 s at 259K</text>
+  <polyline points="65.6,335.7 67.1,335.4 70.2,334.7 76.4,333.4 88.7,330.8 113.4,325.3 138.0,319.2 162.7,312.8 212.0,298.8 261.3,283.0 310.6,265.8 359.9,246.7 412.9,224.6" fill="none" stroke="#52C48A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="65.6" cy="335.7" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="67.1" cy="335.4" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="70.2" cy="334.7" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="76.4" cy="333.4" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="88.7" cy="330.8" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="113.4" cy="325.3" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="138.0" cy="319.2" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="162.7" cy="312.8" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="212.0" cy="298.8" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="261.3" cy="283.0" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="310.6" cy="265.8" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="359.9" cy="246.7" r="2.8" fill="#52C48A" stroke="#161618" stroke-width="1"/>
+  <circle cx="412.9" cy="224.6" r="4.5" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <text class="val-sm" x="424.9" y="238.6" text-anchor="start" style="fill:#52C48A">125 s at 226K</text>
+  <polyline points="65.6,335.6 67.1,335.3 70.2,334.7 76.4,333.4 88.7,330.9 113.4,325.5 138.0,319.9 162.7,313.8 212.0,301.3 261.3,287.4 274.0,283.8" fill="none" stroke="#3B9EFF" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="65.6" cy="335.6" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="67.1" cy="335.3" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="70.2" cy="334.7" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="76.4" cy="333.4" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="88.7" cy="330.9" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="113.4" cy="325.5" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="138.0" cy="319.9" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="162.7" cy="313.8" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="212.0" cy="301.3" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="261.3" cy="287.4" r="2.8" fill="#3B9EFF" stroke="#161618" stroke-width="1"/>
+  <circle cx="274.0" cy="283.8" r="4.5" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <text class="val-sm" x="286.0" y="287.8" text-anchor="start" style="fill:#3B9EFF">58 s at 136K</text>
+
+</svg>
