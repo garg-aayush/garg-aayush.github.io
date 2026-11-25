@@ -2,6 +2,8 @@
 
 This file is the context for anyone (or any agent session) picking up the blog post `posts/2026-11-23-inkling2-mini-llamacpp/index.qmd`. It records what was run on 2026-11-23, why, what came out and what is still open. Quarto does not render underscore folders, so nothing here is published on the site, but the repository is public: keep real IP addresses, hostnames, network names, keys and tokens out of this folder.
 
+> Update 2026-11-25: the benchmark was rerun on a newer llama.cpp build (`b12676-mix-c32dcc8`) and several conclusions changed. See `NEW_BUILD.md` in this folder for that run, its data files and what it means for the published post. Everything below describes the original run on `b12631-mix-acc0843`.
+
 ## What is in this folder
 
 | Path | What it is |
