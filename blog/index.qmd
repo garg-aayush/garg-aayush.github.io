@@ -22,7 +22,8 @@ listing:
     template-params:
       description: true
       root: ../
-    feed: true
+    feed:
+      items: 100
     fields: [date, title, description, categories, reading-time]
     date-format: "D MMM YYYY"
     sort: "date desc"

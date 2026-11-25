@@ -89,7 +89,8 @@ listing:
   # The newest posts, shown as rows and published as the RSS feed.
   - id: blog-listings
     template: _templates/post-rows.ejs
-    feed: true
+    feed:
+      items: 100
     fields: [date, title, categories, reading-time]
     date-format: "D MMM YYYY"
     sort: "date desc"
