@@ -30,7 +30,7 @@ functional_representation : verify_attribute(name[The Room], release_year[2012],
 
 As shown in the graph below, the selected `1K` dataset is a fairly representative sample of the full ViGGO train dataset.
 
-![Understanding Data Distribution](/static/img/blog-2024-07-15/viggo_function_name_distribution_1K.png)
+![Understanding Data Distribution](/static/img/blog-2024-07-15/viggo_function_name_distribution_1K.png){fig-alt="Bar chart showing the distribution of ViGGO function names in the 1K sample"}
 
 ## Upload the dataset to Predibase
 
@@ -133,7 +133,7 @@ for idx in range(len(val_dataset)):
 
 Now, I can generate the evaluation scores using custom evaluation metrics and compare them with previously calculated GPT-4 and Claude 3.5 Sonnet scores:
 
-![plot-finetuned-model](/static/img/blog-2024-07-15/finetuned_llama-3-8B_baseline.png)
+![plot-finetuned-model](/static/img/blog-2024-07-15/finetuned_llama-3-8B_baseline.png){fig-alt="Evaluation metrics chart comparing the baseline fine-tuned Llama-3-8B model against other models"}
 
 The initial finetuning of LLaMA-3-8B using 1,000 random examples from the ViGGO dataset, while not surpassing GPT-4 and Claude 3.5 Sonnet, shows promising results and outperforms several models from our previous blog. Notably, the exact_match score is even better than that of the two best-performing models.
 
@@ -154,7 +154,7 @@ prompt_template = """Given a target sentence construct the underlying meaningful
 
 After uploading this new dataset, finetuning the model, and evaluating it with the new adapter `viggo-finetune-1K/3`, there is significantly improved evaluation metrics. Notably, the model now surpasses GPT-4o's scores for `exact_match` and `function_name_match`.
 
-![plot-finetuned-model](/static/img/blog-2024-07-15/finetuned_llama-3-8B_update1.png)
+![plot-finetuned-model](/static/img/blog-2024-07-15/finetuned_llama-3-8B_update1.png){fig-alt="Evaluation metrics chart after updating the fine-tuned Llama-3-8B training setup"}
 
 **This improvement highlights the importance of clear and specific instructions in prompt engineering, even when working with finetuned models.**
 

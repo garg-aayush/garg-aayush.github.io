@@ -52,7 +52,7 @@ where:
 
 **The key assumption is that both noise sources are Gaussian and independent of each other.**
 
-![The linear state-space model](/static/img/blog-2026-07-15/fig2_state_space_model.svg){width=100%}
+![The linear state-space model](/static/img/blog-2026-07-15/fig2_state_space_model.svg){width=100% fig-alt="Diagram of the linear state-space model with hidden states transitioning via F and emitting noisy measurements via H"}
 
 What makes this formulation so useful for time-series work is its **generality**. The state vector can contain anything: a level, a slope, eleven seasonal factors, a bias term. The matrices $F$ and $H$ define how those pieces relate to each other and to what you actually observe. 
 
@@ -62,7 +62,7 @@ What makes this formulation so useful for time-series work is its **generality**
 
 The filter processes measurements one at a time, maintaining a running estimate of the state and of its own uncertainty. Each timestep has two steps: **predict** and **update**.
 
-![The Kalman filter predict-update cycle](/static/img/blog-2026-07-15/fig1_predict_update_cycle.svg){width=100%}
+![The Kalman filter predict-update cycle](/static/img/blog-2026-07-15/fig1_predict_update_cycle.svg){width=100% fig-alt="Flow diagram of the Kalman filter recursive predict and measurement update cycle"}
 
 ### Predict step
 
@@ -108,7 +108,7 @@ The innovation $\tilde{y}_k$ is the surprise: the difference between what we mea
 
 The gain is the heart of the algorithm and worth staring at for a minute.
 
-![Intuition behind the Kalman gain](/static/img/blog-2026-07-15/fig6_kalman_gain.svg){width=100%}
+![Intuition behind the Kalman gain](/static/img/blog-2026-07-15/fig6_kalman_gain.svg){width=100% fig-alt="Diagram illustrating how the Kalman gain weights model prediction versus noisy measurement"}
 
 When the measurement noise $R$ is large (an unreliable sensor), $K_k$ shrinks toward zero and the filter mostly trusts its own prediction. When the prior uncertainty $P^-_k$ is large (an uncertain model), $K_k$ grows toward one and the filter mostly trusts the measurement. **In between it blends the two optimally: for a linear-Gaussian system, no other linear combination of prediction and measurement achieves lower mean squared error**. 
 
@@ -122,7 +122,7 @@ The filter as described is **causal**: the estimate at time $k$ uses only measur
 
 **Kalman smoothing** fixes this by producing estimates that use all measurements including both past and future. The standard form is the **Rauch-Tung-Striebel (RTS) smoother** which works in two passes.
 
-![The RTS smoother: forward filter pass plus backward smoothing pass](/static/img/blog-2026-07-15/fig3_kalman_smoothing.svg){width=100%}
+![The RTS smoother: forward filter pass plus backward smoothing pass](/static/img/blog-2026-07-15/fig3_kalman_smoothing.svg){width=100% fig-alt="Diagram of the Rauch-Tung-Striebel smoother combining a forward Kalman filter pass with a backward smoothing pass"}
 
 **Forward pass**: run the ordinary Kalman filter through the whole dataset, storing the filtered estimates $\hat{x}_k, P_k$ and the priors $\hat{x}^-_k, P^-_k$ at every step.
 
@@ -148,7 +148,7 @@ The smoothed estimates are always at least as good as the filtered ones since th
 
 **Structural decomposition.** Model the series as trend + seasonal + residual, give each component its own block in the state vector with its own dynamics, and the filter estimates all of them simultaneously, with uncertainty.
 
-![Structural time-series decomposition via the Kalman filter](/static/img/blog-2026-07-15/fig4_time_series_decomposition.svg){width=100%}
+![Structural time-series decomposition via the Kalman filter](/static/img/blog-2026-07-15/fig4_time_series_decomposition.svg){width=100% fig-alt="Diagram showing structural time-series decomposition into trend, seasonal and irregular noise components"}
 
 The noise variances control how flexible each component is: a large process noise on the trend lets it move fast, a tiny one forces it to evolve slowly and smoothly. This is exactly what [statsmodels.tsa.UnobservedComponents](https://www.statsmodels.org/stable/generated/statsmodels.tsa.statespace.structural.UnobservedComponents.html) do internally.
 
@@ -158,7 +158,7 @@ The noise variances control how flexible each component is: a large process nois
 
 **Interpolation and missing data.** This is where the smoother genuinely shines and the mechanism is quite simple: at timesteps with no measurement skip the update step. The predict step still runs, carrying the state through the gap while the uncertainty grows. On the backward pass, information from after the gap flows back through it.
 
-![Gap filling with Kalman smoothing: uncertainty widens mid-gap and narrows at the edges](/static/img/blog-2026-07-15/fig5_interpolation.svg){width=100%}
+![Gap filling with Kalman smoothing: uncertainty widens mid-gap and narrows at the edges](/static/img/blog-2026-07-15/fig5_interpolation.svg){width=100% fig-alt="Diagram of Kalman smoother interpolation across a missing data gap showing uncertainty bands widening toward the middle"}
 
 The result is an interpolated estimate at every missing point with confidence bands that widen toward the middle of the gap and narrow near its edges. Linear or spline interpolation gives you neither the dynamics-awareness nor the uncertainty. Irregular sampling works by the same principle: the predict step can project over any time interval, you just adjust $F$ and $Q$ for the actual elapsed time.
 
@@ -208,13 +208,13 @@ results = model.fit(disp=False)
 
 **Results:** The full decomposition from-scratch on the left and `statsmodels` on the right:
 
-![Mauna Loa $\text{CO}_2$ structural decomposition: observed, trend, seasonal, residual](/static/img/blog-2026-07-15/fig7_co2_decomposition.png){width=100%}
+![Mauna Loa $\text{CO}_2$ structural decomposition: observed, trend, seasonal, residual](/static/img/blog-2026-07-15/fig7_co2_decomposition.png){width=100% fig-alt="Four-panel chart decomposing the Mauna Loa CO2 time series into observed values, upward trend, annual seasonal cycle and residuals"}
 
 The trend captures the accelerating rise: not a straight line but a curve that gently steepens as emission rates increase. The seasonal component is a clean, nearly constant annual oscillation dropping about 6 ppm from the May peak to the September trough each year as Northern Hemisphere forests absorb carbon through the growing season. The residual is tiny (about 0.09 ppm standard deviation in the `statsmodels` version) confirming that trend plus seasonal explains nearly everything. The two implementations agree closely, the visible difference is just MLE-optimized variances versus my hand-tuned ones which changes the trend smoothness slightly.
 
 Zooming into 1990 to 1996 shows the components at the individual-cycle level:
 
-![Zoomed view of the $\text{CO}_2$ seasonal cycles, 1990 to 1996](/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png){width=100%}
+![Zoomed view of the $\text{CO}_2$ seasonal cycles, 1990 to 1996](/static/img/blog-2026-07-15/fig8_co2_seasonal_zoom.png){width=100% fig-alt="Zoomed plot of Mauna Loa CO2 seasonal oscillations from 1990 to 1996 extracted by the Kalman smoother"}
 
 The green line is the trend alone, the blue line adds the estimated seasonal component and the observed points cluster tightly around the reconstruction.
 
@@ -266,13 +266,13 @@ During a gap, $P$ grows at every step because nothing arrives to shrink it which
 
 **Results:** The full series with the from-scratch and `statsmodels` versions against plain linear interpolation:
 
-![AirPassengers gap filling with the Kalman smoother](/static/img/blog-2026-07-15/fig9_airpassengers_interpolation.png){width=100%}
+![AirPassengers gap filling with the Kalman smoother](/static/img/blog-2026-07-15/fig9_airpassengers_interpolation.png){width=100% fig-alt="AirPassengers time series showing missing gaps reconstructed by the Kalman smoother with uncertainty bands"}
 
 The smoothed lines continue the seasonal oscillation straight through the gaps while linear interpolation just draws a line between the gap edges and ignores the seasonality entirely. Also worth noticing is the causal filtered estimate (light blue): it drifts during the gaps because it has no measurements to correct against and only snaps back once data resumes. The smoothed estimate stays close to the truth throughout, because it also sees the data on the far side.
 
 Zooming into each gap with the hidden true values marked:
 
-![Zoomed comparison of each gap: smoother vs linear interpolation vs hidden truth](/static/img/blog-2026-07-15/fig10_airpassengers_gaps_zoomed.png){width=100%}
+![Zoomed comparison of each gap: smoother vs linear interpolation vs hidden truth](/static/img/blog-2026-07-15/fig10_airpassengers_gaps_zoomed.png){width=100% fig-alt="Zoomed comparison of each deleted AirPassengers gap showing Kalman smoother reconstructions tracking hidden ground truth far better than linear interpolation"}
 
 The 9-month gap in the middle panel catches your eye as we are able to reconstruct nearly a full seasonal cycle purely from the learned dynamics and the data on either side.
 

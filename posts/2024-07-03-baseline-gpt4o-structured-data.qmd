@@ -161,7 +161,7 @@ Let's think step by step.
 
 Using the above evaluation strategy, I generate the average evaluation scores for the full dataset.
 
-![GPT-4o Evaluation Metrics](/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png)
+![GPT-4o Evaluation Metrics](/static/img/blog-2024-07-03/gpt-4o-evaluation-metrics.png){fig-alt="Bar chart of baseline GPT-4o evaluation metrics for structured functional representation extraction"}
 
 The task of generating functional representations from natural language sentences is challenging as seen in the above scores. The best the model can do is to provide the exact match only for **30%** of the examples. Even the correct function name evaluation score is only about **80%**. These results indicate that while GPT-4o shows some capability in extracting functional representations, there's significant room for improvement.
 

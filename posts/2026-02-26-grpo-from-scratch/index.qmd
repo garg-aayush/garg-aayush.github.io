@@ -100,7 +100,7 @@ The learning rate is the most critical hyperparameter to get right first. It det
 
 To find the right `lr`, I ran a log-spaced search from `1e-6` to `1e-4` for 100 steps each on H100.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/lr_sweep/lr_sweep.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/lr_sweep/lr_sweep.png){fig-alt="GRPO learning rate sweep plots from 1e-6 to 1e-4 showing evaluation reward accuracy, gradient norm and response length"}
 
 - `1e-6` and `3e-6` barely move the eval reward accuracy. The gradient signal is too small to update the policy meaningfully.
 - `1e-4` shows policy collapse with mean response length spikes and token entropy dropping to near zero.
@@ -113,7 +113,7 @@ To find the right `lr`, I ran a log-spaced search from `1e-6` to `1e-4` for 100 
 
 The vanilla REINFORCE gradient has notoriously high variance. A common technique is to subtract a baseline (the group mean reward) from the advantage which reduces variance without introducing bias. Here I tested whether that variance reduction actually matters in practice.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/baselines/baseline_ablation.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/baselines/baseline_ablation.png){fig-alt="Ablation plots comparing vanilla REINFORCE with and without a group mean reward baseline"}
 
 - `reinforce_with_baseline`: evaluation reward accuracy steadily climbs to ~0.61 with stable gradient norm and consistent mean response length around 300-350 tokens.
 - Both `no_baseline` runs peak early then decline. Their gradient norm is way high and seems to keep increasing, and both suffer rapid response length collapse after some steps.
@@ -129,7 +129,7 @@ When aggregating per-token losses over the sequence dimension, the choice of nor
 - `constant`: divide by a fixed constant (`max_gen_len`=1024). Every token gets the same gradient magnitude regardless of sequence length (used in DeepSeek).
 - `microbatch`: normalize by the longest response in the current microbatch. This is a middle ground between `mean` and `constant`.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/length_normalization/length_normalization.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/length_normalization/length_normalization.png){fig-alt="Ablation plots comparing mean, constant and microbatch length normalization modes in GRPO"}
 
 - All three modes converge to similar final reward accuracy and mean response length. 
 - The main difference is in gradient norm. `constant` produces consistently lower norms in comparison to `microbatch` and `mean`. This is expected since `constant` divides everything by 1024 (max generation length), which is 2-2.5x larger than typical response length.
@@ -141,7 +141,7 @@ When aggregating per-token losses over the sequence dimension, the choice of nor
 
 The standard GRPO advantage computation divides by the group standard deviation: `advantage_i = (reward_i - mean(group)) / (std(group) + eps)`. But [Dr. GRPO](https://arxiv.org/abs/2503.20783) argued that this can introduce unwanted biases where groups with low variance (too easy or too hard questions where all rollouts get the same reward) produce near-zero std deviation, inflating their advantages disproportionately. They proposed removing the division entirely. This ablation tests whether removing that division actually helps.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/std_dev/std_dev_normalization.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/std_dev/std_dev_normalization.png){fig-alt="Ablation plots comparing GRPO advantage computation with and without group standard deviation normalization"}
 
 - **With std normalization**: reaches higher final reward accuracy (~0.72).
 - **Without**: plateaus at ~0.65, but gradient norms are lower and more stable.
@@ -159,7 +159,7 @@ On-policy training is clean but we are generating a full batch of rollouts just 
 
 First, I ran a broad sweep over 6 configs varying `epochs_per_rollout_batch` and `train_batch_size` ranging from on-policy (1 optimizer step per GRPO step) to aggressive off-policy (16 optimizer steps per GRPO step). All runs use `grpo_clip` loss, `lr=3e-5`.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_sweep/off_policy_sweep.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_sweep/off_policy_sweep.png){fig-alt="Broad sweep of 6 on-policy and off-policy GRPO configurations showing collapse on aggressive 16-step updates"}
 
 - Most configs converge to ~0.55-0.65. The clear outlier is `e4_tb64_ga16` (16 opt steps/GRPO). It collapses mid-way with gradient norm spikes and response length collapsing to ~100 tokens. **This is a classic failure mode where the policy drifts too far from the rollout distribution and the model learns to produce minimal outputs.**
 - Mild off-policy (2 opt steps/GRPO) works as well as on-policy.
@@ -170,7 +170,7 @@ First, I ran a broad sweep over 6 configs varying `epochs_per_rollout_batch` and
 
 I then selected the three most promising configs (on-policy and two mild off-policy) for full 200 step training.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_full_sweep/off_policy_full_sweep.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/off_policy_full_sweep/off_policy_full_sweep.png){fig-alt="200-step GRPO training curves comparing on-policy training against two mild off-policy configurations"}
 
 - On-policy (`e1_tb256_ga64`) is consistently the best. It converges fastest and maintains highest reward accuracy (~0.65-0.75). The two mild off-policy configs track slightly behind it.
 - `e2_tb256_ga64` (2 epochs) shows higher gradient norm variance with spikes but doesn't destabilize.
@@ -182,7 +182,7 @@ I then selected the three most promising configs (on-policy and two mild off-pol
 
 Here, I compared the `r1_zero` prompt (structured `<think>...</think>` and `<answer>...</answer>` blocks) against question-only (just `{question}`), each with a matching reward function.
 
-![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/prompt_ablation/prompt_ablation.png)
+![](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/prompt_ablation/prompt_ablation.png){fig-alt="Ablation curves comparing the structured r1_zero prompt against a question-only prompt during GRPO"}
 
 - Question-only starts with much higher accuracy because Qwen2.5-Math-1.5B seems to be pre-trained on math data with `\boxed{}` formatting. It already solves nearly half the problems out of the box. In comparison, r1-zero starts near zero (unfamiliar format) but catches up quickly once the model learns the structured format. Finally, r1-zero consistently performs better than question-only by the end.
 - r1-zero settles at much lower entropy in comparison to question-only. This is expected since the r1-zero prompt is more structured and constrains the output space
@@ -195,7 +195,7 @@ This was not part of the assignment but I thought it would be interesting to see
 
 I ran five runs: base model (no SFT), three SFT checkpoints (early/mid/final) and final with lower `lr`.
 
-![SFT -> GRPO sweep: eval reward, format reward, entropy](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/sft_grpo/sft_grpo.png)
+![SFT -> GRPO sweep: eval reward, format reward, entropy](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/grpo/results/sft_grpo/sft_grpo.png){fig-alt="SFT to GRPO sweep showing evaluation reward, format reward and policy entropy"}
 
 - The base model (no SFT) still performs better than the SFT runs. As we use more and more SFT trained checkpoints, the GRPO ceiling plateaus at lower and lower accuracy. Similarly, we see higher entropy in the SFT runs in comparison to the base model.
 - This indicates that the SFT checkpoints are not helping GRPO training and are actually hurting it. SFT narrows the policy distribution early on, limiting the exploration that RL needs to discover better strategies. The more SFT training the checkpoint has seen, the narrower the distribution and the lower the GRPO ceiling.

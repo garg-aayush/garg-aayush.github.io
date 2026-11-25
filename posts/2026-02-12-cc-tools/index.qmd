@@ -19,12 +19,12 @@ If you are using Claude Code you are prone to hitting the session limit more oft
 
 [CodexBar](https://github.com/steipete/CodexBar) is a lightweight menu bar app that tracks usage and limits across different AI providers. It shows session and weekly limits (credits) right in the menu bar. This is genuinely useful as you always know where you stand.
 
-![](/static/img/blog-2026-02-12/codexbar-snapshot.jpg){width=40%}
+![](/static/img/blog-2026-02-12/codexbar-snapshot.jpg){width=40% fig-alt="CodexBar menu bar dropdown showing session and weekly AI provider usage limits"}
 
 ### ccusage
 
 [ccusage](https://github.com/ryoppippi/ccusage) is a cli tool for analyzing claude code usage from local json files. It gives you session wise, daily and monthly breakdowns of your usage. It is useful for understanding your consumption patterns and keeping an eye on how much you are actually using. Most importantly, it is a great tool to have inline usage info in claude code.
-![](/static/img/blog-2026-02-12/ccusage-snapshot.jpg){width=100%}
+![](/static/img/blog-2026-02-12/ccusage-snapshot.jpg){width=100% fig-alt="Terminal screenshot showing ccusage inline token and cost breakdown in Claude Code"}
 
 
 ## Managing Your AI Context
@@ -36,7 +36,7 @@ One of the biggest challenges with AI assistants is getting the right context in
 Most of us are aware of these three Claude Code commands but more often than not, maybe out of habit, we dont use them often enough and end up hitting the session limit.
 
 - **`/context`** — it provides a great visualization of your current conversation context usage as a colored grid. **I prefer to use it often to understand how much of the context window is consumed, loaded skills, mcps, tools and corresponding tokens used.**
-![](/static/img/blog-2026-02-12/context-snapshot.jpg){width=75%}
+![](/static/img/blog-2026-02-12/context-snapshot.jpg){width=75% fig-alt="Claude Code /context output showing context window usage across tools, skills, MCP servers and messages"}
 - **`/clear`** — this completely resets your conversation history. **I use it between unrelated tasks to start fresh with an empty context window avoiding both context degradation and session limit.**
 - **`/compact [instructions]`** — It summarizes your conversation to free up context space while preserving important information.
 
@@ -138,19 +138,19 @@ alias ll='eza -lh --git --sort=modified --icons'    # list view sorted by timest
 alias lt='eza -lh --git --sort=modified --tree --level=2 --icons' # tree view
 ```
 
-![](/static/img/blog-2026-02-12/eza-snapshot.jpg){width=75%}
+![](/static/img/blog-2026-02-12/eza-snapshot.jpg){width=75% fig-alt="Terminal screenshot of eza listing directory contents with icons, permissions and git status"}
 
 ### bat
 
 [bat](https://github.com/sharkdp/bat) is simly `cat` with syntax highlighting, line numbers and git integration. It automatically detects the file type and renders accordingly.
 
-![](/static/img/blog-2026-02-12/bat-snapshot.jpg){width=75%}
+![](/static/img/blog-2026-02-12/bat-snapshot.jpg){width=75% fig-alt="Terminal screenshot of bat displaying a source file with line numbers and syntax highlighting"}
 
 ### yazi
 
 [yazi](https://github.com/sxyazi/yazi) is a fast terminal file manager with support for previewing different file types including images and PDFs right in the terminal. **This is especially useful when you are already deep in a terminal session with Claude Code and need to quickly browse files or check an image without switching to Finder.**
 
-![](/static/img/blog-2026-02-12/yazi-snapshot.jpg){width=100%}
+![](/static/img/blog-2026-02-12/yazi-snapshot.jpg){width=100% fig-alt="Terminal screenshot of the yazi file manager previewing files directly in the terminal"}
 
 ## Wrapping Up
 

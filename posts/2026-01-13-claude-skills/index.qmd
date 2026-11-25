@@ -16,7 +16,7 @@ Skills deserve all the attention they are getting. They provide the domain knowl
 
 In this post, I will explain what skills are, why they matter and walk you through one of the skills I use daily: a [simple image editing skill](https://github.com/garg-aayush/tutorials/tree/main/claude-skills/basic-image-editing) as an example of how you can quickly build skills for your own use.
 
-![](/static/img/blog-2026-01-13/image-editing-skill-ex-1.png)
+![](/static/img/blog-2026-01-13/image-editing-skill-ex-1.png){fig-alt="Example of using a custom Claude image editing skill to process an image"}
 
 
 ## What Are Agent Skills?
@@ -130,11 +130,11 @@ For example, I work a lot with images. I often need to do basic editing operatio
 
 First of all, ensure the `skill-creator` skill is enabled in your Claude account. You can do this by going to Settings -> Capabilities and enabling the `skill-creator` skill.
 
-![](/static/img/blog-2026-01-13/walkthrough_1.png)
+![](/static/img/blog-2026-01-13/walkthrough_1.png){fig-alt="Claude settings panel showing the skill-creator capability toggle enabled"}
 
 Once you have enabled the skill-creator, you can describe what you want to create a skill for. For eg, I want to create a skill for basic image editing:
 
-![](/static/img/blog-2026-01-13/walkthrough_2.png)
+![](/static/img/blog-2026-01-13/walkthrough_2.png){fig-alt="Prompting Claude with skill-creator to scaffold a basic image editing skill"}
 
 Claude used the skill-creator framework to scaffold the initial structure: a `SKILL.md` with proper YAML frontmatter and a Python script with core operations. 
 
@@ -145,7 +145,7 @@ One thing I always make sure of: I dont try to create a polished skill in one go
 
 For eg, I uploaded a test image and asked Claude to change the background to orange:
 
-![](/static/img/blog-2026-01-13/walkthrough_3.png)
+![](/static/img/blog-2026-01-13/walkthrough_3.png){fig-alt="Testing the scaffolded image editing skill by asking Claude to change an image background to orange"}
 
 This gives you a tight feedback loop. You test what you're building, and if something doesn't work, Claude can fix it for you right there. No context-switching between environments. You build, test, and refine in one place.
 
@@ -153,15 +153,15 @@ This gives you a tight feedback loop. You test what you're building, and if some
 
 Once you have a basic working version, you can start adding more operations and optimizing. 
 
-![](/static/img/blog-2026-01-13/walkthrough_4.png)
+![](/static/img/blog-2026-01-13/walkthrough_4.png){fig-alt="Iterating with Claude to expand the image editing skill with additional operations"}
 
 Similarly, since this skill runs Python scripts locally, I switched to PEP 723 inline metadata so `uv run` installs dependencies automatically on the fly:
 
-![](/static/img/blog-2026-01-13/walkthrough_4.png)
+![](/static/img/blog-2026-01-13/walkthrough_4.png){fig-alt="Updating the skill script to use PEP 723 inline metadata with uv run"}
 
 If you have some domain knowledge, use it. Go through the code Claude generated and check if it's doing something redundant. You can review and ask Claude to make those optimizations.
 
-![](/static/img/blog-2026-01-13/walkthrough_5.png)
+![](/static/img/blog-2026-01-13/walkthrough_5.png){fig-alt="Reviewing the generated skill code and asking Claude to remove redundant work"}
 
 Finally, once you have a version you are happy with, go through the `SKILL.md` file and make sure the examples are good. If not, add them manually. **Good examples help Claude understand exactly how to use the skill.**
 

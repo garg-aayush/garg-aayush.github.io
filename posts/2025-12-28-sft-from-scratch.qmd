@@ -109,7 +109,7 @@ ValueError: There is no module or parameter named '_orig_mod' in Qwen2ForCausalL
 
 After all that debugging, here's what the training runs achieved:
 
-![Reasoning SFT Results](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/sft_train_reasoning_results.png)
+![Reasoning SFT Results](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/sft_train_reasoning_results.png){fig-alt="Plot of reasoning supervised fine-tuning accuracy and training curves"}
 
 | Run | Training Data | Reward Accuracy | Format Accuracy |
 |-----|--------------|-----------------|-----------------|
@@ -169,7 +169,7 @@ The assignment suggested deploying `Llama-3.3-70B-Instruct` locally as the annot
 
 I ran two experiments: one with prompt masking (`mask`) and one without (`no-mask`).
 
-![Instruction Fine-tuning Comparison](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/instruct_finetune_results_comparison.png)
+![Instruction Fine-tuning Comparison](https://raw.githubusercontent.com/garg-aayush/building-from-scratch/main/sft/results/plots/instruct_finetune_results_comparison.png){fig-alt="Comparison plot of instruction fine-tuning evaluation results across training runs"}
 
 | Benchmark | Baseline | No-Mask | Mask |
 |-----------|----------|---------|------|
