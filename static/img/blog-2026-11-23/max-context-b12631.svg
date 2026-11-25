@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 272" width="700" height="272">
+  <title>Max context that survived a full session</title>
+  <desc>On build b12631, 8-bit KV fits 262K, 8-bit KV + DSpark fits 229K, 16-bit KV fits 180K and 16-bit KV + DSpark fits 139K tokens.</desc>
+  <defs>
+    <style>
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+      .title { font-size: 16px; font-weight: 600; fill: #F5F5F7; }
+      .subtitle { font-size: 12.5px; font-weight: 400; fill: #86868B; }
+      .label { font-size: 13px; font-weight: 500; fill: #DADADF; }
+      .val { font-size: 13px; font-weight: 600; fill: #F5F5F7; }
+      .val-sm { font-size: 12px; font-weight: 600; fill: #F5F5F7; }
+      .tick { font-size: 11.5px; font-weight: 400; fill: #86868B; }
+      .axis-title { font-size: 12px; font-weight: 400; fill: #A6A6AB; }
+      .legend { font-size: 12.5px; font-weight: 500; fill: #DADADF; }
+      .note { font-size: 11.5px; font-weight: 400; fill: #A6A6AB; }
+      .note-dim { font-size: 11px; font-weight: 400; fill: #86868B; }
+    </style>
+  </defs>
+  <rect width="700" height="272" fill="#161618"/>
+  <text class="title" x="28" y="34">Max context that survived a full session</text>
+  <text class="subtitle" x="28" y="54">RTX 4090 (24 GB VRAM), build b12631, largest stable window on a 16K grid</text>
+  <line x1="176.0" y1="84" x2="176.0" y2="246" stroke="#34343B" stroke-width="1"/>
+  <text class="tick" x="176.0" y="262" text-anchor="middle">0</text>
+  <line x1="290.4" y1="84" x2="290.4" y2="246" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="290.4" y="262" text-anchor="middle">100K</text>
+  <line x1="404.8" y1="84" x2="404.8" y2="246" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="404.8" y="262" text-anchor="middle">200K</text>
+  <line x1="519.3" y1="84" x2="519.3" y2="246" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="519.3" y="262" text-anchor="middle">300K</text>
+  <line x1="633.7" y1="84" x2="633.7" y2="246" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="633.7" y="262" text-anchor="middle">400K</text>
+  <rect x="176" y="94" width="492.0" height="22" rx="4" fill="#1F1F23"/>
+  <rect x="176" y="94" width="299.9" height="22" rx="4" fill="#F0884D"/>
+  <text class="label" x="162" y="109.5" text-anchor="end">8-bit KV</text>
+  <text class="val" x="485.9" y="109.5">262K</text>
+  <rect x="176" y="134" width="492.0" height="22" rx="4" fill="#1F1F23"/>
+  <rect x="176" y="134" width="262.4" height="22" rx="4" fill="#52C48A"/>
+  <text class="label" x="162" y="149.5" text-anchor="end">8-bit KV + DSpark</text>
+  <text class="val" x="448.4" y="149.5">229K</text>
+  <rect x="176" y="174" width="492.0" height="22" rx="4" fill="#1F1F23"/>
+  <rect x="176" y="174" width="206.2" height="22" rx="4" fill="#B794F6"/>
+  <text class="label" x="162" y="189.5" text-anchor="end">16-bit KV</text>
+  <text class="val" x="392.2" y="189.5">180K</text>
+  <rect x="176" y="214" width="492.0" height="22" rx="4" fill="#1F1F23"/>
+  <rect x="176" y="214" width="159.3" height="22" rx="4" fill="#3B9EFF"/>
+  <text class="label" x="162" y="229.5" text-anchor="end">16-bit KV + DSpark</text>
+  <text class="val" x="345.3" y="229.5">139K</text>
+
+</svg>

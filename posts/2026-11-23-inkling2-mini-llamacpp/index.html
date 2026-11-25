@@ -118,12 +118,12 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <meta property="og:description" content="Finding the right context length and llama.cpp settings to run Inkling-2-Mini on a 24 GB GPU for local coding agents.">
 <meta property="og:image" content="https://aayushgarg.dev/static/img/blog-2026-11-23/code-speed-card.jpg">
 <meta property="og:site_name" content="Aayush Garg">
-<meta property="og:image:alt" content="Code generation speed of Inkling-2-Mini on an RTX 4090 from 0 to 160K context tokens across 16-bit KV + DSpark, 8-bit KV and 8-bit KV + DSpark">
+<meta property="og:image:alt" content="Code generation speed of Inkling-2-Mini on an RTX 4090 on build b12676 from 0 to 160K context tokens, with 8-bit KV + DSpark leading at every depth">
 <meta name="twitter:title" content="Running Inkling-2-Mini on an RTX 4090 with llama.cpp – Aayush Garg">
 <meta name="twitter:description" content="Finding the right context length and llama.cpp settings to run Inkling-2-Mini on a 24 GB GPU for local coding agents.">
 <meta name="twitter:image" content="https://aayushgarg.dev/static/img/blog-2026-11-23/code-speed-card.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image:alt" content="Code generation speed of Inkling-2-Mini on an RTX 4090 from 0 to 160K context tokens across 16-bit KV + DSpark, 8-bit KV and 8-bit KV + DSpark">
+<meta name="twitter:image:alt" content="Code generation speed of Inkling-2-Mini on an RTX 4090 on build b12676 from 0 to 160K context tokens, with 8-bit KV + DSpark leading at every depth">
 </head>
 
 <body class="floating nav-fixed article-page quarto-light">
@@ -204,7 +204,7 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <div class="description">Finding the right context length and llama.cpp settings to run Inkling-2-Mini on a 24 GB GPU for local coding agents.</div>
 <p class="article-byline">
   <span class="article-author">Aayush Garg</span>
-  <span>8 min read</span>
+  <span>9 min read</span>
   <span>3 sections</span>
 </p>
 </header>
@@ -217,6 +217,9 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <li><a href="#possible-configuration-options">Possible configuration options</a></li>
 </ul>
 </details></nav>
+<blockquote class="blockquote">
+<p><strong>Update (25 Nov 2026):</strong> I reran everything on Unsloth’s <code>b12676-mix-c32dcc8</code> build and the main takeaway flipped: 8-bit KV + DSpark is now the fastest setup at every depth. Use the tabs on any chart below to switch between <code>b12676</code> and the original <code>b12631</code> run, and skip <code>b12649</code> on 24 GB (it used 1.5-2 GB more VRAM and OOMed at 262K).</p>
+</blockquote>
 <p>Last week <a href="https://thinkingmachines.ai/">Thinking Machines Lab</a> released <a href="https://huggingface.co/thinkingmachines/Inkling-2-Mini">Inkling-2-Mini</a>. Since its release it has been getting a lot of attention (rightly so!). Firstly, because it is the best model you can run on your local machine with as little as ~12 GB VRAM, sort of dethroning <a href="https://unsloth.ai/docs/models/qwen3.8">Qwen3.8-27B</a> as the go-to local model. Secondly, because it is a sparse MoE model with 26.4B total parameters and 3.4B active (~5.4B effective active parameters per token to account for looping). Local inference is mostly memory-bandwidth bound, so only activating a small fraction of the weights per token gives you the best of both worlds: the capability of a ~26B model at the generation speed of a much smaller one.</p>
 <p>I can genuinely say that it is the best local model since Qwen3.8 and honestly I can even go as far as saying that it feels on par with Claude Sonnet 5.5 to me.</p>
 <p>In one of my earlier posts this year, I walked through <a href="https://aayushgarg.dev/posts/2026-03-29-local-llm-opencode/index.html">deploying a local model on a 24 GB GPU</a> on my RTX 4090 workstation and using it from my Mac. I followed the same approach here, though I am using the <a href="https://unsloth.ai/docs/desktop">Unsloth desktop app</a> instead of OpenCode. It is a great app for local LLM inference, very easy to set up and switch between models. I would highly recommend giving it a try. If you like, you can also hook it up to OpenCode like in my Qwen post, though I have not tried it there yet.</p>
@@ -232,53 +235,80 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 <p>In llama.cpp there are a few flags you end up tuning to balance speed against context size:</p>
 <ul>
 <li><strong>KV cache precision (16-bit vs 8-bit):</strong> By default llama.cpp uses a 16-bit KV cache. Switching to 8-bit (<code>--cache-type-k q8_0 --cache-type-v q8_0</code>) roughly cuts KV cache memory in half so you can fit a lot more context on the same card.</li>
-<li><strong>Speculative decoding (DSpark draft model):</strong> If a model supports MTP or has a draft model available, you can use speculative decoding to speed up generation. For Inkling-2-Mini there is a tiny 0.4 GB DSpark draft model so I tested it here. It gives a nice speed boost on shorter contexts but costs some vram and adds overhead once the context gets large.</li>
-<li><strong>Micro-batch size (<code>-ub</code>):</strong> This controls how many prompt tokens hit the GPU at once during prefill. On an 8K prompt <code>-ub 512</code> was the sweet spot at ~3,000 tok/s while going higher slightly slowed prefill down and cut into usable context.</li>
-<li><strong>Concurrent slots (<code>--parallel</code>):</strong> Each slot splits your vram and throughput. Since I am running on a single 24 GB card and is the only person using this server, it is always best to set it to <code>--parallel 1</code>.</li>
+<li><strong>Speculative decoding (DSpark draft model):</strong> If a model supports MTP or has a draft model available, you can use speculative decoding to speed up generation. For Inkling-2-Mini there is a tiny 0.4-0.5 GB DSpark draft model so I tested it here. It speeds up generation at every depth in exchange for some VRAM headroom.</li>
+<li><strong>Micro-batch size (<code>-ub</code>):</strong> This controls how many prompt tokens hit the GPU at once during prefill. <code>-ub 2048</code> processes prompts ~20% faster than <code>-ub 512</code> (~4,730 vs ~3,940 tok/s on an 8K prompt) but cuts usable context sharply (262K down to 163K on 8-bit KV + DSpark), so <code>-ub 512</code> stays the better choice for long sessions.</li>
+<li><strong>Concurrent slots (<code>--parallel</code>):</strong> Each slot splits your VRAM and throughput. Since I am running on a single 24 GB card and am the only person using this server, it is always best to set it to <code>--parallel 1</code>.</li>
 </ul>
 </section>
 <section id="benchmark-results" class="level2">
 <h2 class="anchored" data-anchor-id="benchmark-results">Benchmark results</h2>
-<blockquote class="blockquote">
-<p><strong>Note (24 Nov 2026):</strong> These benchmarks were run on Unsloth’s <code>b12631-mix-acc0843</code> build, one release before their <a href="https://unsloth.ai/docs/models/inkling-2-mini">23 Nov update</a> (<code>b12649-mix-c7059d6</code>). The newer build brings faster decoding and a Q8_0 KV cache fix so you should expect better speeds if you follow their guide today. I might rerun these benchmarks on the newer build later.</p>
-</blockquote>
 <p>All numbers below are from single runs on my RTX 4090, using slices of real C++ source code (from the llama.cpp repo) to fill the context instead of synthetic dummy tokens.</p>
 <section id="how-much-context-fits-on-24-gb" class="level3">
 <h3 class="anchored" data-anchor-id="how-much-context-fits-on-24-gb">How much context fits on 24 GB</h3>
-<p><img src="../../static/img/blog-2026-11-23/max-context.svg" class="img-fluid" alt="Horizontal bar chart comparing the largest context window that survived a full session across four setups: 262K for 8-bit KV, 229K for 8-bit KV with DSpark, 180K for 16-bit KV and 139K for 16-bit KV with DSpark."></p>
-<p>Testing a single prompt can trick you on 24 GB: with a 16-bit KV cache the server took one 196K prompt, then ran out of GPU memory later in the session. The chart above shows the largest context that actually survived a full multi-turn session.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="build">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">b12676 (latest)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">b12631 (original)</a></li></ul>
+<div class="tab-content" data-group="build">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><img src="../../static/img/blog-2026-11-23/max-context.svg" class="img-fluid" alt="Horizontal bar chart comparing the largest context window that survived a full session on build b12676 across four setups: 376K for 8-bit KV, 262K for 8-bit KV with DSpark, 196K for 16-bit KV and 147K for 16-bit KV with DSpark."></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p><img src="../../static/img/blog-2026-11-23/max-context-b12631.svg" class="img-fluid" alt="Horizontal bar chart comparing the largest context window that survived a full session on build b12631 across four setups: 262K for 8-bit KV, 229K for 8-bit KV with DSpark, 180K for 16-bit KV and 139K for 16-bit KV with DSpark."></p>
+</div>
+</div>
+</div>
+<p>One catch if you download from Hugging Face today: Unsloth’s re-uploaded 0.5 GB drafter (<code>dspark-Inkling-2-Mini-Q8_0.gguf</code>) matches the original 0.4 GB one on speed (<code>dspark-Inkling-2-Mini-Q8_0_Old.gguf</code>, plotted above) but uses ~0.7 GB more VRAM, bringing the DSpark limits down to 229K (8-bit KV) and 131K (16-bit KV). Single prompts can also still trick you: with the new drafter 8-bit KV + DSpark survived one 244K prompt, then crashed early in the multi-turn session.</p>
 <blockquote class="blockquote">
-<p>Switching to an 8-bit KV cache pushes usable context from 180K to 262K tokens while DSpark trades away roughly 30-40K tokens of vram headroom on either cache type.</p>
+<p>Switching to 8-bit KV nearly doubles usable context (196K to 376K), and even with DSpark enabled you still get 229K-262K tokens on 24 GB.</p>
 </blockquote>
 </section>
 <section id="time-to-first-token-ttft" class="level3">
 <h3 class="anchored" data-anchor-id="time-to-first-token-ttft">Time to first token (TTFT)</h3>
-<p><img src="../../static/img/blog-2026-11-23/ttft-vs-context.svg" class="img-fluid" alt="Line chart of cold time to first token vs prompt size for three setups, plus a dashed line showing cached follow-up turns staying under 1 second."></p>
-<p>Each line stops where that setup runs out of VRAM, and all three track almost identically until then. In a 12-turn tool calling session starting at 41K tokens, only the first cold turn felt slow (15.8 s) while turns 2-12 reused the prompt cache and finished in a median of 1.6-1.9 s.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="build">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">b12676 (latest)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">b12631 (original)</a></li></ul>
+<div class="tab-content" data-group="build">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p><img src="../../static/img/blog-2026-11-23/ttft-vs-context.svg" class="img-fluid" alt="Line chart of cold time to first token vs prompt size on build b12676 for three setups, reaching 57 s at 144K for 16-bit KV with DSpark, 138 s at 259K for 8-bit KV with DSpark and 240 s at 374K for 8-bit KV, plus a dashed line showing cached follow-up turns staying under 1 second."></p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p><img src="../../static/img/blog-2026-11-23/ttft-vs-context-b12631.svg" class="img-fluid" alt="Line chart of cold time to first token vs prompt size on build b12631 for three setups, reaching 58 s at 136K for 16-bit KV with DSpark, 125 s at 226K for 8-bit KV with DSpark and 146 s at 259K for 8-bit KV, plus a dashed line showing cached follow-up turns staying under 1 second."></p>
+</div>
+</div>
+</div>
+<p>All three setups track almost identically until each hits its VRAM ceiling. In a 12-turn tool calling session starting at 41K tokens, only the first cold turn felt slow (12.3 s, down from 15.8 s on <code>b12631</code>) while cached turns 2-12 finished in a median of 1.2-1.5 s.</p>
 <blockquote class="blockquote">
-<p>Cold time to first token depends almost entirely on prompt size and barely changes across setups, while cached follow-up turns stay under 1 s at every depth.</p>
+<p>Cold TTFT depends almost entirely on prompt size, while cached follow-up turns stay under 1 s at every depth.</p>
 </blockquote>
 </section>
 <section id="code-generation-speed-as-context-grows" class="level3">
 <h3 class="anchored" data-anchor-id="code-generation-speed-as-context-grows">Code generation speed as context grows</h3>
-<p><img src="../../static/img/blog-2026-11-23/code-speed-vs-context.svg" class="img-fluid" alt="Line chart of code generation speed in tokens per second from 0 to 160K tokens of code in context across three setups."></p>
-<p>To see how generation holds up in a real coding session, I asked four coding questions behind 0 to 160K tokens of code at low thinking effort. On short prompts DSpark makes a clear difference, though that lead shrinks as context grows and by 120K both 16-bit KV + DSpark and plain 8-bit KV are basically tied. The surprise was 8-bit KV + DSpark: you might expect the best of both worlds, but past 64K it actually falls behind plain 8-bit KV.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="build">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">b12676 (latest)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">b12631 (original)</a></li></ul>
+<div class="tab-content" data-group="build">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><img src="../../static/img/blog-2026-11-23/code-speed-vs-context.svg" class="img-fluid" alt="Line chart of code generation speed on build b12676 from 0 to 160K tokens of code in context across three setups, with 8-bit KV + DSpark leading from 119 tok/s at 0 down to 72 tok/s at 160K."></p>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p><img src="../../static/img/blog-2026-11-23/code-speed-vs-context-b12631.svg" class="img-fluid" alt="Line chart of code generation speed on build b12631 from 0 to 160K tokens of code in context across three setups, showing 8-bit KV + DSpark dropping behind plain 8-bit KV past 64K."></p>
+</div>
+</div>
+</div>
+<p>This is where <code>b12676</code> flips the story from <code>b12631</code>. Before, 8-bit KV + DSpark fell behind plain 8-bit KV past 64K. On <code>b12676</code> every setup is faster, and 8-bit KV + DSpark gained up to 67% at long context so it now leads at every depth up to 160K.</p>
 <blockquote class="blockquote">
-<p>DSpark gives a ~30% speed boost on short contexts but on an 8-bit KV cache it actually falls behind plain 8-bit KV past 64K.</p>
+<p>On <code>b12676</code>, 8-bit KV + DSpark gives a ~34% boost on short prompts and stays the fastest setup all the way to 160K.</p>
 </blockquote>
 </section>
 <section id="thinking-effort-and-tool-calls" class="level3">
 <h3 class="anchored" data-anchor-id="thinking-effort-and-tool-calls">Thinking effort and tool calls</h3>
-<p>A couple of smaller things came up while testing that are worth knowing before you set this up:</p>
+<p>A couple of smaller things came up while testing that still hold on <code>b12676</code>:</p>
 <ul>
-<li><strong>Keep <code>--reasoning-effort low</code> as the default:</strong> In my tests, <code>low</code> kept replies snappy while still letting any client bump it up with <code>"reasoning_effort": "high"</code> when needed. Not sure but setting effort to <code>none</code> still made the model think and was actually slower than <code>low</code> and <code>--reasoning-budget 0</code> broke tool calling pretty badly.</li>
-<li><strong>Switching effort mid-session clears the prompt cache once:</strong> Changing thinking effort partway through a 40K toks session made the server reread the whole history</li>
+<li><strong>Keep <code>--reasoning-effort low</code> as the default:</strong> In my tests, <code>low</code> kept replies snappy while still letting any client bump it up with <code>"reasoning_effort": "high"</code> when needed. Setting effort to <code>none</code> still made the model think and was slower than <code>low</code>, and <code>--reasoning-budget 0</code> broke tool calling pretty badly.</li>
+<li><strong>Switching effort mid-session clears the prompt cache once:</strong> Changing thinking effort partway through a 40K token session made the server reread the whole history (11.9 s to first token on <code>b12676</code>, down from 15.2 s before).</li>
 </ul>
 </section>
 </section>
 <section id="possible-configuration-options" class="level2">
 <h2 class="anchored" data-anchor-id="possible-configuration-options">Possible configuration options</h2>
-<p>Putting all of that together, here are the three configs that make sense on a 24 GB card:</p>
+<p>Putting all of that together on <code>b12676</code>, here is how the three configs compare on a 24 GB card:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 20%">
@@ -298,55 +328,58 @@ gtag('config', 'G-16JWTLXJNG', { 'anonymize_ip': true});
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Fast</strong></td>
-<td>16-bit KV + DSpark</td>
-<td>131K</td>
-<td>103 / 71 / 61 / n/a</td>
-<td>22.6 GB</td>
+<td><strong>Recommended</strong></td>
+<td>8-bit KV + DSpark</td>
+<td>196K</td>
+<td>119 / 98 / 82 / 72</td>
+<td>21.9 GB</td>
 </tr>
 <tr class="even">
 <td><strong>Long context</strong></td>
 <td>8-bit KV</td>
 <td>262K</td>
-<td>76 / 66 / 59 / 55</td>
-<td>22.4 GB</td>
+<td>89 / 75 / 67 / 62</td>
+<td>21.5 GB</td>
 </tr>
 <tr class="odd">
-<td><strong>Balanced</strong></td>
-<td>8-bit KV + DSpark</td>
-<td>196K</td>
-<td>98 / 62 / 49 / 43</td>
-<td>23.2 GB</td>
+<td><strong>16-bit KV + DSpark</strong></td>
+<td>16-bit KV + DSpark</td>
+<td>131K</td>
+<td>117 / 89 / 76 / n/a</td>
+<td>22.4 GB</td>
 </tr>
 </tbody>
 </table>
-<p>Honestly, for most people the real choice is between the first two:</p>
+<p>Peak VRAM for the DSpark rows uses the 0.4 GB drafter; the 0.5 GB drafter adds ~0.7 GB.</p>
+<p>Honestly, on <code>b12676</code> the choice is much simpler:</p>
 <ul>
-<li><strong>Fast (131K)</strong> is what I am running right now. It is the fastest setup as long as your sessions stay under roughly 64K tokens and it still matches Long context (262K) at 120K.</li>
-<li><strong>Long context (262K)</strong> is what you should pick if your sessions regularly go past 131K tokens. Just keep in mind that a cold 256K prompt takes around 144 s before the first token shows up.</li>
-<li><strong>Balanced (196K)</strong> really only makes sense if you do not want to restart the server and want both &gt;131K context and fast replies on short prompts. On raw speed it is slower than Fast (131K) at every depth, slower than Long context (262K) past 64K and leaves the least VRAM spare.</li>
+<li><strong>Recommended (8-bit KV + DSpark, 196K)</strong> is the clear daily setup. It is the fastest across every depth and fits comfortably with either drafter.</li>
+<li><strong>Long context (8-bit KV, 262K-376K)</strong> is only needed if sessions regularly pass 229K-262K tokens, though cold prompts take ~132 s at 256K and ~240 s at 374K.</li>
+<li><strong>16-bit KV + DSpark (131K)</strong> no longer has a speed case: it is equal or slower at every depth with a smaller window, and sits right on the VRAM limit with the 0.5 GB drafter.</li>
 </ul>
 <section id="running-it-with-llama.cpp" class="level3">
 <h3 class="anchored" data-anchor-id="running-it-with-llama.cpp">Running it with llama.cpp</h3>
-<p>To install Unsloth’s llama.cpp build and download the <code>UD-Q4_K_XL</code> quant (17.6 GB) and <code>Q8_0</code> DSpark drafter (0.4 GB), follow the steps in <a href="https://unsloth.ai/docs/models/inkling-2-mini">Unsloth’s Inkling-2-Mini guide</a>. Once that is set up, here is the final config I am using (<strong>Fast</strong>, 131K context):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">BIN</span><span class="op">=</span>~/llama.cpp-unsloth/b12631</span>
+<p>Follow <a href="https://unsloth.ai/docs/models/inkling-2-mini">Unsloth’s Inkling-2-Mini guide</a> to download <code>UD-Q4_K_XL</code> (17.6 GB) and the <code>Q8_0</code> DSpark drafter, and grab release <code>b12676-mix-c32dcc8</code> or newer from their <a href="https://github.com/unslothai/llama.cpp/releases">llama.cpp releases</a> instead of <code>b12649</code>.</p>
+<p>Here is the <strong>Recommended</strong> config (8-bit KV + DSpark at 196K context):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">BIN</span><span class="op">=</span>~/llama.cpp-unsloth/b12676</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">MODELS</span><span class="op">=</span>~/MODELS/unsloth/Inkling-2-Mini-GGUF</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LD_LIBRARY_PATH</span><span class="op">=</span><span class="st">"</span><span class="va">$BIN</span><span class="st">:</span><span class="va">${LD_LIBRARY_PATH</span><span class="op">:-</span><span class="va">}</span><span class="st">"</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$BIN</span><span class="ex">/llama-server</span> <span class="dt">\</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-m</span> <span class="va">$MODELS</span>/Inkling-2-Mini-UD-Q4_K_XL.gguf <span class="dt">\</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--model-draft</span> <span class="va">$MODELS</span>/dspark-Inkling-2-Mini-Q8_0.gguf <span class="dt">\</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--spec-type</span> draft-dspark <span class="at">--spec-draft-n-max</span> 2 <span class="at">--n-gpu-layers-draft</span> 99 <span class="dt">\</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">-c</span> 131072 <span class="at">-ub</span> 512 <span class="at">-ngl</span> 99 <span class="at">-fa</span> on <span class="at">--parallel</span> 1 <span class="at">--jinja</span> <span class="dt">\</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--reasoning-effort</span> low <span class="dt">\</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--temp</span> 1.0 <span class="at">--top-p</span> 1.0 <span class="at">--top-k</span> 0 <span class="at">--min-p</span> 0.0 <span class="dt">\</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">--alias</span> inkling-2-mini <span class="dt">\</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--host</span> <span class="op">&lt;</span>YOUR_GPU_SERVER_IP<span class="op">&gt;</span> --port 8080 <span class="dt">\</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-slots</span> <span class="at">--no-webui</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cache-type-k</span> q8_0 <span class="at">--cache-type-v</span> q8_0 <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">-c</span> 196608 <span class="at">-ub</span> 512 <span class="at">-ngl</span> 99 <span class="at">-fa</span> on <span class="at">--parallel</span> 1 <span class="at">--jinja</span> <span class="dt">\</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--reasoning-effort</span> low <span class="dt">\</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">--temp</span> 1.0 <span class="at">--top-p</span> 1.0 <span class="at">--top-k</span> 0 <span class="at">--min-p</span> 0.0 <span class="dt">\</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--alias</span> inkling-2-mini <span class="dt">\</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--host</span> <span class="op">&lt;</span>YOUR_GPU_SERVER_IP<span class="op">&gt;</span> --port 8080 <span class="dt">\</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-slots</span> <span class="at">--no-webui</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
-<li>If you want <strong>Long context (262K)</strong> instead, drop the <code>--model-draft</code> and <code>--spec-type</code> lines, add <code>--cache-type-k q8_0 --cache-type-v q8_0</code> and change <code>-c</code> to <code>262144</code>.</li>
-<li>If you want <strong>Balanced (196K)</strong>, keep the DSpark flags, add the same 8-bit cache flags and set <code>-c 196608</code>.</li>
+<li>For <strong>more context with DSpark</strong>, raise <code>-c</code> to <code>229376</code> (or <code>262144</code> with <code>dspark-Inkling-2-Mini-Q8_0_Old.gguf</code>).</li>
+<li>For <strong>Long context (262K-376K)</strong>, drop the <code>--model-draft</code> and <code>--spec-type</code> lines and set <code>-c</code> to <code>262144</code> (up to <code>376832</code>).</li>
 </ul>
-<p>All three configs leave only 0.8-1.6 GB of VRAM free, so try not to run anything else heavy on the GPU at the same time 🙈.</p>
+<p>Even at 196K you only have 1.5-2 GB of VRAM free depending on the drafter, so try not to run anything else heavy on the GPU at the same time 🙈.</p>
 
 
 <nav class="article-end" aria-label="All writing"><a class="link-back" href="../../blog/">All writing</a></nav>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 386" width="700" height="386">
   <title>Code generation speed as context grows</title>
-  <desc>On an empty context 16-bit KV with DSpark runs at 103 tok/s, 8-bit KV with DSpark at 98 tok/s and plain 8-bit KV at 76 tok/s. By 120K tokens 16-bit KV with DSpark (61 tok/s) and plain 8-bit KV (59 tok/s) are nearly tied, while 8-bit KV with DSpark slows to 49 tok/s and 43 tok/s at 160K.</desc>
+  <desc>On build b12676, empty context speeds are 119 tok/s for 8-bit KV with DSpark, 117 tok/s for 16-bit KV with DSpark and 89 tok/s for plain 8-bit KV. At 120K tokens 16-bit KV with DSpark ends at 76 tok/s; at 160K tokens 8-bit KV with DSpark is 72 tok/s and plain 8-bit KV is 62 tok/s.</desc>
   <defs>
     <style>
       text {
@@ -21,7 +21,7 @@
   </defs>
   <rect width="700" height="386" fill="#161618"/>
   <text class="title" x="28" y="34">Code generation speed as context grows</text>
-  <text class="subtitle" x="28" y="54">Low thinking effort, four coding problems per depth (tokens per second)</text>
+  <text class="subtitle" x="28" y="54">Build b12676, low thinking effort, four coding problems per depth (tokens per second)</text>
   <line x1="28" y1="76" x2="46" y2="76" stroke="#3B9EFF" stroke-width="2.5" stroke-linecap="round"/>
   <circle cx="37" cy="76" r="3.5" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
   <text class="legend" x="53" y="80">16-bit KV + DSpark</text>
@@ -33,18 +33,20 @@
   <text class="legend" x="326" y="80">8-bit KV + DSpark</text>
   <line x1="68" y1="330.0" x2="636" y2="330.0" stroke="#34343B" stroke-width="1"/>
   <text class="tick" x="58" y="334.0" text-anchor="end">0</text>
-  <line x1="68" y1="292.3" x2="636" y2="292.3" stroke="#26262B" stroke-width="1"/>
-  <text class="tick" x="58" y="296.3" text-anchor="end">20</text>
-  <line x1="68" y1="254.7" x2="636" y2="254.7" stroke="#26262B" stroke-width="1"/>
-  <text class="tick" x="58" y="258.7" text-anchor="end">40</text>
-  <line x1="68" y1="217.0" x2="636" y2="217.0" stroke="#26262B" stroke-width="1"/>
-  <text class="tick" x="58" y="221.0" text-anchor="end">60</text>
-  <line x1="68" y1="179.3" x2="636" y2="179.3" stroke="#26262B" stroke-width="1"/>
-  <text class="tick" x="58" y="183.3" text-anchor="end">80</text>
-  <line x1="68" y1="141.7" x2="636" y2="141.7" stroke="#26262B" stroke-width="1"/>
-  <text class="tick" x="58" y="145.7" text-anchor="end">100</text>
+  <line x1="68" y1="297.7" x2="636" y2="297.7" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="58" y="301.7" text-anchor="end">20</text>
+  <line x1="68" y1="265.4" x2="636" y2="265.4" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="58" y="269.4" text-anchor="end">40</text>
+  <line x1="68" y1="233.1" x2="636" y2="233.1" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="58" y="237.1" text-anchor="end">60</text>
+  <line x1="68" y1="200.9" x2="636" y2="200.9" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="58" y="204.9" text-anchor="end">80</text>
+  <line x1="68" y1="168.6" x2="636" y2="168.6" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="58" y="172.6" text-anchor="end">100</text>
+  <line x1="68" y1="136.3" x2="636" y2="136.3" stroke="#26262B" stroke-width="1"/>
+  <text class="tick" x="58" y="140.3" text-anchor="end">120</text>
   <line x1="68" y1="104.0" x2="636" y2="104.0" stroke="#26262B" stroke-width="1"/>
-  <text class="tick" x="58" y="108.0" text-anchor="end">120 t/s</text>
+  <text class="tick" x="58" y="108.0" text-anchor="end">140 t/s</text>
   <line x1="68.0" y1="330" x2="68.0" y2="334" stroke="#34343B" stroke-width="1"/>
   <text class="tick" x="68.0" y="349" text-anchor="middle">0</text>
   <line x1="181.6" y1="330" x2="181.6" y2="334" stroke="#34343B" stroke-width="1"/>
@@ -58,33 +60,32 @@
   <line x1="636.0" y1="330" x2="636.0" y2="334" stroke="#34343B" stroke-width="1"/>
   <text class="tick" x="636.0" y="349" text-anchor="middle">160K</text>
   <text class="axis-title" x="352.0" y="372" text-anchor="middle">Code already in context (tokens)</text>
-  <line x1="295.2" y1="110" x2="295.2" y2="330" stroke="#26262B" stroke-width="1" stroke-dasharray="4 4"/>
-  <text class="note-dim" x="301.2" y="122">Past 64K, plain 8-bit KV beats 8-bit KV + DSpark</text>
-  <polyline points="68.0,136.4 181.6,170.0 295.2,196.6 408.8,205.7 494.0,215.9" fill="none" stroke="#3B9EFF" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-  <circle cx="68.0" cy="136.4" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="181.6" cy="170.0" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="295.2" cy="196.6" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="408.8" cy="205.7" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="494.0" cy="215.9" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
-  <polyline points="68.0,186.0 181.6,197.7 295.2,205.8 408.8,214.0 494.0,218.6 636.0,226.4" fill="none" stroke="#F0884D" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-  <circle cx="68.0" cy="186.0" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="181.6" cy="197.7" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="295.2" cy="205.8" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="408.8" cy="214.0" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="494.0" cy="218.6" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="636.0" cy="226.4" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
-  <polyline points="68.0,144.8 181.6,181.2 295.2,213.4 408.8,221.7 494.0,237.8 636.0,249.2" fill="none" stroke="#52C48A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-  <circle cx="68.0" cy="144.8" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="181.6" cy="181.2" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="295.2" cy="213.4" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="408.8" cy="221.7" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="494.0" cy="237.8" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
-  <circle cx="636.0" cy="249.2" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
-  <text class="val-sm" x="76.0" y="127.4" text-anchor="start" style="fill:#3B9EFF">103</text>
-  <text class="val-sm" x="494.0" y="204.9" text-anchor="middle" style="fill:#3B9EFF">61</text>
-  <text class="val-sm" x="74.0" y="201.0" text-anchor="start" style="fill:#F0884D">76</text>
-  <text class="val-sm" x="646.0" y="230.4" text-anchor="start" style="fill:#F0884D">55</text>
-  <text class="val-sm" x="71.0" y="162.8" text-anchor="start" style="fill:#52C48A">98</text>
-  <text class="val-sm" x="646.0" y="253.2" text-anchor="start" style="fill:#52C48A">43</text>
+  <text class="note-dim" x="636" y="122" text-anchor="end">8-bit KV + DSpark leads at every depth up to 160K</text>
+  <polyline points="68.0,186.6 181.6,199.2 295.2,208.5 408.8,216.0 494.0,222.5 636.0,230.0" fill="none" stroke="#F0884D" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="68.0" cy="186.6" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="181.6" cy="199.2" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="295.2" cy="208.5" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="408.8" cy="216.0" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="494.0" cy="222.5" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="636.0" cy="230.0" r="3.8" fill="#F0884D" stroke="#161618" stroke-width="1.5"/>
+  <polyline points="68.0,140.9 181.6,173.0 295.2,186.1 408.8,202.9 494.0,207.1" fill="none" stroke="#3B9EFF" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="68.0" cy="140.9" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="181.6" cy="173.0" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="295.2" cy="186.1" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="408.8" cy="202.9" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="494.0" cy="207.1" r="3.8" fill="#3B9EFF" stroke="#161618" stroke-width="1.5"/>
+  <polyline points="68.0,137.7 181.6,161.2 295.2,172.5 408.8,197.7 494.0,197.0 636.0,214.2" fill="none" stroke="#52C48A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="68.0" cy="137.7" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="181.6" cy="161.2" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="295.2" cy="172.5" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="408.8" cy="197.7" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="494.0" cy="197.0" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <circle cx="636.0" cy="214.2" r="3.8" fill="#52C48A" stroke="#161618" stroke-width="1.5"/>
+  <text class="val-sm" x="74.0" y="158.9" text-anchor="start" style="fill:#3B9EFF">117</text>
+  <text class="val-sm" x="504.0" y="211.1" text-anchor="start" style="fill:#3B9EFF">76</text>
+  <text class="val-sm" x="74.0" y="202.6" text-anchor="start" style="fill:#F0884D">89</text>
+  <text class="val-sm" x="646.0" y="234.0" text-anchor="start" style="fill:#F0884D">62</text>
+  <text class="val-sm" x="76.0" y="128.7" text-anchor="start" style="fill:#52C48A">119</text>
+  <text class="val-sm" x="646.0" y="218.2" text-anchor="start" style="fill:#52C48A">72</text>
 
 </svg>
